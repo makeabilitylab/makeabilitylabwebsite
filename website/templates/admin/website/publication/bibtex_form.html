@@ -1,0 +1,22 @@
+{% extends "admin/change_form.html" %}
+
+{% block field_sets %}
+    {{ test_var }}
+    <div id="bibtex_content" style="width:75%;">
+        Copy/paste in your publication's bibtex to auto-fill in the publication form. If you do not
+        have bibtex information, just select the "I don't have bibtex" button.<p></p>
+        <form action="" method="post">
+
+            <textarea name="bibtex_textarea" style="width: 100%; min-height: 300px;"></textarea>
+            <p></p>
+            <div id="bibtex_buttons" style="float: right;">
+                <input type="submit" name="nobibtex_button" value="I don't have bibtex for this pub"/>
+                <input type="submit" name="submitbibtex_button" value="Submit"/>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block submit_buttons_bottom %}
+{#    {% submit_row %}#}
+{% endblock %}

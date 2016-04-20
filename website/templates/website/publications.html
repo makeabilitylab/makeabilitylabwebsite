@@ -1,0 +1,11 @@
+{% extends "website/base.html" %}
+
+{% block pagetitle %}Publications{% endblock %}
+
+{% block content %}
+    {% if publications %}
+        There are {{  publications.count }} publications loaded in the system
+    {% else %}
+        <p>No publications are available.</p>
+    {% endif %}
+{% endblock %}

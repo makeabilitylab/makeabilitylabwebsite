@@ -1,0 +1,52 @@
+/* Carousel styles */
+html,
+body,
+.carousel,
+.carousel-inner,
+.carousel-inner .item {
+	height: 500px;
+}
+
+.item {
+  background: black;
+}
+
+.overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	line-height: 500px;
+	z-index: 10;
+	background-color: rgba(0, 0, 0, 0.25);
+}
+
+.fill {
+	width:100%;
+	height:500px;
+	background-position:center;
+	background-size:cover;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+.footer {
+  height: 60px;
+  background-color: #f5f5f5;
+  margin-bottom: 0px;
+}
+
+/* general styles */
+
+.well {
+	border-radius: 0 !important;
+}

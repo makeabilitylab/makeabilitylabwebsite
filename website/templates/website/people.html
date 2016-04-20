@@ -1,0 +1,115 @@
+{#<!DOCTYPE html>#}
+{#<html lang="en">#}
+{#<head>#}
+{#    {% load staticfiles %}#}
+{##}
+{#    <link rel="stylesheet" type="text/css" href="{% static 'website/css/bootstrap.min.css' %}" />#}
+{##}
+{#    <meta charset="UTF-8">#}
+{#    <title>Title</title>#}
+{#</head>#}
+{#<body>#}
+{#    {% if people %}#}
+{#        <ul>#}
+{#        {% for person in people %}#}
+{#            <li><a href="{% url 'website:member' person.id %}">{{ person.get_full_name }}</a></li>#}
+{#        {% endfor %}#}
+{#        </ul>#}
+{#    {% else %}#}
+{#        <p>No people are available.</p>#}
+{#    {% endif %}#}
+{#</body>#}
+{#</html>#}
+
+{% extends "website/base.html" %}
+
+{% block pagetitle %}People{% endblock %}
+
+{% block content %}
+    {% if people %}
+        <h1>All People ({{ people|length}})</h1>
+        <ul>
+        {% for person in people %}
+            <li><a href="{% url 'website:member' person.id %}">{{ person.get_full_name }}</a>
+            <br/>
+            <a href="{{ person.image.url }}">{{ person.image }}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No people are available.</p>
+    {% endif %}
+    <p><hr></p>
+    {% if people %}
+        <div class="row">
+            {% for person in people %}
+                <div class="col-md-2">
+                    <img src="{{ person.image.url }}" class="thumbnail img-responsive"/>
+                    <a href="{% url 'website:member' person.id %}">{{ person.get_full_name }}</a>
+
+                </div>
+            {% endfor %}
+
+        </div>
+    {% else %}
+        <p>No people are available.</p>
+    {% endif %}
+    <p><hr></p>
+    {% if active_members %}
+        {#  To get the length of a list in a template, use | length. #}
+        {#      See: http://stackoverflow.com/questions/13138859/django-length-of-a-list #}
+        <h1>Current Members ({{ active_members|length}})</h1>
+        <div class="row">
+            {% for member in active_members %}
+                <div class="col-md-2">
+                    <a href="{% url 'website:member' member.person.id %}">
+                        <img src="{{ member.person.image.url }}" class="thumbnail img-responsive"/>
+                        {{ member.person.get_full_name }}
+                    </a>
+                    <br/>
+                    {{ member.title }}, {{ member.get_department_abbreviated }}
+                    <br/>
+                    {{ member.school }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+      <p><hr></p>
+    {% if alumni_members %}
+        {#  To get the length of a list in a template, use | length. #}
+        {#      See: http://stackoverflow.com/questions/13138859/django-length-of-a-list #}
+        <h1>Alumni ({{ alumni_members|length}})</h1>
+        <div class="row">
+            {% for member in alumni_members %}
+                <div class="col-md-2">
+                    {# <a href="{{ member.person.personal_website }}">#}
+                    <a href="{% url 'website:member' member.person.id %}">
+                        <img src="{{ member.person.image.url }}" class="thumbnail img-responsive"/>
+                        {{ member.person.get_full_name }}
+                    </a>
+                    <br/>
+                    {{ member.title }}, {{ member.get_department_abbreviated }}, {{ member.get_date_range_as_str }}
+                    <br/>
+                    {{ member.school }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% if alumni_members %}
+        {#  To get the length of a list in a template, use | length. #}
+        {#      See: http://stackoverflow.com/questions/13138859/django-length-of-a-list #}
+        <h1>Collaborators ({{ cur_collaborators|length}})</h1>
+        <div class="row">
+            {% for collaborator in cur_collaborators %}
+                <div class="col-md-2">
+                    <img src="{{ collaborator.person.image.url }}" class="thumbnail img-responsive"/>
+                    <a href="{% url 'website:member' collaborator.person.id %}">{{ collaborator.person.get_full_name }}</a>
+
+                    <br/>
+                    {{ member.title }}, {{ member.get_department_abbreviated }}
+                    <br/>
+                    {{ member.school }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

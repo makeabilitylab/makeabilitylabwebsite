@@ -1,0 +1,62 @@
+{% extends "website/base.html" %}
+
+{% block pagetitle %}Talks{% endblock %}
+
+{% block maincarousel %}
+    {% load staticfiles %}
+     <div id="mainCarousel" class="carousel slide carousel-fade" data-ride="carousel" data-interval="5000" data-pause="false">
+            <div class="overlay carousel-caption">This is an overlay over all of the carousel items.</div>
+            <!-- Wrapper for slides -->
+            <div class="carousel-inner" role="listbox">
+                <div class="item active">
+                    <div class="fill" style="background-image:url({% static 'website/img/DSC_0581_Cropped.jpg' %})"></div>
+                    <div class="carousel-caption">
+                        This is a caption for carousel item 1.
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="fill" style="background-image:url({% static 'website/img/IMG_9893_Cropped.jpg' %})"></div>
+                    <div class="carousel-caption">
+                        This is a caption for carousel item 2.
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="fill" style="background-image:url({% static 'website/img/banner3.png' %})"></div>
+                    <div class="carousel-caption">
+                        This is a caption for carousel item 3.
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {% if talks %}
+            There are {{ talks.count }} talks loaded in the system
+             <ul>
+            {% for talk in talks %}
+                <li>{{ talk.title }}
+                <br/>
+                <a href="{{ talk.thumbnail.url }}">{{  talk.thumbnail.url }}</a></li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No publications are available.</p>
+        {% endif %}
+        <p><hr></p>
+        {% if talks %}
+            <div class="row">
+                {% for talk in talks %}
+                    <div class="col-md-2">
+                        <img src="{{ talk.thumbnail.url }}" class="thumbnail img-responsive"/>
+                        {{ talk.title }}
+                    </div>
+                {% endfor %}
+
+            </div>
+        {% else %}
+            <p>No people are available.</p>
+        {% endif %}
+    </div>
+{% endblock %}

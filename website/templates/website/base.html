@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    {% load staticfiles %}
+
+    <link rel="stylesheet" type="text/css" href="{% static 'website/css/bootstrap.min.css' %}"/>
+
+    <!-- A modified version of the grayscale css -->
+    <link rel="stylesheet" type="text/css" href="{% static 'website/css/grayscale.css' %}"/>
+
+    <!-- Our custom style sheets -->
+    <link rel="stylesheet" href="{% static 'website/css/carousel_fade.css' %}"/>
+	<link rel="stylesheet" href="{% static 'website/css/styles.css' %}">
+
+    <!-- Old base.css class -->
+{#    <link rel="stylesheet" type="text/css" href="{% static 'website/css/base.css' %}"/> #}
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+
+	<!-- jQuery: v1.9.1 necessary for Bootstrap's JavaScript plugins -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+	<!-- Bootstrap: Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+	<!-- Grayscale template -->
+	<script src="{% static 'website/js/jquery.easing.min.js' %}"></script>
+	<script src="{% static 'website/js/grayscale.js' %}"></script>
+
+    <title>
+        {% block pagetitle %}
+            {{ request.resolver_match.url_name }}
+        {% endblock %}
+    </title>
+
+    <script type="text/javascript">
+		$(document).ready(function () {
+			$('.carousel').carousel();
+		});
+	</script>
+</head>
+
+<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+
+    {% block navbar %}
+        <!-- Navigation -->
+        <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    <a class="navbar-brand page-scroll" href="#page-top">
+                        <i class="fa fa-gears"></i>  <span class="light">Makeability</span> Lab
+                    </a>
+                </div>
+
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+                    <ul class="nav navbar-nav">
+                        <!-- To automatically highlight active links, I followed this code:
+                         http://stackoverflow.com/a/29495310 -->
+                        <li class="hidden">
+                            <a href="#page-top"></a>
+                        </li>
+
+                        <!-- TODO: Link highlighting not working with Lee's new CSS. Need to fix -->
+                        {% with request.resolver_match.url_name as url_name %}
+                            <li class="{% if url_name == 'index' %}active{% endif %}"><a href="{% url 'website:index' %}">Home</a></li>
+                            <li class="{% if url_name == 'people' %}active{% endif %}"><a href="{% url 'website:people' %}">People</a></li>
+                            <li class="{% if url_name == 'publications' %}active{% endif %}"><a href="{% url 'website:publications' %}">Publications</a></li>
+                            <li class="{% if url_name == 'talks' %}active{% endif %}"><a href="{% url 'website:talks' %}">Talks</a></li>
+                            <li><a href="http://www.cs.umd.edu/hcil/">HCIL</a></li>
+                        {% endwith %}
+
+                        <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+                        <!-- JEF: TODO I don't think these should be page-scroll classes. I believe this is a grayscale
+                             css class and made for single webpage designs where all content on same page -->
+{#                        <li class="hidden">#}
+{#                            <a href="#page-top"></a>#}
+{#                        </li>#}
+{#                        <li>#}
+{#                            <a class="page-scroll" href="#">Home</a>#}
+{#                        </li>#}
+{#                        <li>#}
+{#                            <a class="page-scroll" href="#">People</a>#}
+{#                        </li>#}
+{#                        <li>#}
+{#                            <a class="page-scroll" href="#">Publications</a>#}
+{#                        </li>#}
+{#                        <li>#}
+{#                            <a class="page-scroll" href="#">Talks</a>#}
+{#                        </li>#}
+{#                        <li>#}
+{#                            <a class="page-scroll" href="http://www.cs.umd.edu/hcil/">HCIL</a>#}
+{#                        </li>#}
+                    </ul>
+                </div>
+                <!-- /.navbar-collapse -->
+            </div>
+            <!-- /.container -->
+        </nav>
+    {% endblock %}
+
+    {% block maincarousel %}
+        <div id="mainCarousel" class="carousel slide carousel-fade" data-ride="carousel" data-interval="5000" data-pause="false">
+            <div class="overlay carousel-caption">This is an overlay over all of the carousel items.</div>
+            <!-- Wrapper for slides -->
+            <div class="carousel-inner" role="listbox">
+                <div class="item active">
+                    <div class="fill" style="background-image:url({% static 'website/img/banner1.jpg' %})"></div>
+                    <div class="carousel-caption">
+                        This is a caption for carousel item 1.
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="fill" style="background-image:url({% static 'website/img/banner2.jpg' %})"></div>
+                    <div class="carousel-caption">
+                        This is a caption for carousel item 2.
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="fill" style="background-image:url({% static 'website/img/banner3.png' %})"></div>
+                    <div class="carousel-caption">
+                        This is a caption for carousel item 3.
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+
+    {% block content %}
+
+        <div class="well">
+            <div class="container">
+                <h1>We're the Makeability Lab!</h1>
+                <p>Some text describing us goes here</p>
+            </div>
+        </div>
+
+        <!--
+        Note: Bootstrap uses a 12 column system, so for each item you specify the number of columns
+        filled. Also, you can define different numbers of items for different screen sizes.
+        So, col-xs-6 col-sm-4 col-md-3 col-lg-2 means that there will be:
+            2 items per row for extra small screens (< 768px)
+            3 items per row for small screens (768px-992px)
+            4 items per row for medium screens (992px-1200px)
+            6 items per row for large screens (> 1200px)
+        See https://scotch.io/tutorials/understanding-the-bootstrap-3-grid-system for more info.
+        -->
+        <div class="container">
+            <h3>
+                Recent publications:
+            </h3><br/>
+            <div class="row">
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
+                  <img src="img/item4.png">
+                  <div class="caption">
+                    <h4>Some text</h4>
+                  </div>
+                </div>
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
+                  <img src="img/item5.png">
+                  <div class="caption">
+                    <h4>Some text</h4>
+                  </div>
+                </div>
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
+                  <img src="img/item6.png">
+                  <div class="caption">
+                    <h4>Some text</h4>
+                  </div>
+                </div>
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
+                  <img src="img/item7.png">
+                  <div class="caption">
+                    <h4>Some text</h4>
+                  </div>
+                </div>
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
+                  <img src="img/item4.png">
+                  <div class="caption">
+                    <h4>Some text</h4>
+                  </div>
+                </div>
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
+                  <img src="img/item5.png">
+                  <div class="caption">
+                    <h4>Some text</h4>
+                  </div>
+                </div>
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
+                  <img src="img/item6.png">
+                  <div class="caption">
+                    <h4>Some text</h4>
+                  </div>
+                </div>
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
+                  <img src="img/item7.png">
+                  <div class="caption">
+                    <h4>Some text</h4>
+                  </div>
+                </div>
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
+                  <img src="img/item4.png">
+                  <div class="caption">
+                    <h4>Some text</h4>
+                  </div>
+                </div>
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
+                  <img src="img/item5.png">
+                  <div class="caption">
+                    <h4>Some text</h4>
+                  </div>
+                </div>
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
+                  <img src="img/item6.png">
+                  <div class="caption">
+                    <h4>Some text</h4>
+                  </div>
+                </div>
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
+                  <img src="img/item7.png">
+                  <div class="caption">
+                    <h4>Some text</h4>
+                  </div>
+                </div>
+            </div>
+
+            <h3>
+                Recent talks:
+            </h3><br/>
+            <div class="row">
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
+                  <img src="img/item1.png">
+                  <div class="caption">
+                    <h4>Some text</h4>
+                  </div>
+                </div>
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
+                  <img src="img/item2.png">
+                  <div class="caption">
+                    <h4>Some text</h4>
+                  </div>
+                </div>
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
+                  <img src="img/item3.png">
+                  <div class="caption">
+                    <h4>Some text</h4>
+                  </div>
+                </div>
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
+                  <img src="img/item1.png">
+                  <div class="caption">
+                    <h4>Some text</h4>
+                  </div>
+                </div>
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
+                  <img src="img/item2.png">
+                  <div class="caption">
+                    <h4>Some text</h4>
+                  </div>
+                </div>
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
+                  <img src="img/item3.png">
+                  <div class="caption">
+                    <h4>Some text</h4>
+                  </div>
+                </div>
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
+                  <img src="img/item2.png">
+                  <div class="caption">
+                    <h4>Some text</h4>
+                  </div>
+                </div>
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
+                  <img src="img/item3.png">
+                  <div class="caption">
+                    <h4>Some text</h4>
+                  </div>
+                </div>
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
+                  <img src="img/item1.png">
+                  <div class="caption">
+                    <h4>Some text</h4>
+                  </div>
+                </div>
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
+                  <img src="img/item3.png">
+                  <div class="caption">
+                    <h4>Some text</h4>
+                  </div>
+                </div>
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
+                  <img src="img/item1.png">
+                  <div class="caption">
+                    <h4>Some text</h4>
+                  </div>
+                </div>
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
+                  <img src="img/item2.png">
+                  <div class="caption">
+                    <h4>Some text</h4>
+                  </div>
+                </div>
+            </div>
+        </div>
+
+    {% endblock %}
+
+    {% block footer %}
+        <hr>
+        <p>Thanks for visiting {{  request.resolver_match.url_name }}.</p>
+    {% endblock %}
+</div>
+</body>
+</html>
