@@ -1,0 +1,4 @@
+django==1.9
+wand==0.4.2
+bibtexparser==0.6.2
+Pillow==3.2.0
