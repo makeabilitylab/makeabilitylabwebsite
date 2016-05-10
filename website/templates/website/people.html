@@ -62,7 +62,7 @@
             {% for member in active_prof_grad %}
                 <div class="col-xs-6 col-sm-4 col-md-3">
                     <a href="{% url 'website:member' member.person.id %}">
-                        <img src="{% thumbnail member.person.image 600x600 box=member.person.cropping crop detail %}" class="thumbnail img-responsive"/>
+                        <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="thumbnail img-responsive"/>
                     </a>
                     <div class="item-info">
                         <a href="{% url 'website:member' member.person.id %}">
@@ -85,7 +85,7 @@
             {% for member in active_undergrad %}
                 <div class="col-xs-6 col-sm-4 col-md-3">
                     <a href="{% url 'website:member' member.person.id %}">
-                        <img src="{{ member.person.image.url }}" class="thumbnail img-responsive"/>
+                        <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="thumbnail img-responsive"/>
                     </a>
                     <div class="item-info">
                         <a href="{% url 'website:member' member.person.id %}">
@@ -108,7 +108,7 @@
             {% for member in active_highschool %}
                 <div class="col-xs-6 col-sm-4 col-md-3">
                     <a href="{% url 'website:member' member.person.id %}">
-                        <img src="{{ member.person.image.url }}" class="thumbnail img-responsive"/>
+                        <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="thumbnail img-responsive"/>
                     </a>
                     <div class="item-info">
                         <a href="{% url 'website:member' member.person.id %}">
@@ -130,7 +130,7 @@
             {% for member in alumni_members %}
                 <div class="col-xs-6 col-sm-4 col-md-3">
                     <a href="{% url 'website:member' member.person.id %}">
-                        <img src="{{ member.person.image.url }}" class="thumbnail img-responsive"/>
+                        <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="thumbnail img-responsive"/>
                     </a>
                     <div class="item-info">
                         <a href="{% url 'website:member' member.person.id %}">
@@ -152,7 +152,7 @@
             {% for collaborator in cur_collaborators %}
                 <div class="col-xs-6 col-sm-4 col-md-3">
                     <a href="{% url 'website:member' collaborator.person.id %}">
-                        <img src="{{ collaborator.person.image.url }}" class="thumbnail img-responsive"/>
+                        <img src="{% thumbnail collaborator.person.image 245x245 box=collaborator.person.cropping crop detail %}" class="thumbnail img-responsive"/>
                     </a>
                     <div class="item-info">
                         <a href="{% url 'website:member' collaborator.person.id %}">
@@ -175,7 +175,7 @@
             {% for collaborator in past_collaborators %}
                 <div class="col-xs-6 col-sm-4 col-md-3">
                     <a href="{% url 'website:member' collaborator.person.id %}">
-                        <img src="{{ collaborator.person.image.url }}" class="thumbnail img-responsive"/>
+                        <img src="{% thumbnail collaborator.person.image 245x245 box=collaborator.person.cropping crop detail %}" class="thumbnail img-responsive"/>
                     </a>
                     <div class="item-info">
                         <a href="{% url 'website:member' collaborator.person.id %}">
