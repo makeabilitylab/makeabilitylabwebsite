@@ -1,4 +1,5 @@
 from django.db import models
+from image_cropping import ImageRatioField
 
 from datetime import date
 from website.utils.fileutils import UniquePathAndRename
@@ -14,8 +15,13 @@ class Person(models.Model):
     # pip3 install Pillow
     # We use the get_unique_path function because otherwise if two people use the same
     # filename (something generic like picture.jpg), one will overwrite the other.
-    image = models.ImageField(upload_to=UniquePathAndRename("person", True))
+    image = models.ImageField(blank=True, upload_to=UniquePathAndRename("person", True))
     # image_cropped = models.ImageField(editable=False)
+
+    # LS: Added image cropping to fixed ratio
+    # See https://github.com/jonasundderwolf/django-image-cropping
+    # size is "width x height"
+    cropping = ImageRatioField('image', '600x600')
 
     def get_full_name(self, includeMiddle=True):
         if self.middle_name and includeMiddle:
@@ -93,9 +99,23 @@ class Position(models.Model):
     def is_member(self):
         return self.role == Position.MEMBER
 
+    # Returns true if professor
+    def is_prof(self):
+        return self.title == Position.FULL_PROF or self.title == Position.ASSOCIATE_PROF or self.title == Position.ASSISTANT_PROF
+
+    # Returns true if grad student
+    def is_grad(self):
+        return self.title == Position.MS_STUDENT or self.title == Position.PHD_STUDENT or self.title == Position.POST_DOC
+
     # Returns true if member is still active based on end date
     def is_active_member(self):
         return self.is_member() and \
+               self.start_date is not None and self.start_date <= date.today() and \
+               self.end_date is None or (self.end_date is not None and self.end_date >= date.today())
+
+    # Returns true if member is still active based on end date
+    def is_active_collaborator(self):
+        return self.is_collaborator() and \
                self.start_date is not None and self.start_date <= date.today() and \
                self.end_date is None or (self.end_date is not None and self.end_date >= date.today())
 

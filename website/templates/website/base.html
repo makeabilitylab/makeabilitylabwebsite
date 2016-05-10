@@ -24,6 +24,9 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
 
+    <!-- Back Top -->
+    <link rel="stylesheet" href="{% static 'website/css/backtop.css' %}"/>    
+
 	<!-- jQuery: v1.9.1 necessary for Bootstrap's JavaScript plugins -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
@@ -43,7 +46,49 @@
     <script type="text/javascript">
 		$(document).ready(function () {
 			$('.carousel').carousel();
+      $("#back-top").hide();
 		});
+
+    // allow for smooth scrolling to anchor links
+    $(document).click(function (event) {
+        if (event.originalEvent.srcElement.className === "scroll") {
+            //prevent the default action for the click event
+            event.preventDefault();
+
+            //get the top offset of the target anchor
+            var hashName = event.originalEvent.srcElement.hash.substring(1);
+            var target_offset = $('[name=' + hashName + ']').offset();
+            var target_top = target_offset.top - 60;
+
+            //goto that anchor by setting the body scroll top to anchor top
+            //http://api.jquery.com/animate/
+            $('html, body').animate({ scrollTop: target_top }, 500);
+        }
+    });
+
+    // auto-hide button scroll to top: http://webdesignerwall.com/demo/scroll-to-top/scrolltotop.html
+    // provide the back to top button
+    // hide #back-top first
+
+    // fade in #back-top
+    $(function () {
+        $(window).scroll(function () {
+            if ($(this).scrollTop() > 100) {
+                $('#back-top').fadeIn();
+            } else {
+                $('#back-top').fadeOut();
+            }
+        });
+
+        // scroll body to 0px on click
+        $('#back-top a').click(function () {
+            $('body,html').animate({
+                scrollTop: 0
+            }, 800);
+            return false;
+        });
+    });
+
 	</script>
 </head>
 
@@ -316,9 +361,17 @@
     {% endblock %}
 
     {% block footer %}
-        <hr>
+    <hr>
+    <div class="container">
         <p>Thanks for visiting {{  request.resolver_match.url_name }}.</p>
+    </div>
     {% endblock %}
 </div>
+
+<p id="back-top">
+    <a href="#top"><span></span>Back to Top</a>
+</p>
+
+
 </body>
 </html>

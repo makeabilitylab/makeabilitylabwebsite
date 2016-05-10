@@ -1,115 +1,195 @@
-{#<!DOCTYPE html>#}
-{#<html lang="en">#}
-{#<head>#}
-{#    {% load staticfiles %}#}
-{##}
-{#    <link rel="stylesheet" type="text/css" href="{% static 'website/css/bootstrap.min.css' %}" />#}
-{##}
-{#    <meta charset="UTF-8">#}
-{#    <title>Title</title>#}
-{#</head>#}
-{#<body>#}
-{#    {% if people %}#}
-{#        <ul>#}
-{#        {% for person in people %}#}
-{#            <li><a href="{% url 'website:member' person.id %}">{{ person.get_full_name }}</a></li>#}
-{#        {% endfor %}#}
-{#        </ul>#}
-{#    {% else %}#}
-{#        <p>No people are available.</p>#}
-{#    {% endif %}#}
-{#</body>#}
-{#</html>#}
-
 {% extends "website/base.html" %}
 
 {% block pagetitle %}People{% endblock %}
 
-{% block content %}
-    {% if people %}
-        <h1>All People ({{ people|length}})</h1>
-        <ul>
-        {% for person in people %}
-            <li><a href="{% url 'website:member' person.id %}">{{ person.get_full_name }}</a>
-            <br/>
-            <a href="{{ person.image.url }}">{{ person.image }}</a></li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>No people are available.</p>
-    {% endif %}
-    <p><hr></p>
-    {% if people %}
-        <div class="row">
-            {% for person in people %}
-                <div class="col-md-2">
-                    <img src="{{ person.image.url }}" class="thumbnail img-responsive"/>
-                    <a href="{% url 'website:member' person.id %}">{{ person.get_full_name }}</a>
+{% load staticfiles %}
+{% load thumbnail %}
 
-                </div>
-            {% endfor %}
-
+{% block maincarousel %}
+    <div id="mainCarousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="5000" data-pause="false">
+        <div class="overlay carousel-caption">
+            <div class="container">
+                <div class="overlay-spacer"></div>
+                <div class="overlay-title">People</div>
+            </div>
         </div>
-    {% else %}
-        <p>No people are available.</p>
-    {% endif %}
-    <p><hr></p>
-    {% if active_members %}
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner" role="listbox">
+            <div class="item active">
+                <div class="fill" style="background-image:url({% static 'website/img/banner1.jpg' %})"></div>
+                <!-- <div class="carousel-caption">
+                    This is a caption for carousel item 1.
+                </div> -->
+            </div>
+            <div class="item">
+                <div class="fill" style="background-image:url({% static 'website/img/banner2.jpg' %})"></div>
+                <!-- <div class="carousel-caption">
+                    This is a caption for carousel item 2.
+                </div> -->
+            </div>
+            <div class="item">
+                <div class="fill" style="background-image:url({% static 'website/img/banner3.png' %})"></div>
+                <!-- <div class="carousel-caption">
+                    This is a caption for carousel item 3.
+                </div> -->
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div id="content" class="container" data-spy="scroll" data-target="#navbar-scroll" data-offset="50">
+    <div class="navbar navbar-filter" role="navigation">
+        <ol class="navbar-right breadcrumb">
+            {% if active_prof_grad %}<li><a href="#profgrad" class="scroll">Professors and Graduate Students</a></li> {% endif %}
+            {% if active_undergrad %}<li><a href="#undergrad" class="scroll">Undergraduate Students</a></li> {% endif %}
+            {% if active_highschool %}<li><a href="#highschool" class="scroll">High School Students</a></li> {% endif %}
+            {% if alumni_members %}<li><a href="#alumni" class="scroll">Alumni</a></li> {% endif %}
+            {% if cur_collaborators %}<li><a href="#collaborators" class="scroll">Collaborators</a></li> {% endif %}
+            {% if past_collaborators %}<li><a href="#pastcollaborators" class="scroll">Past Collaborators</a></li> {% endif %}
+        </ol>
+    </div>
+    {% if active_prof_grad %}
         {#  To get the length of a list in a template, use | length. #}
         {#      See: http://stackoverflow.com/questions/13138859/django-length-of-a-list #}
-        <h1>Current Members ({{ active_members|length}})</h1>
+        <h1 name="profgrad">Professors and Graduate Students</h1>
+        <h4>{{ active_prof|length }} Prof, 
+            {% if active_postdoc %} {{ active_postdoc|length }} Postdoc, {% endif %}
+            {% if active_phd %} {{ active_phd|length }} PhD, {% endif %}
+            {% if active_ms %} {{ active_ms|length }} MS{% endif %}
+        </h4>
         <div class="row">
-            {% for member in active_members %}
-                <div class="col-md-2">
+            {% for member in active_prof_grad %}
+                <div class="col-xs-6 col-sm-4 col-md-3">
+                    <a href="{% url 'website:member' member.person.id %}">
+                        <img src="{% thumbnail member.person.image 600x600 box=member.person.cropping crop detail %}" class="thumbnail img-responsive"/>
+                    </a>
+                    <div class="item-info">
+                        <a href="{% url 'website:member' member.person.id %}">
+                            {{ member.person.get_full_name }}
+                        </a>
+                        <br/>
+                        {{ member.title }}, {{ member.get_department_abbreviated }}
+                        <br/>
+                        {{ member.school }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <p><hr></p>
+    {% endif %}
+    {% if active_undergrad %}
+        <h1 name="undergrad">Undergraduate Students</h1>
+        <h4>{{ active_undergrad|length}} Undergrad</h4>
+        <div class="row">
+            {% for member in active_undergrad %}
+                <div class="col-xs-6 col-sm-4 col-md-3">
                     <a href="{% url 'website:member' member.person.id %}">
                         <img src="{{ member.person.image.url }}" class="thumbnail img-responsive"/>
-                        {{ member.person.get_full_name }}
                     </a>
-                    <br/>
-                    {{ member.title }}, {{ member.get_department_abbreviated }}
-                    <br/>
-                    {{ member.school }}
+                    <div class="item-info">
+                        <a href="{% url 'website:member' member.person.id %}">
+                            {{ member.person.get_full_name }}
+                        </a>
+                        <br/>
+                        {{ member.title }}, {{ member.get_department_abbreviated }}
+                        <br/>
+                        {{ member.school }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <p><hr></p>
+    {% endif %}
+    {% if active_highschool %}
+        <h1 name="highschool">High School Students</h1>
+        <h4>{{ active_highschool|length}} HS</h4>
+        <div class="row">
+            {% for member in active_highschool %}
+                <div class="col-xs-6 col-sm-4 col-md-3">
+                    <a href="{% url 'website:member' member.person.id %}">
+                        <img src="{{ member.person.image.url }}" class="thumbnail img-responsive"/>
+                    </a>
+                    <div class="item-info">
+                        <a href="{% url 'website:member' member.person.id %}">
+                            {{ member.person.get_full_name }}
+                        </a>
+                        <br/>
+                        {{ member.title }}, {{ member.get_department_abbreviated }}
+                        <br/>
+                        {{ member.school }}
+                    </div>
                 </div>
             {% endfor %}
         </div>
     {% endif %}
-      <p><hr></p>
     {% if alumni_members %}
-        {#  To get the length of a list in a template, use | length. #}
-        {#      See: http://stackoverflow.com/questions/13138859/django-length-of-a-list #}
-        <h1>Alumni ({{ alumni_members|length}})</h1>
+        <h1 name="alumni">Alumni</h1>
+        <h4>{{ alumni_members|length}} {% if alumni_members|length > 1 %} Alumni {% else %} Alumnus {% endif %}</h4>
         <div class="row">
             {% for member in alumni_members %}
-                <div class="col-md-2">
-                    {# <a href="{{ member.person.personal_website }}">#}
+                <div class="col-xs-6 col-sm-4 col-md-3">
                     <a href="{% url 'website:member' member.person.id %}">
                         <img src="{{ member.person.image.url }}" class="thumbnail img-responsive"/>
-                        {{ member.person.get_full_name }}
                     </a>
-                    <br/>
-                    {{ member.title }}, {{ member.get_department_abbreviated }}, {{ member.get_date_range_as_str }}
-                    <br/>
-                    {{ member.school }}
+                    <div class="item-info">
+                        <a href="{% url 'website:member' member.person.id %}">
+                            {{ member.person.get_full_name }}
+                        </a>
+                        <br/>
+                        {{ member.title }}, {{ member.get_department_abbreviated }}
+                        <br/>
+                        {{ member.school }}
+                    </div>
                 </div>
             {% endfor %}
         </div>
     {% endif %}
-    {% if alumni_members %}
-        {#  To get the length of a list in a template, use | length. #}
-        {#      See: http://stackoverflow.com/questions/13138859/django-length-of-a-list #}
-        <h1>Collaborators ({{ cur_collaborators|length}})</h1>
+    {% if cur_collaborators %}
+        <h1 name="collaborators">Collaborators</h1>
+        <h4>{{ cur_collaborators|length}} {% if cur_collaborators|length > 1 %} Collaborators {% else %} Collaborator {% endif %}</h4>
         <div class="row">
             {% for collaborator in cur_collaborators %}
-                <div class="col-md-2">
-                    <img src="{{ collaborator.person.image.url }}" class="thumbnail img-responsive"/>
-                    <a href="{% url 'website:member' collaborator.person.id %}">{{ collaborator.person.get_full_name }}</a>
-
-                    <br/>
-                    {{ member.title }}, {{ member.get_department_abbreviated }}
-                    <br/>
-                    {{ member.school }}
+                <div class="col-xs-6 col-sm-4 col-md-3">
+                    <a href="{% url 'website:member' collaborator.person.id %}">
+                        <img src="{{ collaborator.person.image.url }}" class="thumbnail img-responsive"/>
+                    </a>
+                    <div class="item-info">
+                        <a href="{% url 'website:member' collaborator.person.id %}">
+                            {{ collaborator.person.get_full_name }}
+                        </a>
+                        <br/>
+                        {{ collaborator.title }}, {{ collaborator.get_department_abbreviated }}
+                        <br/>
+                        {{ collaborator.school }}
+                    </div>
                 </div>
             {% endfor %}
         </div>
+        {% if past_collaborators %}<p><hr></p>{% endif %}
     {% endif %}
+    {% if past_collaborators %}
+        <h1 name="pastcollaborators">Past Collaborators</h1>
+        <h4>{{ past_collaborators|length}} {% if past_collaborators|length > 1 %} Collaborators {% else %} Collaborator {% endif %}</h4>
+        <div class="row">
+            {% for collaborator in past_collaborators %}
+                <div class="col-xs-6 col-sm-4 col-md-3">
+                    <a href="{% url 'website:member' collaborator.person.id %}">
+                        <img src="{{ collaborator.person.image.url }}" class="thumbnail img-responsive"/>
+                    </a>
+                    <div class="item-info">
+                        <a href="{% url 'website:member' collaborator.person.id %}">
+                            {{ collaborator.person.get_full_name }}
+                        </a>
+                        <br/>
+                        {{ collaborator.title }}, {{ collaborator.get_department_abbreviated }}
+                        <br/>
+                        {{ collaborator.school }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <p><hr></p>
+    {% endif %}
+</div>
 {% endblock %}

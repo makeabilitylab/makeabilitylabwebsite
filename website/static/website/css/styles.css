@@ -1,6 +1,66 @@
+/* General styles */
+@font-face {
+	font-family: adelle-semibold;
+	src: url(../fonts/Adelle/adelle_semibold-webfont.ttf);
+}
+
+@font-face {
+	font-family: adelle-regular;
+	src: url(../fonts/Adelle/adelle_reg-webfont.ttf);
+}
+
+h1 {
+	font-family: adelle-semibold;
+	font-variant: small-caps;
+	font-size: 24;
+	margin-bottom:0;
+	padding-bottom:0;
+}
+
+h4 {
+	font-family: adelle-regular;
+	font-size: 12;
+	color: #464D59;
+	margin-top:0;
+	padding-top:0;
+}
+
+.thumbnail {
+	margin-bottom:0;
+}
+
+.item-info {
+	margin:0;
+	padding-top:10px;
+	padding-bottom:10px;
+}
+
+#content {
+	position: relative;
+}
+
+/* Custom navbar for filters */
+.breadcrumb {
+	background-color: transparent;
+}
+
+.navbar-filter {
+    
+}
+
+.navbar-filter .navbar-nav > li > a {
+    /*color:#fff;*/
+}
+.navbar-filter .navbar-nav > li > a:hover, .navbar-filter .navbar-nav > li > a:focus {
+    background-color: transparent;
+    color: #23527c;
+    text-decoration: underline;
+}
+.navbar-filter .navbar-brand {
+    
+}
+
 /* Carousel styles */
-html,
-body,
 .carousel,
 .carousel-inner,
 .carousel-inner .item {
@@ -19,12 +79,56 @@ body,
 	height: 100%;
 	line-height: 500px;
 	z-index: 10;
-	background-color: rgba(0, 0, 0, 0.25);
+	background-color: rgba(0, 0, 0, 0.55);
 }
 
 .fill {
 	width:100%;
 	height:500px;
+	background-position:center;
+	background-size:cover;
+}
+
+.shortCarousel, .shortCarousel .carousel-inner, .shortCarousel .item {
+	height: 335px;
+}
+
+.shortCarousel .overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	line-height: 335px;
+	vertical-align: bottom;
+	display: table-cell;
+	padding-top:0;
+	z-index: 10;
+	background-color: rgba(0, 0, 0, 0.55);
+	/*background-image: url(../img/texture.png);
+	background-repeat: repeat;
+	background-position: 0 0;*/
+}
+
+.overlay-title {
+	height: 120px;
+	line-height: 120px;
+	width: 300px;
+	text-align: left;
+	font-family: adelle-semibold;
+	font-weight: bold;
+	font-size: 72px;
+	font-variant: small-caps;
+}
+
+.overlay-spacer {
+	height: 215px;
+	margin-top:0;
+}
+
+.shortCarousel .fill {
+	width:100%;
+	height:335px;
 	background-position:center;
 	background-size:cover;
 }

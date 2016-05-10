@@ -42,7 +42,9 @@ INSTALLED_APPS = [
     # pip3 install django_extensions
     # python manage.py shell_plus
     # https://opensourcehacker.com/2014/08/13/turbocharge-your-python-prompt-and-django-shell-with-ipython-notebook/
-    'django_extensions'
+    'django_extensions',
+    'image_cropping',
+    'easy_thumbnails'
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -134,3 +136,10 @@ MEDIA_URL = '/media/'
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Thumbnail processing
+# LS: from https://github.com/jonasundderwolf/django-image-cropping
+from easy_thumbnails.conf import Settings as thumbnail_settings
+THUMBNAIL_PROCESSORS = (
+    'image_cropping.thumbnail_processors.crop_corners',
+) + thumbnail_settings.THUMBNAIL_PROCESSORS
