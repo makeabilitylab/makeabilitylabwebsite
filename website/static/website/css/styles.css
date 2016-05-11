@@ -9,12 +9,26 @@
 	src: url(../fonts/Adelle/adelle_reg-webfont.ttf);
 }
 
+@font-face {
+	font-family: adelle-heavy;
+	src: url(../fonts/Adelle/adelle_heavy-webfont.ttf);
+}
+
+body {
+	font-family: adelle-regular;
+}
+
+hr {
+	margin-top:0;
+}
+
 h1 {
 	font-family: adelle-semibold;
 	font-variant: small-caps;
 	font-size: 24;
 	margin-bottom:0;
 	padding-bottom:0;
+	margin-left:-1px;
 }
 
 h4 {
@@ -25,6 +39,14 @@ h4 {
 	padding-top:0;
 }
 
+h5 {
+	font-family: adelle-regular;
+	font-size: large;
+	font-weight: bold;
+	margin:0;
+	padding:0;
+}
+
 .thumbnail {
 	margin-bottom:0;
 }
@@ -32,7 +54,7 @@ h4 {
 .item-info {
 	margin:0;
 	padding-top:10px;
-	padding-bottom:10px;
+	padding-bottom:50px;
 }
 
 #content {
@@ -42,10 +64,12 @@ h4 {
 /* Custom navbar for filters */
 .breadcrumb {
 	background-color: transparent;
+	margin-bottom:0;
 }
 
 .navbar-filter {
-    
+    margin-bottom: 0;
+    min-height: 30px;
 }
 
 .navbar-filter .navbar-nav > li > a {
@@ -58,6 +82,11 @@ h4 {
 }
 .navbar-filter .navbar-brand {
     
+}
+
+.main-content {
+	margin-left:-10px;
+	margin-right:-10px;
 }
 
 /* Carousel styles */
@@ -119,6 +148,7 @@ h4 {
 	font-weight: bold;
 	font-size: 72px;
 	font-variant: small-caps;
+	margin-left: -3px;
 }
 
 .overlay-spacer {
@@ -133,20 +163,95 @@ h4 {
 	background-size:cover;
 }
 
+/* Custom 5-column styles
+-------------------------------------------------- */
+.col-xs-5ths,
+.col-sm-5ths,
+.col-md-5ths,
+.col-lg-5ths {
+    position: relative;
+    min-height: 1px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.col-xs-4-5ths,
+.col-sm-4-5ths,
+.col-md-4-5ths,
+.col-lg-4-5ths {
+    position: relative;
+    min-height: 1px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.col-xs-5ths {
+    width: 20%;
+    float: left;
+}
+
+.col-xs-4-5ths {
+    width: 80%;
+    float: left;
+}
+
+@media (min-width: 768px) {
+    .col-sm-5ths {
+        width: 20%;
+        float: left;
+    }
+    .col-sm-4-5ths {
+        width: 80%;
+        float: left;
+    }
+}
+
+@media (min-width: 992px) {
+    .col-md-5ths {
+        width: 20%;
+        float: left;
+    }
+    .col-md-4-5ths {
+        width: 80%;
+        float: left;
+    }
+}
+
+@media (min-width: 1200px) {
+    .col-lg-5ths {
+        width: 20%;
+        float: left;
+    }
+    .col-lg-4-5ths {
+        width: 80%;
+        float: left;
+    }
+}
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
-  position: relative;
-  min-height: 100%;
+  /*position: relative;
+  min-height: 100%;*/
 }
 body {
   /* Margin bottom by footer height */
-  margin-bottom: 60px;
+  /*margin-bottom: 60px;*/
 }
-.footer {
+/*.footer {
   height: 60px;
   background-color: #f5f5f5;
   margin-bottom: 0px;
+}*/
+
+.footer {
+	height: 75px;
+	line-height: 75px;
+}
+
+.footer-img {
+	max-height: 60px;
+	vertical-align: middle;
 }
 
 /* general styles */

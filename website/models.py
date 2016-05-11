@@ -17,11 +17,13 @@ class Person(models.Model):
     # filename (something generic like picture.jpg), one will overwrite the other.
     image = models.ImageField(blank=True, upload_to=UniquePathAndRename("person", True))
     # image_cropped = models.ImageField(editable=False)
+    image.help_text = 'You must select "Save and continue editing" at the bottom of the page after uploading a new image for cropping.'
 
     # LS: Added image cropping to fixed ratio
     # See https://github.com/jonasundderwolf/django-image-cropping
     # size is "width x height"
-    cropping = ImageRatioField('image', '600x600')
+    # TODO: update with desired aspect ratio and maximum resolution
+    cropping = ImageRatioField('image', '245x245', size_warning=True)
 
     def get_full_name(self, includeMiddle=True):
         if self.middle_name and includeMiddle:
