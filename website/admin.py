@@ -15,12 +15,14 @@ import urllib
 
 import bibtexparser
 
+from image_cropping import ImageCroppingMixin
+
 #class ChoiceInline(admin.StackedInline):
 class RoleInline(admin.StackedInline):
     model = Position
     extra = 1
 
-class PersonAdmin(admin.ModelAdmin):
+class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
     inlines = [RoleInline]
 
 class PublicationAdmin(admin.ModelAdmin):
