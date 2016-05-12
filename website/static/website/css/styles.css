@@ -10,8 +10,8 @@
 }
 
 @font-face {
-	font-family: adelle-heavy;
-	src: url(../fonts/Adelle/adelle_heavy-webfont.ttf);
+	font-family: adelle-light;
+	src: url(../fonts/Adelle/adelle_light-webfont.ttf);
 }
 
 body {
@@ -25,7 +25,7 @@ hr {
 h1 {
 	font-family: adelle-semibold;
 	font-variant: small-caps;
-	font-size: 24;
+	font-size: 36px;
 	margin-bottom:0;
 	padding-bottom:0;
 	margin-left:-1px;
@@ -33,7 +33,7 @@ h1 {
 
 h4 {
 	font-family: adelle-regular;
-	font-size: 12;
+	font-size: 18px;
 	color: #464D59;
 	margin-top:0;
 	padding-top:0;
@@ -87,6 +87,29 @@ h5 {
 .main-content {
 	margin-left:-10px;
 	margin-right:-10px;
+}
+
+.publication-row {
+	padding-top:10px;
+	padding-bottom:10px;
+}
+
+.publication-title {
+	font-family: adelle-regular;
+	font-size: 16px;
+	font-weight: bold;
+	color: #464D59;
+}
+
+.publication-authors {
+	font-family: adelle-light;
+	font-weight: 16px;
+}
+
+.publication-venue {
+	font-family: adelle-light;
+	font-size: 16px;
+	color: #7F7F7F;
 }
 
 /* Carousel styles */

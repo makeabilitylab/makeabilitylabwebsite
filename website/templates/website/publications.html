@@ -2,10 +2,67 @@
 
 {% block pagetitle %}Publications{% endblock %}
 
+{% load staticfiles %}
+{% load thumbnail %}
+
+{% block maincarousel %}
+    <div id="mainCarousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="5000" data-pause="false">
+        <div class="overlay carousel-caption">
+            <div class="container">
+                <div class="overlay-spacer"></div>
+                <div class="overlay-title">Publications</div>
+            </div>
+        </div>
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner" role="listbox">
+            <div class="item active">
+                <div class="fill" style="background-image:url({% static 'website/img/banner1.jpg' %})"></div>
+                <!-- <div class="carousel-caption">
+                    This is a caption for carousel item 1.
+                </div> -->
+            </div>
+            <div class="item">
+                <div class="fill" style="background-image:url({% static 'website/img/banner2.jpg' %})"></div>
+                <!-- <div class="carousel-caption">
+                    This is a caption for carousel item 2.
+                </div> -->
+            </div>
+            <div class="item">
+                <div class="fill" style="background-image:url({% static 'website/img/banner3.png' %})"></div>
+                <!-- <div class="carousel-caption">
+                    This is a caption for carousel item 3.
+                </div> -->
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
 {% block content %}
+<div id="content" class="container">
     {% if publications %}
-        There are {{  publications.count }} publications loaded in the system
+        {% for pub in publications %}
+        <div class="row publication-row">
+        	<div class="col-xs-2">
+        	</div>
+            <div class="col-xs-2">
+                <a href="../../media/{{ pub.pdf_file }}">
+                    <img src="{% thumbnail pub.thumbnail 300x0 detail %}" class="img-responsive" style="border:1px solid lightgray; max-width:150px"/>
+                </a>
+            </div>
+            <div class="col-xs-8">
+            	<p class="publication-title">{{ pub.title }}</p>
+            	<p class="publication-authors">
+            	{% for author in pub.authors.all %}
+            		<a href="{% url 'website:member' author.id %}">{{ author.get_full_name }}{% if not forloop.last %},{% endif %}</a>
+            	{% endfor %}
+            	</p>
+            	<p class="publication-venue">{{ pub.book_title_short }} | TODO: More Info</p>
+            	<p class="publication-keywords">TODO: Keywords</p>
+            </div>
+        </div>
+        {% endfor %}
     {% else %}
-        <p>No publications are available.</p>
+        <p style="min-height:50px; line-height:50px">No publications are available.</p>
     {% endif %}
+</div>
 {% endblock %}

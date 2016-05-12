@@ -179,9 +179,8 @@ class Publication(models.Model):
     title = models.CharField(max_length=255)
     authors = models.ManyToManyField(Person)
 
-    # The PDF and raw files (e.g., keynote, pptx) are required
-    # TODO: remove null=True from these two fields
-    pdf_file = models.FileField(upload_to='talks/', null=True, default=None)
+    # The PDF is required
+    pdf_file = models.FileField(upload_to='publications/', null=False, default=None)
 
     book_title = models.CharField(max_length=255, null=True)
     book_title_short = models.CharField(max_length=255, null=True)
@@ -189,7 +188,7 @@ class Publication(models.Model):
     # The thumbnail should have null=True because it is added automatically later by a post_save signal
     # TODO: decide if we should have this be editable=True and if user doesn't add one him/herself, then
     # auto-generate thumbnail
-    thumbnail = models.ImageField(upload_to='talks/images/', editable=False, null=True)
+    thumbnail = models.ImageField(upload_to='publications/images/', editable=False, null=True)
 
     date = models.DateField(null=True)
     num_pages = models.IntegerField(null=True)
