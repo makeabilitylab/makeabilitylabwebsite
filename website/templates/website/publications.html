@@ -1,9 +1,299 @@
+{#	TODO: citation popup #}
+{#	TODO: fix author and keyword order #}
+{#	TODO: limit keywords/projects by page size #}
+
 {% extends "website/base.html" %}
 
 {% block pagetitle %}Publications{% endblock %}
 
 {% load staticfiles %}
 {% load thumbnail %}
+
+{% block scripts %}
+	
+	var groupMode = "year";
+
+	var filterTop = 0, filterInitOffset = 0;
+	$(window).load(function () {
+		filterTop = $('.filter-bar').offset().top - parseInt($('.filter-bar').css('margin-top'));
+		filterInitOffset = $('.filter-bar').css('top');
+
+		$("#filter-textbox").on("propertychange change keyup paste input", function(){
+			groupPublications();
+	    	updateDisplay();
+		});
+
+		preprocessPublications();
+		groupPublications();
+		updateDisplay();
+	});
+
+	$(window).resize(resize);
+
+	$(window).scroll(function(event) {
+		// check the vertical position of the scroll
+        var y = $(this).scrollTop();
+
+        var filterBar = $('.filter-bar');
+
+        // is it below the form?
+        if (y >= filterTop) {
+            // if so, set fixed position
+            filterBar.css('position', 'fixed');
+            filterBar.css('top', '0');
+            filterBar.css('left', parseInt($('#content').css('margin-left')) + "px");
+        } else {
+            // otherwise set absolute position
+            filterBar.css('position', 'absolute');
+            filterBar.css('top', filterInitOffset);
+            filterBar.css('left', "0");
+        }
+	});
+
+	var pubTypeCodes = {
+		"Conference": "C",
+    	"Article": "A",
+    	"Journal": "J",
+    	"Book Chapter": "BC",
+    	"Book": "B",
+    	"MS Thesis": "T",
+    	"PhD Dissertation": "D",
+    	"Workshop": "W",
+	    "Poster": "P",
+	    "Demo": "Dm",
+	    "Work in Progress": "WiP",
+	    "Late Breaking Result": "LBR",
+	    "Other": "O"
+	};
+
+	function preprocessPublications() {
+		var pubTypeCount = {};
+		publications.sort(function(a, b) {
+			return a.date - b.date;
+		});
+		publications.forEach(function(pub, index, array) {
+			if(!(pub.pub_type in pubTypeCount)) {
+				pubTypeCount[pub.pub_type] = 1;
+			} else {
+				pubTypeCount[pub.pub_type]++;
+			}
+
+			pub.id = "[" + pubTypeCodes[pub.pub_type] + "." + pubTypeCount[pub.pub_type] + "]";
+		});
+		publications.reverse();
+	}
+
+	function setGrouping(newGroupMode) {
+		groupMode = newGroupMode;
+		groupPublications();
+		updateDisplay();
+	}
+
+	function groupPublications() {
+		$(".group-type").removeClass("filter-selected");
+		$("#group-" + groupMode).addClass("filter-selected");
+
+		var tempGroupedPublications = {};
+		groupedPublications = [];
+		publications.forEach(function(pub, index, array) {
+			if(!passesFilter(pub)) return;
+			if(groupMode === "year") {
+				var group = pub.date.getFullYear().toString();
+				if(!(group in tempGroupedPublications)) {
+					tempGroupedPublications[group] = [];
+				}
+				tempGroupedPublications[group].push(pub);
+			} else if(groupMode === "pub-type") {
+				var group = pub.pub_type;
+				if(!(group in tempGroupedPublications)) {
+					tempGroupedPublications[group] = [];
+				}
+				tempGroupedPublications[group].push(pub);
+			} else if(groupMode === "keyword") {
+				var groups = pub.keywords;
+				groups.forEach(function(group, index, array) {
+					if(!(group in tempGroupedPublications)) {
+						tempGroupedPublications[group] = [];
+					}
+					tempGroupedPublications[group].push(pub);
+				});
+			} else if(groupMode === "project") {
+				var groups = pub.projects;
+				groups.forEach(function(group, index, array) {
+					if(!(group in tempGroupedPublications)) {
+						tempGroupedPublications[group] = [];
+					}
+					tempGroupedPublications[group].push(pub);
+				});
+			} else {
+				var group = "Chronological List";
+				if(!(group in tempGroupedPublications)) {
+					tempGroupedPublications[group] = [];
+				}
+				tempGroupedPublications[group].push(pub);
+			}
+		});
+
+		for(group in tempGroupedPublications) {
+			groupedPublications.push({"name": group, "items": tempGroupedPublications[group]});
+		}
+
+		if(groupMode === "year") {
+			groupedPublications.sort(function(a,b) { return parseInt(b.name) - parseInt(a.name) });
+		} else if(groupMode === "pub-type" || groupMode === "keyword" || groupMode === "project") {
+			groupedPublications.sort(function(a,b) { return b.items.length - a.items.length });
+		}
+
+		var groupList = $(".filter-bar-items");
+		if(groupMode === "none") {
+			groupList.css("display", "none");
+		} else {
+			groupList.css("display", "block");
+			var displayGroupMode = groupMode.toUpperCase().replace("-", " ");
+			var data = "<h1>" + displayGroupMode + "</h1>\n"
+			for(var i=0; i<groupedPublications.length; i++) {
+				data += "<li><a href=\"#" + groupedPublications[i].name + "\" class=\"scroll\">" + groupedPublications[i].name + " (" + groupedPublications[i].items.length + ")</a></li>\n";
+			}
+			groupList[0].innerHTML = data;
+		}
+	}
+
+	function passesFilter(pub) {
+		var filter = $('#filter-textbox').val().toLowerCase();
+		var passes = false;
+		if(!filter || filter.length == 0) passes = true;
+
+		if(pub.title.toLowerCase().indexOf(filter) >= 0) passes = true;
+		if(pub.venue.toLowerCase().indexOf(filter) >= 0) passes = true;
+		pub.authors.forEach(function(author, index, array) { 
+			if(author.name.toLowerCase().indexOf(filter) >= 0) passes = true; 
+		});
+		pub.keywords.forEach(function(keyword, index, array) { if(keyword.toLowerCase().indexOf(filter) >= 0) passes = true; });
+		pub.projects.forEach(function(project, index, array) { if(project.toLowerCase().indexOf(filter) >= 0) passes = true; });
+
+		return passes;
+	}
+
+	function updateDisplay() {
+		displayPublications();
+		resize();
+	}
+
+	function resize() {
+		var filterBar = $('.filter-bar');
+		var minHeight = filterBar.height() + 10;
+		var publicationList = $('#publication-list');
+		publicationList.css('min-height', minHeight + "px");
+
+		if(filterBar.css('position') == "fixed") {
+			filterBar.css('left', parseInt($('#content').css('margin-left')) + "px");
+		} else {
+			filterBar.css('left', 0);
+		}
+	}
+
+	function displayPublications() {
+		var content = $("#publication-list")[0];
+		var data = "";
+		groupedPublications.forEach(function (group, groupIndex, groupArray) {
+			var groupCount = 0;
+			group.items.forEach(function(pub, pubIndex, pubArray) { if(passesFilter(pub))groupCount++; });
+			if(groupCount == 0) return;
+
+			data += "<h1 name=\"" + group.name + "\">" + group.name + "</h1>";
+			group.items.forEach(function (pub, pubIndex, pubArray) {
+				if(!passesFilter(pub)) return;
+				data += "<div class=\"publication-row\">\n";
+		        data += "	<div class=\"publication-id\">" + pub.id + "</div>\n";
+		        data += "    <div class=\"publication-thumbnail\">\n";
+		        data += "        <a href=\"" + pub.pdf + "\">\n";
+		        data += "            <img src=\"" + pub.thumbnail + "\" class=\"img-responsive\"/>\n";
+		        data += "        </a>\n";
+		        data += "    </div>\n";
+		        data += "    <div class=\"publication-info\">\n";
+		        data += "    	<p class=\"publication-title\">" + pub.title + "</p>\n";
+		        data += "    	<p class=\"publication-authors\">\n";
+		        pub.authors.forEach(function(author, index, array) {
+		        	data += "    		<a href=\"" + author.link + "\">" + author.name + "</a>";
+		        	if(index + 1 < array.length) {
+		        		data += ",&nbsp;";
+		        	}
+		        	data += "\n";
+		    	});
+		        data += "    	</p>\n";
+		        data += "    	<p class=\"publication-venue\">\n";
+		        data += "    		" + pub.venue + "&nbsp;\n";
+		        if(pub.award) {
+		        	data += "    		| <span style=\"color:#c25059\">" + pub.award + "<i class=\"fa fa-trophy\" aria-hidden=\"true\"></i></span>&nbsp;\n";
+		    	}
+		    	if(pub.total_papers_accepted && pub.total_papers_submitted) {
+		    		data += "    		| <span style=\"font-style: bold\">Acceptance Rate: " + (pub.total_papers_accepted / pub.total_papers_submitted * 100).toFixed(0) + "% (" + pub.total_papers_accepted + " / " + pub.total_papers_submitted + ")</span>&nbsp;\n";
+		    	}
+		    	if(pub.to_appear) {
+			        data += "    		| <span style=\"font-style: italic\">To Appear</span>&nbsp;\n";
+			    }
+		        data += "    	</p>\n";
+		        if(pub.keywords.length > 0)
+		        {
+			        data += "    	<p class=\"publication-keywords\">\n";
+			        data += "    	keywords:&nbsp;\n";
+			        pub.keywords.forEach(function(keyword, index, array) {
+				        data += "    		" + keyword.toLowerCase();
+				        if(index + 1 < array.length) {
+				        	data += ",&nbsp;";
+				    	}
+				        data += "\n";
+				    });
+				}
+		        data += "    	</p>\n";
+		        data += "    	<div class=\"publication-download\">Download: <a href=\"" + pub.pdf + "\">[pdf]</a> Export <a href=\"#\">[Citation]</a></div>\n";
+		        data += "    </div>\n";
+		        data += "</div>\n";
+			});
+		});
+		content.innerHTML = data;
+	}
+
+	var groupedPublications = [];
+	var publications = [
+		{% for pub in publications %}
+		{
+			"id": "A.###",
+			"title": "{{pub.title}}",
+			"authors": [
+				{% for author in pub.authors.all %}
+				{
+					"name": "{{author.get_full_name}}",
+					"link": "{% url 'website:member' author.id %}"
+				},
+				{% endfor %}
+			],
+			"date": new Date("{{pub.date.isoformat}}"),
+			"pdf": "../../media/{{ pub.pdf_file }}",
+			"thumbnail": "{% thumbnail pub.thumbnail 300x0 detail %}",
+			"venue": "{{pub.book_title_short}}",
+			"pub_type": "{{pub.pub_venue_type}}",
+			{% if pub.award %}"award": "{{ pub.award }}",{% endif %}
+			{% if pub.total_papers_accepted and pub.total_papers_submitted %}
+			"total_papers_accepted": {{pub.total_papers_accepted}},
+			"total_papers_submitted": {{pub.total_papers_submitted}},
+			{% endif %}
+			"to_appear": {% if pub.to_appear %}true{% else %}false{% endif %},
+			"keywords": [
+				{% for keyword in pub.keywords.all %}
+					"{{keyword.keyword}}",
+				{% endfor %}
+			],
+			"projects": [
+				{% for project in pub.projects.all %}
+					"{{project.short_name}}",
+				{% endfor %}
+			]
+		},
+		{% endfor %}
+	];
+
+{% endblock %}
 
 {% block maincarousel %}
     <div id="mainCarousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="5000" data-pause="false">
@@ -39,30 +329,26 @@
 
 {% block content %}
 <div id="content" class="container">
-    {% if publications %}
-        {% for pub in publications %}
-        <div class="row publication-row">
-        	<div class="col-xs-2">
-        	</div>
-            <div class="col-xs-2">
-                <a href="../../media/{{ pub.pdf_file }}">
-                    <img src="{% thumbnail pub.thumbnail 300x0 detail %}" class="img-responsive" style="border:1px solid lightgray; max-width:150px"/>
-                </a>
-            </div>
-            <div class="col-xs-8">
-            	<p class="publication-title">{{ pub.title }}</p>
-            	<p class="publication-authors">
-            	{% for author in pub.authors.all %}
-            		<a href="{% url 'website:member' author.id %}">{{ author.get_full_name }}{% if not forloop.last %},{% endif %}</a>
-            	{% endfor %}
-            	</p>
-            	<p class="publication-venue">{{ pub.book_title_short }} | TODO: More Info</p>
-            	<p class="publication-keywords">TODO: Keywords</p>
-            </div>
+	<div class="filter-bar">
+		<h1 style="margin-top:10px">FILTER</h1>
+		<input class="shortTextbox" id="filter-textbox" type='text' value='' />
+
+		<h1>GROUP BY</h1>
+
+		<div class="filter-bar-categories">
+	        <li id="group-year" class="group-type" onclick="setGrouping('year')">Year</li>
+	        <li id="group-pub-type" class="group-type" onclick="setGrouping('pub-type')">Pub Type</li>
+	        <li id="group-keyword" class="group-type" onclick="setGrouping('keyword')">Keyword</li>
+	        <li id="group-project" class="group-type" onclick="setGrouping('project')">Project</li>
+	        <li id="group-none" class="group-type" onclick="setGrouping('none')">None</li>
+    	</div>
+
+        <div class="filter-bar-items">
         </div>
-        {% endfor %}
-    {% else %}
-        <p style="min-height:50px; line-height:50px">No publications are available.</p>
-    {% endif %}
+
+	</div>
+	<div class="publication-list" id="publication-list">
+		Loading content... (Please make sure JavaScript is enabled)
+	</div>
 </div>
 {% endblock %}

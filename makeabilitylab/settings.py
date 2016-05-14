@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     # https://opensourcehacker.com/2014/08/13/turbocharge-your-python-prompt-and-django-shell-with-ipython-notebook/
     'django_extensions',
     'image_cropping',
-    'easy_thumbnails'
+    'easy_thumbnails',
+    'ordered_model'
 ]
 
 MIDDLEWARE_CLASSES = [

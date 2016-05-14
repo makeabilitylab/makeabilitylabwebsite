@@ -1,5 +1,6 @@
 from django.db import models
 from image_cropping import ImageRatioField
+from ordered_model.models import OrderedModel
 
 from datetime import date
 from website.utils.fileutils import UniquePathAndRename
@@ -177,7 +178,7 @@ class Talk(models.Model):
 
 class Publication(models.Model):
     title = models.CharField(max_length=255)
-    authors = models.ManyToManyField(Person)
+    authors = models.ManyToManyField(Person, through='PublicationAuthorThroughModel')
 
     # The PDF is required
     pdf_file = models.FileField(upload_to='publications/', null=False, default=None)
@@ -195,6 +196,7 @@ class Publication(models.Model):
 
     # A publication can be about more than one project
     projects = models.ManyToManyField(Project, blank=True, null=True)
+    keywords = models.ManyToManyField(Keyword, blank=True, null=True)
 
     # TODO, see if there is an IntegerRangeField or something like that for page_num_start and end
     page_num_start = models.IntegerField(blank=True, null=True)
@@ -255,8 +257,25 @@ class Publication(models.Model):
     )
     award = models.CharField(max_length=50, choices=AWARD_CHOICES, blank=True, null=True)
 
+    def get_acceptance_rate(self):
+        if self.total_papers_accepted and self.total_papers_submitted:
+            return self.total_papers_accepted / self.total_papers_submitted
+        else:
+            return -1
+
+    def to_appear(self):
+        return self.date and self.date > date.today()
+
     def __str__(self):
         return self.title
+
+class PublicationAuthorThroughModel(OrderedModel):
+    publication = models.ForeignKey(Publication)
+    author = models.ForeignKey(Person)
+    order_with_respect_to = 'publication'
+
+    class Meta:
+        ordering = ('publication', 'order')
 
 class Poster(models.Model):
     publication = models.ForeignKey(Publication, blank=True, null=True)
