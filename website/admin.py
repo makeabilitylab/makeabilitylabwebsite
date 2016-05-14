@@ -46,7 +46,7 @@ class PublicationAdmin(admin.ModelAdmin):
         ('Keyword Info',            {'fields': ['keywords']}),
     ]
     list_display = ('title', 'book_title_short')
-    # inlines = (PublicationAuthorThroughModelInline, )
+    inlines = (PublicationAuthorThroughModelInline, )
     filter_horizontal = ('projects', 'keywords')
 
     # Uncomment this function to enable auto-entry from bibtex

@@ -1,3 +1,0 @@
-#!/bin/sh
-docker build -t django-ordered-model .
-docker run django-ordered-model script/test-command

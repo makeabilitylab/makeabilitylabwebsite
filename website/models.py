@@ -178,7 +178,8 @@ class Talk(models.Model):
 
 class Publication(models.Model):
     title = models.CharField(max_length=255)
-    authors = models.ManyToManyField(Person, through='PublicationAuthorThroughModel')
+    # authors = models.ManyToManyField(Person)
+    authorsOrdered = models.ManyToManyField(Person, through='PublicationAuthorThroughModel')
 
     # The PDF is required
     pdf_file = models.FileField(upload_to='publications/', null=False, default=None)
