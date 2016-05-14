@@ -241,7 +241,7 @@
 		        data += "    	<p class=\"publication-venue\">\n";
 		        data += "    		" + pub.venue + "&nbsp;\n";
 		        if(pub.award) {
-		        	data += "    		| <span style=\"color:#c25059\">" + pub.award + "<i class=\"fa fa-trophy\" aria-hidden=\"true\"></i></span>&nbsp;\n";
+		        	data += "    		| <span style=\"color:#c25059\">" + pub.award + " <i class=\"fa fa-trophy\" aria-hidden=\"true\"></i></span>&nbsp;\n";
 		    	}
 		    	if(pub.total_papers_accepted && pub.total_papers_submitted) {
 		    		data += "    		| <span style=\"font-style: bold\">Acceptance Rate: " + (pub.total_papers_accepted / pub.total_papers_submitted * 100).toFixed(0) + "% (" + pub.total_papers_accepted + " / " + pub.total_papers_submitted + ")</span>&nbsp;\n";
