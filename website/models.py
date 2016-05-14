@@ -1,6 +1,6 @@
 from django.db import models
 from image_cropping import ImageRatioField
-from ordered_model.models import OrderedModel
+from sortedm2m.fields import SortedManyToManyField
 
 from datetime import date
 from website.utils.fileutils import UniquePathAndRename
@@ -178,8 +178,8 @@ class Talk(models.Model):
 
 class Publication(models.Model):
     title = models.CharField(max_length=255)
-    # authors = models.ManyToManyField(Person)
-    authorsOrdered = models.ManyToManyField(Person, through='PublicationAuthorThroughModel')
+    authors = SortedManyToManyField(Person)
+    # authorsOrdered = models.ManyToManyField(Person, through='PublicationAuthorThroughModel')
 
     # The PDF is required
     pdf_file = models.FileField(upload_to='publications/', null=False, default=None)
@@ -196,8 +196,8 @@ class Publication(models.Model):
     num_pages = models.IntegerField(null=True)
 
     # A publication can be about more than one project
-    projects = models.ManyToManyField(Project, blank=True, null=True)
-    keywords = models.ManyToManyField(Keyword, blank=True, null=True)
+    projects = SortedManyToManyField(Project, blank=True, null=True)
+    keywords = SortedManyToManyField(Keyword, blank=True, null=True)
 
     # TODO, see if there is an IntegerRangeField or something like that for page_num_start and end
     page_num_start = models.IntegerField(blank=True, null=True)
@@ -269,14 +269,6 @@ class Publication(models.Model):
 
     def __str__(self):
         return self.title
-
-class PublicationAuthorThroughModel(OrderedModel):
-    publication = models.ForeignKey(Publication)
-    author = models.ForeignKey(Person)
-    order_with_respect_to = 'publication'
-
-    class Meta:
-        ordering = ('publication', 'order')
 
 class Poster(models.Model):
     publication = models.ForeignKey(Publication, blank=True, null=True)

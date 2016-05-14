@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'image_cropping',
     'easy_thumbnails',
-    'ordered_model'
+    'sortedm2m'
 ]
 
 MIDDLEWARE_CLASSES = [

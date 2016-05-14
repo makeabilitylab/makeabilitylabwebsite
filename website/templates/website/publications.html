@@ -1,6 +1,5 @@
-{#	TODO: citation popup #}
-{#	TODO: fix author and keyword order #}
-{#	TODO: limit keywords/projects by page size #}
+{#	TODO: limit keywords/projects by page size to avoid overflow #}
+{#	TODO: auto-add using bibtex #}
 
 {% extends "website/base.html" %}
 
@@ -21,6 +20,21 @@
 		$("#filter-textbox").on("propertychange change keyup paste input", function(){
 			groupPublications();
 	    	updateDisplay();
+		});
+
+		// Hide popovers when clicking outside, but not when clicking inside
+		// from: http://stackoverflow.com/a/14857326
+		// LS: this is a bit of a hack, since the default click behavior leaves them open
+		// until you click on the button again, but the default focus behavior prevents you
+		// from interacting with the content of the popover
+		$('body').on('click', function (e) {
+		    $('[data-toggle="popover"]').each(function () {
+		        //the 'is' for buttons that trigger popups
+		        //the 'has' for icons within a button that triggers a popup
+		        if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+		            $(this).popover('hide');
+		        }
+		    });
 		});
 
 		preprocessPublications();
@@ -81,6 +95,9 @@
 			pub.id = "[" + pubTypeCodes[pub.pub_type] + "." + pubTypeCount[pub.pub_type] + "]";
 		});
 		publications.reverse();
+		publications.forEach(function(pub, index, array) {
+			pub["index"] = index;
+		});
 	}
 
 	function setGrouping(newGroupMode) {
@@ -246,12 +263,66 @@
 				    });
 				}
 		        data += "    	</p>\n";
-		        data += "    	<div class=\"publication-download\">Download: <a href=\"" + pub.pdf + "\">[pdf]</a> Export <a href=\"#\">[Citation]</a></div>\n";
+		        data += "    	<div class=\"publication-download\">Download: <a href=\"" + pub.pdf + "\">[pdf]</a> | Export <a data-toggle=\"popover\" data-html=\"true\" data-trigger=\"manual\" tabindex=\"0\" title=\"\Citation\" data-content=\"" + createCitationText(pub) + "\" style=\"cursor:pointer\">[Citation]</a></div>\n";
 		        data += "    </div>\n";
 		        data += "</div>\n";
 			});
 		});
 		content.innerHTML = data;
+		$('[data-toggle="popover"]').popover()
+
+		// Manual trigger to get around idiosyncrasies of bootstrap's popover control
+		$('[data-toggle="popover"]').click(function() {
+
+			// prevent multiple popovers from being open at once
+			var popovers = $('[data-toggle="popover"]')
+			for(var i = 0; i < popovers.length; i++) {
+				if(popovers[i] != this) // ignore the current popover
+					$(popovers[i]).popover('hide');
+			}
+
+			// toggle this popover
+			$(this).popover('toggle');
+		});
+	}
+
+	function showCitation(index) {
+		var text = createCitationText(publications[index]);
+		alert(text);
+	}
+
+	function createCitationText(pub) {
+		var text = "";
+		
+		// authors
+		pub.authors.forEach(function(author, index, array) {
+			text += author.last_name + ", " + author.first_name.substring(0,1) + ". ";
+			if(author.middle_name && author.middle_name.length > 0)
+				text += author.middle_name.substring(0,1) + ". ";
+			text = text.substring(0, text.length-1) + ", "; // trim last space, add comma
+		});
+		if(text.length > 0) text = text.substring(0, text.length - 2); // trim last comma and space
+
+		// year
+		text += " (" + pub.date.getFullYear() + "). ";
+
+		// title
+		text += pub.title + ". ";
+
+		// venue
+		text += "<i>" + pub.venue + "</i>. "
+
+		// pages
+		if(pub.to_appear) {
+			if(pub.num_pages) {
+				text += pub.num_pages + " pages.";
+			}
+			text += " <i>To Appear</i>.";
+		} else if(pub.start_page && pub.end_page) {
+			text += pub.start_page + "&ndash;" + pub.end_page + ".";
+		}
+
+		return text;
 	}
 
 	var groupedPublications = [];
@@ -264,6 +335,9 @@
 				{% for author in pub.authors.all %}
 				{
 					"name": "{{author.get_full_name}}",
+					"first_name": "{{author.first_name}}",
+					"middle_name": "{{author.middle_name}}",
+					"last_name": "{{author.last_name}}",
 					"link": "{% url 'website:member' author.id %}"
 				},
 				{% endfor %}
@@ -278,6 +352,9 @@
 			"total_papers_accepted": {{pub.total_papers_accepted}},
 			"total_papers_submitted": {{pub.total_papers_submitted}},
 			{% endif %}
+			{% if pub.page_num_start %} "start_page": {{pub.page_num_start}},{% endif %}
+			{% if pub.page_num_end %} "end_page": {{pub.page_num_end}},{% endif %}
+			{% if pub.num_pages %} "num_pages": {{pub.num_pages}},{% endif %}
 			"to_appear": {% if pub.to_appear %}true{% else %}false{% endif %},
 			"keywords": [
 				{% for keyword in pub.keywords.all %}

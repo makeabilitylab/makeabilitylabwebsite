@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Person, Publication, Position, Talk, Project, Poster, Keyword, PublicationAuthorThroughModel
+from .models import Person, Publication, Position, Talk, Project, Poster, Keyword
 
 from django.http import HttpResponse
 from datetime import datetime
@@ -16,7 +16,6 @@ import urllib
 import bibtexparser
 
 from image_cropping import ImageCroppingMixin
-from ordered_model.admin import OrderedTabularInline
 
 #class ChoiceInline(admin.StackedInline):
 class RoleInline(admin.StackedInline):
@@ -26,16 +25,9 @@ class RoleInline(admin.StackedInline):
 class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
     inlines = [RoleInline]
 
-class PublicationAuthorThroughModelInline(OrderedTabularInline):
-    model = PublicationAuthorThroughModel
-    fields = ('author', 'order', 'move_up_down_links',)
-    readonly_fields = ('order', 'move_up_down_links',)
-    extra = 1
-    ordering = ('order',)
-
 class PublicationAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None,                      {'fields': ['title', 'date']}),
+        (None,                      {'fields': ['title', 'authors', 'date']}),
         ('Files',                   {'fields': ['pdf_file']}),
         ('Pub Venue information',   {'fields': ['pub_venue_type', 'book_title', 'book_title_short', 'geo_location', 'total_papers_submitted', 'total_papers_accepted']}),
         ('Archival Info',           {'fields': ['official_url', 'extended_abstract', 'peer_reviewed', 'award' ]}),
@@ -46,8 +38,6 @@ class PublicationAdmin(admin.ModelAdmin):
         ('Keyword Info',            {'fields': ['keywords']}),
     ]
     list_display = ('title', 'book_title_short')
-    inlines = (PublicationAuthorThroughModelInline, )
-    filter_horizontal = ('projects', 'keywords')
 
     # Uncomment this function to enable auto-entry from bibtex
     # The following code is based in part on a hint by this Stackoverflow post: http://stackoverflow.com/a/4952370
