@@ -1,5 +1,6 @@
 from django.db import models
 from image_cropping import ImageRatioField
+from sortedm2m.fields import SortedManyToManyField
 
 from datetime import date
 from website.utils.fileutils import UniquePathAndRename
@@ -177,11 +178,11 @@ class Talk(models.Model):
 
 class Publication(models.Model):
     title = models.CharField(max_length=255)
-    authors = models.ManyToManyField(Person)
+    authors = SortedManyToManyField(Person)
+    # authorsOrdered = models.ManyToManyField(Person, through='PublicationAuthorThroughModel')
 
-    # The PDF and raw files (e.g., keynote, pptx) are required
-    # TODO: remove null=True from these two fields
-    pdf_file = models.FileField(upload_to='talks/', null=True, default=None)
+    # The PDF is required
+    pdf_file = models.FileField(upload_to='publications/', null=False, default=None)
 
     book_title = models.CharField(max_length=255, null=True)
     book_title_short = models.CharField(max_length=255, null=True)
@@ -189,13 +190,14 @@ class Publication(models.Model):
     # The thumbnail should have null=True because it is added automatically later by a post_save signal
     # TODO: decide if we should have this be editable=True and if user doesn't add one him/herself, then
     # auto-generate thumbnail
-    thumbnail = models.ImageField(upload_to='talks/images/', editable=False, null=True)
+    thumbnail = models.ImageField(upload_to='publications/images/', editable=False, null=True)
 
     date = models.DateField(null=True)
     num_pages = models.IntegerField(null=True)
 
     # A publication can be about more than one project
-    projects = models.ManyToManyField(Project, blank=True, null=True)
+    projects = SortedManyToManyField(Project, blank=True, null=True)
+    keywords = SortedManyToManyField(Keyword, blank=True, null=True)
 
     # TODO, see if there is an IntegerRangeField or something like that for page_num_start and end
     page_num_start = models.IntegerField(blank=True, null=True)
@@ -255,6 +257,15 @@ class Publication(models.Model):
         (BEST_PAPER_NOMINATION, BEST_PAPER_NOMINATION)
     )
     award = models.CharField(max_length=50, choices=AWARD_CHOICES, blank=True, null=True)
+
+    def get_acceptance_rate(self):
+        if self.total_papers_accepted and self.total_papers_submitted:
+            return self.total_papers_accepted / self.total_papers_submitted
+        else:
+            return -1
+
+    def to_appear(self):
+        return self.date and self.date > date.today()
 
     def __str__(self):
         return self.title
