@@ -1,13 +1,13 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from website.models import Talk, Publication, Poster
-from wand.image import Image
+from wand.image import Image, Color
 from django.conf import settings
 import os
 from django.core.files import File
 
 @receiver(post_save, sender=Publication)
-def my_handler(sender, **kwargs):
+def save_publication(sender, **kwargs):
     # See: http://www.yaconiello.com/blog/auto-generating-pdf-covers/
     # http://stackoverflow.com/questions/1308386/programmatically-saving-image-to-django-imagefield
 
@@ -16,6 +16,8 @@ def my_handler(sender, **kwargs):
     print("Publication '{}' has just been saved with PDF={}, checking to see if we should auto-generate a thumbnail".format(pub.title, pub.pdf_file.path))
     thumbnail_res = 300
     generate_and_save_thumbnail_from_pdf(pub, thumbnail_res)
+
+post_save.connect(save_publication, sender=Publication)
 
 @receiver(post_save, sender=Talk)
 def my_handler(sender, **kwargs):
@@ -85,10 +87,13 @@ def generate_and_save_thumbnail_from_pdf(artifact, thumbnail_resolution):
 
     # check to see if this is a new (or changed) file. This 'if condition' is super necessary
     # because otherwise we would enter an infinite loop given that we save the model again below
-    if artifact.thumbnail.name is None or \
+    if not artifact.thumbnail or artifact.thumbnail.name is None or \
                     os.path.normpath(os.path.normcase(artifact.thumbnail.path)) != os.path.normpath(os.path.normcase(thumbnail_path)):
-        with Image(filename="{}[0]".format(artifact.pdf_file.path), resolution=thumbnail_resolution) as img:
-             img.save(filename=thumbnail_path)
+        with Image(filename="{}[0]".format(artifact.pdf_file.path), resolution=300) as img:
+            img.format = 'jpeg'
+            img.background_color = Color('white')
+            img.alpha_channel = 'remove'
+            img.save(filename=thumbnail_path)
 
         # talk.thumbnail = thumbnail_path
         relative_thumbnail_path = os.path.join(artifact.thumbnail.field.upload_to, thumbnail_filename)
