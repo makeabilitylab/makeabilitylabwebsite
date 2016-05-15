@@ -6,3 +6,4 @@ website/__pycache__
 website/utils/__pycache__
 makeabilitylab/__pycache__
 website/migrations/__pycache__
+*.pyc
