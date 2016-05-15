@@ -41,7 +41,7 @@
 <div id="content" class="container" data-spy="scroll" data-target="#navbar-scroll" data-offset="50">
     <div class="navbar navbar-filter" role="navigation">
         <ol class="navbar-right breadcrumb">
-            {% if active_prof_grad %}<li><a href="#profgrad" class="scroll">Professors and Graduate Students</a></li> {% endif %}
+            {% if active_prof_grad %}<li><a href="#profgrad" class="scroll">Professor and Graduate Students</a></li> {% endif %}
             {% if active_undergrad %}<li><a href="#undergrad" class="scroll">Undergraduate Students</a></li> {% endif %}
             {% if active_highschool %}<li><a href="#highschool" class="scroll">High School Students</a></li> {% endif %}
             {% if alumni_members %}<li><a href="#alumni" class="scroll">Alumni</a></li> {% endif %}
@@ -52,10 +52,10 @@
     {% if active_prof_grad %}
         {#  To get the length of a list in a template, use | length. #}
         {#      See: http://stackoverflow.com/questions/13138859/django-length-of-a-list #}
-        <h1 name="profgrad" style="margin-top:0">Professors and Graduate Students</h1>
+        <h1 name="profgrad" style="margin-top:0">Professor and Graduate Students</h1>
         <h4>{{ active_prof|length }} Prof, 
             {% if active_postdoc %} {{ active_postdoc|length }} Postdoc, {% endif %}
-            {% if active_phd %} {{ active_phd|length }} PhD, {% endif %}
+            {% if active_phd %} {{ active_phd|length }} PhD {% if active_ms %},{% endif %} {% endif %}
             {% if active_ms %} {{ active_ms|length }} MS{% endif %}
         </h4>
         <div class="row main-content">
@@ -75,7 +75,7 @@
                 </div>
             {% endfor %}
         </div>
-        <hr>
+        {% if active_undergrad or active_highschool or alumni_members or cur_collaborators or past_collaborators %}<hr>{% endif %}
     {% endif %}
     {% if active_undergrad %}
         <h1 name="undergrad">Undergraduate Students</h1>
@@ -97,7 +97,7 @@
                 </div>
             {% endfor %}
         </div>
-        <hr>
+        {% if active_highschool or alumni_members or cur_collaborators or past_collaborators %}<hr>{% endif %}
     {% endif %}
     {% if active_highschool %}
         <h1 name="highschool">High School Students</h1>
@@ -119,7 +119,7 @@
                 </div>
             {% endfor %}
         </div>
-        <hr>
+        {% if alumni_members or cur_collaborators or past_collaborators %}<hr>{% endif %}
     {% endif %}
     {% if alumni_members %}
         <h1 name="alumni">Alumni</h1>
@@ -185,7 +185,6 @@
                 </div>
             {% endfor %}
         </div>
-        <hr>
     {% endif %}
 </div>
 {% endblock %}

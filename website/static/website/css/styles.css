@@ -82,7 +82,7 @@ h5 {
 
 .filter-bar {
 	margin-left: 15px;
-	margin-top: 60px;
+	margin-top: 85px;
 	width: 125px;
 	left:0;
 	top:-60px;
@@ -106,7 +106,8 @@ h5 {
 }
 
 .publication-list {
-	padding-left: 140px; /* should be greater than the filter-bar width */
+	padding-left: 145px; /* should be greater than the filter-bar width */
+	margin-top: 25px;
 }
 
 .publication-list h1 {
