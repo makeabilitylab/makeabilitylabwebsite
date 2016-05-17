@@ -105,6 +105,10 @@ h5 {
 	cursor: pointer;
 }
 
+.highlight {
+	background-color: yellow;
+}
+
 .publication-list {
 	padding-left: 145px; /* should be greater than the filter-bar width */
 	margin-top: 25px;

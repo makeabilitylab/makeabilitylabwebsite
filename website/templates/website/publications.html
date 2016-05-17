@@ -209,6 +209,14 @@
 		}
 	}
 
+	function addHighlight(text) {
+		var result = text;
+		var filter = $('#filter-textbox').val().toLowerCase();
+		if(filter && filter.length > 0)
+			result = text.replace(new RegExp('(' + filter + ')', 'gi'), "<span class=\"highlight\">$1</span>");
+		return result;
+	}
+
 	function displayPublications() {
 		var content = $("#publication-list")[0];
 		var data = "";
@@ -228,10 +236,10 @@
 		        data += "        </a>\n";
 		        data += "    </div>\n";
 		        data += "    <div class=\"publication-info\">\n";
-		        data += "    	<p class=\"publication-title\">" + pub.title + "</p>\n";
+		        data += "    	<p class=\"publication-title\">" + addHighlight(pub.title) + "</p>\n";
 		        data += "    	<p class=\"publication-authors\">\n";
 		        pub.authors.forEach(function(author, index, array) {
-		        	data += "    		<a href=\"" + author.link + "\">" + author.name + "</a>";
+		        	data += "    		<a href=\"" + author.link + "\">" + addHighlight(author.name) + "</a>";
 		        	if(index + 1 < array.length) {
 		        		data += ",&nbsp;";
 		        	}
@@ -239,9 +247,9 @@
 		    	});
 		        data += "    	</p>\n";
 		        data += "    	<p class=\"publication-venue\">\n";
-		        data += "    		" + pub.venue + "&nbsp;\n";
+		        data += "    		" + addHighlight(pub.venue) + "&nbsp;\n";
 		        if(pub.award) {
-		        	data += "    		| <span style=\"color:#c25059\">" + pub.award + " <i class=\"fa fa-trophy\" aria-hidden=\"true\"></i></span>&nbsp;\n";
+		        	data += "    		| <span style=\"color:#c25059\">" + addHighlight(pub.award) + " <i class=\"fa fa-trophy\" aria-hidden=\"true\"></i></span>&nbsp;\n";
 		    	}
 		    	if(pub.total_papers_accepted && pub.total_papers_submitted) {
 		    		data += "    		| <span style=\"font-style: bold\">Acceptance Rate: " + (pub.total_papers_accepted / pub.total_papers_submitted * 100).toFixed(0) + "% (" + pub.total_papers_accepted + " / " + pub.total_papers_submitted + ")</span>&nbsp;\n";
@@ -255,7 +263,7 @@
 			        data += "    	<p class=\"publication-keywords\">\n";
 			        data += "    	keywords:&nbsp;\n";
 			        pub.keywords.forEach(function(keyword, index, array) {
-				        data += "    		" + keyword.toLowerCase();
+				        data += "    		" + addHighlight(keyword.toLowerCase());
 				        if(index + 1 < array.length) {
 				        	data += ",&nbsp;";
 				    	}
