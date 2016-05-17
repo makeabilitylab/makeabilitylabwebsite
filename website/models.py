@@ -16,7 +16,7 @@ class Person(models.Model):
     # pip3 install Pillow
     # We use the get_unique_path function because otherwise if two people use the same
     # filename (something generic like picture.jpg), one will overwrite the other.
-    image = models.ImageField(blank=True, upload_to=UniquePathAndRename("person", True))
+    image = models.ImageField(blank=True, upload_to=UniquePathAndRename("person", True), max_length=255)
     # image_cropped = models.ImageField(editable=False)
     image.help_text = 'You must select "Save and continue editing" at the bottom of the page after uploading a new image for cropping.'
 
@@ -162,13 +162,13 @@ class Talk(models.Model):
 
     # The PDF and raw files (e.g., keynote, pptx) are required
     # TODO: remove null=True from these two fields
-    pdf_file = models.FileField(upload_to='talks/', null=True, default=None)
-    raw_file = models.FileField(upload_to='talks/', blank=True, null=True, default=None)
+    pdf_file = models.FileField(upload_to='talks/', null=True, default=None, max_length=255)
+    raw_file = models.FileField(upload_to='talks/', blank=True, null=True, default=None, max_length=255)
 
     # The thumbnail should have null=True because it is added automatically later by a post_save signal
     # TODO: decide if we should have this be editable=True and if user doesn't add one him/herself, then
     # auto-generate thumbnail
-    thumbnail = models.ImageField(upload_to='talks/images/', editable=False, null=True)
+    thumbnail = models.ImageField(upload_to='talks/images/', editable=False, null=True, max_length=255)
 
     # raw_file = models.FileField(upload_to='talks/')
     # print("In talk model!")
@@ -182,7 +182,7 @@ class Publication(models.Model):
     # authorsOrdered = models.ManyToManyField(Person, through='PublicationAuthorThroughModel')
 
     # The PDF is required
-    pdf_file = models.FileField(upload_to='publications/', null=False, default=None)
+    pdf_file = models.FileField(upload_to='publications/', null=False, default=None, max_length=255)
 
     book_title = models.CharField(max_length=255, null=True)
     book_title_short = models.CharField(max_length=255, null=True)
@@ -190,7 +190,7 @@ class Publication(models.Model):
     # The thumbnail should have null=True because it is added automatically later by a post_save signal
     # TODO: decide if we should have this be editable=True and if user doesn't add one him/herself, then
     # auto-generate thumbnail
-    thumbnail = models.ImageField(upload_to='publications/images/', editable=False, null=True)
+    thumbnail = models.ImageField(upload_to='publications/images/', editable=False, null=True, max_length=255)
 
     date = models.DateField(null=True)
     num_pages = models.IntegerField(null=True)
@@ -279,13 +279,13 @@ class Poster(models.Model):
     authors = models.ManyToManyField(Person, blank=True, null=True)
 
     # The PDF and raw files (e.g., illustrator, powerpoint)
-    pdf_file = models.FileField(upload_to='posters/', null=True, default=None)
-    raw_file = models.FileField(upload_to='posters/', null=True, default=None)
+    pdf_file = models.FileField(upload_to='posters/', null=True, default=None, max_length=255)
+    raw_file = models.FileField(upload_to='posters/', null=True, default=None, max_length=255)
 
     # The thumbnail should have null=True because it is added automatically later by a post_save signal
     # TODO: decide if we should have this be editable=True and if user doesn't add one him/herself, then
     # auto-generate thumbnail
-    thumbnail = models.ImageField(upload_to='posters/images/', editable=False, null=True)
+    thumbnail = models.ImageField(upload_to='posters/images/', editable=False, null=True, max_length=255)
 
     def __str__(self):
         if self.publication:
