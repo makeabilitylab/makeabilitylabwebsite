@@ -8,8 +8,17 @@
 {% load staticfiles %}
 {% load thumbnail %}
 
+{% block stylesheets %}
+
+<link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/fixed_side_bar.css' %}">
+
+{% endblock %}
+
 {% block external_scripts %}
 
+<script src="{% static 'website/js/fixedSideBar.js' %}"></script>
+<script src="{% static 'website/js/filterBar.js' %}"></script>
 <script src="{% static 'website/js/publications.js' %}"></script>
 
 {% endblock %}
@@ -96,26 +105,40 @@
 
 {% block content %}
 <div id="content" class="container">
-	<div class="filter-bar">
-		<h1 style="margin-top:7px">FILTER</h1>
-		<input class="shortTextbox" id="filter-textbox" type='text' value='' />
-
-		<h1>GROUP BY</h1>
-
-		<div class="filter-bar-categories">
-	        <li id="group-year" class="group-type" onclick="setGrouping('year')">Year</li>
-	        <li id="group-pub-type" class="group-type" onclick="setGrouping('pub-type')">Pub Type</li>
-	        <li id="group-keyword" class="group-type" onclick="setGrouping('keyword')">Keyword</li>
-	        <li id="group-project" class="group-type" onclick="setGrouping('project')">Project</li>
-	        <li id="group-none" class="group-type" onclick="setGrouping('none')">None</li>
-    	</div>
-
-        <div class="filter-bar-items">
-        </div>
-
+	<div id="fixed-side-bar">
+		<div id="filter-bar">
+	    </div>
 	</div>
-	<div class="publication-list" id="publication-list">
+	<div class="publication-list" id="main-content">
 		Loading content... (Please make sure JavaScript is enabled)
+		<h1 class="group-template" name="Group Name"></h1>
+		<div class="publication-template">
+			<div class="publication-id">id</div>
+        	<div class="publication-thumbnail">
+        		<a href="link" class="publication-thumbnail-link">
+        			<img src="" class="publication-thumbnail-image img-responsive"/>
+        		</a>
+        	</div>
+        	<div class="publication-info">
+        		<p class="publication-title">Paper Title</p>
+        		<p class="publication-authors">
+        			<span class="publication-author"><a href="link">Author Name</a>,&nbsp;</span>
+        			<span class="publication-author-last"><a href="link">Author Name</a></span>
+        		</p>
+        		<p class="publication-stats">
+        			<span class="publication-venue">Venue Name</span>
+        			<span class="publication-award">| <span class="publication-award-text">Award Name</span> <span class="publication-award-icon"><i class=\"fa fa-trophy\" aria-hidden="true"></i><span></span>
+    				<span class="publication-acceptance-rate">| <span class="publication-acceptance-rate-text">Acceptance Rate: ##% (# / #)</span></span>
+    				<span class="publication-to-appear">| <span class="publication-to-appear-text">To Appear</span></span>
+		    	</p>
+        		<p class="publication-keywords">
+	        		keywords: 
+	        		<span class="publication-keyword"><span class="publication-keyword-text">keyword</span>,&nbsp;</span>
+	        		<span class="publication-keyword-last"><span class="publication-keyword-text">keyword</span></span>
+        		</p>
+        		<div class="publication-download">Download: <a href="link" class="publication-download-link">[pdf]</a> | Export <a data-toggle="popover" data-html="true" data-trigger="manual" tabindex="0" title="Citation" data-content="Empty Citation" class="publication-citation-link">[Citation]</a></div>
+        	</div>
+		</div>
 	</div>
 </div>
 {% endblock %}

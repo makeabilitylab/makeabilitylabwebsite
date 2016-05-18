@@ -16,7 +16,11 @@
 
     <!-- Our custom style sheets -->
     <link rel="stylesheet" href="{% static 'website/css/carousel_fade.css' %}"/>
-	<link rel="stylesheet" href="{% static 'website/css/styles.css' %}">
+	  <link rel="stylesheet" href="{% static 'website/css/styles.css' %}">
+
+    {% block stylesheets %}
+    
+    {% endblock %}
 
     <!-- Old base.css class -->
 {#    <link rel="stylesheet" type="text/css" href="{% static 'website/css/base.css' %}"/> #}
@@ -38,7 +42,7 @@
 	<script src="{% static 'website/js/grayscale.js' %}"></script>
 
   {% block external_scripts %}
-  
+
   {% endblock %}
 
     <title>
