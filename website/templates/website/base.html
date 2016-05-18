@@ -37,6 +37,10 @@
 	<script src="{% static 'website/js/jquery.easing.min.js' %}"></script>
 	<script src="{% static 'website/js/grayscale.js' %}"></script>
 
+  {% block external_scripts %}
+  
+  {% endblock %}
+
     <title>
         {% block pagetitle %}
             {{ request.resolver_match.url_name }}
