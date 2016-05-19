@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Person, Publication, Position, Talk, Project, Poster, Keyword
+from .models import Person, Publication, Position, Talk, Project, Poster, Keyword, News
 
 from django.http import HttpResponse
 from datetime import datetime
@@ -109,3 +109,4 @@ admin.site.register(Talk)
 admin.site.register(Project)
 admin.site.register(Poster)
 admin.site.register(Keyword)
+admin.site.register(News)

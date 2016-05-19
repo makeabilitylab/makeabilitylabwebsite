@@ -292,3 +292,14 @@ class Poster(models.Model):
             return self.publication.title
         else:
             return self.title
+
+class News(models.Model):
+    title = models.CharField(max_length=255)
+    date = models.DateField(default=date.today)
+    author = models.ForeignKey(Person)
+    content = models.TextField()
+
+    class Meta:
+        # These names are used in the admin display, see https://docs.djangoproject.com/en/1.9/ref/models/options/#verbose-name
+        verbose_name = 'News Item'
+        verbose_name_plural = 'News'
