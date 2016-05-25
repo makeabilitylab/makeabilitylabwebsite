@@ -113,41 +113,10 @@
             Loading content... (Please make sure JavaScript is enabled)
             <h1 class="group-template" name="Group Name"></h1>
             <div class="talk-template">
-                <div class="talk-id">id</div>
                 <div class="talk-info">
                     <p class="talk-title">Paper Title</p>
                 </div>
             </div>
         </div>
-    </div>
-{% endblock %}
-
-{% block temp %}
- {% if talks %}
-            There are {{ talks.count }} talks loaded in the system
-             <ul>
-            {% for talk in talks %}
-                <li>{{ talk.title }}
-                <br/>
-{#                <a href="{{ talk.thumbnail.url }}">{{  talk.thumbnail.url }}</a></li> #}
-            {% endfor %}
-            </ul>
-        {% else %}
-            <p>No publications are available.</p>
-        {% endif %}
-        <p><hr></p>
-        {% if talks %}
-            <div class="row">
-                {% for talk in talks %}
-                    <div class="col-md-2">
- {#                        <img src="{{ talk.thumbnail.url }}" class="thumbnail img-responsive"/> #}
-                        {{ talk.title }}
-                    </div>
-                {% endfor %}
-
-            </div>
-        {% else %}
-            <p>No people are available.</p>
-        {% endif %}
     </div>
 {% endblock %}

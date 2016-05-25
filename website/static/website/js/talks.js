@@ -51,10 +51,9 @@ $(window).load(function () {
 	$('#fixed-side-bar').fixedSideBar();
 	$('#filter-bar').filterBar({
 		items: talks, 
-		categories: ["Year", "Talk Type", "Keyword", "Project", "None"],
+		categories: ["Year", "Keyword", "Project", "None"],
 		groupsForCategory: {
 			"Year": groupTalksByYear(),
-			"Talk Type": groupTalksByType(),
 			"Keyword": groupTalksByKeyword(),
 			"Project": groupTalksByProject(),
 			"None": [{"name": "Chronological List", items: talks}]
@@ -113,29 +112,6 @@ function groupTalksByYear()
 
 	// years are sorted chronologically, all of the other groupings are sorted by frequency
 	groups.sort(function(a,b) { return parseInt(b.name) - parseInt(a.name) });
-
-	return groups;
-}
-
-// returns a list of talks grouped by talk venue type, sorted with the most frequent type first
-function groupTalksByType()
-{
-	var tempGroups = {};
-	talks.forEach(function(talk, index, array) {
-		var group = talk.talk_type;
-		if(!(group in tempGroups)) {
-			tempGroups[group] = [];
-		}
-		tempGroups[group].push(talk);
-	});
-
-	var groups = []
-	for(group in tempGroups) {
-		groups.push({"name": group, "items": tempGroups[group]});
-	}
-
-	// years are sorted chronologically, all of the other groupings are sorted by frequency
-	groups.sort(function(a,b) { return b.items.length - a.items.length });
 
 	return groups;
 }
