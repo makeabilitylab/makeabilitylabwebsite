@@ -169,7 +169,7 @@ function groupTalksByProject()
 }
 
 // returns true if the publication contains the text entered into the filter box anywhere
-// in the title, authors, venue, keywords, or projects
+// in the title, speakers, venue, keywords, or projects
 function passesFilter(talk, filter) {
 	filter = filter.toLowerCase();
 	var passes = false;
@@ -177,8 +177,8 @@ function passesFilter(talk, filter) {
 
 	if(talk.title.toLowerCase().indexOf(filter) >= 0) passes = true;
 	if(talk.venue.toLowerCase().indexOf(filter) >= 0) passes = true;
-	talk.authors.forEach(function(author, index, array) { 
-		if(author.name.toLowerCase().indexOf(filter) >= 0) passes = true; 
+	talk.speakers.forEach(function(speaker, index, array) { 
+		if(speaker.name.toLowerCase().indexOf(filter) >= 0) passes = true; 
 	});
 	talk.keywords.forEach(function(keyword, index, array) { if(keyword.toLowerCase().indexOf(filter) >= 0) passes = true; });
 	talk.projects.forEach(function(project, index, array) { if(project.toLowerCase().indexOf(filter) >= 0) passes = true; });
@@ -202,7 +202,7 @@ function formatGroup(group) {
 	return groupData[0].outerHTML;
 }
 
-// helper function to populate the template with the publication data
+// helper function to populate the template with the talk data
 function formatTalk(talk, filter) {
 	if(filter) filter = filter.toLowerCase();
 
@@ -212,15 +212,15 @@ function formatTalk(talk, filter) {
 	talkData.find(".talk-thumbnail-image").attr("src", talk.thumbnail);
 	talkData.find(".talk-title").html(addHighlight(talk.title));
 
-	var authors = talkData.find(".talk-authors");
-	var authorTemplate = authors.find(".talk-author");
-	var authorLastTemplate = authors.find(".talk-author-last");
-	authors.html("");
-	talk.authors.forEach(function(author, index, array) {
-		var authorData = index + 1 < array.length ? authorTemplate.clone() : authorLastTemplate.clone();
-		authorData.find("a").attr("href", author.link);
-		authorData.find("a").html(addHighlight(author.name, filter));
-		authors.append(authorData);
+	var speakers = talkData.find(".talk-speakers");
+	var speakerTemplate = speakers.find(".talk-speaker");
+	var speakerLastTemplate = speakers.find(".talk-speaker-last");
+	speakers.html("");
+	talk.speakers.forEach(function(speaker, index, array) {
+		var speakerData = index + 1 < array.length ? speakerTemplate.clone() : speakerLastTemplate.clone();
+		speakerData.find("a").attr("href", speaker.link);
+		speakerData.find("a").html(addHighlight(speaker.name, filter));
+		speakers.append(speakerData);
 	});
 
 	talkData.find(".talk-venue").html(addHighlight(talk.venue, filter));

@@ -30,14 +30,14 @@
 		{
 			"id": "A.###",
 			"title": "{{talk.title}}",
-			"authors": [
-				{% for author in talk.authors.all %}
+			"speakers": [
+				{% for speaker in talk.speakers.all %}
 				{
-					"name": "{{author.get_full_name}}",
-					"first_name": "{{author.first_name}}",
-					"middle_name": "{{author.middle_name}}",
-					"last_name": "{{author.last_name}}",
-					"link": "{% url 'website:member' author.id %}"
+					"name": "{{speaker.get_full_name}}",
+					"first_name": "{{speaker.first_name}}",
+					"middle_name": "{{speaker.middle_name}}",
+					"last_name": "{{speaker.last_name}}",
+					"link": "{% url 'website:member' speaker.id %}"
 				},
 				{% endfor %}
 			],
@@ -115,6 +115,14 @@
             <div class="talk-template">
                 <div class="talk-info">
                     <p class="talk-title">Paper Title</p>
+                    <p class="talk-speakers">
+        				<span class="talk-speaker"><a href="link">Speaker Name</a>,&nbsp;</span>
+                        <span class="talk-speaker-last"><a href="link">Speaker Name</a></span>
+        			</p>
+                    <p class="talk-stats">
+        			<span class="talk-venue">Venue Name</span>
+		    	</p>
+        		<div class="publication-download"><a href="link" class="talk-download-link">PDF</a> | <a href="link" class="talk-pptx-link">PPTX</a> | <a href="link" class="talk-slideshare-link">Slideshare</a> | <a href="link" class="talk-video-link">Video</a></div>
                 </div>
             </div>
         </div>
