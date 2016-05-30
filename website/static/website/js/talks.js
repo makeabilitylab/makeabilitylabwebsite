@@ -176,7 +176,6 @@ function passesFilter(talk, filter) {
 	if(!filter || filter.length == 0) passes = true;
 
 	if(talk.title.toLowerCase().indexOf(filter) >= 0) passes = true;
-	if(talk.venue.toLowerCase().indexOf(filter) >= 0) passes = true;
 	talk.speakers.forEach(function(speaker, index, array) { 
 		if(speaker.name.toLowerCase().indexOf(filter) >= 0) passes = true; 
 	});
@@ -211,6 +210,20 @@ function formatTalk(talk, filter) {
 	talkData.find(".talk-thumbnail-link").attr("href", talk.pdf);
 	talkData.find(".talk-thumbnail-image").attr("src", talk.thumbnail);
 	talkData.find(".talk-title").html(addHighlight(talk.title));
+	
+	//Human Readable Date
+	//TODO: Easier way to do this?
+	var monthNames = ["January", "February", "March", "April", "May", "June",
+  						"July", "August", "September", "October", "November", "December"
+						];
+	var dd = talk.date.getDate()+1;
+	var mm = monthNames[talk.date.getMonth()];
+	var yy = talk.date.getFullYear();
+	var showDate = mm + " " + dd + ", " + yy;
+	talkData.find(".talk-date").html(addHighlight(showDate));
+	
+	//Location Data
+	talkData.find(".talk-location").html(addHighlight(talk.location));
 
 	var speakers = talkData.find(".talk-speakers");
 	var speakerTemplate = speakers.find(".talk-speaker");
