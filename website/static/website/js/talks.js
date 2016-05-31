@@ -237,7 +237,7 @@ function formatTalk(talk, filter) {
 		speakers.append(speakerData);
 	});
 
-	talkData.find(".talk-venue").html(addHighlight(talk.venue, filter));
+	talkData.find(".talk-venue").html(addHighlight(talk.location, filter));
 
 	if(talk.award) { 
 		talkData.find(".talk-award-text").html(addHighlight(talk.award, filter));
