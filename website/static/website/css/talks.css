@@ -15,10 +15,13 @@
 .talk-template {
 	padding-top:10px;
 	padding-bottom:10px;
+	padding-right:20px;
 	font-family: adelle-light;
 	font-size: 14px;
 	position:relative;
 	min-height: 170px;
+	width: 270px;
+	float: left;
 }
 
 .talk-template p {
@@ -42,7 +45,7 @@
 }
 
 .talk-thumbnail {
-	width:120px;
+	width:140px;
 	min-width:120px;
 	display:table-cell;
 	vertical-align: top;
