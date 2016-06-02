@@ -32,7 +32,7 @@
 .talk-template img {
 	border: 1px solid #dddddd;
 	width:100%;
-	max-width:135px;
+	max-width: 270px;
 	margin:auto;
 }
 
@@ -45,8 +45,8 @@
 }
 
 .talk-thumbnail {
-	width:140px;
-	min-width:120px;
+	width: 270px;
+	min-width: 270px;
 	display:table-cell;
 	vertical-align: top;
 	padding-right:10px;
