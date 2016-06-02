@@ -211,6 +211,13 @@ function formatTalk(talk, filter) {
 	talkData.find(".talk-thumbnail-image").attr("src", talk.thumbnail);
 	talkData.find(".talk-title").html(addHighlight(talk.title));
 	
+	//TODO: Remove these links if they do not exsist
+	talkData.find(".talk-pdf-link").attr("href", talk.pdf);
+	talkData.find(".talk-pptx-link").attr("href", talk.pptx);
+	talkData.find(".talk-slideshare-link").attr("href", talk.slideshare);
+	talkData.find(".talk-video-link").attr("href", talk.video);
+	
+	
 	//Human Readable Date
 	//TODO: Easier way to do this?
 	var monthNames = ["January", "February", "March", "April", "May", "June",

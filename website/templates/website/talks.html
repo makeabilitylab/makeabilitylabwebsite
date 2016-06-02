@@ -43,6 +43,9 @@
 			],
 			"date": new Date("{{talk.date.isoformat}}"),
 			"pdf": "../../media/{{ talk.pdf_file }}",
+            "pptx": "../../media/{{ talk.raw_file }}",
+            "video": "../../media/{{ talk.video_url }}",
+            "slideshare": "{{ talk.slideshare_url }}",
 			"thumbnail": "{% thumbnail talk.thumbnail 300x0 detail %}",
 			"location": "{{talk.location}}",
 			"talk_type": "{{talk.talk_venue_type}}",
@@ -129,7 +132,7 @@
                     	<span class="talk-location">Talk Location</span>
 		    		</p>
         			<div class="publication-download">
-                		<a href="link" class="talk-download-link">PDF</a> | 
+                		<a href="link" class="talk-pdf-link">PDF</a> | 
                     	<a href="link" class="talk-pptx-link">PPTX</a> | 
                     	<a href="link" class="talk-slideshare-link">Slideshare</a> | 
                     	<a href="link" class="talk-video-link">Video</a>
