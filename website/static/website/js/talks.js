@@ -207,7 +207,7 @@ function formatTalk(talk, filter) {
 
 	var talkData = talkTemplate.clone();
 	talkData.find(".talk-id").html(talk.id);
-	talkData.find(".talk-thumbnail-link").attr("href", talk.pdf);
+	talkData.find(".talk-thumbnail-link").attr("href", "../../media/" + talk.pdf);
 	talkData.find(".talk-thumbnail-image").attr("src", talk.thumbnail);
 	talkData.find(".talk-title").html(addHighlight(talk.title));
 	
@@ -239,7 +239,6 @@ function formatTalk(talk, filter) {
 		talkData.find(".talk-video-link").remove();
 		talkData.find(".decor_video").remove();
 	}
-	
 	
 	//Human Readable Date
 	//TODO: Easier way to do this?

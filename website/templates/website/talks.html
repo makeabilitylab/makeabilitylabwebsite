@@ -42,7 +42,7 @@
 				{% endfor %}
 			],
 			"date": new Date("{{talk.date.isoformat}}"),
-			"pdf": "media/{{ talk.pdf_file }}",
+			"pdf": "{{ talk.pdf_file }}",
             "pptx": "{{ talk.raw_file }}",
             "video": "{{ talk.video_url }}",
             "slideshare": "{{ talk.slideshare_url }}",
@@ -131,7 +131,7 @@
         				<span class="talk-date">Talk Date</span> | 
                     	<span class="talk-location">Talk Location</span>
 		    		</p>
-        			<div class="publication-download">
+        			<div class="talk-download">
                 		<a href="link" class="talk-pdf-link">PDF</a>
                     	<span class="decor_pptx"> | </span><a href="link" class="talk-pptx-link">PPTX</a>
                     	<span class="decor_slideshare"> | </span><a href="link" class="talk-slideshare-link">Slideshare</a>
@@ -139,6 +139,7 @@
                     </div>
                 </div>
             </div>
+            <br />
         </div>
     </div>
 {% endblock %}
