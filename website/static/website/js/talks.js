@@ -216,7 +216,7 @@ function formatTalk(talk, filter) {
 		talkData.find(".talk-pdf-link").attr("href", "../../media/" + talk.pdf);
 	} else {
 		talkData.find(".talk-pdf-link").remove();
-		talkData.find(".decor_pdf").remove();
+		
 	}
 	
 	if (talk.pptx != "") {
@@ -237,6 +237,7 @@ function formatTalk(talk, filter) {
 		talkData.find(".talk-video-link").attr("href", talk.video);
 	} else {
 		talkData.find(".talk-video-link").remove();
+		talkData.find(".decor_video").remove();
 	}
 	
 	
