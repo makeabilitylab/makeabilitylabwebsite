@@ -29,7 +29,7 @@
 		{% for talk in talks %}
 		{
 			"id": "A.###",
-			"title": "{{talk.title}}",
+			"title": "{{talk.short_title}}",
 			"speakers": [
 				{% for speaker in talk.speakers.all %}
 				{
@@ -42,9 +42,9 @@
 				{% endfor %}
 			],
 			"date": new Date("{{talk.date.isoformat}}"),
-			"pdf": "../../media/{{ talk.pdf_file }}",
-            "pptx": "../../media/{{ talk.raw_file }}",
-            "video": "../../media/{{ talk.video_url }}",
+			"pdf": "media/{{ talk.pdf_file }}",
+            "pptx": "{{ talk.raw_file }}",
+            "video": "{{ talk.video_url }}",
             "slideshare": "{{ talk.slideshare_url }}",
 			"thumbnail": "{% thumbnail talk.thumbnail 300x0 detail %}",
 			"location": "{{talk.location}}",

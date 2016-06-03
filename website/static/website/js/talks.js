@@ -212,7 +212,11 @@ function formatTalk(talk, filter) {
 	talkData.find(".talk-title").html(addHighlight(talk.title));
 	
 	//TODO: Remove these links if they do not exsist
-	talkData.find(".talk-pdf-link").attr("href", talk.pdf);
+	if (talk.pdf != "") {
+		talkData.find(".talk-pdf-link").attr("href", talk.pdf);
+	} else {
+		talkData.find(".talk-pdf-link").remove();
+	}
 	talkData.find(".talk-pptx-link").attr("href", talk.pptx);
 	talkData.find(".talk-slideshare-link").attr("href", talk.slideshare);
 	talkData.find(".talk-video-link").attr("href", talk.video);
