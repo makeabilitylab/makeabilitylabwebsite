@@ -211,15 +211,33 @@ function formatTalk(talk, filter) {
 	talkData.find(".talk-thumbnail-image").attr("src", talk.thumbnail);
 	talkData.find(".talk-title").html(addHighlight(talk.title));
 	
-	//TODO: Remove these links if they do not exsist
+	//Insert links if available
 	if (talk.pdf != "") {
-		talkData.find(".talk-pdf-link").attr("href", talk.pdf);
+		talkData.find(".talk-pdf-link").attr("href", "../../media/" + talk.pdf);
 	} else {
 		talkData.find(".talk-pdf-link").remove();
+		talkData.find(".decor_pdf").remove();
 	}
-	talkData.find(".talk-pptx-link").attr("href", talk.pptx);
-	talkData.find(".talk-slideshare-link").attr("href", talk.slideshare);
-	talkData.find(".talk-video-link").attr("href", talk.video);
+	
+	if (talk.pptx != "") {
+		talkData.find(".talk-pptx-link").attr("href", "../../media/" + talk.pptx);
+	} else {
+		talkData.find(".talk-pptx-link").remove();
+		talkData.find(".decor_pptx").remove();
+	}
+	
+	if (talk.slideshare != "") {
+		talkData.find(".talk-slideshare-link").attr("href", talk.slideshare);
+	} else {
+		talkData.find(".talk-slideshare-link").remove();
+		talkData.find(".decor_slideshare").remove();
+	}
+	
+	if (talk.video != "") {
+		talkData.find(".talk-video-link").attr("href", talk.video);
+	} else {
+		talkData.find(".talk-video-link").remove();
+	}
 	
 	
 	//Human Readable Date
