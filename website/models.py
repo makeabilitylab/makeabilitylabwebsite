@@ -174,6 +174,7 @@ class Keyword(models.Model):
 
 class Talk(models.Model):
     title = models.CharField(max_length=255)
+    short_title = models.CharField(max_length=100)
 
     # A talk can be about more than one project
     projects = models.ManyToManyField(Project, blank=True, null=True)

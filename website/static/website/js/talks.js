@@ -207,9 +207,38 @@ function formatTalk(talk, filter) {
 
 	var talkData = talkTemplate.clone();
 	talkData.find(".talk-id").html(talk.id);
-	talkData.find(".talk-thumbnail-link").attr("href", talk.pdf);
+	talkData.find(".talk-thumbnail-link").attr("href", "../../media/" + talk.pdf);
 	talkData.find(".talk-thumbnail-image").attr("src", talk.thumbnail);
 	talkData.find(".talk-title").html(addHighlight(talk.title));
+	
+	//Insert links if available
+	if (talk.pdf != "") {
+		talkData.find(".talk-pdf-link").attr("href", "../../media/" + talk.pdf);
+	} else {
+		talkData.find(".talk-pdf-link").remove();
+		
+	}
+	
+	if (talk.pptx != "") {
+		talkData.find(".talk-pptx-link").attr("href", "../../media/" + talk.pptx);
+	} else {
+		talkData.find(".talk-pptx-link").remove();
+		talkData.find(".decor_pptx").remove();
+	}
+	
+	if (talk.slideshare != "") {
+		talkData.find(".talk-slideshare-link").attr("href", talk.slideshare);
+	} else {
+		talkData.find(".talk-slideshare-link").remove();
+		talkData.find(".decor_slideshare").remove();
+	}
+	
+	if (talk.video != "") {
+		talkData.find(".talk-video-link").attr("href", talk.video);
+	} else {
+		talkData.find(".talk-video-link").remove();
+		talkData.find(".decor_video").remove();
+	}
 	
 	//Human Readable Date
 	//TODO: Easier way to do this?
@@ -217,7 +246,7 @@ function formatTalk(talk, filter) {
   						"July", "August", "September", "October", "November", "December"
 						];
 						
-	var dd = talk.date.getDate()+1;
+	var dd = talk.date.getDate();
 	var mm = monthNames[talk.date.getMonth()];
 	var yy = talk.date.getFullYear();
 	var showDate = mm + " " + dd + ", " + yy;

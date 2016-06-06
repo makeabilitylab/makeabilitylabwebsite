@@ -29,7 +29,7 @@
 		{% for talk in talks %}
 		{
 			"id": "A.###",
-			"title": "{{talk.title}}",
+			"title": "{{talk.short_title}}",
 			"speakers": [
 				{% for speaker in talk.speakers.all %}
 				{
@@ -42,7 +42,10 @@
 				{% endfor %}
 			],
 			"date": new Date("{{talk.date.isoformat}}"),
-			"pdf": "../../media/{{ talk.pdf_file }}",
+			"pdf": "{{ talk.pdf_file }}",
+            "pptx": "{{ talk.raw_file }}",
+            "video": "{{ talk.video_url }}",
+            "slideshare": "{{ talk.slideshare_url }}",
 			"thumbnail": "{% thumbnail talk.thumbnail 300x0 detail %}",
 			"location": "{{talk.location}}",
 			"talk_type": "{{talk.talk_venue_type}}",
@@ -128,11 +131,11 @@
         				<span class="talk-date">Talk Date</span> | 
                     	<span class="talk-location">Talk Location</span>
 		    		</p>
-        			<div class="publication-download">
-                		<a href="link" class="talk-download-link">PDF</a> | 
-                    	<a href="link" class="talk-pptx-link">PPTX</a> | 
-                    	<a href="link" class="talk-slideshare-link">Slideshare</a> | 
-                    	<a href="link" class="talk-video-link">Video</a>
+        			<div class="talk-download">
+                		<a href="link" class="talk-pdf-link">PDF</a>
+                    	<span class="decor_pptx"> | </span><a href="link" class="talk-pptx-link">PPTX</a>
+                    	<span class="decor_slideshare"> | </span><a href="link" class="talk-slideshare-link">Slideshare</a>
+                    	<span class="decor_video"> | </span><a href="link" class="talk-video-link">Video</a>
                     </div>
                 </div>
             </div>
