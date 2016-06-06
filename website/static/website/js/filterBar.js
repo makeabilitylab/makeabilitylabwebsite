@@ -65,10 +65,14 @@
 		return this;
 	};
 
+	$.fn.cleanName = function(name) {
+		return name.toLowerCase().replace(new RegExp(" ", "g"), "-"); 
+	}
+
 	$.fn.applyFilter = function(newCategory) {
 		if(newCategory) currCategory = newCategory;
 		$(".filter-category").removeClass("filter-selected");
-		$("#filter-category-" + currCategory.toLowerCase().replace(new RegExp(" "), "-")).addClass("filter-selected");
+		$("#filter-category-" + this.cleanName(currCategory)).addClass("filter-selected");
 
 		var groupList = $("#filter-bar-groups");
 		if(settings.groupsForCategory[currCategory].length <= 1) {
@@ -77,7 +81,7 @@
 			groupList.css("display", "block");
 			var data = "<h1>" + currCategory.toUpperCase() + "</h1>\n"
 			for(var i=0; i<settings.groupsForCategory[currCategory].length; i++) {
-				data += "<li><a href=\"#" + settings.groupsForCategory[currCategory][i].name + "\" class=\"scroll\">" + settings.groupsForCategory[currCategory][i].name + " (" + settings.groupsForCategory[currCategory][i].items.length + ")</a></li>\n";
+				data += "<li><a href=\"#" + this.cleanName(settings.groupsForCategory[currCategory][i].name) + "\" class=\"scroll\">" + settings.groupsForCategory[currCategory][i].name + " (" + settings.groupsForCategory[currCategory][i].items.length + ")</a></li>\n";
 			}
 			groupList[0].innerHTML = data;
 		}

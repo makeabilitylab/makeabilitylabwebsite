@@ -196,7 +196,7 @@ function addHighlight(text, filter) {
 // helper function to populate the template with the group data
 function formatGroup(group) {
 	var groupData = groupTemplate.clone();
-	groupData.attr("name", group);
+	groupData.attr("name", group.toLowerCase().replace(new RegExp(" ", "g"), "-"));
 	groupData.html(group);
 	return groupData[0].outerHTML;
 }
