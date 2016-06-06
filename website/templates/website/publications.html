@@ -81,7 +81,7 @@
         <!-- Wrapper for slides -->
         <div class="carousel-inner" role="listbox">
             {% for banner in banners %}
-                <div class="fill" style="background-image:url({{ banner.image.url }})" title="{{ banner.alt_text }}"></div>
+                <div class="fill" style="background-image:url({{ banner.image.url }})" aria-label="{{ banner.alt_text }}"></div>
                     <div class="overlay">
                       <div class="container carousel-container">
                         <div class="carousel-caption carousel-caption-right">
