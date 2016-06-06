@@ -6,10 +6,11 @@
 {% load thumbnail %}
 
 {% block maincarousel %}
-    <div id="mainCarousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="5000" data-pause="false">
-        <div class="overlay carousel-caption">
-            <div class="container">
-                <div class="overlay-spacer"></div>
+    <div id="mainCarousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="5000" data-pause="false">    
+        <div class="overlay overlay-no-background">
+            <div class="container carousel-container">
+            <!-- <div class="container"> -->
+                <!-- <div class="overlay-spacer"></div> -->
                 <div class="overlay-title">People</div>
             </div>
         </div>
@@ -18,8 +19,19 @@
             {% for banner in banners %}
                 <div class="item {% if forloop.first %}active{% endif %}">
                     <div class="fill" style="background-image:url({{ banner.image.url }})" title="{{ banner.alt_text }}"></div>
-                    <div class="carousel-caption">
-                        {{ banner.caption }}
+                    <div class="overlay">
+                      <div class="container carousel-container">
+                        <div class="carousel-caption carousel-caption-right">
+                          {% autoescape off %} {# enable HTML tags #}
+                          <div class="carousel-caption-title">
+                            {{ banner.title }}
+                          </div>
+                          <div class="carousel-caption-text">
+                            {{ banner.caption }}
+                          </div>
+                          {% endautoescape %}
+                        </div>
+                      </div>
                     </div>
                 </div>
             {% endfor %}

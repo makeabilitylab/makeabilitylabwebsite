@@ -73,10 +73,11 @@
 
 @media(min-width:768px) {
     .navbar-custom {
-        padding: 20px 0;
+        padding: 10px 0;
         border-bottom: 0;
         letter-spacing: 1px;
-        background: 0 0;
+        /*background: 0 0;*/
+        background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 75%);
         -webkit-transition: background .5s ease-in-out,padding .5s ease-in-out;
         -moz-transition: background .5s ease-in-out,padding .5s ease-in-out;
         transition: background .5s ease-in-out,padding .5s ease-in-out;

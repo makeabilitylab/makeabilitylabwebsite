@@ -169,14 +169,25 @@
 
     {% block maincarousel %}
         <div id="mainCarousel" class="carousel slide carousel-fade" data-ride="carousel" data-interval="5000" data-pause="false">
-            <div class="overlay carousel-caption">This is an overlay over all of the carousel items.</div>
+            <!-- <div class="overlay carousel-caption"></div> -->
             <!-- Wrapper for slides -->
             <div class="carousel-inner" role="listbox">
             {% for banner in banners %}
                 <div class="item {% if forloop.first %}active{% endif %}">
                     <div class="fill" style="background-image:url({{ banner.image.url }})" title="{{ banner.alt_text }}"></div>
-                    <div class="carousel-caption">
-                        {{ banner.caption }}
+                    <div class="overlay">
+                      <div class="container carousel-container">
+                        <div class="carousel-caption carousel-caption-right">
+                          {% autoescape off %}
+                          <div class="carousel-caption-title">
+                            {{ banner.title }}
+                          </div>
+                          <div class="carousel-caption-text">
+                            {{ banner.caption }}
+                          </div>
+                          {% endautoescape %}
+                        </div>
+                      </div>
                     </div>
                 </div>
             {% endfor %}
