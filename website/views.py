@@ -1,10 +1,12 @@
 import operator
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, render
-from .models import Person, Publication, Talk, Position
+from .models import Person, Publication, Talk, Position, Banner
 
 def index(request):
-    context = { 'people': Person.objects.all() }
+    banners = Banner.objects.filter(page=Banner.FRONTPAGE)
+
+    context = { 'people': Person.objects.all(), 'banners': banners }
     return render(request, 'website/index.html', context)
 
 def people(request):
@@ -71,6 +73,8 @@ def people(request):
     active_prof_grad.extend(active_phd)
     active_prof_grad.extend(active_ms)
 
+    banners = Banner.objects.filter(page=Banner.PEOPLE)
+
     context = {
         'people' : Person.objects.all(),
         'active_members' : active_members,
@@ -84,7 +88,9 @@ def people(request):
         'alumni_members' : alumni_members,
         'cur_collaborators' : cur_collaborators,
         'past_collaborators' : past_collaborators,
-        'positions' : positions
+        'positions' : positions,
+        'banners' : banners
+
     }
     return render(request, 'website/people.html', context)
 
@@ -99,9 +105,11 @@ def member(request, member_id):
     return render(request, 'website/member.html', {'person': person})
 
 def publications(request):
-    context = { 'publications': Publication.objects.all() }
+    banners = Banner.objects.filter(page=Banner.PUBLICATIONS)
+    context = { 'publications': Publication.objects.all(), 'banners': banners }
     return render(request, 'website/publications.html', context)
 
 def talks(request):
-    context = { 'talks': Talk.objects.all() }
+    banners = Banner.objects.filter(page=Banner.TALKS)
+    context = { 'talks': Talk.objects.all(), 'banners': banners }
     return render(request, 'website/talks.html', context)

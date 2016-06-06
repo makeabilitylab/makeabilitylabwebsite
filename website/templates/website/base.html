@@ -172,25 +172,15 @@
             <div class="overlay carousel-caption">This is an overlay over all of the carousel items.</div>
             <!-- Wrapper for slides -->
             <div class="carousel-inner" role="listbox">
-                <div class="item active">
-                    <div class="fill" style="background-image:url({% static 'website/img/banner1.jpg' %})"></div>
+            {% for banner in banners %}
+                <div class="item {% if forloop.first %}active{% endif %}">
+                    <div class="fill" style="background-image:url({{ banner.image.url }})" title="{{ banner.alt_text }}"></div>
                     <div class="carousel-caption">
-                        This is a caption for carousel item 1.
+                        {{ banner.caption }}
                     </div>
                 </div>
-                <div class="item">
-                    <div class="fill" style="background-image:url({% static 'website/img/banner2.jpg' %})"></div>
-                    <div class="carousel-caption">
-                        This is a caption for carousel item 2.
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="fill" style="background-image:url({% static 'website/img/banner3.png' %})"></div>
-                    <div class="carousel-caption">
-                        This is a caption for carousel item 3.
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
+        </div>
         </div>
     {% endblock %}
 

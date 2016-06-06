@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Person, Publication, Position, Talk, Project, Poster, Keyword, News
+from .models import Person, Publication, Position, Talk, Project, Poster, Keyword, News, Banner
 
 from django.http import HttpResponse
 from datetime import datetime
@@ -16,6 +16,14 @@ import urllib
 import bibtexparser
 
 from image_cropping import ImageCroppingMixin
+
+class BannerAdmin(admin.ModelAdmin):
+    fieldsets = [
+        (None, {'fields': ["page", "title", "caption", "alt_text"]}),
+        ('Image', {'fields': ["image", "image_preview"]})
+    ]
+    readonly_fields = ["image_preview"]
+
 
 #class ChoiceInline(admin.StackedInline):
 class RoleInline(admin.StackedInline):
@@ -110,3 +118,4 @@ admin.site.register(Project)
 admin.site.register(Poster)
 admin.site.register(Keyword)
 admin.site.register(News)
+admin.site.register(Banner, BannerAdmin)

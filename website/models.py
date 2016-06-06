@@ -5,6 +5,37 @@ from sortedm2m.fields import SortedManyToManyField
 from datetime import date
 from website.utils.fileutils import UniquePathAndRename
 
+class Banner(models.Model):
+    FRONTPAGE = "FRONTPAGE"
+    PEOPLE = "PEOPLE"
+    PUBLICATIONS = "PUBLICATIONS"
+    TALKS = "TALKS"
+    PAGE_CHOICES = (
+         (FRONTPAGE, "Front Page"),
+         (PEOPLE, "People"),
+         (PUBLICATIONS, "Publications"),
+         (TALKS, "Talks"),
+    )
+    page = models.CharField(max_length=50, choices=PAGE_CHOICES, default="FRONTPAGE")
+    image = models.ImageField(blank=True, upload_to=UniquePathAndRename("banner", True), max_length=255)
+    def image_preview(self):
+        if self.image:
+            return u'<img src="%s" style="width:100%%"/>' % self.image.url
+        else:
+            return '(Please upload an image)'
+    image_preview.short_description = 'Image Preview'
+    image_preview.allow_tags = True
+    image.help_text = 'You must select "Save and continue editing" at the bottom of the page after uploading a new image to preview it. Since we are using a responsive design with fixed height banners, your selected image may be cropped'
+    title = models.CharField(max_length=50, blank=True, null=True)
+    caption = models.CharField(max_length=1024, blank=True, null=True)
+    alt_text = models.CharField(max_length=1024, blank=True, null=True)
+
+    def __str__(self):
+        if self.title and self.page:
+            return self.title + ' (' + self.get_page_display() + ')'
+        else:
+            return "Banner object"
+
 class Person(models.Model):
     first_name = models.CharField(max_length=40)
     middle_name = models.CharField(max_length=50, blank=True, null=True)

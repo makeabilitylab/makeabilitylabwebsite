@@ -168,7 +168,7 @@ h5 {
 .shortCarousel .fill {
 	width:100%;
 	height:335px;
-	background-position:center;
+	background-position: center center;
 	background-size:cover;
 }
 
