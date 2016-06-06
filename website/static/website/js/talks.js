@@ -246,7 +246,7 @@ function formatTalk(talk, filter) {
   						"July", "August", "September", "October", "November", "December"
 						];
 						
-	var dd = talk.date.getDate()+1;
+	var dd = talk.date.getDate();
 	var mm = monthNames[talk.date.getMonth()];
 	var yy = talk.date.getFullYear();
 	var showDate = mm + " " + dd + ", " + yy;
