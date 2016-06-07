@@ -30,6 +30,7 @@ class Banner(models.Model):
     title = models.CharField(max_length=50, blank=True, null=True)
     caption = models.CharField(max_length=1024, blank=True, null=True)
     alt_text = models.CharField(max_length=1024, blank=True, null=True)
+    link = models.CharField(max_length=1024, blank=True, null=True)
 
     def __str__(self):
         if self.title and self.page:

@@ -175,10 +175,12 @@
             <div class="carousel-inner" role="listbox">
             {% for banner in banners %}
                 <div class="item {% if forloop.first %}active{% endif %}">
-                    <div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})" title="{{ banner.alt_text }}"></div>
-                    <div class="overlay">
+                    {% if banner.link %}<a href="{{ banner.link }}">{% endif %}
+                      <div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})" title="{{ banner.alt_text }}"></div>
+                    {% if banner.link %}</a>{% endif %}
+                    <div class="overlay" style="pointer-events: none;">
                       <div class="container carousel-container">
-                        <div class="carousel-caption carousel-caption-right">
+                        <div class="carousel-caption carousel-caption-right" style="pointer-events: auto;">
                           {% autoescape off %}
                           <div class="carousel-caption-title">
                             {{ banner.title }}
