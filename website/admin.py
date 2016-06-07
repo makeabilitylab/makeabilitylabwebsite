@@ -17,12 +17,13 @@ import bibtexparser
 
 from image_cropping import ImageCroppingMixin
 
-class BannerAdmin(admin.ModelAdmin):
+class BannerAdmin(ImageCroppingMixin, admin.ModelAdmin):
     fieldsets = [
         (None, {'fields': ["page", "title", "caption", "alt_text"]}),
-        ('Image', {'fields': ["image", "image_preview"]})
+        # ('Image', {'fields': ["image", "image_preview"]})
+        ('Image', {'fields': ["image", "cropping"]})
     ]
-    readonly_fields = ["image_preview"]
+    # readonly_fields = ["image_preview"]
 
 
 #class ChoiceInline(admin.StackedInline):
