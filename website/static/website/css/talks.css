@@ -52,8 +52,9 @@
 .talk-thumbnail {
 	width: 240px;
 	min-width: 240px;
+	height: 173px !important;
 	display:table-cell;
-	vertical-align: top;
+	vertical-align: middle;
 	padding-right:10px;
 }
 
