@@ -117,7 +117,7 @@
                         <i class="fa fa-bars"></i>
                     </button>
                     <a class="navbar-brand page-scroll" href="#page-top">
-                        <i class="fa fa-gears"></i>  <span class="light">Makeability</span> Lab
+                        <i class="fa fa-gears"></i>  <span style="font-family: helvetica-neue-lt-bold;">make</span>ability</span> lab
                     </a>
                 </div>
 
@@ -126,11 +126,6 @@
                     <ul class="nav navbar-nav">
                         <!-- To automatically highlight active links, I followed this code:
                          http://stackoverflow.com/a/29495310 -->
-                        <li class="hidden">
-                            <a href="#page-top"></a>
-                        </li>
-
-                        <!-- TODO: Link highlighting not working with Lee's new CSS. Need to fix -->
                         {% with request.resolver_match.url_name as url_name %}
                             <li class="{% if url_name == 'index' %}active{% endif %}"><a href="{% url 'website:index' %}">Home</a></li>
                             <li class="{% if url_name == 'people' %}active{% endif %}"><a href="{% url 'website:people' %}">People</a></li>
@@ -138,28 +133,6 @@
                             <li class="{% if url_name == 'talks' %}active{% endif %}"><a href="{% url 'website:talks' %}">Talks</a></li>
                             <li><a href="http://www.cs.umd.edu/hcil/">HCIL</a></li>
                         {% endwith %}
-
-                        <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
-                        <!-- JEF: TODO I don't think these should be page-scroll classes. I believe this is a grayscale
-                             css class and made for single webpage designs where all content on same page -->
-{#                        <li class="hidden">#}
-{#                            <a href="#page-top"></a>#}
-{#                        </li>#}
-{#                        <li>#}
-{#                            <a class="page-scroll" href="#">Home</a>#}
-{#                        </li>#}
-{#                        <li>#}
-{#                            <a class="page-scroll" href="#">People</a>#}
-{#                        </li>#}
-{#                        <li>#}
-{#                            <a class="page-scroll" href="#">Publications</a>#}
-{#                        </li>#}
-{#                        <li>#}
-{#                            <a class="page-scroll" href="#">Talks</a>#}
-{#                        </li>#}
-{#                        <li>#}
-{#                            <a class="page-scroll" href="http://www.cs.umd.edu/hcil/">HCIL</a>#}
-{#                        </li>#}
                     </ul>
                 </div>
                 <!-- /.navbar-collapse -->

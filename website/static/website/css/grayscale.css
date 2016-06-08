@@ -4,7 +4,7 @@
  * For details, see http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-/* Note: only the navbar styles were preserved */
+/* Note: only the navbar styles were preserved, and some styles were modified */
 
 .navbar-custom {
     margin-bottom: 0;
@@ -60,7 +60,9 @@
 }
 
 .navbar-custom .nav li.active a {
-    background-color: rgba(255,255,255,.3);
+    /*background-color: rgba(255,255,255,.3);*/
+    font-weight: bold;
+    font-family: helvetica-neue-lt-bold;
 }
 
 .navbar-custom .nav li.active a:hover {
@@ -73,11 +75,12 @@
 
 @media(min-width:768px) {
     .navbar-custom {
-        padding: 10px 0;
+        padding: 5px 0;
+        padding-bottom: 10px;
         border-bottom: 0;
         letter-spacing: 1px;
         /*background: 0 0;*/
-        background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 75%);
+        background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
         -webkit-transition: background .5s ease-in-out,padding .5s ease-in-out;
         -moz-transition: background .5s ease-in-out,padding .5s ease-in-out;
         transition: background .5s ease-in-out,padding .5s ease-in-out;

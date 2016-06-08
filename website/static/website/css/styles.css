@@ -19,6 +19,16 @@
 	src: url(../fonts/Adelle/adelle_heavy-webfont.ttf);
 }
 
+@font-face {
+	font-family: helvetica-neue-lt;
+	src: url(../fonts/Helvetica/HelveticaNeueLT/HelveticaNeueLTCom-UltLtEx.ttf);
+}
+
+@font-face {
+	font-family: helvetica-neue-lt-bold;
+	src: url(../fonts/Helvetica/HelveticaNeueLT/HelveticaNeueLTCom-LtEx.ttf);
+}
+
 body {
 	font-family: adelle-regular;
 }
@@ -81,6 +91,23 @@ h5 {
 	margin-bottom:0;
 }
 
+.navbar-custom {
+	font-family: helvetica-neue-lt;
+	font-variant: normal;
+	text-transform: lowercase;
+}
+
+.navbar-custom .navbar-brand {
+	font-weight: normal;
+	font-size: 20px;
+}
+
+.navbar-custom .nav li a {
+	padding-left: 10px;
+	padding-right: 10px;
+	font-size: 20px;
+}
+
 .navbar-filter {
     margin-bottom: 0;
     min-height: 30px;
@@ -107,6 +134,10 @@ h5 {
 
 .item {
   background: black;
+}
+
+.carousel a {
+	color: hsl(195, 65%, 65%);
 }
 
 .overlay {
