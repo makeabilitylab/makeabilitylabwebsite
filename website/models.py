@@ -33,6 +33,7 @@ class Banner(models.Model):
     link = models.CharField(max_length=1024, blank=True, null=True)
     favorite = models.BooleanField(default=False)
     favorite.help_text = 'Check this box if this image should appear before other (non-favorite) banner images on the same page.'
+    date_added = models.DateField(auto_now=True)
 
     def __str__(self):
         if self.title and self.page:
