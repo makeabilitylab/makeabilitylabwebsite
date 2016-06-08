@@ -4,7 +4,19 @@ from django.shortcuts import get_object_or_404, render
 from .models import Person, Publication, Talk, Position, Banner
 
 def index(request):
-    banners = Banner.objects.filter(page=Banner.FRONTPAGE)
+    max_favorite_banners = 5
+    max_banners = 5
+    favorite_banners = Banner.objects.filter(page=Banner.FRONTPAGE, favorite=True)
+    other_banners = Banner.objects.filter(page=Banner.FRONTPAGE, favorite=False)
+    banners = []
+    for banner in favorite_banners:
+        if len(banners) > max_favorite_banners:
+            break
+        banners.append(banner)
+    for banner in other_banners:
+        if len(banners) > max_banners:
+            break
+        banners.append(banner)
 
     context = { 'people': Person.objects.all(), 'banners': banners }
     return render(request, 'website/index.html', context)
@@ -73,7 +85,19 @@ def people(request):
     active_prof_grad.extend(active_phd)
     active_prof_grad.extend(active_ms)
 
-    banners = Banner.objects.filter(page=Banner.PEOPLE)
+    max_favorite_banners = 5
+    max_banners = 5
+    favorite_banners = Banner.objects.filter(page=Banner.PEOPLE, favorite=True)
+    other_banners = Banner.objects.filter(page=Banner.PEOPLE, favorite=False)
+    banners = []
+    for banner in favorite_banners:
+        if len(banners) > max_favorite_banners:
+            break;
+        banners.append(banner)
+    for banner in other_banners:
+        if len(banners) > max_banners:
+            break;
+        banners.append(banner)
 
     context = {
         'people' : Person.objects.all(),
@@ -105,11 +129,35 @@ def member(request, member_id):
     return render(request, 'website/member.html', {'person': person})
 
 def publications(request):
-    banners = Banner.objects.filter(page=Banner.PUBLICATIONS)
+    max_favorite_banners = 5
+    max_banners = 5
+    favorite_banners = Banner.objects.filter(page=Banner.PUBLICATIONS, favorite=True)
+    other_banners = Banner.objects.filter(page=Banner.PUBLICATIONS, favorite=False)
+    banners = []
+    for banner in favorite_banners:
+        if len(banners) > max_favorite_banners:
+            break;
+        banners.append(banner)
+    for banner in other_banners:
+        if len(banners) > max_banners:
+            break;
+        banners.append(banner)
     context = { 'publications': Publication.objects.all(), 'banners': banners }
     return render(request, 'website/publications.html', context)
 
 def talks(request):
-    banners = Banner.objects.filter(page=Banner.TALKS)
+    max_favorite_banners = 5
+    max_banners = 5
+    favorite_banners = Banner.objects.filter(page=Banner.TALKS, favorite=True)
+    other_banners = Banner.objects.filter(page=Banner.TALKS, favorite=False)
+    banners = []
+    for banner in favorite_banners:
+        if len(banners) > max_favorite_banners:
+            break;
+        banners.append(banner)
+    for banner in other_banners:
+        if len(banners) > max_banners:
+            break;
+        banners.append(banner)
     context = { 'talks': Talk.objects.all(), 'banners': banners }
     return render(request, 'website/talks.html', context)

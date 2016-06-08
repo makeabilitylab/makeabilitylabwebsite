@@ -19,7 +19,7 @@ from image_cropping import ImageCroppingMixin
 
 class BannerAdmin(ImageCroppingMixin, admin.ModelAdmin):
     fieldsets = [
-        (None, {'fields': ["page", "title", "caption", "alt_text", "link"]}),
+        (None, {'fields': ["page", "title", "caption", "alt_text", "link", "favorite"]}),
         # ('Image', {'fields': ["image", "image_preview"]})
         ('Image', {'fields': ["image", "cropping"]})
     ]
