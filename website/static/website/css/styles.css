@@ -29,6 +29,16 @@
 	src: url(../fonts/Helvetica/HelveticaNeueLT/HelveticaNeueLTCom-LtEx.ttf);
 }
 
+@font-face {
+	font-family: roboto;
+	src: url(../fonts/roboto/Roboto-Thin.ttf);
+}
+
+@font-face {
+	font-family: roboto-bold;
+	src: url(../fonts/roboto/Roboto-Regular.ttf);
+}
+
 body {
 	font-family: adelle-regular;
 }
@@ -92,20 +102,21 @@ h5 {
 }
 
 .navbar-custom {
-	font-family: helvetica-neue-lt;
+	/*font-family: helvetica-neue-lt;*/
+	font-family: roboto;
 	font-variant: normal;
 	text-transform: lowercase;
 }
 
 .navbar-custom .navbar-brand {
 	font-weight: normal;
-	font-size: 20px;
+	font-size: 19px;
 }
 
 .navbar-custom .nav li a {
 	padding-left: 10px;
 	padding-right: 10px;
-	font-size: 20px;
+	font-size: 19px;
 }
 
 .navbar-filter {
