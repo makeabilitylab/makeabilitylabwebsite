@@ -31,6 +31,10 @@ class RoleInline(admin.StackedInline):
     model = Position
     extra = 1
 
+#Uses format as per https://github.com/jonasundderwolf/django-image-cropping to add cropping to the admin page
+class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
+    pass
+    
 class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
     inlines = [RoleInline]
 
@@ -118,5 +122,5 @@ admin.site.register(Talk)
 admin.site.register(Project)
 admin.site.register(Poster)
 admin.site.register(Keyword)
-admin.site.register(News)
+admin.site.register(News, NewsAdmin)
 admin.site.register(Banner, BannerAdmin)
