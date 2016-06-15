@@ -1,7 +1,7 @@
 import operator, datetime, random
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, render
-from .models import Person, Publication, Talk, Position, Banner
+from .models import Person, Publication, Talk, Position, Banner, News
 
 max_banners = 7
 
@@ -47,20 +47,24 @@ def choose_banners(banners):
     return selected_banners
 
 def index(request):
+    news_itmes_num = 5 # Defines the number of news items that will be selected
+    papers_num = 3 # Defines the number of papers which will be selected
+    talks_num = 4 # Defines the number of talks which will be selected
     all_banners = Banner.objects.filter(page=Banner.FRONTPAGE)
     displayed_banners = choose_banners(all_banners)
-
-    context = { 'people': Person.objects.all(), 'banners': displayed_banners }
+    #Select recent news, papers, and talks.
+    news_items = News.objects.order_by('-date')[:news_itmes_num]
+    papers = Publication.objects.order_by('-date')[:papers_num]
+    talks = Talk.objects.order_by('-date')[:talks_num]
+    context = { 'people': Person.objects.all(), 'banners': displayed_banners, 'news': news_items, 'papers': papers, 'talks': talks }
     return render(request, 'website/index.html', context)
 
 def people(request):
-
     # template = loader.get_template('website/people.html')
     # context = RequestContext(request, {
     #     'people': Person.objects.all(),
     # })
     # return HttpResponse(template.render(context))
-
     positions = Position.objects.all()
     active_members = []
     active_prof_grad = []
