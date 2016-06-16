@@ -47,16 +47,20 @@ def choose_banners(banners):
     return selected_banners
 
 def index(request):
-    news_itmes_num = 5 # Defines the number of news items that will be selected
+    news_item_max_length=25 # Defines the number of words which will be shown on the news item list
+    news_items_num = 5 # Defines the number of news items that will be selected
     papers_num = 3 # Defines the number of papers which will be selected
     talks_num = 4 # Defines the number of talks which will be selected
     all_banners = Banner.objects.filter(page=Banner.FRONTPAGE)
     displayed_banners = choose_banners(all_banners)
     #Select recent news, papers, and talks.
-    news_items = News.objects.order_by('-date')[:news_itmes_num]
-    papers = Publication.objects.order_by('-date')[:papers_num]
+    news_items = News.objects.order_by('-date')[:news_items_num]
+    news_item_lengths=[]
+    for item in news_items:
+       news_item_lengths.append((item, len(item.content.split())))
+    publications = Publication.objects.order_by('-date')[:papers_num]
     talks = Talk.objects.order_by('-date')[:talks_num]
-    context = { 'people': Person.objects.all(), 'banners': displayed_banners, 'news': news_items, 'papers': papers, 'talks': talks }
+    context = { 'people': Person.objects.all(), 'banners': displayed_banners, 'news': news_item_lengths, 'news_length': news_item_max_length, 'publications': publications, 'talks': talks }
     return render(request, 'website/index.html', context)
 
 def people(request):
