@@ -334,7 +334,20 @@ class News(models.Model):
     date = models.DateField(default=date.today)
     author = models.ForeignKey(Person)
     content = models.TextField()
+    #Following the scheme of above thumbnails in other models
+    image = models.ImageField(blank=True, upload_to=UniquePathAndRename("news", True), max_length=255)
+    image.help_text = 'You must select "Save and continue editing" at the bottom of the page after uploading a new image for cropping. Please note that since we are using a responsive design with fixed height banners, your selected image may appear differently on various screens.'
 
+    # Copied from person model
+    # LS: Added image cropping to fixed ratio
+    # See https://github.com/jonasundderwolf/django-image-cropping
+    # size is "width x height"
+    # TODO: update with desired aspect ratio and maximum resolution
+    cropping = ImageRatioField('image', '245x245', size_warning=True)
+
+    #Optional caption and alt_text for the imate
+    caption = models.CharField(max_length=1024, blank=True, null=True)
+    alt_text = models.CharField(max_length=1024, blank=True, null=True)
     class Meta:
         # These names are used in the admin display, see https://docs.djangoproject.com/en/1.9/ref/models/options/#verbose-name
         verbose_name = 'News Item'
