@@ -36,7 +36,7 @@
 	    <center><span class="icon_label">Accessibility</span></center>
 	</div>
 	<div class="col-xs-2 icon-col">
-	    <a herf="">
+	    <a href="">
 		<img src="{% static 'website/img/icons/healthcircle.png' %}">
 	    </a>
 	    <center><span class="icon_label">Health</span></center>
@@ -62,7 +62,7 @@
     <div class="row">
 	<!-- This column will contain the new feeds  -->
 	<div class="col-xs-12 col-md-2 col-md-push-10">
-	    <h2>Recent News</h2>
+	    <h3>Recent News</h3>
 	    <!-- Create a row for the well which will contain news from our feeds -->
 	    <div class="row">
 		<div class="well news-well">
@@ -76,7 +76,7 @@
 			<img src="{% static 'website/img/news_icon.png' %}" class="news_image" heght="50" width="50">			
 			{% endif %}
 			<p class="news_title">{{item.title}}</p>
-			<p class="news_date">{{item.date}} | {{item.author}}</p>
+			<p class="news_date">{{item.date}}</p><p class="news_date">{{item.author}}</p>
 		    </div>
 		    <div class="row news_body">
 			<!-- If the content is going to be truncated, remove the default ... and replace it with our link -->

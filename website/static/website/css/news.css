@@ -13,6 +13,8 @@
 }
 
 .news_title{
+    font-weight: bold;
+    font-size: 18px;
     padding-top: 0px;
     padding-left: 20px;
     padding-bottom: 0px;
@@ -21,6 +23,7 @@
 
 .news_date{
     padding-top: 0px;
+    font-size: 10px;
     padding-left: 20px;
     padding-bottom: 0px;
     line-height: 100%;
