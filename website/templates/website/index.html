@@ -77,8 +77,11 @@
 			<img src="{% static 'website/img/news_icon.png' %}" class="news_image" height="50" width="50">			
 			{% endif %}
 			<div class="news_info">
-			    <p class="news_title">{{item.title|truncatechars:35}}</p>
-			    <p class="news_date">{{item.short_date}} | {{item.author|truncatechars:16}}</p><!--</p><p class="news_date">{{item.author}}</p>-->
+			    <!-- https://css-tricks.com/line-clampin/ This seems to be a good way to do multi line wrapping, also referenced in relevant news.css file -->
+			    <div class="news_title line-clamp">
+				<p>{{item.title}}</p>
+			    </div>
+			    <p class="news_date">{{item.short_date}} | {{item.author}}</p><!--</p><p class="news_date">{{item.author}}</p>-->
 			</div>
 		    </div>
 		    <div class="row news_body">

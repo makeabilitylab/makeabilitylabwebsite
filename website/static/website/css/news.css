@@ -1,6 +1,6 @@
 .news_image{
     float: left;
-    padding-right: 5px;
+    padding-right: 0px;
     padding-bottom: 0px;
     vertical-align: top;
 }
@@ -13,22 +13,44 @@
     margin: 5px;
 }
 
+
+/**
+ * https://css-tricks.com/line-clampin/ relevant to text wrapping
+ */
+
+.line-clamp{
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient:vertical;
+}
+
+.news_info{
+    padding-left: 50px;
+    padding-top: 0px;
+    width: 100%
+}
+
 .news_title{
     font-weight: bold;
-    font-size: 18px;
+    font-size: 17px;
     padding-top: 0px;
-    padding-left: 20px;
+    padding-left: 0px;
     padding-bottom: 0px;
     margin: 0 auto;
-    line-height: 100%;
+    line-height: 100%
+    width: 100%;
+    overflow: hidden;
 }
 
 .news_date{
     padding-top: 0px;
     font-size: 10px;
-    padding-left: 20px;
+    padding-left: 0px;
     padding-bottom: 0px;
     line-height: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .news_header{
