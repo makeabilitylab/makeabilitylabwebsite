@@ -62,9 +62,10 @@
     <div class="row">
 	<!-- This column will contain the new feeds  -->
 	<div class="col-xs-12 col-md-2 col-md-push-10">
-	    <h3>Recent News</h3>
+	    
 	    <!-- Create a row for the well which will contain news from our feeds -->
 	    <div class="row">
+		<h3 class="news-type-label">Recent News</h3>
 		<div class="well news-well">
 		    {% for item, length in news %}
 		    <!-- Create a row for each news item which has been passed in -->
@@ -73,10 +74,12 @@
 			{% if item.image %}
 			<img src="{{item.image.url}}" class="news_image" height="50" width="50" alt="{{item.alt_text}}">
 			{% else %}
-			<img src="{% static 'website/img/news_icon.png' %}" class="news_image" heght="50" width="50">			
+			<img src="{% static 'website/img/news_icon.png' %}" class="news_image" height="50" width="50">			
 			{% endif %}
-			<p class="news_title">{{item.title}}</p>
-			<p class="news_date">{{item.date}}</p><p class="news_date">{{item.author}}</p>
+			<div class="news_info">
+			    <p class="news_title">{{item.title|truncatechars:35}}</p>
+			    <p class="news_date">{{item.short_date}} | {{item.author|truncatechars:16}}</p><!--</p><p class="news_date">{{item.author}}</p>-->
+			</div>
 		    </div>
 		    <div class="row news_body">
 			<!-- If the content is going to be truncated, remove the default ... and replace it with our link -->

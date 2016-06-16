@@ -348,6 +348,13 @@ class News(models.Model):
     #Optional caption and alt_text for the imate
     caption = models.CharField(max_length=1024, blank=True, null=True)
     alt_text = models.CharField(max_length=1024, blank=True, null=True)
+
+    def short_date(self):
+        month=self.date.strftime('%b')
+        day=self.date.strftime('%d')
+        year=self.date.strftime('%Y')
+        return month+" "+day+", "+year
+    
     class Meta:
         # These names are used in the admin display, see https://docs.djangoproject.com/en/1.9/ref/models/options/#verbose-name
         verbose_name = 'News Item'
