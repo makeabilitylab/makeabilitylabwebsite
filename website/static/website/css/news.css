@@ -1,0 +1,29 @@
+.news_image{
+    float: left;
+    padding-right: 5px;
+    padding-bottom: 0px;
+}
+
+.news_content{
+   
+}
+
+.news_title{
+    padding-top: 0px;
+    padding-left: 20px;
+    padding-bottom: 0px;
+}
+
+.news_date{
+    padding-top: 0px;
+    padding-left: 20px;
+    padding-bottom: 0px;
+}
+
+.news_header{
+    padding-bottom: 0px
+}
+
+.news_body{
+    padding-bottom: 10px
+}

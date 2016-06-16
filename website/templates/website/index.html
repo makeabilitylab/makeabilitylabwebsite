@@ -10,6 +10,8 @@
 
 <link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
 <link rel="stylesheet" href="{% static 'website/css/talks.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/news.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/landing.css' %}"
 
 {% endblock %}
 
@@ -18,8 +20,28 @@
     <div id="header" class="container">
 	<center><h1>We are the <font color="blue">Makeability Lab</font>, dedicated to building and studying interaction technology for a social purpose</h1></center>
     </div>
-    <div id="circles" class="row">
-	Those circle things will go here
+    <div id="circles" class="row icon_row">
+	<!-- TODO Cleanup the icon files once they are accepted -->
+	<div class="col-xs-2 col-xs-offset-1 icon-col">
+	    <img src="{% static 'website/img/icons/sustainabilitycircle.png' %}">
+	    <center><span class="icon_label">Sustainability</span></center>
+	</div>
+	<div class="col-xs-2 icon-col">
+	    <img src="{% static 'website/img/icons/accessibilitycircle.png' %}">
+	    <center><span class="icon_label">Accessibility</span></center>
+	</div>
+	<div class="col-xs-2 icon-col">
+	    <img src="{% static 'website/img/icons/healthcircle.png' %}">
+	    <center><span class="icon_label">Health</span></center>
+	</div>
+	<div class="col-xs-2 icon-col">
+	    <img src="{% static 'website/img/icons/learningcircle.png' %}">
+	    <center><span class="icon_label">Learning Tools</span></center>
+	</div>
+	<div class="col-xs-2 icon-col">
+	    <img src="{% static 'website/img/icons/makertoolscricle.png' %}">
+	    <center><span class="icon_label">Maker Tools</span></center>
+	</div>
     </div>
     <div id="statement" class="row">
 	<p>
@@ -27,40 +49,48 @@
 	</p>
     </div>
     <div class="row">
-	<!-- This column will contain the recent publications and talks  -->
 	<!-- This column will contain the new feeds  -->
 	<div class="col-xs-12 col-md-2 col-md-push-10">
 	    <h2>Recent News</h2>
+	    <!-- Create a row for the well which will contain news from our feeds -->
 	    <div class="row">
 		<div class="well">
 		    {% for item, length in news %}
-		    <div class="row">
+		    <!-- Create a row for each news item which has been passed in -->
+		    <div class="row news_header">
+			<!-- Use the items image if it exists, otherwise use the default icon -->
 			{% if item.image %}
-			<img src="{{item.image.url}}" style="float: left" height="50" width="50">
+			<img src="{{item.image.url}}" class="news_image" height="50" width="50" alt="{{item.alt_text}}">
 			{% else %}
-			<img src="{% static 'website/img/news_icon.png' %}" style="float: left" heght="50" width="50">			
+			<img src="{% static 'website/img/news_icon.png' %}" class="news_image" heght="50" width="50">			
 			{% endif %}
-			<p>{{item.title}}</p>
-			<p>{{item.date}} | {{item.author}}</p>
+			<p class="news_title">{{item.title}}</p>
+			<p class="news_date">{{item.date}} | {{item.author}}</p>
 		    </div>
-		    <div class="row">
+		    <div class="row news_body">
+			<!-- If the content is going to be truncated, remove the default ... and replace it with our link -->
+			<!-- news_length can be adjusted in the view.py file -->
+			<!-- TODO link to the full news item -->
 			{% if length > news_length %}
-			<p>{{item.content|truncatewords:news_length|slice:"-4"}} <a href="">...</a></p>
+			<span class="news_content"> {{item.content|truncatewords:news_length|slice:"-4"}} <a href="">...</a></span>
 			{% else %}
-			<p>{{item.content|truncatewords:news_length}} <a href="">...</a></p>
+			<span class="news_content"> {{item.content|truncatewords:news_length}} <a href="">...</a></span>
 			{% endif %}
 		    </div>
 		    {% endfor %}
 		</div>
 	    </div>
 	</div>
+	<!-- This column will contain the recent publications and talks  -->
 	<div class="col-xs-12 col-md-10 col-md-pull-2">
 	    <div class="row">
 		<h2>Recent Papers</h2>
 		<div class="col-xs-12 col-md-10">
+		    <!-- Create a publication div for each publication passed in -->
 		    {% for pub in publications %}
 		    <div class="row publication-template">
 			<div class="publication-thumbnail">
+			    <!-- TODO link to the specific page for the paper/project or the general publications page -->
 			    <a href="" class="publication-thumbnail-link">
 				<img src="{% thumbnail pub.thumbnail 300x0 detail %}" class="publication-thumbnail-img img-responsive">
 			    </a>
@@ -86,9 +116,11 @@
 		<p>All our talks can be found <a href="{% url 'website:talks' %}">here</a></p>
 		<div class="row">
 		</div>
+		<!-- Create a div for each talk passed in -->
 		    {% for talk in talks %}
 		    <div class="col-xs-5 col-md-2 talk-template">
 			<div class="talk-thumbnail">
+			    <!-- TODO add link to the specific talk? or to the general talk page perhaps -->
 			    <a href="" class="talk-thumbnail-link">
 				<img src="{% thumbnail talk.thumbnail 200x0 detail %}" class="talk-thumbnail-image img-responsive">
 			    </a>
