@@ -8,16 +8,22 @@
    
 }
 
+.news-well p {
+    margin: 5px;
+}
+
 .news_title{
     padding-top: 0px;
     padding-left: 20px;
     padding-bottom: 0px;
+    line-height: 100%;
 }
 
 .news_date{
     padding-top: 0px;
     padding-left: 20px;
     padding-bottom: 0px;
+    line-height: 100%;
 }
 
 .news_header{

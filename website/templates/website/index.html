@@ -22,24 +22,35 @@
     </div>
     <div id="circles" class="row icon_row">
 	<!-- TODO Cleanup the icon files once they are accepted -->
+	<!-- TODO add links for each icon to the appropriate publications/projects page -->
 	<div class="col-xs-2 col-xs-offset-1 icon-col">
-	    <img src="{% static 'website/img/icons/sustainabilitycircle.png' %}">
+	    <a href="">
+		<img src="{% static 'website/img/icons/sustainabilitycircle.png' %}">
+	    </a>
 	    <center><span class="icon_label">Sustainability</span></center>
 	</div>
 	<div class="col-xs-2 icon-col">
-	    <img src="{% static 'website/img/icons/accessibilitycircle.png' %}">
+	    <a href="">
+		<img src="{% static 'website/img/icons/accessibilitycircle.png' %}">
+	    </a>
 	    <center><span class="icon_label">Accessibility</span></center>
 	</div>
 	<div class="col-xs-2 icon-col">
-	    <img src="{% static 'website/img/icons/healthcircle.png' %}">
+	    <a herf="">
+		<img src="{% static 'website/img/icons/healthcircle.png' %}">
+	    </a>
 	    <center><span class="icon_label">Health</span></center>
 	</div>
 	<div class="col-xs-2 icon-col">
-	    <img src="{% static 'website/img/icons/learningcircle.png' %}">
+	    <a href="">
+		<img src="{% static 'website/img/icons/learningcircle.png' %}">
+	    </a>
 	    <center><span class="icon_label">Learning Tools</span></center>
 	</div>
 	<div class="col-xs-2 icon-col">
-	    <img src="{% static 'website/img/icons/makertoolscricle.png' %}">
+	    <a href="">
+		<img src="{% static 'website/img/icons/makertoolscircle.png' %}">
+	    </a>
 	    <center><span class="icon_label">Maker Tools</span></center>
 	</div>
     </div>
@@ -54,7 +65,7 @@
 	    <h2>Recent News</h2>
 	    <!-- Create a row for the well which will contain news from our feeds -->
 	    <div class="row">
-		<div class="well">
+		<div class="well news-well">
 		    {% for item, length in news %}
 		    <!-- Create a row for each news item which has been passed in -->
 		    <div class="row news_header">
