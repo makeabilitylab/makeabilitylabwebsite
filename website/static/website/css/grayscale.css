@@ -12,10 +12,14 @@
     text-transform: uppercase;
     font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
     background-color: #000;
+    min-height: 44px;
 }
 
 .navbar-custom .navbar-brand {
     font-weight: 700;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    height: auto;
 }
 
 .navbar-custom .navbar-brand:focus {
@@ -77,11 +81,12 @@
 @media(min-width:768px) {
     .navbar-custom {
         /*padding: 5px 0;*/
-        padding-bottom: 60px;
+        /*padding-bottom: 10px;*/
         border-bottom: 0;
         letter-spacing: 1px;
         /*background: 0 0;*/
-        background: linear-gradient(180deg, rgba(0,0,0,8) 0%, rgba(0,0,0,0) 100%);
+        /*background: linear-gradient(180deg, rgba(0,0,0,0.8), rgba(0,0,0,0.5) 60%, rgba(0,0,0,0));*/
+        background: rgba(0,0,0,0.6);
         -webkit-transition: background .5s ease-in-out,padding .5s ease-in-out;
         -moz-transition: background .5s ease-in-out,padding .5s ease-in-out;
         transition: background .5s ease-in-out,padding .5s ease-in-out;
@@ -91,5 +96,10 @@
         padding: 0;
         border-bottom: 1px solid rgba(255,255,255,.3);
         background: #000;
+    }
+
+    .navbar-nav>li>a {
+        padding-top: 10px;
+        padding-bottom: 10px;
     }
 }
