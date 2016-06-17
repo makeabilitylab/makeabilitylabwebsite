@@ -66,7 +66,7 @@
 	    <!-- Create a row for the well which will contain news from our feeds -->
 	    <div class="row">
 		<h3 class="news-type-label">Recent News</h3>
-		<div class="well news-well">
+		<div class="well news-well" style="background-color: white; border: none">
 		    {% for item, length in news %}
 		    <!-- Create a row for each news item which has been passed in -->
 		    <div class="row news_header">
@@ -99,11 +99,23 @@
 		    {% endfor %}
 		</div>
 	    </div>
+	    <div class="row">
+		<h3 class="new-type-label">Recent Tweets</h3>
+		<!-- See https://dev.twitter.com/docs/embedded-timelines#customization -->
+		<a class="twitter-timeline" 
+	href="https://twitter.com/makeabilitylab/makeability-lab" 
+	data-widget-id="412952552452280320" 
+	width="600"
+	data-chrome="noheader nofooter noborders transparent"
+	data-tweet-limit="5">Tweets from https://twitter.com/makeabilitylab/makeability-lab</a>
+
+		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	    </div>
 	</div>
 	<!-- This column will contain the recent publications and talks  -->
 	<div class="col-xs-12 col-md-10 col-md-pull-2">
 	    <div class="row">
-		<h2>Recent Papers</h2>
+		<h2>Recent Publications</h2>
 		<p>More Publications can be found<a href="{% url 'website:publications' %}"> here</a></p>
 		<div class="col-xs-12 col-md-10">
 		    <!-- Create a publication div for each publication passed in -->
