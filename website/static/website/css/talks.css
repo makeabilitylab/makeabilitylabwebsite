@@ -59,9 +59,9 @@
 }
 
 .talk-thumbnail-image{
-    width: 100%;
-    height: 100%;
-	      
+    max-width: 240px;
+    max-height: 185px;
+    overflow: hidden;
 }
 
 .talk-id {
