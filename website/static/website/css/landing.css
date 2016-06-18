@@ -11,3 +11,9 @@
     width: 100%;
     text-align: center;
 }
+
+
+h1{
+    text-transform: none;
+    font-variant: normal;
+}

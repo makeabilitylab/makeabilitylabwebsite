@@ -45,6 +45,10 @@
     
 }
 
+.twitter-timeline {
+    margin-left: -10px;
+}
+
 @supports (-webkit-line-clamp: 2) {
     .line-clamp {
         display: -webkit-box;
