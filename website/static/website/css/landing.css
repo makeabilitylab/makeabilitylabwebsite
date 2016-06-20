@@ -1,0 +1,19 @@
+.icon_row img {
+    width: 100%;
+}
+
+.icon_row{
+    padding-top: 20px;
+    padding-bottom: 20px
+}
+
+.icon-label {
+    width: 100%;
+    text-align: center;
+}
+
+
+h1{
+    text-transform: none;
+    font-variant: normal;
+}
