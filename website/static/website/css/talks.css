@@ -36,7 +36,7 @@
 
 .talk-template img {
 	border: 1px solid #dddddd;
-	width:100%;
+	
 	max-width: 240px;
 	margin:auto;
 }
@@ -56,6 +56,12 @@
 	display:table-cell;
 	vertical-align: middle;
 	padding-right:10px;
+}
+
+.talk-thumbnail-image{
+    max-width: 240px;
+    max-height: 185px;
+    overflow: hidden;
 }
 
 .talk-id {
