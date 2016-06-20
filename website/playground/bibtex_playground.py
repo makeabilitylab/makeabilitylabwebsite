@@ -24,3 +24,5 @@ for entry in bib_database.entries:
     #set video url to video_url
     #set num pages to numpages
     #parse keywords and add them if necessary
+
+    

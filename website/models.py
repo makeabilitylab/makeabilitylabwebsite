@@ -95,6 +95,7 @@ class Position(models.Model):
     ASSISTANT_PROF = "Assistant Professor"
     ASSOCIATE_PROF = "Associate Professor"
     FULL_PROF = "Professor"
+    UNKNOWN = "Uncategorized"
 
     TITLE_CHOICES = (
          (HIGH_SCHOOL, HIGH_SCHOOL),
@@ -105,6 +106,7 @@ class Position(models.Model):
          (ASSISTANT_PROF, ASSISTANT_PROF),
          (ASSOCIATE_PROF, ASSOCIATE_PROF),
          (FULL_PROF, FULL_PROF),
+         (UNKNOWN, UNKNOWN)
     )
     title = models.CharField(max_length=50, choices=TITLE_CHOICES)
 
