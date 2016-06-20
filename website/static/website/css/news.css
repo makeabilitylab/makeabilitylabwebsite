@@ -34,14 +34,14 @@
  */
 .line-clamp {
       position: relative;
-      max-height: 2.8em; /* exactly two lines*/
+      max-height: 2.4em; /* exactly two lines*/
     }
 .line-clamp:after {
     position: absolute;
     bottom: 0;
     right: 0;
     width: 70%;
-    height: 1.4em;
+    height: 1.2em;
     
 }
 
@@ -54,7 +54,7 @@
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;  
-        max-height:2.8em; /* I needed this to get it to work */
+        max-height:2.4em; /* I needed this to get it to work */
         height: auto;
     }
     .line-clamp:after {
@@ -64,14 +64,14 @@
 
 .content-clamp {
       position: relative;
-      max-height: 8.6em; /* exactly six lines */
+      max-height: 9em; /* exactly six lines */
     }
 .content-clamp:after {
     position: absolute;
-      bottom: 0;
-      right: 0;
-      width: 70%;
-      height: 1.4em;
+    bottom: 0;
+    right: 0;
+    width: 70%;
+    height: 1.4em;
       
  }
 
@@ -80,7 +80,7 @@
         display: -webkit-box;
         -webkit-line-clamp: 6;
         -webkit-box-orient: vertical;  
-        max-height:8.6em; /* This should be 1.4 * number of lines */
+        max-height:9em; /* */
         height: auto;
     }
     .content-clamp:after {
