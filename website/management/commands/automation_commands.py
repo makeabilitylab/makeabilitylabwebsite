@@ -89,6 +89,8 @@ class Command(BaseCommand):
                 pdf_file_loc="http://cs.umd.edu/~jonf/"+get_val_key('local_pdf', entry)
                 title=get_val_key('title', entry)
                 print(exists(title))
+                #This is important because if local_pdf is not set then this part will crash, if a PDF is not included nothing will be done
+                #TODO see what to do if no PDF is included
                 #skip entry if PDF is missing, title is missing, or if title is already in the database
                 if pdf_file_loc!="http://cs.umd.edu/~jonf/" and title!=None and not exists(title):
                     
@@ -158,8 +160,7 @@ class Command(BaseCommand):
                     #Create the new publication
                         
                     #Items have to be saved before you can do many to many queries
-                    #This is important because if local_pdf is not set then this part will crash, if a PDF is not included nothing will be done
-                    #TODO see what to do if no PDF is included
+                   
 
             
                     res=requests.get(pdf_file_loc)
