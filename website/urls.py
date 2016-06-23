@@ -7,5 +7,7 @@ urlpatterns = [
     url(r'^people/$', views.people, name='people'),
     url(r'^member/(?P<member_id>[0-9]+)/$', views.member, name='member'),
     url(r'^publications/$', views.publications, name='publications'),
+    url(r'^publications/(?P<keyword>[\w -]{0,50})/$', views.publications, name='publications'),
     url(r'^talks/$', views.talks, name='talks'),
+    url(r'^talks/(?P<keyword>[\w -]{0,50})/$', views.talks, name='talks'),
 ]
