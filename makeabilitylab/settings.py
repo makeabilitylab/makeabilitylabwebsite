@@ -25,12 +25,16 @@ config.read(os.path.join(BASE_DIR, 'config.ini'))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config.get('Django', 'SECRET_KEY')
+if config.has_option('Django', 'SECRET_KEY'):
+    SECRET_KEY = config.get('Django', 'SECRET_KEY')
+else:
+    # We should never be in production with this key
+    SECRET_KEY = 'pe)-#st8rk!pomy!_1ha7=cpypp_(8%1xqmtw%!u@kw-f5&w^e' 
 
 # SECURITY WARNING: don't run with debug turned on in production!
 #  we will default to True if not overriden in the config file
 if config.has_option('Django', 'DEBUG'):
-    DEBUG = False
+    DEBUG = config.getboolean('Django', 'DEBUG')
 else:
     DEBUG = True
 
