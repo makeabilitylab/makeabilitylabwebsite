@@ -17,3 +17,16 @@ h1{
     text-transform: none;
     font-variant: normal;
 }
+
+.page-link{
+    margin: 0;
+    text-align: left;
+}
+
+.landing-talk-fix{
+    margin: 0;
+}
+
+.landing-talk-fix img{
+    margin: 0;
+}
