@@ -157,26 +157,14 @@ def member(request, member_id):
     person = get_object_or_404(Person, pk=member_id)
     return render(request, 'website/member.html', {'person': person})
 
-def publications(request, keyword=None):
+def publications(request, filter=None):
     all_banners = Banner.objects.filter(page=Banner.PUBLICATIONS)
     displayed_banners = choose_banners(all_banners)
-    publications = []
-    if keyword==None:
-        publications = Publication.objects.all()
-    else:
-        keywordObjects = Keyword.objects.filter(keyword__iexact=keyword)
-        publications = Publication.objects.filter(keywords__in=keywordObjects)
-    context = { 'publications': publications, 'banners': displayed_banners }
+    context = { 'publications': Publication.objects.all(), 'banners': displayed_banners, 'filter': filter }
     return render(request, 'website/publications.html', context)
 
-def talks(request, keyword=None):
+def talks(request, filter=None):
     all_banners = Banner.objects.filter(page=Banner.TALKS)
     displayed_banners = choose_banners(all_banners)
-    talks = []
-    if keyword==None:
-        talks = Talk.objects.all()
-    else:
-        keywordObjects = Keyword.objects.filter(keyword__iexact=keyword)
-        talks = Talk.objects.filter(keywords__in=keywordObjects)
-    context = { 'talks': talks, 'banners': displayed_banners }
+    context = { 'talks': Talk.objects.all(), 'banners': displayed_banners, 'filter': filter }
     return render(request, 'website/talks.html', context)

@@ -70,6 +70,8 @@
 		{% endfor %}
 	];
 
+	initialFilter = "{{ filter }}";
+
 {% endblock %}
 
 {% block maincarousel %}
@@ -82,7 +84,8 @@
         <!-- Wrapper for slides -->
         <div class="carousel-inner" role="listbox">
             {% for banner in banners %}
-                <div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})" aria-label="{{ banner.alt_text }}" title="{{ banner.alt_text }}"></div>
+                <div class="item {% if forloop.first %}active{% endif %}">
+                    <div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})" aria-label="{{ banner.alt_text }}" title="{{ banner.alt_text}}"></div>
                     <!-- <div class="overlay">
                       <div class="container carousel-container">
                         <div class="carousel-caption carousel-caption-right">
@@ -97,6 +100,7 @@
                         </div>
                       </div>
                     </div> -->
+                </div>
             {% endfor %}
         </div>
         <ol class="carousel-indicators">
