@@ -11,21 +11,34 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+from configparser import ConfigParser
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Load a ConfigParser object from a file called config.ini at the base level
+# of the django project.
+config = ConfigParser()
+config.read(os.path.join(BASE_DIR, 'config.ini'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'pe)-#st8rk!pomy!_1ha7=cpypp_(8%1xqmtw%!u@kw-f5&w^e'
+SECRET_KEY = config.get('Django', 'SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#  we will default to True if not overriden in the config file
+if config.has_option('Django', 'DEBUG'):
+    DEBUG = False
+else:
+    DEBUG = True
 
-ALLOWED_HOSTS = []
+if config.has_option('Django', 'ALLOWED_HOSTS'):
+    USE_X_FORWARDED_HOST = True
+    ALLOWED_HOSTS = config.get('Django', 'ALLOWED_HOSTS').split(',')
+else:
+    ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -84,13 +97,24 @@ WSGI_APPLICATION = 'makeabilitylab.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db/db.sqlite3'),
+if ALLOWED_HOSTS:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': config.get('Postgres', 'DATABASE'),
+            'USER': config.get('Postgres', 'USER'),
+            'PASSWORD': config.get('Postgres', 'PASSWORD'),
+            'HOST': config.get('Postgres', 'HOSTNAME'),
+            'PORT': '',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 
 # Password validation
@@ -98,7 +122,7 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME':'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
@@ -137,6 +161,7 @@ MEDIA_URL = '/media/'
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Thumbnail processing
 # LS: from https://github.com/jonasundderwolf/django-image-cropping
