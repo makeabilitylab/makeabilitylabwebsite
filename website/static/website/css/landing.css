@@ -23,10 +23,7 @@ h1{
     text-align: left;
 }
 
-.landing-talk-fix{
-    margin: 0;
-}
 
 .landing-talk-fix img{
-    margin: 0;
+    min-width: 240px;
 }
