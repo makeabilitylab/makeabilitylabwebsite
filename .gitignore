@@ -8,3 +8,8 @@ makeabilitylab/__pycache__
 website/migrations/
 website/migrations/__pycache__
 *.pyc
+
+*.suo
+*.user
+bin
+obj
