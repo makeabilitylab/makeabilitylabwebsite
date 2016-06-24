@@ -8,7 +8,8 @@ makeabilitylab/__pycache__
 website/migrations/
 website/migrations/__pycache__
 *.pyc
-
+config.ini
+static
 *.suo
 *.user
 bin
