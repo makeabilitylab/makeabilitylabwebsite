@@ -63,6 +63,8 @@ $(window).load(function () {
 		displayItem: formatPublication,
 		afterDisplay: afterDisplay
 	});
+	if(initialFilter && initialFilter.length > 0 && initialFilter != "None")
+		$('#filter-textbox').val(initialFilter);
 	$('#filter-bar').applyFilter();
 });
 

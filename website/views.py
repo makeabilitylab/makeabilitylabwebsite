@@ -1,7 +1,7 @@
 import operator, datetime, random
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, render
-from .models import Person, Publication, Talk, Position, Banner, News
+from .models import Person, Publication, Talk, Position, Banner, News, Keyword
 
 max_banners = 7
 
@@ -157,14 +157,14 @@ def member(request, member_id):
     person = get_object_or_404(Person, pk=member_id)
     return render(request, 'website/member.html', {'person': person})
 
-def publications(request):
+def publications(request, filter=None):
     all_banners = Banner.objects.filter(page=Banner.PUBLICATIONS)
     displayed_banners = choose_banners(all_banners)
-    context = { 'publications': Publication.objects.all(), 'banners': displayed_banners }
+    context = { 'publications': Publication.objects.all(), 'banners': displayed_banners, 'filter': filter }
     return render(request, 'website/publications.html', context)
 
-def talks(request):
+def talks(request, filter=None):
     all_banners = Banner.objects.filter(page=Banner.TALKS)
     displayed_banners = choose_banners(all_banners)
-    context = { 'talks': Talk.objects.all(), 'banners': displayed_banners }
+    context = { 'talks': Talk.objects.all(), 'banners': displayed_banners, 'filter': filter }
     return render(request, 'website/talks.html', context)

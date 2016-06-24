@@ -18,37 +18,37 @@
 {% block content %}
 <div id="content" class="container" data-spy="scroll" data-target="#navbar-scroll" data-offset="50">
     <div id="header" class="container">
-	<center><h1>We are the <font color="blue">Makeability Lab</font>, dedicated to building and studying interaction technology for a social purpose</h1></center>
+	<center><h1>We are the <font color="00B0F0">Makeability Lab</font>, dedicated to building and studying interaction technology for a social purpose</h1></center>
     </div>
     <div id="circles" class="row icon_row">
 	<!-- TODO Cleanup the icon files once they are accepted -->
 	<!-- TODO add links for each icon to the appropriate publications/projects page -->
 	<div class="col-xs-2 col-xs-offset-1 icon-col">
-	    <a href="">
+	    <a href="{% url 'website:publications' 'sustainability' %}">
 		<img src="{% static 'website/img/icons/sustainabilitycircle.png' %}">
 	    </a>
 	    <center><span class="icon_label">Sustainability</span></center>
 	</div>
 	<div class="col-xs-2 icon-col">
-	    <a href="">
+	    <a href="{% url 'website:publications' 'accessibility' %}">
 		<img src="{% static 'website/img/icons/accessibilitycircle.png' %}">
 	    </a>
 	    <center><span class="icon_label">Accessibility</span></center>
 	</div>
 	<div class="col-xs-2 icon-col">
-	    <a href="">
+	    <a href="{% url 'website:publications' 'health' %}">
 		<img src="{% static 'website/img/icons/healthcircle.png' %}">
 	    </a>
 	    <center><span class="icon_label">Health</span></center>
 	</div>
 	<div class="col-xs-2 icon-col">
-	    <a href="">
+	    <a href="{% url 'website:publications' 'learning' %}">
 		<img src="{% static 'website/img/icons/learningcircle.png' %}">
 	    </a>
 	    <center><span class="icon_label">Learning Tools</span></center>
 	</div>
 	<div class="col-xs-2 icon-col">
-	    <a href="">
+	    <a href="{% url 'website:publications' 'making' %}">
 		<img src="{% static 'website/img/icons/makertoolscircle.png' %}">
 	    </a>
 	    <center><span class="icon_label">Maker Tools</span></center>
@@ -100,7 +100,7 @@
 		</div>
 	    </div>
 	    <div class="row">
-		<h3 class="new-type-label">Recent Tweets</h3>
+		<h3 class="news-type-label">Recent Tweets</h3>
 		<!-- See https://dev.twitter.com/docs/embedded-timelines#customization -->
 		<a class="twitter-timeline" 
 	href="https://twitter.com/makeabilitylab/makeability-lab" 
@@ -115,15 +115,14 @@
 	<!-- This column will contain the recent publications and talks  -->
 	<div class="col-xs-12 col-md-10 col-md-pull-2">
 	    <div class="row">
-		<h2>Recent Publications</h2>
-		<p>More Publications can be found<a href="{% url 'website:publications' %}"> here</a></p>
+		<h3 class="news-type-label">Recent Publications</h3>
+		
 		<div class="col-xs-12 col-md-10">
 		    <!-- Create a publication div for each publication passed in -->
 		    {% for pub in publications %}
 		    <div class="row publication-template">
 			<div class="publication-thumbnail">
-			    <!-- TODO link to the specific page for the paper/project or the general publications page -->
-			    <a href="" class="publication-thumbnail-link">
+			    <a href="../../media/{{pub.pdf_file}}" class="publication-thumbnail-link">
 				<img src="{% thumbnail pub.thumbnail 300x0 detail %}" class="publication-thumbnail-img img-responsive">
 			    </a>
 			</div>
@@ -140,28 +139,45 @@
 			</div>
 		    </div>
 		    {% endfor %}
-		    
+		    <div class="row">
+			<a href="{% url 'website:publications' %}" class="page-link">More...</a>
+		    </div>
 		</div>
 	    </div>
 	    <div class="row">
-		<h2>Recent Talks</h2>
-		<p>All our talks can be found <a href="{% url 'website:talks' %}">here</a></p>
+		<h3 class="news-type-label">Recent Talks</h3>
+		
 		<div class="row">
-		<!-- Create a div for each talk passed in -->
+		    <!-- Create a div for each talk passed in -->
 		    {% for talk in talks %}
-		    <div class="col-xs-5 col-md-2 talk-template">
-			<div class="talk-thumbnail">
-			    <!-- TODO add link to the specific talk? or to the general talk page perhaps -->
-			    <a href="" class="talk-thumbnail-link">
-				<img src="{% thumbnail talk.thumbnail 200x0 detail %}" class="talk-thumbnail-image img-responsive">
-			    </a>
+		    <div class="col-xs-5 col-md-2 talk-template landing-talk-fix">
+			<div class="talk-info">
+			    <div class="talk-thumbnail">
+				<a href="../../media/{{talk.pdf_file}}" class="talk-thumbnail-link">
+				    <img src="{% thumbnail talk.thumbnail 200x0 detail %}" class="talk-thumbnail-image img-responsive talk-image-fix"/>
+				</a>
+			    </div>
+			    <p class="talk-title">
+				{{talk.title}}
+			    </p>
+			    <p class="talk-speakers">
+				{% for speaker in talk.speakers.all %}
+				{% if forloop.last %}
+				<span class="talk-speaker"><a href="{% url 'website:member' speaker.id %}">{{speaker.get_full_name}}</a></span>
+				{% else %}
+				<span class="talk-speaker"><a href="{% url 'website:member' speaker.id %}">{{speaker.get_full_name}}</a>,&nbsp;</span>
+				{% endif %}
+				{% endfor %}
+			    </p>
+			    <p class="talk-stats">
+				<span class="talk-date">{{talk.date}}</span>
+				<span class="talk-location">{{talk.location}}</span>
+			    </p>
 			</div>
-			<p class="talk-title">
-			    {{talk.title}}
-			</p>
 		    </div>
 		    {% endfor %}
 		</div>
+		<a href="{% url 'website:talks' %}" class="page-link">More...</a>
 	    </div>
 	</div>
     </div>

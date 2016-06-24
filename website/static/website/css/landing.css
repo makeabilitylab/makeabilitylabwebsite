@@ -17,3 +17,13 @@ h1{
     text-transform: none;
     font-variant: normal;
 }
+
+.page-link{
+    margin: 0;
+    text-align: left;
+}
+
+
+.landing-talk-fix img{
+    min-width: 240px;
+}

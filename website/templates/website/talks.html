@@ -30,7 +30,7 @@
 		{% for talk in talks %}
 		{
 			"id": "A.###",
-			"title": "{{talk.short_title}}",
+			"title": "{{talk.title}}",
 			"speakers": [
 				{% for speaker in talk.speakers.all %}
 				{
@@ -72,6 +72,8 @@
 		},
 		{% endfor %}
 	];
+
+    initialFilter = "{{ filter }}";
 
 {% endblock %}
 
