@@ -21,48 +21,50 @@
 	$.fn.filterBar = function(options) {
 
 		// save a reference to "this" so that we can refer to it in the event handlers below
-		filterBar = this;
+	    filterBar = this;
 
 		// This is the easiest way to have default options.
-        settings = $.extend({
-            // These are the defaults.
-            items: [],
-            categories: ["None"],
-            groupsForCategory: {"None": []},
-            passesFilter: function(item, filter) { return true; },
-            displayGroupHeader: function(group) { return group.toString(); },
-            displayItem: function(item) { return item.toString(); },
-            afterDisplay: function() { return; }
-        }, options );
-
-        currCategory = settings.categories[0];
-
-		// append filter bar content
-		filterBar.append("<h1 style=\"margin-top:7px\">FILTER</h1><input class=\"shortTextbox\" id=\"filter-textbox\" type=\"text\" value=\"\" /><h1>GROUP BY</h1>");
-
-		categoryList = $(document.createElement("div"));
-		categoryList.addClass("filter-bar-categories");
-		$(settings.categories).each(function() {
-			var categoryItem = $(document.createElement("li"));
-			var categoryText = this;
-			categoryItem.addClass("filter-category");
-			categoryItem.attr("id", "filter-category-" + categoryText.toLowerCase().replace(new RegExp(" "), "-"));
-			categoryItem.click(function() { filterBar.applyFilter(categoryText); });
+            settings = $.extend({
+		// These are the defaults.
+		items: [],
+		categories: ["None"],
+		groupsForCategory: {"None": []},
+		passesFilter: function(item, filter) { return true; },
+		displayGroupHeader: function(group) { return group.toString(); },
+		displayItem: function(item) { return item.toString(); },
+		afterDisplay: function() { return; }
+            }, options );
+	    
+            currCategory = settings.categories[0];
+	    
+	    // append filter bar content
+	    filterBar.append("<h1 style=\"margin-top:7px\">FILTER</h1><input class=\"shortTextbox\" id=\"filter-textbox\" type=\"text\" value=\"\" /><h1>GROUP BY</h1>");
+	    $("#filter-textbox").autocomplete({
+		source: settings.keywords
+	    });
+	    categoryList = $(document.createElement("div"));
+	    categoryList.addClass("filter-bar-categories");
+	    $(settings.categories).each(function() {
+		var categoryItem = $(document.createElement("li"));
+		var categoryText = this;
+		categoryItem.addClass("filter-category");
+		categoryItem.attr("id", "filter-category-" + categoryText.toLowerCase().replace(new RegExp(" "), "-"));
+		categoryItem.click(function() { filterBar.applyFilter(categoryText); });
 			categoryItem.text(categoryText);
-			categoryList.append(categoryItem);
-		});
-		filterBar.append(categoryList);
-
-		filterBar.append("<div id=\"filter-bar-groups\"></div>");
-
-		// update the filtered items whenever the filter textbox changes
-		// note: it's not enough just to bind to keyup, since there are other 
+		categoryList.append(categoryItem);
+	    });
+	    filterBar.append(categoryList);
+	    
+	    filterBar.append("<div id=\"filter-bar-groups\"></div>");
+	    
+	    // update the filtered items whenever the filter textbox changes
+	    // note: it's not enough just to bind to keyup, since there are other 
 		//       ways for the text to change
-		$("#filter-textbox").on("propertychange change keyup paste input", function(){
-			filterBar.applyFilter();
-		});
-
-		return this;
+	    $("#filter-textbox").on("propertychange change keyup paste input", function(){
+		filterBar.applyFilter();
+	    });
+	    
+	    return this;
 	};
 
 	$.fn.cleanName = function(name) {
@@ -107,3 +109,37 @@
 	}
 
 }(jQuery));
+
+//Code to use isotope for filtering from http://codepen.io/desandro/pen/wfaGu
+
+// init Isotope
+var $grid = $('.publication-list').isotope({
+  itemSelector: '.publication-template',
+  layoutMode: 'fitRows',
+  filter: function() {
+    return qsRegex ? $(this).text().match( qsRegex ) : true;
+  }
+});
+
+
+
+// use value of search field to filter
+var $quicksearch = $('#filter-textbox').keyup( debounce( function() {
+  qsRegex = new RegExp( $quicksearch.val(), 'gi' );
+  $grid.isotope();
+}, 200 ) );
+
+// debounce so filtering doesn't happen every millisecond
+function debounce( fn, threshold ) {
+  var timeout;
+  return function debounced() {
+    if ( timeout ) {
+      clearTimeout( timeout );
+    }
+    function delayed() {
+      fn();
+      timeout = null;
+    }
+    timeout = setTimeout( delayed, threshold || 100 );
+  }
+}

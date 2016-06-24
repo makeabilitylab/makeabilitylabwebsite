@@ -50,18 +50,18 @@ $(window).load(function () {
 	$('#fixed-side-bar').fixedSideBar();
 	$('#filter-bar').filterBar({
 		items: publications, 
-		categories: ["Year", "Pub Type", "Keyword", "Project", "None"],
+		categories: ["Year", "Pub Type", "Project", "None"],
 		groupsForCategory: {
 			"Year": groupPublicationsByYear(),
 			"Pub Type": groupPublicationsByType(),
-			"Keyword": groupPublicationsByKeyword(),
 			"Project": groupPublicationsByProject(),
 			"None": [{"name": "Chronological List", items: publications}]
 		},
 		passesFilter: passesFilter,
 		displayGroupHeader: formatGroup,
 		displayItem: formatPublication,
-		afterDisplay: afterDisplay
+	        afterDisplay: afterDisplay,
+	    keywords: getAllKeywords()
 	});
 	if(initialFilter && initialFilter.length > 0 && initialFilter != "None")
 		$('#filter-textbox').val(initialFilter);
@@ -139,6 +139,17 @@ function groupPublicationsByType()
 	groups.sort(function(a,b) { return b.items.length - a.items.length });
 
 	return groups;
+}
+
+function getAllKeywords()
+{
+    var keywords=[];
+    publications.forEach(function(pub, index, array){
+	pub.keywords.forEach(function(keyword, index, array){
+	    keywords.push(keyword);
+	});
+    });
+    return keywords;
 }
 
 // returns a list of publications grouped by keyword, sorted with the most frequent keyword first
@@ -341,4 +352,20 @@ function createCitationText(pub) {
 	}
 
 	return text;
+}
+
+//elements of searching with isototpe come from http://codepen.io/desandro/pen/wfaGu
+
+function debounce( fn, threshold ) {
+  var timeout;
+  return function debounced() {
+    if ( timeout ) {
+      clearTimeout( timeout );
+    }
+    function delayed() {
+      fn();
+      timeout = null;
+    }
+    timeout = setTimeout( delayed, threshold || 100 );
+  }
 }
