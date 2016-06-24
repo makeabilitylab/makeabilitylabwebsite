@@ -24,10 +24,13 @@ def parse_authors(author_list):
     authors_names=author_list.split(", ")
     for author_ind in authors_names:
         if 'and' in author_ind:
+            #if 'and' == author_ind.strip()[:3]:
+                
             print(author_ind)
-            last_two = author_ind.split(" and ")
+            last_two = author_ind.split("and")
             print(last_two)
             for ind in last_two:
+                ind = ind.strip()
                 print(ind)
                 names = ind.strip().split(" ")
                 first = names[0]
@@ -119,14 +122,14 @@ class Command(BaseCommand):
                 elif get_val_key('deck', entry):
                     #Handle pptx
                     file_name=get_val_key('deck', entry)
-                    deck_url = "http://cs.umd.edu/~jonf/"+file_name
+                    
                     file_name_short=file_name[file_name.find("/")+1:file_name.find(".")]
-                    file_type=file_name[file_name.find(".")+1:]
+                    deck_url = "http://cs.umd.edu/~jonf/talks/autogen_pdfs/"+file_name_short+".pdf"
+                    print(deck_url)
                     res = requests.get(deck_url)
-                    temp_file = open('media/temp/'+file_name_short+file_type, 'wb')
+                    temp_file = open('media/temp/'+file_name_short+".pdf", 'wb')
                     temp_file.write(res.content)
                     temp_file.close()
-                    os.system('unoconv media/temp/'+file_name_short+file_type)
                     pdf_file = File(open('media/temp/'+file_name_short+".pdf", 'rb'))
                     file_dic[title] = pdf_file
 

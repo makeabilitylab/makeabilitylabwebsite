@@ -49,7 +49,7 @@ def get_authors(author_list):
 
 #Takes a string with lots of keywords and returns a list of those words
 def parse_keywords(keyword_text):
-    ret = [word.strip().lowercase() for word in keyword_text.split(",")]
+    ret = [word.strip().lower() for word in keyword_text.split(",")]
     print(ret)
     return ret
 
