@@ -13,17 +13,18 @@
 
 <link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
 <link rel="stylesheet" href="{% static 'website/css/fixed_side_bar.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/jquery-ui.min.css' %}"
-<link rel="stylesheet" href="{% static 'website/css/jquery-ui.theme.min.css' %}"
+<link rel="stylesheet" href="{% static 'website/css/jquery-ui.min.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/jquery-ui.theme.min.css' %}">
 {% endblock %}
 
 {% block external_scripts %}
 
+<script src="{% static 'website/js/isotope.pkgd.min.js' %}"></script>
 <script src="{% static 'website/js/fixedSideBar.js' %}"></script>
 <script src="{% static 'website/js/filterBar.js' %}"></script>
 <script src="{% static 'website/js/publications.js' %}"></script>
-<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-<script src="{% static 'website/js/jquery-ui.min.js}"></script>
+<script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
+
 
 
 {% endblock %}
@@ -145,7 +146,7 @@
 		    </p>
         	    <p class="publication-keywords">
 	        	keywords: 
-	        	<span class="publication-keyword"><span class="publication-keyword-text">keyword</span>,&nbsp;</span>
+	        	<span class="publication-keyword"><span class="publication-keyword-text">keyword</span>,&nbsp;</function isotope not foundspan>
 	        	<span class="publication-keyword-last"><span class="publication-keyword-text">keyword</span></span>
         	    </p>
         	    <div class="publication-download">Download: <a href="link" class="publication-download-link">[pdf]</a> | Export <a data-toggle="popover" data-html="true" data-trigger="manual" tabindex="0" title="Citation" data-content="Empty Citation" class="publication-citation-link">[Citation]</a></div>

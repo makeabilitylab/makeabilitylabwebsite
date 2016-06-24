@@ -51,17 +51,17 @@ $(window).load(function () {
 	$('#fixed-side-bar').fixedSideBar();
 	$('#filter-bar').filterBar({
 		items: talks, 
-		categories: ["Year", "Keyword", "Project", "None"],
+		categories: ["Year", "Project", "None"],
 		groupsForCategory: {
 			"Year": groupTalksByYear(),
-			"Keyword": groupTalksByKeyword(),
 			"Project": groupTalksByProject(),
 			"None": [{"name": "Chronological List", items: talks}]
 		},
 		passesFilter: passesFilter,
 		displayGroupHeader: formatGroup,
 		displayItem: formatTalk,
-		afterDisplay: afterDisplay
+	    afterDisplay: afterDisplay,
+	    keywords: getAllKeywords()
 	});
 	if(initialFilter && initialFilter.length > 0 && initialFilter != "None")
 		$('#filter-textbox').val(initialFilter);
@@ -117,6 +117,18 @@ function groupTalksByYear()
 
 	return groups;
 }
+
+function getAllKeywords()
+{
+    var keywords=[];
+    talks.forEach(function(talk, index, array){
+	talk.keywords.forEach(function(keyword, index, array){
+	    keywords.push(keyword);
+	});
+    });
+    return keywords;
+}
+
 
 // returns a list of talks grouped by keyword, sorted with the most frequent keyword first
 // note: a talk can appear in more than one group
@@ -325,4 +337,38 @@ function afterDisplay() {
 		// toggle this popover
 		$(this).popover('toggle');
 	});
+}
+
+//Code to use isotope for filtering from http://codepen.io/desandro/pen/wfaGu
+
+// init Isotope
+var $grid = $('.talk-list').isotope({
+  itemSelector: '.talk-template',
+  layoutMode: 'fitRows',
+  filter: function() {
+    return qsRegex ? $(this).text().match( qsRegex ) : true;
+  }
+});
+
+
+
+// use value of search field to filter
+var $quicksearch = $('#filter-textbox').keyup( debounce( function() {
+  qsRegex = new RegExp( $quicksearch.val(), 'gi' );
+  $grid.isotope();
+}, 200 ) );
+
+// debounce so filtering doesn't happen every millisecond
+function debounce( fn, threshold ) {
+  var timeout;
+  return function debounced() {
+    if ( timeout ) {
+      clearTimeout( timeout );
+    }
+    function delayed() {
+      fn();
+      timeout = null;
+    }
+    timeout = setTimeout( delayed, threshold || 100 );
+  }
 }
