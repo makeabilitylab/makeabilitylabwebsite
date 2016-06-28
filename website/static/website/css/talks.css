@@ -15,9 +15,9 @@
 .talk-template {
 	padding-top:10px;
 	padding-bottom:10px;
-	padding-right:20px;
+	margin-right:4px;
 	font-family: adelle-light;
-	font-size: 14px;
+	font-size: 12px;
 	position:relative;
 	height: 300px;
 	width: 240px;
@@ -62,6 +62,7 @@
     max-width: 240px;
     max-height: 185px;
     overflow: hidden;
+    margin-right: 50px;
 }
 
 .talk-id {
@@ -78,12 +79,10 @@
 	font-family: adelle-regular;
 	font-weight: bold;
 	color: #464D59;
-	font-size: 15px;
+	font-size: 14px;
 	text-overflow: ellipsis;
 	overflow: hidden;
-	height:1.5em;
 	width: 230px;
-	white-space:nowrap
 }
 
 .talk-speakers {
@@ -132,4 +131,35 @@
 
 .talk-citation-link {
 	cursor:pointer;
+}
+
+/**
+ * https://css-tricks.com/line-clampin/ relevant to text wrapping
+ * Firefox support comes from here http://jsfiddle.net/danield770/DpQ7e/30/ and 
+ * http://stackoverflow.com/questions/20594995/why-webkit-line-clamping-does-not-work-in-firefox
+ */
+.line-clamp {
+      position: relative;
+      max-height: 2.6em; /* exactly two lines*/
+    }
+.line-clamp:after {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 70%;
+    height: 1.2em;
+    
+}
+
+@supports (-webkit-line-clamp: 2) {
+    .line-clamp {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;  
+        max-height:2.6em; /* I needed this to get it to work */
+        height: auto;
+    }
+    .line-clamp:after {
+        display: none;
+    }
 }
