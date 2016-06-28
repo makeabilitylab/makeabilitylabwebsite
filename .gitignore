@@ -14,3 +14,4 @@ static
 *.user
 bin
 obj
+\#*\#
