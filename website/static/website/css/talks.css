@@ -140,7 +140,7 @@
  */
 .line-clamp {
       position: relative;
-      max-height: 2.6em; /* exactly two lines*/
+      max-height: 3em; /* exactly two lines*/
     }
 .line-clamp:after {
     position: absolute;
@@ -156,7 +156,7 @@
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;  
-        max-height:2.6em; /* I needed this to get it to work */
+        max-height:3em; /* I needed this to get it to work */
         height: auto;
     }
     .line-clamp:after {
