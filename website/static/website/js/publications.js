@@ -230,6 +230,7 @@ function addHighlight(text, filter) {
 	return result;
 }
 
+
 // helper function to populate the template with the group data
 function formatGroup(group) {
 	var groupData = groupTemplate.clone();
