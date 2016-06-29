@@ -211,7 +211,7 @@ function formatTalk(talk, filter) {
 	talkData.find(".talk-id").html(talk.id);
 	talkData.find(".talk-thumbnail-link").attr("href", "../../media/" + talk.pdf);
 	talkData.find(".talk-thumbnail-image").attr("src", talk.thumbnail);
-	talkData.find(".talk-title").html(addHighlight(talk.title));
+	talkData.find(".talk-title").html(addHighlight(talk.title, filter));
 	
 	//Insert links if available
 	if (talk.pdf != "") {
@@ -252,10 +252,10 @@ function formatTalk(talk, filter) {
 	var mm = monthNames[talk.date.getMonth()];
 	var yy = talk.date.getFullYear();
 	var showDate = mm + " " + dd + ", " + yy;
-	talkData.find(".talk-date").html(addHighlight(showDate));
+	talkData.find(".talk-date").html(addHighlight(showDate, filter));
 	
 	//Location Data
-	talkData.find(".talk-location").html(addHighlight(talk.location));
+	talkData.find(".talk-location").html(addHighlight(talk.location, filter));
 
 	var speakers = talkData.find(".talk-speakers");
 	var speakerTemplate = speakers.find(".talk-speaker");
