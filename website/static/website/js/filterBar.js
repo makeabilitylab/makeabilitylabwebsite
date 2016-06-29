@@ -125,13 +125,14 @@
 	    settings.afterDisplay();
 	}
 
-    function checkFilter(groups, title, filter){
+    function checkFilter(groups, title, filter, groupPasses){
 	var res=false;
 	groups.forEach(function(group, groupIndex, groupArray){
 	    group.items.forEach(function(item, itemIndex, itemArray){
 		if(item['title'].trim()==title.trim()){
 		    if(settings.passesFilter(item, filter)){
 			res=true;
+			groupPasses[group['name']]++;
 		    }
 		    else{
 			res=false;
@@ -168,13 +169,17 @@
     $.fn.applyTextFilter = function(){
 	var filter= $("#filter-textbox").val().toLowerCase();
 	var groups=settings.groupsForCategory[currCategory];
+	var groupPasses={};
+	groups.forEach(function(group, groupIndex, groupArray){
+	    groupPasses[group['name']]=0;
+	});
 	if(oldfilter!=filter){
 	    $('.publication-template').each(function(){
 		
 		var title = $(this).find('.publication-title').text();
 		console.log(title);
 		title=title.replace(/(<([^>]+)>)/ig,"");
-		var passes=checkFilter(groups, title, filter);
+		var passes=checkFilter(groups, title, filter, groupPasses);
 		console.log(passes);
 		if(!passes){
 		    $(this).fadeOut();
@@ -192,7 +197,7 @@
 	    });
 	    $('.talk-template').each(function(){
 		var title = $(this).find('.talk-title').text();
-		var passes=checkFilter(groups, title, filter);
+		var passes=checkFilter(groups, title, filter, groupPasses);
 		console.log(passes);
 		if(!passes){
 		    $(this).fadeOut();
@@ -201,6 +206,14 @@
 		    $(this).fadeIn();
 		}
 	    });
+	    for(var key in groupPasses){
+		if(groupPasses[key]==0){
+		    $('h1[name='+key+']').fadeOut();
+		}
+		else{
+		    $('h1[name='+key+']').fadeIn();
+		}
+	    }
 	    oldfilter=filter;
 	}
 	
