@@ -94,9 +94,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         file_dic={}
-        for talk_file in os.listdir(os.getcwd()+"/media/xml"):
+        for talk_file in os.listdir(os.getcwd()+"/import/xml"):
             print("Parsing file "+talk_file)
-            with open('media/xml/'+talk_file) as xml_file:
+            with open('import/xml/'+talk_file) as xml_file:
                 talk_database=xd.parse(xml_file.read())['talks']['talk']
             #Iterate over all entries in each file
             for entry in talk_database:
@@ -114,10 +114,10 @@ class Command(BaseCommand):
                 elif get_val_key('talk_pdf', entry)!=None:
                     pdf_url = "http://cs.umd.edu/~jonf/"+get_val_key('talk_pdf', entry)
                     res = requests.get(pdf_url)
-                    temp_file = open('media/temp/'+title+".pdf", 'wb')
+                    temp_file = open('import/temp/'+title+".pdf", 'wb')
                     temp_file.write(res.content)
                     temp_file.close()
-                    pdf_file = File(open("media/temp/"+title+".pdf", 'rb'))
+                    pdf_file = File(open("import/temp/"+title+".pdf", 'rb'))
                     file_dic[title] = pdf_file
                 elif get_val_key('deck', entry):
                     #Handle pptx
@@ -127,10 +127,10 @@ class Command(BaseCommand):
                     deck_url = "http://cs.umd.edu/~jonf/talks/autogen_pdfs/"+file_name_short+".pdf"
                     print(deck_url)
                     res = requests.get(deck_url)
-                    temp_file = open('media/temp/'+file_name_short+".pdf", 'wb')
+                    temp_file = open('import/temp/'+file_name_short+".pdf", 'wb')
                     temp_file.write(res.content)
                     temp_file.close()
-                    pdf_file = File(open('media/temp/'+file_name_short+".pdf", 'rb'))
+                    pdf_file = File(open('import/temp/'+file_name_short+".pdf", 'rb'))
                     file_dic[title] = pdf_file
 
                 if pdf_file!=None:
@@ -144,3 +144,4 @@ class Command(BaseCommand):
                     keyword_list = get_keywords(parse_keywords(get_val_key('keywords', entry)))
                     for keyword in keyword_list:
                         new_talk.keywords.add(keyword)
+        os.system("rm import/temp/*")

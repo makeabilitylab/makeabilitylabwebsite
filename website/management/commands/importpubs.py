@@ -78,9 +78,9 @@ def exists(title):
 class Command(BaseCommand):
     
     def handle(self, *args, **options):
-        for bib_file in os.listdir(os.getcwd()+"/media/bibtex"):
+        for bib_file in os.listdir(os.getcwd()+"/import/bibtex"):
             print("Parsing file "+bib_file)
-            with open('media/bibtex/'+bib_file) as bibtex_file:
+            with open('import/bibtex/'+bib_file) as bibtex_file:
                 bibtex_str = bibtex_file.read()
 
             bib_database = bibtexparser.loads(bibtex_str)
@@ -164,10 +164,10 @@ class Command(BaseCommand):
 
             
                     res=requests.get(pdf_file_loc)
-                    temp_file=open("media/temp/"+title+".pdf", 'wb')
+                    temp_file=open("import/temp/"+title+".pdf", 'wb')
                     temp_file.write(res.content)
                     temp_file.close()
-                    pdf_file=File(open("media/temp/"+title+".pdf", 'rb'))
+                    pdf_file=File(open("import/temp/"+title+".pdf", 'rb'))
                     new_pub=Publication(title=title, geo_location=geo_location, book_title=book_title, book_title_short=book_title_short, num_pages=num_pages, video_url=video_url, pub_venue_type=pub_venue_type, peer_reviewed=peer_reviewed, total_papers_accepted=total_papers_accepted, total_papers_submitted=total_papers_submitted, award=award, pdf_file=pdf_file, date=date.date())
                     new_pub.save()
                     #Info on how to do the many to many crap is from here https://docs.djangoproject.com/en/1.9/topics/db/examples/many_to_many/
@@ -182,6 +182,7 @@ class Command(BaseCommand):
                 
                     for keyword in keyword_obj_list:
                         new_pub.keywords.add(keyword)
+        os.system("rm import/temp/*")
 
             
 
