@@ -16,8 +16,25 @@
 //		where category is an optional category name from those defined in the initial filterBar call
 
 (function($) {
-	var filterBar, currCategory, settings;
+    var filterBar, currCategory, settings;
+    var oldfilter=".";
 
+    // debounce so filtering doesn't happen every millisecond
+    function debounce( fn, threshold ) {
+	console.log("Debouncing");
+	var timeout;
+	return function debounced() {
+	    if ( timeout ) {
+		clearTimeout( timeout );
+	    }
+	    function delayed() {
+		fn();
+		timeout = null;
+	    }
+	    timeout = setTimeout( delayed, threshold || 100 );
+	}
+    }
+    
 	$.fn.filterBar = function(options) {
 
 		// save a reference to "this" so that we can refer to it in the event handlers below
@@ -49,7 +66,7 @@
 		var categoryText = this;
 		categoryItem.addClass("filter-category");
 		categoryItem.attr("id", "filter-category-" + categoryText.toLowerCase().replace(new RegExp(" "), "-"));
-		categoryItem.click(function() { filterBar.applyFilter(categoryText); });
+		categoryItem.click(function() { debounce(filterBar.applyFilter(categoryText), 1000); });
 			categoryItem.text(categoryText);
 		categoryList.append(categoryItem);
 	    });
@@ -61,7 +78,7 @@
 	    // note: it's not enough just to bind to keyup, since there are other 
 		//       ways for the text to change
 	    $("#filter-textbox").on("propertychange change keyup paste input", function(){
-		filterBar.applyFilter();
+		debounce(filterBar.applyTextFilter(), 500);
 	    });
 	    
 	    return this;
@@ -72,7 +89,8 @@
 	}
 
 	$.fn.applyFilter = function(newCategory) {
-		if(newCategory) currCategory = newCategory;
+	    if(newCategory) currCategory = newCategory;
+	    var filter = $("#filter-textbox").val().toLowerCase();
 		$(".filter-category").removeClass("filter-selected");
 		$("#filter-category-" + this.cleanName(currCategory)).addClass("filter-selected");
 
@@ -92,7 +110,6 @@
 
 		var content = $("#main-content")[0];
 		var data = "";
-		var filter = $("#filter-textbox").val().toLowerCase();
 		settings.groupsForCategory[currCategory].forEach(function (group, groupIndex, groupArray) {
 			var groupCount = 0;
 			group.items.forEach(function(item, itemIndex, itemArray) { if(settings.passesFilter(item, filter)) groupCount++; });
@@ -104,9 +121,58 @@
 				data += settings.displayItem(item, filter);
 			});
 		});
-		content.innerHTML = data;
-		settings.afterDisplay();
+	    content.innerHTML = data;
+	    settings.afterDisplay();
 	}
 
+    function checkFilter(groups, title, filter){
+	var res=false;
+	groups.forEach(function(group, groupIndex, groupArray){
+	    group.items.forEach(function(item, itemIndex, itemArray){
+		if(item['title'].trim()==title.trim()){
+		    if(settings.passesFilter(item, filter)){
+			res=true;
+		    }
+		    else{
+			res=false;
+		    }
+		}
+	    });
+	});
+	return res;
+    }
+    
+    $.fn.applyTextFilter = function(){
+	var filter= $("#filter-textbox").val().toLowerCase();
+	var groups=settings.groupsForCategory[currCategory];
+	if(oldfilter!=filter){
+	    $('.publication-template').each(function(){
+		var title = $(this).find('.publication-title').text();
+		var passes=checkFilter(groups, title, filter);
+		if(!passes){
+		    $(this).fadeOut();
+		}
+		else{
+		    $(this).fadeIn();
+		}
+	    });
+	    $('.talk-template').each(function(){
+		var title = $(this).find('.talk-title').text();
+		var passes=checkFilter(groups, title, filter);
+		console.log(passes);
+		if(!passes){
+		    $(this).fadeOut();
+		}
+		else{
+		    $(this).fadeIn();
+		}
+	    });
+	    oldfilter=filter;
+	}
+	
+    }
+
 }(jQuery));
+
+
 
