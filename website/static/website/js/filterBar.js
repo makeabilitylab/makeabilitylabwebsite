@@ -141,19 +141,53 @@
 	});
 	return res;
     }
+
+    // adds html markup to the specified text wherever it matches the filter, applying the highlight style
+    function addHighlight(text, filter) {
+	//console.log(text);
+	var result = text;
+	if(filter && filter.length > 0)
+	    result = text.replace(new RegExp('(' + filter + ')', 'gi'), "<span class=\"highlight\">$1</span>");
+	//console.log(result);
+	return result;
+    }
+
+    function removeHighlight(text){
+	console.log(text);
+	text.replace(new RegExp('(<span class=\"highlight\">*</span>)', 'gi'), "");
+	console.log(text);
+	return text;	
+    }
+
+    function resetHTML($template){
+	$template.find('.publication-keywords').children().each(function(){
+	    $(this).html(removeHighlight($(this).html()));
+	});
+    }
     
     $.fn.applyTextFilter = function(){
 	var filter= $("#filter-textbox").val().toLowerCase();
 	var groups=settings.groupsForCategory[currCategory];
 	if(oldfilter!=filter){
 	    $('.publication-template').each(function(){
+		
 		var title = $(this).find('.publication-title').text();
+		console.log(title);
+		title=title.replace(/(<([^>]+)>)/ig,"");
 		var passes=checkFilter(groups, title, filter);
+		console.log(passes);
 		if(!passes){
 		    $(this).fadeOut();
+		    //resetHTML($(this));
 		}
 		else{
 		    $(this).fadeIn();
+		    $(this).find('.publication-keywords').children().each(function(){
+		    	$(this).html(addHighlight($(this).text(), filter));
+		    });
+		     $(this).find('.publication-authors').children().each(function(){
+		    	$(this).html(addHighlight($(this).text(), filter));
+		    });
 		}
 	    });
 	    $('.talk-template').each(function(){
