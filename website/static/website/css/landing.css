@@ -25,5 +25,9 @@ h1{
 
 
 .landing-talk-fix img{
-    min-width: 240px;
+    /*min-width: 240px;*/
+}
+
+.landing-content {
+    padding-right: 60px;
 }
