@@ -152,12 +152,13 @@
 	//console.log(result);
 	return result;
     }
+    
 
     function removeHighlight(text){
 	console.log(text);
 	text.replace(new RegExp('(<span class=\"highlight\">*</span>)', 'gi'), "");
 	console.log(text);
-	return text;	
+	return text;
     }
 
     function resetHTML($template){
@@ -175,7 +176,6 @@
 	});
 	if(oldfilter!=filter){
 	    $('.publication-template').each(function(){
-		
 		var title = $(this).find('.publication-title').text();
 		console.log(title);
 		title=title.replace(/(<([^>]+)>)/ig,"");
@@ -190,20 +190,22 @@
 		    $(this).find('.publication-keywords').children().each(function(){
 		    	$(this).html(addHighlight($(this).text(), filter));
 		    });
-		     $(this).find('.publication-authors').children().each(function(){
-		    	$(this).html(addHighlight($(this).text(), filter));
+		    $(this).find('.publication-authors').children().each(function(){
+		    	 $(this).html(addHighlight($(this).text(), filter));
 		    });
 		}
 	    });
 	    $('.talk-template').each(function(){
 		var title = $(this).find('.talk-title').text();
 		var passes=checkFilter(groups, title, filter, groupPasses);
-		console.log(passes);
 		if(!passes){
 		    $(this).fadeOut();
 		}
 		else{
 		    $(this).fadeIn();
+		    $(this).find('.talk-speakers').children().each(function(){
+		    	$(this).html(addHighlight($(this).text(), filter));
+		    });
 		}
 	    });
 	    for(var key in groupPasses){
