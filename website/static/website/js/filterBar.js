@@ -152,13 +152,10 @@
 	//console.log(result);
 	return result;
     }
-    
 
     function removeHighlight(text){
-	console.log(text);
 	text.replace(new RegExp('(<span class=\"highlight\">*</span>)', 'gi'), "");
-	console.log(text);
-	return text;
+	return text;	
     }
 
     function resetHTML($template){
@@ -190,8 +187,8 @@
 		    $(this).find('.publication-keywords').children().each(function(){
 		    	$(this).html(addHighlight($(this).text(), filter));
 		    });
-		    $(this).find('.publication-authors').children().each(function(){
-		    	 $(this).html(addHighlight($(this).text(), filter));
+		     $(this).find('.publication-authors').children().each(function(){
+		    	$(this).html(addHighlight($(this).text(), filter));
 		    });
 		}
 	    });
