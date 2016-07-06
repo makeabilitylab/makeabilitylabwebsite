@@ -23,31 +23,31 @@
     <div id="circles" class="row icon_row">
 	<!-- TODO Cleanup the icon files once they are accepted -->
 	<!-- TODO add links for each icon to the appropriate publications/projects page -->
-	<div class="col-xs-2 col-xs-offset-1 icon-col">
+	<div class="col-xs-4 col-md-2 col-xs-offset-2 col-md-offset-1 icon-col">
 	    <a href="{% url 'website:publications' 'sustainability' %}">
 		<img src="{% static 'website/img/icons/sustainabilitycircle.png' %}">
 	    </a>
 	    <center><span class="icon_label">Sustainability</span></center>
 	</div>
-	<div class="col-xs-2 icon-col">
+	<div class="col-xs-4 col-md-2 icon-col">
 	    <a href="{% url 'website:publications' 'accessibility' %}">
 		<img src="{% static 'website/img/icons/accessibilitycircle.png' %}">
 	    </a>
 	    <center><span class="icon_label">Accessibility</span></center>
 	</div>
-	<div class="col-xs-2 icon-col">
+	<div class="col-xs-4 col-md-2 icon-col">
 	    <a href="{% url 'website:publications' 'health' %}">
 		<img src="{% static 'website/img/icons/healthcircle.png' %}">
 	    </a>
 	    <center><span class="icon_label">Health</span></center>
 	</div>
-	<div class="col-xs-2 icon-col">
+	<div class="col-xs-4 col-md-2 icon-col">
 	    <a href="{% url 'website:publications' 'learning' %}">
 		<img src="{% static 'website/img/icons/learningcircle.png' %}">
 	    </a>
 	    <center><span class="icon_label">Learning Tools</span></center>
 	</div>
-	<div class="col-xs-2 icon-col">
+	<div class="col-xs-4 col-md-2 icon-col">
 	    <a href="{% url 'website:publications' 'making' %}">
 		<img src="{% static 'website/img/icons/makertoolscircle.png' %}">
 	    </a>
@@ -150,7 +150,7 @@
 		<div class="row">
 		    <!-- Create a div for each talk passed in -->
 		    {% for talk in talks %}
-		    <div class="col-xs-6 col-md-4 col-lg-3 talk-template-landing landing-talk-fix">
+		    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 talk-template-landing landing-talk-fix">
 			<div class="talk-info">
 			    <div class="talk-thumbnail">
 				<a href="../../media/{{talk.pdf_file}}" class="talk-thumbnail-link">
