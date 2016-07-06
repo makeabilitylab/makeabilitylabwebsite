@@ -116,11 +116,16 @@
 
 {% block content %}
     <div id="content" class="container">
-        <div id="fixed-side-bar">
+	<div class="visible-xs">
+	    <br/>
+	    <input class="shortTextbox" id="filter-textbox-backup" placeholder="FILTER" type="text" value="">
+	</div>
+        <div id="fixed-side-bar" class="hidden-xs">
             <div id="filter-bar">
             </div>
         </div>
         <div class="talk-list" id="main-content">
+
             Loading content... (Please make sure JavaScript is enabled)
             <h1 class="group-template row" name="Group Name"></h1>
             <div class="talk-template col-xs-12 col-sm-6 col-md-4 col-lg-3">
