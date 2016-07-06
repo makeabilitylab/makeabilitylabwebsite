@@ -1,0 +1,196 @@
+
+@media (max-width: 768px){
+    .talk-list {
+	margin-top: 25px;
+    }
+}
+
+@media (min-width: 769px){
+    .talk-list {
+	padding-left: 145px; /* should be greater than the filter-bar width */
+	margin-top: 25px;
+    }
+}
+
+
+
+.talk-list h1 {
+	color: #7F7F7F;
+	font-size: 24px;
+	font-family: adelle-light;
+	border-bottom: 1px solid #A6A6A6;
+	margin: 5px 0px 3px 0px;
+	padding-bottom: 1px;
+}
+
+.talk-template {
+	padding-top:10px;
+	padding-bottom:10px;
+	/*margin-right:8px;*/
+	font-family: adelle-light;
+	font-size: 12px;
+	position:relative;
+	min-height: 300px;
+	/*width: 240px;*/
+	float: left;
+}
+
+.talk-template-landing {
+    padding-top:10px;
+	padding-bottom:10px;
+	/*margin-right:4px;*/
+	font-family: adelle-light;
+	font-size: 12px;
+	position:relative;
+	/*height: 300px;
+	width: 240px;*/
+	float: left;
+}
+
+.group-template {
+	width:100%;
+	clear:left;
+}
+
+.talk-template p {
+	margin:0;
+	padding:0;
+}
+
+.talk-template img {
+	border: 1px solid #dddddd;
+	
+	/*max-width: 240px;*/
+	margin:auto;
+}
+
+.talk-info {
+	padding-bottom:20px; /* height of the downloads bar */
+	display:table-cell;
+	vertical-align: top;
+	/*width: 240px;*/
+	position: relative;
+	margin-bottom:0;
+}
+
+.talk-thumbnail {
+	/*width: 240px;
+	min-width: 240px;*/
+	height: 185px !important;
+	width: 10000px;
+	display:table-cell;
+	vertical-align: middle;
+	/*padding-right:10px;*/
+}
+
+.talk-thumbnail-image{
+    /*max-width: 240px;
+    max-height: 185px;*/
+    overflow: hidden;
+    width: 100%;
+    /*margin-right: 50px;*/
+}
+
+.talk-id {
+	font-size: 10px;
+	color: #7F7F7F;
+	min-width: 40px;
+	display: table-cell;
+	vertical-align: top;
+	text-align: right;
+	padding-right: 10px;
+}
+
+.talk-title {
+	font-family: adelle-regular;
+	font-weight: bold;
+	color: #464D59;
+	font-size: 14px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	width: 230px;
+	margin-bottom:4px;
+}
+
+.talk-speakers {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	height:1.5em;
+	width: 230px;
+	white-space:nowrap;
+	margin-bottom:0;
+}
+
+.talk-stats {
+	color: #7F7F7F;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	height:1.5em;
+	width: 230px;
+	white-space:nowrap;
+	margin-bottom:0;
+}
+
+.talk-award-text, .talk-award-icon {
+	color:#c25059;
+}
+
+.talk-acceptance-rate {
+	font-style: bold;
+}
+
+.talk-to-appear {
+	font-style: italic;
+}
+
+.talk-keywords {
+	font-size: 11px;
+	color: #7F7F7F;
+}
+
+.talk-download {
+	position: absolute;
+	font-size: 12px;
+	width:100%;
+	height: 20px;
+	bottom:0;
+	right:0px;
+	margin-left:5px;
+}
+
+.talk-citation-link {
+	cursor:pointer;
+}
+
+/**
+ * https://css-tricks.com/line-clampin/ relevant to text wrapping
+ * Firefox support comes from here http://jsfiddle.net/danield770/DpQ7e/30/ and 
+ * http://stackoverflow.com/questions/20594995/why-webkit-line-clamping-does-not-work-in-firefox
+ */
+.line-clamp {
+      position: relative;
+      max-height: 2.75em; /* 2.6em = exactly two lines (LS: except that it doesn't seem to; 2.6 cuts off the bottom of the line)*/
+      height: 2.75em;
+    }
+.line-clamp:after {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 70%;
+    height: 1.2em;
+    
+}
+
+@supports (-webkit-line-clamp: 2) {
+    .line-clamp {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;  
+        max-height:2.75em; /* I needed this to get it to work */
+        height:2.75em;
+        /*height: auto;*/
+    }
+    .line-clamp:after {
+        display: none;
+    }
+}

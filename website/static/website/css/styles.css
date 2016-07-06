@@ -1,0 +1,369 @@
+/* General styles */
+@font-face {
+	font-family: adelle-semibold;
+	src: url(../fonts/Adelle/adelle_semibold-webfont.ttf);
+}
+
+@font-face {
+	font-family: adelle-regular;
+	src: url(../fonts/Adelle/adelle_reg-webfont.ttf);
+}
+
+@font-face {
+	font-family: adelle-light;
+	src: url(../fonts/Adelle/adelle_light-webfont.ttf);
+}
+
+@font-face {
+	font-family: adelle-heavy;
+	src: url(../fonts/Adelle/adelle_heavy-webfont.ttf);
+}
+
+@font-face {
+	font-family: helvetica-neue-lt;
+	src: url(../fonts/Helvetica/HelveticaNeueLT/HelveticaNeueLTCom-UltLtEx.ttf);
+}
+
+@font-face {
+	font-family: helvetica-neue-lt-bold;
+	src: url(../fonts/Helvetica/HelveticaNeueLT/HelveticaNeueLTCom-LtEx.ttf);
+}
+
+@font-face {
+	font-family: roboto;
+	src: url(../fonts/roboto/Roboto-Thin.ttf);
+}
+
+@font-face {
+	font-family: roboto-bold;
+	src: url(../fonts/roboto/Roboto-Light.ttf);
+}
+
+body {
+	font-family: adelle-regular;
+}
+
+hr {
+	margin-top:0;
+}
+
+h1 {
+	font-family: adelle-semibold;
+	font-variant: small-caps;
+	font-size: 36px;
+	margin-bottom:0;
+	padding-bottom:0;
+	margin-left:-1px;
+}
+
+h4 {
+	font-family: adelle-regular;
+	font-size: 18px;
+	color: #464D59;
+	margin-top:0;
+	padding-top:0;
+}
+
+h5 {
+	font-family: adelle-regular;
+	font-size: large;
+	font-weight: bold;
+	margin:0;
+	padding:0;
+}
+
+.thumbnail {
+	margin-bottom:0;
+}
+
+.item-info {
+	margin:0;
+	padding-top:10px;
+	padding-bottom:50px;
+}
+
+#content {
+	position: relative;
+}
+
+.main-content {
+	margin-left:-10px;
+	margin-right:-10px;
+}
+
+.highlight {
+	background-color: yellow;
+}
+
+/* Custom navbar for filters */
+.breadcrumb {
+	background-color: transparent;
+	margin-bottom:0;
+}
+
+.navbar-custom {
+	/*font-family: helvetica-neue-lt;*/
+	font-family: roboto;
+	font-variant: normal;
+	text-transform: lowercase;
+}
+
+.navbar-custom .navbar-brand {
+	font-weight: normal;
+	font-size: 16px;
+}
+
+.navbar-custom .nav li a {
+	padding-left: 10px;
+	padding-right: 10px;
+	font-size: 16px;
+}
+
+.navbar-filter {
+    margin-bottom: 0;
+    min-height: 30px;
+}
+
+.navbar-filter .navbar-nav > li > a {
+    /*color:#fff;*/
+}
+.navbar-filter .navbar-nav > li > a:hover, .navbar-filter .navbar-nav > li > a:focus {
+    background-color: transparent;
+    color: #23527c;
+    text-decoration: underline;
+}
+.navbar-filter .navbar-brand {
+    
+}
+
+/* Carousel styles */
+.carousel,
+.carousel-inner,
+.carousel-inner .item {
+	height: 500px;
+}
+
+.item {
+  background: black;
+}
+
+.carousel a {
+	color: hsl(195, 65%, 65%);
+}
+
+.overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 10;
+	/*background-color: rgba(0, 0, 0, 0.55);*/
+}
+
+.page-title {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 5;
+	pointer-events: none;
+	
+}
+
+.shadow-right {
+	background: linear-gradient(335deg, rgba(0,0,0,0.75) 0%,rgba(0,0,0,0) 50%);
+}
+
+.shadow-left {
+	background: linear-gradient(65deg, rgba(0,0,0,0.75) 0%,rgba(0,0,0,0) 50%);
+}
+
+.fill {
+	width:100%;
+	height:500px;
+	background-position:center;
+	background-size:cover;
+}
+
+.shortCarousel, .shortCarousel .carousel-inner, .shortCarousel .item {
+	height: 335px;
+}
+
+.shortCarousel .overlay {
+	vertical-align: bottom;
+	display: table-cell;
+	padding-top:0;
+}
+
+.overlay-title {
+	position: absolute;
+	/*height: 120px;
+	line-height: 120px;
+	width: 300px;
+	text-align: left;*/
+	font-family: adelle-semibold;
+	font-weight: bold;
+	font-size: 72px;
+	font-variant: small-caps;
+	margin-left: -3px;
+	bottom: 0;
+	color: #fff;
+	text-shadow: 0 1px 2px rgba(0,0,0,.6);
+}
+
+.shortCarousel .fill {
+	width:100%;
+	height:335px;
+	background-position: center center;
+	background-size:cover;
+}
+
+.carousel-container {
+	height: 100%;
+	position: relative;
+}
+
+.carousel-caption-left {
+	text-align: left;
+	right: auto;
+	left: 0;
+	bottom: 0;
+	/*padding-right: 20px;*/
+	padding-bottom: 55px;
+	padding-left: 15px;
+	width: 335px;
+}
+
+.carousel-caption-right {
+	text-align: right;
+	left: auto;
+	right: 0;
+	bottom: 0;
+	padding-right: 15px;
+	padding-bottom: 20px;
+	width: 300px;
+}
+
+.carousel-caption-title {
+	font-family: adelle-semibold;
+	font-size: 32px;
+}
+
+.carousel-caption-text {
+	font-family: adelle-light;
+	font-size: 16px;
+}
+
+/* Custom 5-column styles
+-------------------------------------------------- */
+.col-xs-5ths,
+.col-sm-5ths,
+.col-md-5ths,
+.col-lg-5ths {
+    position: relative;
+    min-height: 1px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.col-xs-4-5ths,
+.col-sm-4-5ths,
+.col-md-4-5ths,
+.col-lg-4-5ths {
+    position: relative;
+    min-height: 1px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.col-xs-5ths {
+    width: 20%;
+    float: left;
+}
+
+.col-xs-4-5ths {
+    width: 80%;
+    float: left;
+}
+
+@media (min-width: 768px) {
+    .col-sm-5ths {
+        width: 20%;
+        float: left;
+    }
+    .col-sm-4-5ths {
+        width: 80%;
+        float: left;
+    }
+}
+
+@media (min-width: 992px) {
+    .col-md-5ths {
+        width: 20%;
+        float: left;
+    }
+    .col-md-4-5ths {
+        width: 80%;
+        float: left;
+    }
+}
+
+@media (min-width: 1200px) {
+    .col-lg-5ths {
+        width: 20%;
+        float: left;
+    }
+    .col-lg-4-5ths {
+        width: 80%;
+        float: left;
+    }
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  /*position: relative;
+  min-height: 100%;*/
+}
+body {
+  /* Margin bottom by footer height */
+  /*margin-bottom: 60px;*/
+}
+/*.footer {
+  height: 60px;
+  background-color: #f5f5f5;
+  margin-bottom: 0px;
+}*/
+
+.footer {
+	height: 75px;
+	line-height: 75px;
+}
+
+.footer div {
+	position: relative;
+	height: 100%;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+.footer-img {
+	max-height: 90%;  
+    max-width: 90%; 
+    width: auto;
+    height: auto;
+    position: absolute;  
+    top: 0;  
+    bottom: 0;  
+    left: 0;  
+    right: 0;  
+    margin: auto;
+}
+
+/* general styles */
+
+.well {
+	border-radius: 0 !important;
+}

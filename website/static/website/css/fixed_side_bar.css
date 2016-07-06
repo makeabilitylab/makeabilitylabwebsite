@@ -1,0 +1,33 @@
+.shortTextbox {
+	width: 100%;
+}
+
+.filter-selected {
+	font-family: adelle-semibold;
+	font-weight: bold;
+}
+
+#fixed-side-bar {
+	margin-left: 15px;
+	margin-top: 85px;
+	width: 125px;
+	left:0;
+	top:-60px;
+	font-family: adelle-light;
+	text-align: right;
+	position:absolute;
+}
+
+#fixed-side-bar h1 {
+	font-size: 14px;
+	margin-bottom:0;
+	padding-bottom:0;
+	font-weight: regular;
+}
+
+#filter-bar li {
+	text-decoration: none;
+	font-size: 12px;
+	list-style: none;
+	cursor: pointer;
+}
