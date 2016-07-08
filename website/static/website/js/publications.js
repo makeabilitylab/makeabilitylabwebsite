@@ -50,18 +50,18 @@ $(window).load(function () {
 	$('#fixed-side-bar').fixedSideBar();
 	$('#filter-bar').filterBar({
 		items: publications, 
-		categories: ["Year", "Pub Type", "Keyword", "Project", "None"],
+		categories: ["Year", "Pub Type", "Project", "None"],
 		groupsForCategory: {
 			"Year": groupPublicationsByYear(),
 			"Pub Type": groupPublicationsByType(),
-			"Keyword": groupPublicationsByKeyword(),
 			"Project": groupPublicationsByProject(),
 			"None": [{"name": "Chronological List", items: publications}]
 		},
 		passesFilter: passesFilter,
 		displayGroupHeader: formatGroup,
 		displayItem: formatPublication,
-		afterDisplay: afterDisplay
+	        afterDisplay: afterDisplay,
+	    keywords: getAllKeywords()
 	});
 	if(initialFilter && initialFilter.length > 0 && initialFilter != "None")
 		$('#filter-textbox').val(initialFilter);
@@ -141,6 +141,17 @@ function groupPublicationsByType()
 	return groups;
 }
 
+function getAllKeywords()
+{
+    var keywords=[];
+    publications.forEach(function(pub, index, array){
+	pub.keywords.forEach(function(keyword, index, array){
+	    keywords.push(keyword);
+	});
+    });
+    return keywords;
+}
+
 // returns a list of publications grouped by keyword, sorted with the most frequent keyword first
 // note: a publication can appear in more than one group
 function groupPublicationsByKeyword()
@@ -218,6 +229,7 @@ function addHighlight(text, filter) {
 		result = text.replace(new RegExp('(' + filter + ')', 'gi'), "<span class=\"highlight\">$1</span>");
 	return result;
 }
+
 
 // helper function to populate the template with the group data
 function formatGroup(group) {
@@ -342,3 +354,4 @@ function createCitationText(pub) {
 
 	return text;
 }
+
