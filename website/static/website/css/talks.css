@@ -15,12 +15,24 @@
 .talk-template {
 	padding-top:10px;
 	padding-bottom:10px;
-	margin-right:4px;
+	/*margin-right:8px;*/
 	font-family: adelle-light;
 	font-size: 12px;
 	position:relative;
-	height: 300px;
-	width: 240px;
+	min-height: 300px;
+	/*width: 240px;*/
+	float: left;
+}
+
+.talk-template-landing {
+    padding-top:10px;
+	padding-bottom:10px;
+	/*margin-right:4px;*/
+	font-family: adelle-light;
+	font-size: 12px;
+	position:relative;
+	/*height: 300px;
+	width: 240px;*/
 	float: left;
 }
 
@@ -37,7 +49,7 @@
 .talk-template img {
 	border: 1px solid #dddddd;
 	
-	max-width: 240px;
+	/*max-width: 240px;*/
 	margin:auto;
 }
 
@@ -45,24 +57,27 @@
 	padding-bottom:20px; /* height of the downloads bar */
 	display:table-cell;
 	vertical-align: top;
-	width: 240px;
+	/*width: 240px;*/
 	position: relative;
+	margin-bottom:0;
 }
 
 .talk-thumbnail {
-	width: 240px;
-	min-width: 240px;
+	/*width: 240px;
+	min-width: 240px;*/
 	height: 185px !important;
+	width: 10000px;
 	display:table-cell;
 	vertical-align: middle;
-	padding-right:10px;
+	/*padding-right:10px;*/
 }
 
 .talk-thumbnail-image{
-    max-width: 240px;
-    max-height: 185px;
+    /*max-width: 240px;
+    max-height: 185px;*/
     overflow: hidden;
-    margin-right: 50px;
+    width: 100%;
+    /*margin-right: 50px;*/
 }
 
 .talk-id {
@@ -83,6 +98,7 @@
 	text-overflow: ellipsis;
 	overflow: hidden;
 	width: 230px;
+	margin-bottom:4px;
 }
 
 .talk-speakers {
@@ -90,7 +106,8 @@
 	overflow: hidden;
 	height:1.5em;
 	width: 230px;
-	white-space:nowrap
+	white-space:nowrap;
+	margin-bottom:0;
 }
 
 .talk-stats {
@@ -99,7 +116,8 @@
 	overflow: hidden;
 	height:1.5em;
 	width: 230px;
-	white-space:nowrap
+	white-space:nowrap;
+	margin-bottom:0;
 }
 
 .talk-award-text, .talk-award-icon {
@@ -140,7 +158,8 @@
  */
 .line-clamp {
       position: relative;
-      max-height: 3em; /* exactly two lines*/
+      max-height: 2.75em; /* 2.6em = exactly two lines (LS: except that it doesn't seem to; 2.6 cuts off the bottom of the line)*/
+      height: 2.75em;
     }
 .line-clamp:after {
     position: absolute;
@@ -156,8 +175,9 @@
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;  
-        max-height:3em; /* I needed this to get it to work */
-        height: auto;
+        max-height:2.75em; /* I needed this to get it to work */
+        height:2.75em;
+        /*height: auto;*/
     }
     .line-clamp:after {
         display: none;
