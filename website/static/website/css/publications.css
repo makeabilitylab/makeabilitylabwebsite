@@ -12,6 +12,7 @@
     }
 }
 
+
 .navbar {
     width: 100%;
 }
@@ -51,6 +52,7 @@
 	vertical-align: top;
 	width: 100%;
 	position: relative;
+
 }
 
 .publication-thumbnail {
@@ -93,6 +95,8 @@
 	font-weight: bold;
 	color: #464D59;
 	font-size: 15px;
+	word-wrap: break-word;
+	text-overflow: ellipsis;
 }
 
 .publication-authors {
@@ -118,6 +122,11 @@
 .publication-keywords {
 	font-size: 11px;
 	color: #7F7F7F;
+	word-break: break-all;
+}
+
+.publication-keyword {
+    word-wrap: break-word;
 }
 
 .publication-download {
