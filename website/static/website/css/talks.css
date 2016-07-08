@@ -1,7 +1,18 @@
-.talk-list {
+
+@media (max-width: 768px){
+    .talk-list {
+	margin-top: 25px;
+    }
+}
+
+@media (min-width: 769px){
+    .talk-list {
 	padding-left: 145px; /* should be greater than the filter-bar width */
 	margin-top: 25px;
+    }
 }
+
+
 
 .talk-list h1 {
 	color: #7F7F7F;

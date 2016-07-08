@@ -75,51 +75,55 @@
 {% endblock %}
 
 {% block maincarousel %}
-    <div id="mainCarousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="10000" data-pause="false">
-        <div class="page-title shadow-left">
-            <div class="container carousel-container">
-                <div class="overlay-title">Publications</div>
-            </div>
+<div id="mainCarousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="10000" data-pause="false">
+    <div class="page-title shadow-left">
+        <div class="container carousel-container">
+            <div class="overlay-title">Publications</div>
         </div>
-        <!-- Wrapper for slides -->
-        <div class="carousel-inner" role="listbox">
-            {% for banner in banners %}
-                <div class="item {% if forloop.first %}active{% endif %}">
-                    <div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})" aria-label="{{ banner.alt_text }}" title="{{ banner.alt_text}}"></div>
-                    <!-- <div class="overlay">
-                      <div class="container carousel-container">
-                        <div class="carousel-caption carousel-caption-right">
-                          {% autoescape off %} {# enable HTML tags #}
-                          <div class="carousel-caption-title">
-                            {{ banner.title }}
-                          </div>
-                          <div class="carousel-caption-text">
-                            {{ banner.caption }}
-                          </div>
-                          {% endautoescape %}
-                        </div>
-                      </div>
-                    </div> -->
-                </div>
-            {% endfor %}
-        </div>
-        <ol class="carousel-indicators">
-          {% for banner in banners %}
-          <li data-target="#mainCarousel" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
-          {% endfor %}
-       </ol>
     </div>
+    <!-- Wrapper for slides -->
+    <div class="carousel-inner" role="listbox">
+        {% for banner in banners %}
+        <div class="item {% if forloop.first %}active{% endif %}">
+            <div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})" aria-label="{{ banner.alt_text }}" title="{{ banner.alt_text}}"></div>
+            <!-- <div class="overlay">
+                 <div class="container carousel-container">
+                 <div class="carousel-caption carousel-caption-right">
+                 {% autoescape off %} {# enable HTML tags #}
+                 <div class="carousel-caption-title">
+                 {{ banner.title }}
+                 </div>
+                 <div class="carousel-caption-text">
+                 {{ banner.caption }}
+                 </div>
+                 {% endautoescape %}
+                 </div>
+                 </div>
+                 </div> -->
+        </div>
+        {% endfor %}
+    </div>
+    <ol class="carousel-indicators">
+        {% for banner in banners %}
+        <li data-target="#mainCarousel" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
+        {% endfor %}
+    </ol>
+</div>
 {% endblock %}
 
 {% block content %}
-    <div id="content" class="container">
-	<div id="fixed-side-bar">
+<div id="content" class="container">
+    <div class="visible-xs">
+	<br/>
+	<input class="shortTextbox" id="filter-textbox-backup" placeholder="FILTER" type="text" value="">
+    </div>
+	<div id="fixed-side-bar" class="hidden-xs">
 	    <div id="filter-bar">
 	    </div>
 	</div>
 	<div class="publication-list" id="main-content">
 	    Loading content... (Please make sure JavaScript is enabled)
-	    <h1 class="group-template" name="Group Name"></h1>
+	    <h1 class="group-template row" name="Group Name"></h1>
 	    <div class="publication-template">
 		<div class="publication-id">id</div>
         	<div class="publication-thumbnail">

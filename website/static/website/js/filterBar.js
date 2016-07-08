@@ -61,6 +61,9 @@
 		$("#filter-textbox").on("propertychange change keyup paste input", function(){
 			filterBar.applyFilter();
 		});
+	    $("#filter-textbox-backup").on("propertychange change keyup paste input", function(){
+			filterBar.applyFilter();
+		});
 
 		return this;
 	};
@@ -90,7 +93,7 @@
 
 		var content = $("#main-content")[0];
 		var data = "";
-		var filter = $("#filter-textbox").val().toLowerCase();
+	    var filter = $("#filter-textbox").val().toLowerCase() || $("#filter-textbox-backup").val().toLowerCase();
 		settings.groupsForCategory[currCategory].forEach(function (group, groupIndex, groupArray) {
 			var groupCount = 0;
 			group.items.forEach(function(item, itemIndex, itemArray) { if(settings.passesFilter(item, filter)) groupCount++; });
