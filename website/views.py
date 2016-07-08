@@ -2,6 +2,7 @@ import operator, datetime, random
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, render
 from .models import Person, Publication, Talk, Position, Banner, News, Keyword
+from django.conf import settings
 
 max_banners = 7
 
@@ -53,6 +54,7 @@ def index(request):
     talks_num = 8 # Defines the number of talks which will be selected
     all_banners = Banner.objects.filter(page=Banner.FRONTPAGE)
     displayed_banners = choose_banners(all_banners)
+    print(settings.DEBUG)
     #Select recent news, papers, and talks.
     news_items = News.objects.order_by('-date')[:news_items_num]
     news_item_lengths=[]
@@ -60,7 +62,7 @@ def index(request):
        news_item_lengths.append((item, len(item.content.split())))
     publications = Publication.objects.order_by('-date')[:papers_num]
     talks = Talk.objects.order_by('-date')[:talks_num]
-    context = { 'people': Person.objects.all(), 'banners': displayed_banners, 'news': news_item_lengths, 'news_length': news_item_max_length, 'publications': publications, 'talks': talks }
+    context = { 'people': Person.objects.all(), 'banners': displayed_banners, 'news': news_item_lengths, 'news_length': news_item_max_length, 'publications': publications, 'talks': talks, 'debug': settings.DEBUG }
     return render(request, 'website/index.html', context)
 
 def people(request):
@@ -142,7 +144,8 @@ def people(request):
         'cur_collaborators' : cur_collaborators,
         'past_collaborators' : past_collaborators,
         'positions' : positions,
-        'banners' : displayed_banners
+        'banners' : displayed_banners,
+       'debug': settings.DEBUG
 
     }
     return render(request, 'website/people.html', context)
@@ -155,16 +158,16 @@ def member(request, member_id):
     #     raise Http404("Person does not exist")
     # return render(request, 'website/member.html', {'person': person})
     person = get_object_or_404(Person, pk=member_id)
-    return render(request, 'website/member.html', {'person': person})
+    return render(request, 'website/member.html', {'person': person, 'debug': settings.DEBUG})
 
 def publications(request, filter=None):
     all_banners = Banner.objects.filter(page=Banner.PUBLICATIONS)
     displayed_banners = choose_banners(all_banners)
-    context = { 'publications': Publication.objects.all(), 'banners': displayed_banners, 'filter': filter }
+    context = { 'publications': Publication.objects.all(), 'banners': displayed_banners, 'filter': filter, 'debug': settings.DEBUG }
     return render(request, 'website/publications.html', context)
 
 def talks(request, filter=None):
     all_banners = Banner.objects.filter(page=Banner.TALKS)
     displayed_banners = choose_banners(all_banners)
-    context = { 'talks': Talk.objects.all(), 'banners': displayed_banners, 'filter': filter }
+    context = { 'talks': Talk.objects.all(), 'banners': displayed_banners, 'filter': filter, 'debug': settings.DEBUG }
     return render(request, 'website/talks.html', context)

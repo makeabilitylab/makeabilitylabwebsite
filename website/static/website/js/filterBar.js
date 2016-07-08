@@ -80,6 +80,10 @@
 	    $("#filter-textbox").on("propertychange change keyup paste input", function(){
 		debounce(filterBar.applyTextFilter(), 500);
 	    });
+	    $("#filter-textbox-backup").on("propertychange change keyup paste input", function(){
+		debounce(filterBar.applyTextFilter(), 500);
+	    });
+
 	    
 	    return this;
 	};
@@ -165,7 +169,7 @@
     }
     
     $.fn.applyTextFilter = function(){
-	var filter= $("#filter-textbox").val().toLowerCase();
+	var filter= $("#filter-textbox").val().toLowerCase() || $("#filter-textbox-backup").val().toLowerCase();
 	var groups=settings.groupsForCategory[currCategory];
 	var groupPasses={};
 	groups.forEach(function(group, groupIndex, groupArray){
@@ -219,6 +223,3 @@
     }
 
 }(jQuery));
-
-
-
