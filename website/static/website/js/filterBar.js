@@ -86,6 +86,7 @@
 
 	    
 	    return this;
+
 	};
 
 	$.fn.cleanName = function(name) {
@@ -94,7 +95,7 @@
 
 	$.fn.applyFilter = function(newCategory) {
 	    if(newCategory) currCategory = newCategory;
-	    var filter = $("#filter-textbox").val().toLowerCase();
+	    var filter = $("#filter-textbox").val().toLowerCase() || $("#filter-textbox-backup").val().toLowerCase();
 		$(".filter-category").removeClass("filter-selected");
 		$("#filter-category-" + this.cleanName(currCategory)).addClass("filter-selected");
 
