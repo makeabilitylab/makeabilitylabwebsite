@@ -62,7 +62,7 @@
     <div class="row">
 	<!-- This column will contain the new feeds  -->
 	<div class="col-xs-12 col-md-2 col-md-push-10">
-	    
+	    {% if news %}
 	    <!-- Create a row for the well which will contain news from our feeds -->
 	    <div class="row">
 		<h3 class="news-type-label">Recent News</h3>
@@ -99,6 +99,7 @@
 		    {% endfor %}
 		</div>
 	    </div>
+	    {% endif %}
 	    <div class="row hidden-xs">
 		<h3 class="news-type-label">Recent Tweets</h3>
 		<!-- See https://dev.twitter.com/docs/embedded-timelines#customization -->

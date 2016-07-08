@@ -15,3 +15,5 @@ config.ini
 bin
 obj
 \#*\#
+output
+ssl_access_log
