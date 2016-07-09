@@ -27,6 +27,10 @@
     box-shadow: none;
 }
 
+.news-column {
+    padding-left: 10px;
+}
+
 /**
  * https://css-tricks.com/line-clampin/ relevant to text wrapping
  * Firefox support comes from here http://jsfiddle.net/danield770/DpQ7e/30/ and 

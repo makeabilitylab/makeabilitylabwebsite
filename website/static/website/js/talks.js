@@ -239,8 +239,8 @@ function formatTalk(talk, filter) {
 		talkData.find(".talk-pptx-link").remove();
 		talkData.find(".decor_pptx").remove();
 	}
-	
-	if (talk.slideshare != "") {
+    console.log(talk.title+", "+talk.slideshare)
+    if ((talk.slideshare != "") && (talk.slideshare != "None")) {
 		talkData.find(".talk-slideshare-link").attr("href", talk.slideshare);
 	} else {
 		talkData.find(".talk-slideshare-link").remove();

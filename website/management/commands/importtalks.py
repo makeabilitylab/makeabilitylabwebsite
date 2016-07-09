@@ -107,7 +107,17 @@ class Command(BaseCommand):
                 print(date_text)
                 date=datetime.strptime(date_text, '%B %d, %Y')
                 slideshare_url = get_val_key('slideshare', entry)
+                print(slideshare_url)
                 pdf_file = None
+                pptx_file = None
+                deck_url = get_val_key('deck', entry)
+                if deck_url != None:
+                    deck_url = "http://cs.umd.edu/~jonf/"+deck_url
+                    res = requests.get(deck_url)
+                    temp_file = open('import/temp/'+title+'.pptx', 'wb')
+                    temp_file.write(res.content)
+                    temp_file.close()
+                    pptx_file = File(open('import/temp/'+title+'.pptx', 'rb'))
                 if title in file_dic.keys():
                     pdf_file = file_dic[title]
                     print("Using existing copy of pdf...")
@@ -134,7 +144,10 @@ class Command(BaseCommand):
                     file_dic[title] = pdf_file
 
                 if pdf_file!=None:
-                    new_talk = Talk(title=title, date=date.date(), location=location, forum_name=forum_name, pdf_file=pdf_file, slideshare_url=slideshare_url)
+                    if pptx_file!=None:
+                        new_talk = Talk(title=title, date=date.date(), location=location, forum_name=forum_name, pdf_file=pdf_file, raw_file=pptx_file, slideshare_url=slideshare_url)
+                    else:
+                        new_talk = Talk(title=title, date=date.date(), location=location, forum_name=forum_name, pdf_file=pdf_file, slideshare_url=slideshare_url)
                     # Each item must be saved before authors and keywords can be added
                     new_talk.save()
                     #Info on how to do the many to many crap is from here https://docs.djangoproject.com/en/1.9/topics/db/examples/many_to_many/
