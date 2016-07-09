@@ -113,9 +113,11 @@ class Command(BaseCommand):
                 deck_url = get_val_key('deck', entry)
                 if deck_url != None:
                     deck_url = "http://cs.umd.edu/~jonf/"+deck_url
-                    res = requests.get(deck_url)
+                    res = requests.get(deck_url, stream=True)
                     temp_file = open('import/temp/'+title+'.pptx', 'wb')
-                    temp_file.write(res.content)
+                    for chunk in res.iter_content(chunk_size=4096):
+                        if chunk:
+                            f.write(chunk)
                     temp_file.close()
                     pptx_file = File(open('import/temp/'+title+'.pptx', 'rb'))
                 if title in file_dic.keys():
