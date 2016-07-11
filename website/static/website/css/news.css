@@ -16,6 +16,9 @@
     overflow: hidden;
 }
 
+.newstwitter-bar {
+}
+
 .news-well p {
     margin: 0px;
     
@@ -29,6 +32,9 @@
 
 .news-column {
     padding-left: 10px;
+}
+
+.twitter-row {
 }
 
 /**
