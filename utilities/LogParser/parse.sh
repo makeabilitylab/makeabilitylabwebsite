@@ -4,6 +4,6 @@ then
 else
     file=$1
 fi
-grep pdf $1 | awk '{print $4  $7}' | awk 'BEGIN{FS="/"} {print $1 "/" $2 "/" $3 "_" $5 "_" $6}' | awk 'BEGIN{FS="_"} {$NF=""; print $0}'  >> output
+grep pdf $file | awk '{print $4  $7}' | awk 'BEGIN{FS="/"} {print $1 "/" $2 "/" $3 "_" $5 "_" $6}' | awk 'BEGIN{FS="_"} {$NF=""; print $0}'  >> output
 output | sort | uniq > output
 
