@@ -21,7 +21,7 @@
 
     // debounce so filtering doesn't happen every millisecond
     function debounce( fn, threshold ) {
-	console.log("Debouncing");
+
 	var timeout;
 	return function debounced() {
 	    if ( timeout ) {
@@ -53,7 +53,7 @@
             }, options );
 	    
             currCategory = settings.categories[0];
-	    
+	    console.log(settings.keywords);
 	    // append filter bar content
 	    filterBar.append("<h1 style=\"margin-top:7px\">FILTER</h1><input class=\"shortTextbox\" id=\"filter-textbox\" type=\"text\" value=\"\" /><h1>GROUP BY</h1>");
 	    $("#filter-textbox").autocomplete({
@@ -150,11 +150,9 @@
 
     // adds html markup to the specified text wherever it matches the filter, applying the highlight style
     function addHighlight(text, filter) {
-	//console.log(text);
 	var result = text;
 	if(filter && filter.length > 0)
 	    result = text.replace(new RegExp('(' + filter + ')', 'gi'), "<span class=\"highlight\">$1</span>");
-	//console.log(result);
 	return result;
     }
 
@@ -179,10 +177,8 @@
 	if(oldfilter!=filter){
 	    $('.publication-template').each(function(){
 		var title = $(this).find('.publication-title').text();
-		console.log(title);
 		title=title.replace(/(<([^>]+)>)/ig,"");
 		var passes=checkFilter(groups, title, filter, groupPasses);
-		console.log(passes);
 		if(!passes){
 		    $(this).fadeOut();
 		    //resetHTML($(this));
@@ -196,9 +192,7 @@
 		    	$(this).html(addHighlight($(this).text(), filter));
 		    });
 		    $(this).find('.publication-title').each(function(){
-			console.log("Highlighting title");
-			console.log($(this).text());
-		    	$(this).html(addHighlight($(this).text(), filter));
+			$(this).html(addHighlight($(this).text(), filter));
 		    });
 		    $(this).find('.publication-venue').each(function(){
 		    	$(this).html(addHighlight($(this).text(), filter));

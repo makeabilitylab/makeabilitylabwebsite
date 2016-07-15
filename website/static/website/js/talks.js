@@ -126,9 +126,16 @@ function getAllKeywords()
 	    keywords.push(keyword);
 	});
     });
+    keywords = uniq(keywords);
     return keywords;
 }
 
+// Comes from here http://stackoverflow.com/questions/9229645/remove-duplicates-from-javascript-array
+function uniq(a) {
+    return a.sort().filter(function(item, pos, ary) {
+        return !pos || item != ary[pos - 1];
+    })
+}
 
 // returns a list of talks grouped by keyword, sorted with the most frequent keyword first
 // note: a talk can appear in more than one group
