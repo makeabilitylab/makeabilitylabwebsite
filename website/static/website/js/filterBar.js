@@ -192,7 +192,15 @@
 		    $(this).find('.publication-keywords').children().each(function(){
 		    	$(this).html(addHighlight($(this).text(), filter));
 		    });
-		     $(this).find('.publication-authors').children().each(function(){
+		    $(this).find('.publication-authors').children().each(function(){
+		    	$(this).html(addHighlight($(this).text(), filter));
+		    });
+		    $(this).find('.publication-title').each(function(){
+			console.log("Highlighting title");
+			console.log($(this).text());
+		    	$(this).html(addHighlight($(this).text(), filter));
+		    });
+		    $(this).find('.publication-venue').each(function(){
 		    	$(this).html(addHighlight($(this).text(), filter));
 		    });
 		}
@@ -206,6 +214,9 @@
 		else{
 		    $(this).fadeIn();
 		    $(this).find('.talk-speakers').children().each(function(){
+		    	$(this).html(addHighlight($(this).text(), filter));
+		    });
+		    $(this).find('.talk-title').each(function(){
 		    	$(this).html(addHighlight($(this).text(), filter));
 		    });
 		}
