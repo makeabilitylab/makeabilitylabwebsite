@@ -171,3 +171,6 @@ def talks(request, filter=None):
     displayed_banners = choose_banners(all_banners)
     context = { 'talks': Talk.objects.all(), 'banners': displayed_banners, 'filter': filter, 'debug': settings.DEBUG }
     return render(request, 'website/talks.html', context)
+
+def website_analytics(request):
+   return render(request, 'admin/analytics.html')

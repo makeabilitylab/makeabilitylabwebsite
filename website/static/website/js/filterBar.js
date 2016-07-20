@@ -57,7 +57,8 @@
 	    // append filter bar content
 	    filterBar.append("<h1 style=\"margin-top:7px\">FILTER</h1><input class=\"shortTextbox\" id=\"filter-textbox\" type=\"text\" value=\"\" /><h1>GROUP BY</h1>");
 	    $("#filter-textbox").autocomplete({
-		source: settings.keywords
+		source: settings.keywords,
+		appendTo: "#fixed-side-bar"
 	    });
 	    categoryList = $(document.createElement("div"));
 	    categoryList.addClass("filter-bar-categories");
