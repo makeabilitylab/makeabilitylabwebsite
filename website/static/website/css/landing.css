@@ -28,6 +28,13 @@ h1{
     /*min-width: 240px;*/
 }
 
-.landing-content {
-    padding-right: 80px;
+@media (min-width: 769px){
+    .landing-content {
+	padding-right: 80px;
+    }
+}
+
+.content-container {
+    padding-left: 25px;
+    padding-right: 25px;
 }

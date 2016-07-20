@@ -1,6 +1,8 @@
 body {
     padding-top: 20px;
     padding-bottom: 20px;
+    padding-left: 25px;
+    padding-right: 25px;
 }
 
 .navbar {
@@ -34,3 +36,4 @@ body {
   padding-right: 0;
   padding-left: 0;
 }
+

@@ -35,8 +35,23 @@
 	float: left;
 }
 
-.talk-template-landing {
-    padding-top:10px;
+@media (max-width: 768px){
+    .talk-template-landing {
+	padding-top:10px;
+	padding-bottom:10px;
+	/*margin-right:4px;*/
+	padding-right: 10px;
+	font-family: adelle-light;
+	font-size: 12px;
+	position:relative;
+	/*height: 300px;
+	width: 240px;*/
+	margin: 0 auto;
+    }
+}
+@media (min-width: 769px){
+    .talk-template-landing {
+	padding-top:10px;
 	padding-bottom:10px;
 	/*margin-right:4px;*/
 	padding-right: 10px;
@@ -46,7 +61,10 @@
 	/*height: 300px;
 	width: 240px;*/
 	float: left;
+    }
 }
+
+
 
 .group-template {
 	width:100%;
