@@ -3,6 +3,7 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, render
 from .models import Person, Publication, Talk, Position, Banner, News, Keyword
 from django.conf import settings
+from datetime import date
 
 max_banners = 7
 
@@ -163,13 +164,13 @@ def member(request, member_id):
 def publications(request, filter=None):
     all_banners = Banner.objects.filter(page=Banner.PUBLICATIONS)
     displayed_banners = choose_banners(all_banners)
-    context = { 'publications': Publication.objects.all(), 'banners': displayed_banners, 'filter': filter, 'debug': settings.DEBUG }
+    context = { 'publications': Publication.objects.filter(date__range=["2012-01-01", date.today()]), 'banners': displayed_banners, 'filter': filter, 'debug': settings.DEBUG }
     return render(request, 'website/publications.html', context)
 
 def talks(request, filter=None):
     all_banners = Banner.objects.filter(page=Banner.TALKS)
     displayed_banners = choose_banners(all_banners)
-    context = { 'talks': Talk.objects.all(), 'banners': displayed_banners, 'filter': filter, 'debug': settings.DEBUG }
+    context = { 'talks': Talk.objects.filter(date__range=["2012-01-01", date.today()]), 'banners': displayed_banners, 'filter': filter, 'debug': settings.DEBUG }
     return render(request, 'website/talks.html', context)
 
 def website_analytics(request):
