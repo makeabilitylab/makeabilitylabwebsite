@@ -49,8 +49,10 @@ def get_authors(author_list):
 
 #Takes a string with lots of keywords and returns a list of those words
 def parse_keywords(keyword_text):
-    ret = [word.strip().lower() for word in keyword_text.split(",")]
-    print(ret)
+    if keyword_text.find(';') == -1:
+        ret = [word.strip().lower() for word in keyword_text.split(",")]
+    else:
+        ret = [word.strip().lower() for word in keyword_text.split(";")]
     return ret
 
 #Takes a list of keyword strings and returns a list of keyword objects, creating those that don't already exist

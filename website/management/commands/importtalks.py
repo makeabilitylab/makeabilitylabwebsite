@@ -23,11 +23,11 @@ def parse_authors(author_list):
     ret=[]
     authors_names=author_list.split(", ")
     for author_ind in authors_names:
-        if 'and' in author_ind:
+        if 'and ' in author_ind:
             #if 'and' == author_ind.strip()[:3]:
                 
             print(author_ind)
-            last_two = author_ind.split("and")
+            last_two = author_ind.split("and ")
             print(last_two)
             for ind in last_two:
                 ind = ind.strip()
@@ -37,8 +37,9 @@ def parse_authors(author_list):
                 last = names[len(names)-1]
                 middle = " ".join(names[1:-1]).strip()
                 auth = (first, middle, last)
-                print(auth)
-                ret.append(auth)
+                if len(names)>1:
+                    print(auth)
+                    ret.append(auth)
         else:
             names = author_ind.strip().split(" ")
             first = names[0]
@@ -65,7 +66,10 @@ def get_authors(author_list):
 
 #Takes a string with lots of keywords and returns a list of those words
 def parse_keywords(keyword_text):
-    ret = [word.strip().lower() for word in keyword_text.split(",")]
+    if keyword_text.find(';') == -1:
+        ret = [word.strip().lower() for word in keyword_text.split(",")]
+    else:
+        ret = [word.strip().lower() for word in keyword_text.split(";")]
     return ret
 
 #Takes a list of keyword strings and returns a list of keyword objects, creating those that don't already exist
@@ -117,7 +121,7 @@ class Command(BaseCommand):
                     temp_file = open('import/temp/'+title+'.pptx', 'wb')
                     for chunk in res.iter_content(chunk_size=4096):
                         if chunk:
-                            f.write(chunk)
+                            temp_file.write(chunk)
                     temp_file.close()
                     pptx_file = File(open('import/temp/'+title+'.pptx', 'rb'))
                 if title in file_dic.keys():
