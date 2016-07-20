@@ -53,7 +53,6 @@
             }, options );
 	    
             currCategory = settings.categories[0];
-	    console.log(settings.keywords);
 	    // append filter bar content
 	    filterBar.append("<h1 style=\"margin-top:7px\">FILTER</h1><input class=\"shortTextbox\" id=\"filter-textbox\" type=\"text\" value=\"\" /><h1>GROUP BY</h1>");
 	    $("#filter-textbox").autocomplete({
@@ -190,7 +189,8 @@
 		    	$(this).html(addHighlight($(this).text(), filter));
 		    });
 		    $(this).find('.publication-authors').children().each(function(){
-		    	$(this).html(addHighlight($(this).text(), filter));
+			console.log($(this).find('a').text());
+		    	$(this).find('a').html(addHighlight($(this).find('a').text(), filter));
 		    });
 		    $(this).find('.publication-title').each(function(){
 			$(this).html(addHighlight($(this).text(), filter));
@@ -209,7 +209,7 @@
 		else{
 		    $(this).fadeIn();
 		    $(this).find('.talk-speakers').children().each(function(){
-		    	$(this).html(addHighlight($(this).text(), filter));
+			$(this).find('a').html(addHighlight($(this).find('a').text(), filter));
 		    });
 		    $(this).find('.talk-title').each(function(){
 		    	$(this).html(addHighlight($(this).text(), filter));
