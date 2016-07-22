@@ -41,6 +41,7 @@
 	<!-- Grayscale template -->
 	<script src="{% static 'website/js/jquery.easing.min.js' %}"></script>
 	<script src="{% static 'website/js/grayscale.js' %}"></script>
+	<script src="{% static 'website/js/backtop.js' %}"></script>
 
   {% block external_scripts %}
 
@@ -396,7 +397,7 @@
     {% endblock %}
 </div>
 
-<p id="back-top">
+<p id="back-top" style="display: none">
     <a href="#top"><span></span>Back to Top</a>
 </p>
 
