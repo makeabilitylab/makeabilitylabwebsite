@@ -303,8 +303,14 @@ function formatPublication(pub, filter) {
 		publicationData.find(".publication-keywords").css("display", "none");
 	}
 
-	publicationData.find(".publication-download-link").attr("href", pub.pdf);
-	publicationData.find(".publication-citation-link").attr("data-content", createCitationText(pub));
+    publicationData.find(".publication-download-link").attr("href", pub.pdf);
+    if(pub.video_url){
+	publicationData.find(".publication-video-link").attr("href", pub.video_url);	
+    }
+    else{
+	publicationData.find(".publication-video-link-label").css("display", "none");
+    }
+    publicationData.find(".publication-citation-link").attr("data-content", createCitationText(pub));
 
 	return publicationData[0].outerHTML;
 }

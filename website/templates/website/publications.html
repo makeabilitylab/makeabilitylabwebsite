@@ -48,7 +48,8 @@
 				{% endfor %}
 			],
 			"date": new Date("{{pub.date.isoformat}}"),
-			"pdf": "../../media/{{ pub.pdf_file }}",
+"pdf": "../../media/{{ pub.pdf_file }}",
+"video_url": "{{pub.video.video_url}}",
 			"thumbnail": "{% thumbnail pub.thumbnail 300x0 detail %}",
 			"venue": "{{pub.book_title_short}}",
 			"pub_type": "{{pub.pub_venue_type}}",
@@ -153,7 +154,7 @@
 	        	<span class="publication-keyword"><span class="publication-keyword-text">keyword</span>,&nbsp;</span>
 	        	<span class="publication-keyword-last"><span class="publication-keyword-text">keyword</span></span>
         	    </p>
-        	    <div class="publication-download">Download: <a href="link" class="publication-download-link">[pdf]</a> | Export <a data-toggle="popover" data-html="true" data-trigger="manual" tabindex="0" title="Citation" data-content="Empty Citation" class="publication-citation-link">[Citation]</a></div>
+        	    <div class="publication-download">Download: <a href="link" class="publication-download-link">[pdf]</a> <span class="publication-video-link-label">| Video: <a href="link" class="publication-video-link">[youtube]</a></span> | Export <a data-toggle="popover" data-html="true" data-trigger="manual" tabindex="0" title="Citation" data-content="Empty Citation" class="publication-citation-link">[Citation]</a></div>
         	</div>
 	    </div>
 	</div>
