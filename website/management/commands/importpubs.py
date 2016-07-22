@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from website.models import Person, Position, Keyword, Publication
+from website.models import Person, Position, Keyword, Publication, Video
 import bibtexparser
 from django.core.files import File
 import requests
@@ -68,6 +68,12 @@ def get_keywords(keyword_list):
             new_keyword.save()
             ret.append(new_keyword)
     return ret
+
+def get_video(url, preview_url, date):
+    new_video = Video(video_url=url, video_preview_url=preview_url, date=date)
+    new_video.save()
+    return new_video
+
 
 #Returns true if a title already exists in the database to avoid duplication
 def exists(title):
@@ -170,7 +176,13 @@ class Command(BaseCommand):
                     temp_file.write(res.content)
                     temp_file.close()
                     pdf_file=File(open("import/temp/"+title+".pdf", 'rb'))
-                    new_pub=Publication(title=title, geo_location=geo_location, book_title=book_title, book_title_short=book_title_short, num_pages=num_pages, video_url=video_url, pub_venue_type=pub_venue_type, peer_reviewed=peer_reviewed, total_papers_accepted=total_papers_accepted, total_papers_submitted=total_papers_submitted, award=award, pdf_file=pdf_file, date=date.date())
+                    video_url = get_val_key('video_url', entry)
+                    preview_video_url = get_val_key('video_preview_url', entry)
+                    if video_url != None:
+                        video=get_video(video_url, preview_video_url, date.date())
+                    else:
+                        video = None
+                    new_pub=Publication(title=title, geo_location=geo_location, book_title=book_title, book_title_short=book_title_short, num_pages=num_pages, pub_venue_type=pub_venue_type, peer_reviewed=peer_reviewed, total_papers_accepted=total_papers_accepted, total_papers_submitted=total_papers_submitted, award=award, pdf_file=pdf_file, date=date.date(), video=video)
                     new_pub.save()
                     #Info on how to do the many to many crap is from here https://docs.djangoproject.com/en/1.9/topics/db/examples/many_to_many/
                     #Parse authors

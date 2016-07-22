@@ -166,6 +166,18 @@ class Position(models.Model):
     def __str__(self):
         return "Name={}, Role={}, Title={}".format(self.person.get_full_name(), self.role, self.title)
 
+class Video(models.Model):
+    #title = models.CharField(max_length=255)
+    #Do we want a title? The youtube embedded thing includes the title already so it might not be necessary
+    video_url = models.URLField(blank=True, null=True)
+    video_preview_url = models.URLField(blank=True, null=True)
+    date = models.DateField(null=True)
+
+    def get_embed(self):
+        base_url = "https://youtube.com/embed"
+        unique_url = self.video_url[self.video_url.find("/", 9):]
+        return base_url+unique_url
+    
 class Project(models.Model):
     name = models.CharField(max_length=255)
     short_name = models.CharField(max_length=255)
@@ -243,8 +255,7 @@ class Publication(models.Model):
     official_url = models.URLField(blank=True, null=True)
     geo_location = models.CharField(max_length=255, blank=True, null=True)
 
-    video_url = models.URLField(blank=True, null=True)
-    video_preview_url = models.URLField(blank=True, null=True)
+    video = models.OneToOneField(Video, on_delete=models.CASCADE, null=True, blank=True)
     talk = models.ForeignKey(Talk, blank=True, null=True)
 
     CONFERENCE = "Conference"
