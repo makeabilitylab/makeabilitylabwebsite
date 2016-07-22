@@ -1,7 +1,7 @@
 import operator, datetime, random
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, render
-from .models import Person, Publication, Talk, Position, Banner, News, Keyword
+from .models import Person, Publication, Talk, Position, Banner, News, Keyword, Video
 from django.conf import settings
 from datetime import date
 
@@ -53,6 +53,7 @@ def index(request):
     news_items_num = 5 # Defines the number of news items that will be selected
     papers_num = 3 # Defines the number of papers which will be selected
     talks_num = 8 # Defines the number of talks which will be selected
+    videos_num = 2 # Defines teh number of videos which will be selected
     all_banners = Banner.objects.filter(page=Banner.FRONTPAGE)
     displayed_banners = choose_banners(all_banners)
     print(settings.DEBUG)
@@ -63,7 +64,8 @@ def index(request):
        news_item_lengths.append((item, len(item.content.split())))
     publications = Publication.objects.order_by('-date')[:papers_num]
     talks = Talk.objects.order_by('-date')[:talks_num]
-    context = { 'people': Person.objects.all(), 'banners': displayed_banners, 'news': news_item_lengths, 'news_length': news_item_max_length, 'publications': publications, 'talks': talks, 'debug': settings.DEBUG }
+    videos = Video.objects.order_by('-date')[:videos_num]
+    context = { 'people': Person.objects.all(), 'banners': displayed_banners, 'news': news_item_lengths, 'news_length': news_item_max_length, 'publications': publications, 'talks': talks, 'videos':videos, 'debug': settings.DEBUG }
     return render(request, 'website/index.html', context)
 
 def people(request):

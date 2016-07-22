@@ -178,7 +178,7 @@ class Command(BaseCommand):
                     pdf_file=File(open("import/temp/"+title+".pdf", 'rb'))
                     video_url = get_val_key('video_url', entry)
                     preview_video_url = get_val_key('video_preview_url', entry)
-                    if video_url != None:
+                    if video_url != None and len(video_url)>0:
                         video=get_video(video_url, preview_video_url, date.date())
                     else:
                         video = None
