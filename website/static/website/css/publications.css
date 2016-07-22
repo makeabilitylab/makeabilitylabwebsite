@@ -55,12 +55,20 @@
 
 }
 
-.publication-thumbnail {
+@media (max-width: 374px){
+    .publication-thumbnail {
+	display: none;
+    }
+}
+
+@media (min-width: 375px){
+    .publication-thumbnail {
 	width:120px;
 	min-width:120px;
 	display:table-cell;
 	vertical-align: top;
 	padding-right:10px;
+    }
 }
 
 
