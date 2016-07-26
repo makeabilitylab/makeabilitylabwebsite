@@ -16,6 +16,12 @@
 .navbar {
     width: 100%;
 }
+
+.citation-links {
+    text-align: right;
+    margin-bottom: -5px;
+}
+
 .publication-list h1 {
 	color: #7F7F7F;
 	font-size: 24px;

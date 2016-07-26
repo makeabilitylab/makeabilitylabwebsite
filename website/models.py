@@ -258,6 +258,13 @@ class Publication(models.Model):
     video = models.OneToOneField(Video, on_delete=models.CASCADE, null=True, blank=True)
     talk = models.ForeignKey(Talk, blank=True, null=True)
 
+    series = models.CharField(max_length=255, blank=True, null=True)
+    isbn = models.CharField(max_length=255, blank=True, null=True)
+    doi = models.CharField(max_length=255, blank=True, null=True)
+    publisher = models.CharField(max_length=255, blank=True, null=True)
+    publisher_address = models.CharField(max_length=255, blank=True, null=True)
+    acmid = models.CharField(max_length=255, blank=True, null=True)
+
     CONFERENCE = "Conference"
     ARTICLE = "Article"
     JOURNAL = "Journal"

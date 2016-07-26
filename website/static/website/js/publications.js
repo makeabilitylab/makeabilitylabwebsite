@@ -356,7 +356,7 @@ function bibtexclick(){
 
 // combines and formats the citation metadata for display
 function createCitationText(pub) {
-	var text = "<span class=\"citation-links\"><a id=\"citation-link\" onclick=\"citationclick()\">Citation</a> | <a id=\"bibtex-link\" onclick=\"bibtexclick()\">Bibtex</a></span><br/>";
+	var text = "<div class=\"citation-links\"><a id=\"citation-link\" onclick=\"citationclick()\">Citation</a> | <a id=\"bibtex-link\" onclick=\"bibtexclick()\">Bibtex</a></div><br/>";
     // authors
     text+="<div id=\"citation-text\">";
 	pub.authors.forEach(function(author, index, array) {
@@ -387,7 +387,7 @@ function createCitationText(pub) {
 	}
     text+="</div>";
     text+="<div id=\"bibtex-text\" style=\"display: none\">";
-    text+="@inproceedings{"+pub.authors[0].last_name+",<br/>";
+    text+="@inproceedings{"+pub.authors[0].last_name+pub.series.split(" ")[0]+",<br/>";
     text+=" author = {";
     pub.authors.forEach(function(author, index, array){
 	text+=author.last_name+", "+author.first_name+" "+author.middle_name;
@@ -397,17 +397,45 @@ function createCitationText(pub) {
     });
     text+="},<br/>";
     text+=" title = {"+pub.title+"},<br/>";
-    if (pub.booktitle) {
+    if(pub.book_title && pub.book_title!="None"){
 	text+=" booktitle = {"+pub.book_title+"},<br/>";
-	text+=" series = {"+pub.book_title_short+"},<br/>"; //Is this what series is?
     }
-    text+=" year = {"+new Date(pub.date).getFullYear()+"},<br/>";
-    if (pub.location) {
+    if(pub.series && pub.series!="None"){
+	text+=" series = {"+pub.series+"},<br/>"; //Is this what series is?
+    }
+    text+=" year = {"+pub.date.getFullYear()+"},<br/>";
+    if (pub.isbn && pub.isbn!="None" && pub.isbn!="tbd") {
+	text+=" isbn = {"+pub.isbn+"},<br/>";
+    }
+    if (pub.geo_location && pub.geo_location!="None") {
 	text+=" location = {"+pub.geo_location+"},<br/>";
     }
-    if (pub.page_num_start) {
+    if (pub.page_num_start && pub.page_num_start!="None") {
 	text+=" pages = {"+pub.page_num_start+"--"+pub.page_num_end+"},<br/>";
-	text+=" numpages = {"+pub.page_num_end-pub.page_num_start+"},<br/>";
+	text+=" numpages = {"+String(parseInt(pub.page_num_end)-parseInt(pub.page_num_start))+"},<br/>";
+    }
+    if (pub.url && pub.url!="None" && pub.url!="tbd"){
+	text+=" url = {"+pub.url+"},<br/>";
+    }
+    if (pub.doi && pub.doi!="None" && pub.doi!="tbd"){
+	text+=" doi = {"+pub.doi+"},<br/>";
+    }
+    if (pub.acmid && pub.acmid!="None" && pub.acmid!="tbd"){
+	text+=" acmid = {"+pub.acmid+"},<br/>";
+    }
+    if (pub.publisher && pub.publisher!="None"){
+	text+=" publisher = {"+pub.publisher+"},<br/>";
+	text+=" publisher_address = {"+pub.publisher_address+"},<br/>";
+    }
+    if (pub.award && pub.award!="None"){
+	text+=" award = {"+pub.award+"},<br/>";
+    }
+    if (pub.total_papers_accepted && pub.total_papers_accepted!="None") {
+	text+=" total_papers_submitted = {"+pub.total_papers_submitted+"},<br/>";
+	text+=" total_papers_accepted = {"+pub.total_papers_accepted+"},<br/>";
+    }
+    if (pub.video_url && pub.video_url!="None"){
+	text+=" video_url = {"+pub.video_url+"},<br/>";
     }
     text+=" keywords = {";
     pub.keywords.forEach(function(keyword, index, array){

@@ -52,8 +52,18 @@
 "video_url": "{{pub.video.video_url}}",
 			"thumbnail": "{% thumbnail pub.thumbnail 300x0 detail %}",
 			"venue": "{{pub.book_title_short}}",
-			"pub_type": "{{pub.pub_venue_type}}",
-			{% if pub.award %}"award": "{{ pub.award }}",{% endif %}
+"pub_type": "{{pub.pub_venue_type}}",
+"geo_location": "{{pub.geo_location}}",
+"series": "{{pub.series}}",
+"page_num_start": "{{pub.page_num_start}}",
+"page_num_end": "{{pub.page_num_end}}",
+"book_title": "{{pub.book_title}}",
+"url": "{{pub.official_url}}",
+"doi": "{{pub.doi}}",
+"publisher": "{{pub.publisher}}",
+"publisher_address": "{{pub.publisher_address}}",
+"isbn": "{{pub.isbn}}",
+{% if pub.award %}"award": "{{ pub.award }}",{% endif %}
 			{% if pub.total_papers_accepted and pub.total_papers_submitted %}
 			"total_papers_accepted": {{pub.total_papers_accepted}},
 			"total_papers_submitted": {{pub.total_papers_submitted}},

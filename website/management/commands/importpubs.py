@@ -107,11 +107,25 @@ class Command(BaseCommand):
                     
                     num_pages=get_val_key('numpages', entry)
                     geo_location=get_val_key('location', entry)
+                    print(geo_location)
                     video_url=get_val_key('video_url', entry)
                     #Compare to pub_venue_type
                     pub_type=get_val_key('pub_type', entry)
                     date_text=get_val_key('month', entry)+", "+get_val_key("year", entry)
-                
+                    series=get_val_key('series', entry)
+                    isbn=get_val_key('isbn', entry)
+                    doi=get_val_key('doi', entry)
+                    publisher=get_val_key('published', entry)
+                    publisher_address=get_val_key('address', entry)
+                    page_range=get_val_key('pages', entry)
+                    acmid=get_val_key('acmid', entry)
+                    url=get_val_key('url', entry)
+                    if page_range != None and page_range != 'tbd' and page_range != '-':
+                        page_start = page_range.split('--')[0]
+                        page_end = page_range.split('--')[1]
+                    else:
+                        page_start=None
+                        page_end=None
                     date=datetime.strptime(date_text, '%B, %Y')
                     print(date.date())
                     if pub_type==None:
@@ -182,7 +196,7 @@ class Command(BaseCommand):
                         video=get_video(video_url, preview_video_url, date.date())
                     else:
                         video = None
-                    new_pub=Publication(title=title, geo_location=geo_location, book_title=book_title, book_title_short=book_title_short, num_pages=num_pages, pub_venue_type=pub_venue_type, peer_reviewed=peer_reviewed, total_papers_accepted=total_papers_accepted, total_papers_submitted=total_papers_submitted, award=award, pdf_file=pdf_file, date=date.date(), video=video)
+                    new_pub=Publication(title=title, geo_location=geo_location, book_title=book_title, book_title_short=book_title_short, num_pages=num_pages, pub_venue_type=pub_venue_type, peer_reviewed=peer_reviewed, total_papers_accepted=total_papers_accepted, total_papers_submitted=total_papers_submitted, award=award, pdf_file=pdf_file, date=date.date(), video=video, series=series, isbn=isbn, doi=doi, publisher=publisher, publisher_address=publisher_address, acmid=acmid, page_num_start=page_start, page_num_end=page_end, official_url=url)
                     new_pub.save()
                     #Info on how to do the many to many crap is from here https://docs.djangoproject.com/en/1.9/topics/db/examples/many_to_many/
                     #Parse authors
