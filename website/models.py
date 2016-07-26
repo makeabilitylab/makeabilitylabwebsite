@@ -1,7 +1,8 @@
 from django.db import models
 from image_cropping import ImageRatioField
 from sortedm2m.fields import SortedManyToManyField
-
+from django.dispatch import receiver
+from django.db.models.signals import pre_delete
 from datetime import date
 from website.utils.fileutils import UniquePathAndRename
 
@@ -41,6 +42,11 @@ class Banner(models.Model):
         else:
             return "Banner object"
 
+@receiver(pre_delete, sender=Banner)
+def banner_delete(sender, instance, **kwargs):
+    if instance.image:
+        isntance.image.delete(False)
+
 class Person(models.Model):
     first_name = models.CharField(max_length=40)
     middle_name = models.CharField(max_length=50, blank=True, null=True)
@@ -70,6 +76,11 @@ class Person(models.Model):
 
     def __str__(self):
         return self.get_full_name()
+
+@receiver(pre_delete, sender=Person)
+def person_delete(sender, instance, **kwargs):
+    if instance.image:
+        instance.image.delete(False)
 
 class Position(models.Model):
     person = models.ForeignKey(Person)
@@ -166,6 +177,7 @@ class Position(models.Model):
     def __str__(self):
         return "Name={}, Role={}, Title={}".format(self.person.get_full_name(), self.role, self.title)
 
+    
 class Video(models.Model):
     #title = models.CharField(max_length=255)
     #Do we want a title? The youtube embedded thing includes the title already so it might not be necessary
@@ -225,6 +237,12 @@ class Talk(models.Model):
 
     def __str__(self):
         return self.title
+@receiver(pre_delete, sender=Talk)
+def talk_delete(sender, instance, **kwargs):
+    if instance.pdf_file:
+        instance.pdf_file.delete(False)
+    if instance.raw_file:
+        instance.raw_file.delete(False)
 
 class Publication(models.Model):
     title = models.CharField(max_length=255)
@@ -326,6 +344,15 @@ class Publication(models.Model):
     def __str__(self):
         return self.title
 
+@receiver(pre_delete, sender=Publication)
+def publication_delete(sender, instance, **kwards):
+    if instance.video:
+        instance.video.delete(False)
+    if instance.thumbnail:
+        instance.thumbnail.delete(False)
+    if instance.pdf_file:
+        instance.pdf_file.delete(False)
+
 class Poster(models.Model):
     publication = models.ForeignKey(Publication, blank=True, null=True)
 
@@ -348,6 +375,13 @@ class Poster(models.Model):
             return self.publication.title
         else:
             return self.title
+
+@receiver(pre_delete, sender=Poster)
+def poster_delete(sender, instance, **kwargs):
+    if instance.pdf_file:
+        instance.pdf_file.delete(False)
+    if instance.raw_file:
+        instance.raw_file.delete(False)
 
 class News(models.Model):
     title = models.CharField(max_length=255)
@@ -379,3 +413,8 @@ class News(models.Model):
         # These names are used in the admin display, see https://docs.djangoproject.com/en/1.9/ref/models/options/#verbose-name
         verbose_name = 'News Item'
         verbose_name_plural = 'News'
+
+@receiver(pre_delete, sender=News)
+def news_delete(sender, instance, **kwards):
+    if instance.image:
+        instance.image.delete(False)
