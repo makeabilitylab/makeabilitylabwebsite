@@ -30,7 +30,6 @@
 {% endblock %}
 
 {% block scripts %}
-
 	var publications = [
 		{% for pub in publications %}
 		{
@@ -63,6 +62,8 @@
 "publisher": "{{pub.publisher}}",
 "publisher_address": "{{pub.publisher_address}}",
 "isbn": "{{pub.isbn}}",
+"best_paper": "{% static 'website/img/bestpaper.png' %}",
+"honorable_mention": "{% static 'website/img/honorablemention.png' %}",
 {% if pub.award %}"award": "{{ pub.award }}",{% endif %}
 			{% if pub.total_papers_accepted and pub.total_papers_submitted %}
 			"total_papers_accepted": {{pub.total_papers_accepted}},

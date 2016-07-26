@@ -281,12 +281,20 @@ function formatPublication(pub, filter) {
 
 	publicationData.find(".publication-venue").html(addHighlight(pub.venue, filter));
 
-	if(pub.award) { 
-		publicationData.find(".publication-award-text").html(addHighlight(pub.award, filter));
-	} else {
-		publicationData.find(".publication-award").css("display", "none");
-	}
-
+    if(pub.award) {
+	console.log(pub.title);
+	var award_icon;
+	console.log(pub.award);
+	if(pub.award=="Best Paper Award")
+	    award_icon=pub.best_paper;
+	else
+	    award_icon=pub.honorable_mention;
+	publicationData.find(".publication-id").append("<img src=\""+award_icon+"\" align=\"center\" class=\"award-icon\"/>");
+	publicationData.find(".publication-award-text").html(addHighlight(pub.award, filter));
+    } else {
+	publicationData.find(".publication-award").css("display", "none");
+    }
+    
     if(pub.total_papers_accepted && pub.total_papers_submitted) {
     	publicationData.find(".publication-acceptance-rate-text").html("Acceptance Rate: " + (pub.total_papers_accepted / pub.total_papers_submitted * 100).toFixed(0) + "% (" + pub.total_papers_accepted + " / " + pub.total_papers_submitted + ")");
 	} else {

@@ -45,7 +45,7 @@
 	padding:0;
 }
 
-.publication-template img {
+.publication-thumbnail-image {
 	border: 1px solid #dddddd;
 	width:100%;
 	max-width:135px;
@@ -78,8 +78,16 @@
 	display:table-cell;
 	vertical-align: top;
 	padding-right:10px;
+	position: relative;
     }
 }
+
+.publication-award-banner {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
 
 
 @media (max-width: 768px){
@@ -160,4 +168,11 @@
 
 .publication-citation-link {
 	cursor:pointer;
+}
+
+.award-icon {
+    borders: none;
+    width: 20px;
+    height: auto;
+    align: left;
 }
