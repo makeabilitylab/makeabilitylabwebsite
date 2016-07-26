@@ -26,6 +26,17 @@ var pubTypeCodes = {
 // initialization code that's called when the window has finished loading
 $(window).load(function () {
 
+    $("#citation-link").click(function(){
+	console.log("citation clicked");
+	$("#citation-text").css('display', 'block');
+	$("#bibtex-text").css('display', 'none');
+    });
+    $("#bibtex-link").click(function(){
+	console.log("bibtex clicked");
+	$("#bibtex-text").css('display', 'block');
+	$("#citation-text").css('display', 'none');
+    });
+
 	// preserve the template designs so that they're not lost when updating the display
 	groupTemplate = $(".group-template").clone();
 	publicationTemplate = $(".publication-template").clone();
@@ -334,11 +345,20 @@ function afterDisplay() {
 	});
 }
 
+function citationclick(){
+    $("#citation-text").css('display', 'block');
+    $("#bibtex-text").css('display', 'none');
+}
+function bibtexclick(){
+    $("#bibtex-text").css('display', 'block');
+    $("#citation-text").css('display', 'none');
+}
+
 // combines and formats the citation metadata for display
 function createCitationText(pub) {
-	var text = "";
-	
-	// authors
+	var text = "<span class=\"citation-links\"><a id=\"citation-link\" onclick=\"citationclick()\">Citation</a> | <a id=\"bibtex-link\" onclick=\"bibtexclick()\">Bibtex</a></span><br/>";
+    // authors
+    text+="<div id=\"citation-text\">";
 	pub.authors.forEach(function(author, index, array) {
 		text += author.last_name + ", " + author.first_name.substring(0,1) + ". ";
 		if(author.middle_name && author.middle_name.length > 0)
@@ -365,6 +385,39 @@ function createCitationText(pub) {
 	} else if(pub.start_page && pub.end_page) {
 		text += pub.start_page + "&ndash;" + pub.end_page + ".";
 	}
+    text+="</div>";
+    text+="<div id=\"bibtex-text\" style=\"display: none\">";
+    text+="@inproceedings{"+pub.authors[0].last_name+",<br/>";
+    text+=" author = {";
+    pub.authors.forEach(function(author, index, array){
+	text+=author.last_name+", "+author.first_name+" "+author.middle_name;
+	if (index != array.length-1){
+	    text+=" and ";
+	}
+    });
+    text+="},<br/>";
+    text+=" title = {"+pub.title+"},<br/>";
+    if (pub.booktitle) {
+	text+=" booktitle = {"+pub.book_title+"},<br/>";
+	text+=" series = {"+pub.book_title_short+"},<br/>"; //Is this what series is?
+    }
+    text+=" year = {"+new Date(pub.date).getFullYear()+"},<br/>";
+    if (pub.location) {
+	text+=" location = {"+pub.geo_location+"},<br/>";
+    }
+    if (pub.page_num_start) {
+	text+=" pages = {"+pub.page_num_start+"--"+pub.page_num_end+"},<br/>";
+	text+=" numpages = {"+pub.page_num_end-pub.page_num_start+"},<br/>";
+    }
+    text+=" keywords = {";
+    pub.keywords.forEach(function(keyword, index, array){
+	text+=keyword;
+	if (index != array.length-1) {
+	    text+=", "; 
+	}
+    });
+    text+="}<br/>}"
+    text+="</div>";
 
 	return text;
 }

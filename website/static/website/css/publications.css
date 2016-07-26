@@ -46,6 +46,10 @@
 	margin:auto;
 }
 
+.popover {
+    max-width: 100%;
+}
+
 .publication-info {
 	padding-bottom:20px; /* height of the downloads bar */
 	display:table-cell;
