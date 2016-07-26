@@ -398,8 +398,9 @@ function createCitationText(pub) {
     text+="},<br/>";
     text+=" title = {"+pub.title+"},<br/>";
     if(pub.book_title && pub.book_title!="None"){
-	text+=" booktitle = {"+pub.book_title+"},<br/>";
+	text+=" book_title = {"+pub.book_title+"},<br/>";
     }
+    text+=" book_title_short = {"+pub.venue+"},<br/>";
     if(pub.series && pub.series!="None"){
 	text+=" series = {"+pub.series+"},<br/>"; //Is this what series is?
     }
