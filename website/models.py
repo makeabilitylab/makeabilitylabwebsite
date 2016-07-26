@@ -53,6 +53,7 @@ class Person(models.Model):
     last_name = models.CharField(max_length=50)
     email = models.EmailField(blank=True, null=True)
     personal_website = models.URLField(blank=True, null=True)
+    bio = models.CharField(max_length=2048, blank=True, null=True)
 
     # Note: the ImageField requires the pillow library, which can be installed using pip
     # pip3 install Pillow
