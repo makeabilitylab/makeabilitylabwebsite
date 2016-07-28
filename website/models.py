@@ -355,8 +355,6 @@ class Publication(models.Model):
 
 @receiver(pre_delete, sender=Publication)
 def publication_delete(sender, instance, **kwards):
-    if instance.video:
-        instance.video.delete(False)
     if instance.thumbnail:
         instance.thumbnail.delete(False)
     if instance.pdf_file:
