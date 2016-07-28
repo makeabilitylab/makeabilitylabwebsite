@@ -62,7 +62,7 @@
 				    <p>{{item.title}}</p>
 				</a>
 			    </div>
-			    <p class="news_date">{{item.short_date}} | {{item.author}}</p><!--</p><p class="news_date">{{item.author}}</p>-->
+			    <p class="news_date">{{item.short_date}} | <a href="{% url 'website:member' item.author.id %}">{{item.author}}</a></p><!--</p><p class="news_date">{{item.author}}</p>-->
 			</div>
 		    </div>
 		    <div class="row news_body">
@@ -79,7 +79,27 @@
 	    <div class="row about-row">
 		<h3 class="news-type-label">About</h3>
 		<p class="project-about">
-		    <iframe class="video-about" src="{% with project.video_set.all|first as first_video %}{{first_video.get_embed}}{% endwith %}" frameborder="0" allowfullscreen></iframe>
+		    <div style="float: right">
+			<div class="header-visual">
+			    {% if project.header_visual %}
+			    <iframe class="video-about" src="{{project.header_visual.get_visual}}" frameborder="0" allowfullscreen></iframe>
+			    <br/>
+			    <span class="header-visual-title">{{project.header_visual_title}}</span><br/>
+			    {% if project.header_visual_caption %}
+			    <span class="header-visual-caption">{{project.header_visual_caption}}</span>
+			    {% endif %}
+			    {% else %}
+			    {% with project.video_set.all|first as first_video %}
+			    <iframe class="video-about" src="{{first_video.get_embed}}" frameborder="0" allowfullscreen></iframe><br/>
+			    <span class="header-visual-title">{{first_video.title}}</span><br/>
+			    {% if project.header_visual_caption %}
+			    <span class="header-visual-caption">{{first_video.caption}}</span>
+			    {% endif %}
+			    {% endwith %}
+			    {% endif %}
+			    
+			</div>
+		    </div>
 		    {{project.about}}
 		</p>
 	    </div>
@@ -117,7 +137,7 @@
 				{% endfor %}
 			    </span>,&nbsp;</span>
 	        	</p>
-        		<div class="publication-download">Download: <a href="../../media/{{pub.pdf_file}}" class="publication-download-link">[pdf]</a> <span class="publication-video-link-label">| Video: <a href="{{pub.video.video_url}}" class="publication-video-link">[youtube]</a></span> | Export <a data-toggle="popover" data-html="true" data-trigger="manual" tabindex="0" title="Citation" data-content="Empty Citation" class="publication-citation-link">[Citation]</a></div>
+        		<div class="publication-download">Download: <a href="../../media/{{pub.pdf_file}}" class="publication-download-link">[pdf]</a> <span class="publication-video-link-label">| {% if pub.video %}Video: <a href="{{pub.video.video_url}}" class="publication-video-link">[youtube]</a></span> | {% endif %}Export <a data-toggle="popover" data-html="true" data-trigger="manual" tabindex="0" title="Citation" data-content="Empty Citation" class="publication-citation-link">[Citation]</a></div>
 		    </div>
 		</div>
 		{% endfor %}
@@ -133,7 +153,9 @@
 		    <iframe class="video" src="{{video.get_embed}}" frameborder="0" allowfullscreen></iframe>
 		</div>
 		<p class="video-title">{{video.title}}</p>
+		{% if video.caption %}
 		<p class="video-location">{{video.caption}} </p>
+		{% endif %}
 		<p class="video-links">
 		    <a href="{{video.video_url}}">YouTube</a>
 		    {% if video.publication %}

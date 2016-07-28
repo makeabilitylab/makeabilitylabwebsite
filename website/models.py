@@ -188,6 +188,22 @@ class Keyword(models.Model):
     def __str__(self):
         return self.keyword    
 
+class Project_header(models.Model):
+    video_url = models.URLField(blank=True, null=True)
+    title = models.CharField(max_length=255)
+    caption = models.CharField(max_length=255, blank=True, null=True)
+    image = models.ImageField(upload_to='projects/images/', editable=False, blank=True, null=True, max_length=255)
+
+    def get_visual(self):
+        if self.video_url:
+            return self.get_embed
+        elif self.image:
+            return "<img src=\""+self.image+"\">"
+
+    def get_embed(self):
+        base_url = "https://youtube.com/embed"
+        unique_url = self.video_url[self.video_url.find("/", 9):]
+        return base_url+unique_url
     
 class Project(models.Model):
     name = models.CharField(max_length=255)
@@ -196,9 +212,7 @@ class Project(models.Model):
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True, blank=True)
 
-
-    header_visual_title = models.CharField(max_length=255)
-    header_visual_caption = models.CharField(max_length=255, blank=True, null=True)
+    header_visual = models.ForeignKey(Project_header, blank=True, null=True)
     people = models.ManyToManyField(Person, blank=True, null=True)
     keywords = models.ManyToManyField(Keyword, blank=True, null=True)
     #pis = models.ManyToOneField(Person, blank=True, null=True)
@@ -221,6 +235,9 @@ class Video(models.Model):
         base_url = "https://youtube.com/embed"
         unique_url = self.video_url[self.video_url.find("/", 9):]
         return base_url+unique_url
+
+    def __str__(self):
+        return self.title
 
 class Talk(models.Model):
     title = models.CharField(max_length=255)
@@ -429,11 +446,15 @@ class News(models.Model):
         day=self.date.strftime('%d')
         year=self.date.strftime('%Y')
         return month+" "+day+", "+year
+
+    def __str__(self):
+        return self.title
     
     class Meta:
         # These names are used in the admin display, see https://docs.djangoproject.com/en/1.9/ref/models/options/#verbose-name
         verbose_name = 'News Item'
         verbose_name_plural = 'News'
+        
 
 @receiver(pre_delete, sender=News)
 def news_delete(sender, instance, **kwards):

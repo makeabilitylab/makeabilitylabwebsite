@@ -9,7 +9,9 @@
 .video-about {
     height: 300px;
     width: 535px; /*1.78 * height*/
-    float: right;
+}
+
+.header-visual {
     padding-right: 10px;
     margin-left: 20px;
     margin-bottom: 20px;
@@ -26,4 +28,20 @@
 
 .publication-template {
     margin: 0px;
+}
+
+.header-visual-title {
+    	font-family: adelle-regular;
+	font-weight: bold;
+	color: #464D59;
+	font-size: 15px;
+	word-wrap: break-word;
+	text-overflow: ellipsis;
+	padding-top: 5px;
+	margin-bottom: 0px;
+}
+
+.header-visual-caption {
+    margin-top: 0px;
+    color: #7F7F7F;
 }
