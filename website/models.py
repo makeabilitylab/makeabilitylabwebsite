@@ -45,7 +45,7 @@ class Banner(models.Model):
 @receiver(pre_delete, sender=Banner)
 def banner_delete(sender, instance, **kwargs):
     if instance.image:
-        isntance.image.delete(False)
+        instance.image.delete(False)
 
 class Person(models.Model):
     first_name = models.CharField(max_length=40)

@@ -108,7 +108,7 @@
                 </div>
             {% endfor %}
         </div>
-        <ol class="carousel-indicators">
+        <ol class="carousel-indicators"  {% if banners|length < 2 %} style="display: none" {% endif %}>
           {% for banner in banners %}
           <li data-target="#mainCarousel" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
           {% endfor %}
