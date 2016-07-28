@@ -1,7 +1,7 @@
 import operator, datetime, random
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, render
-from .models import Person, Publication, Talk, Position, Banner, News, Keyword, Video
+from .models import Person, Publication, Talk, Position, Banner, News, Keyword, Video, Project
 from django.conf import settings
 from datetime import date
 
@@ -177,3 +177,18 @@ def talks(request, filter=None):
 
 def website_analytics(request):
    return render(request, 'admin/analytics.html')
+
+
+def projects(request):
+   all_banners = Banner.objects.filter(page=Banner.PROJECTS)
+   displayed_banners = choose_banners(all_banners)
+   projects = Project.objects.all()
+   context = {'projects': projects, 'banners': displayed_banners, 'debug': settings.DEBUG}
+   return render(request, 'website/projects.html', context)
+
+def project_ind(request, project_id):
+   project = get_object_or_404(Project, pk=project_id)
+   all_banners = Banner.objects.filter(page=Banner.INDPROJECT)
+   displayed_banners = choose_banners(all_banners)
+   context = {'banners': displayed_banners, 'project': project, 'debug':settings.DEBUG}
+   return render(request, 'website/indproject.html', context)

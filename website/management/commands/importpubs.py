@@ -69,8 +69,8 @@ def get_keywords(keyword_list):
             ret.append(new_keyword)
     return ret
 
-def get_video(url, preview_url, date):
-    new_video = Video(video_url=url, video_preview_url=preview_url, date=date)
+def get_video(url, preview_url, date, title, caption):
+    new_video = Video(video_url=url, video_preview_url=preview_url, date=date, title=title, caption=caption)
     new_video.save()
     return new_video
 
@@ -193,7 +193,7 @@ class Command(BaseCommand):
                     video_url = get_val_key('video_url', entry)
                     preview_video_url = get_val_key('video_preview_url', entry)
                     if video_url != None and len(video_url)>0:
-                        video=get_video(video_url, preview_video_url, date.date())
+                        video=get_video(video_url, preview_video_url, date.date(), title, book_title_short)
                     else:
                         video = None
                     new_pub=Publication(title=title, geo_location=geo_location, book_title=book_title, book_title_short=book_title_short, num_pages=num_pages, pub_venue_type=pub_venue_type, peer_reviewed=peer_reviewed, total_papers_accepted=total_papers_accepted, total_papers_submitted=total_papers_submitted, award=award, pdf_file=pdf_file, date=date.date(), video=video, series=series, isbn=isbn, doi=doi, publisher=publisher, publisher_address=publisher_address, acmid=acmid, page_num_start=page_start, page_num_end=page_end, official_url=url)

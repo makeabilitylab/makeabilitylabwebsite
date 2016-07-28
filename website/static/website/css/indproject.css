@@ -1,0 +1,29 @@
+.info-title {
+    margin-left: 0px;
+}
+
+.project-intro-content {
+    padding-right: 30px;
+}
+
+.video-about {
+    height: 300px;
+    width: 535px; /*1.78 * height*/
+    float: right;
+    padding-right: 10px;
+    margin-left: 20px;
+    margin-bottom: 20px;
+}
+
+.content-container {
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+.no-margin {
+    padding: 0px;
+}
+
+.publication-template {
+    margin: 0px;
+}

@@ -10,4 +10,6 @@ urlpatterns = [
     url(r'^publications/(?P<filter>[\w -]{0,50})/$', views.publications, name='publications'),
     url(r'^talks/$', views.talks, name='talks'),
     url(r'^talks/(?P<filter>[\w -]{0,50})/$', views.talks, name='talks'),
+    url(r'^projects/&', views.projects, name='projects'),
+    url(r'^project/(?P<project_id>[0-9]+)/$', views.project_ind, name='project_ind')
 ]

@@ -11,11 +11,15 @@ class Banner(models.Model):
     PEOPLE = "PEOPLE"
     PUBLICATIONS = "PUBLICATIONS"
     TALKS = "TALKS"
+    PROJECTS = "PROJECTS"
+    INDPROJECT = "INDPROJECT"
     PAGE_CHOICES = (
          (FRONTPAGE, "Front Page"),
          (PEOPLE, "People"),
          (PUBLICATIONS, "Publications"),
          (TALKS, "Talks"),
+         (PROJECTS, "Projects"),
+         (INDPROJECT, "Ind_Project")
     )
     page = models.CharField(max_length=50, choices=PAGE_CHOICES, default="FRONTPAGE")
     image = models.ImageField(blank=True, upload_to=UniquePathAndRename("banner", True), max_length=255)
@@ -178,31 +182,45 @@ class Position(models.Model):
     def __str__(self):
         return "Name={}, Role={}, Title={}".format(self.person.get_full_name(), self.role, self.title)
 
+class Keyword(models.Model):
+    keyword = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.keyword    
+
     
+class Project(models.Model):
+    name = models.CharField(max_length=255)
+    short_name = models.CharField(max_length=255)
+    sponsors = models.CharField(max_length=255)
+    start_date = models.DateField(null=True)
+    end_date = models.DateField(null=True, blank=True)
+
+
+    header_visual_title = models.CharField(max_length=255)
+    header_visual_caption = models.CharField(max_length=255, blank=True, null=True)
+    people = models.ManyToManyField(Person, blank=True, null=True)
+    keywords = models.ManyToManyField(Keyword, blank=True, null=True)
+    #pis = models.ManyToOneField(Person, blank=True, null=True)
+
+    about = models.CharField(max_length = 8192, blank=True, null=True)
+    def __str__(self):
+        return self.name
+
 class Video(models.Model):
     #title = models.CharField(max_length=255)
     #Do we want a title? The youtube embedded thing includes the title already so it might not be necessary
     video_url = models.URLField(blank=True, null=True)
     video_preview_url = models.URLField(blank=True, null=True)
+    title = models.CharField(max_length=255)
+    caption = models.CharField(max_length=255, blank=True, null=True)
     date = models.DateField(null=True)
+    project = models.ForeignKey(Project, blank=True, null=True)
 
     def get_embed(self):
         base_url = "https://youtube.com/embed"
         unique_url = self.video_url[self.video_url.find("/", 9):]
         return base_url+unique_url
-    
-class Project(models.Model):
-    name = models.CharField(max_length=255)
-    short_name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.name
-
-class Keyword(models.Model):
-    keyword = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.keyword
 
 class Talk(models.Model):
     title = models.CharField(max_length=255)
@@ -404,6 +422,8 @@ class News(models.Model):
     caption = models.CharField(max_length=1024, blank=True, null=True)
     alt_text = models.CharField(max_length=1024, blank=True, null=True)
 
+    project = models.ForeignKey(Project, blank=True, null=True)
+    
     def short_date(self):
         month=self.date.strftime('%b')
         day=self.date.strftime('%d')
