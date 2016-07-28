@@ -45,3 +45,17 @@
     margin-top: 0px;
     color: #7F7F7F;
 }
+
+
+.project-gallery {
+    width: 100%;
+    padding-bottom: 10px;
+}
+
+.project-gallery-col {
+    padding-left: 0px;
+}
+
+.project-people-col {
+    padding-left: 0px;
+}

@@ -206,24 +206,37 @@
 		    </div>
 		    {% endfor %}
 		</div>
-		<div class="row">
-		    {% for member in project.people.all %}
-                    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths">
-			<a href="{% url 'website:member' member.id %}">
-                            <img src="{% thumbnail member.image 245x245 box=member.cropping crop detail %}" class="img-responsive"/>
-			</a>
-			<div class="item-info">
-                            <a href="{% url 'website:member' member.id %}">
-				<h5>{{ member.get_full_name }}</h5>
-                            </a>
-                            {{ member.position.title }}, {{ member.position.get_department_abbreviated }}
-                            <br/>
-                            {{ member.position.school }}
-			</div>
-                    </div>
-		    {% endfor %}
-		</div>
 	    </div>
+	</div>
+	<div class="row">
+	    <h3 class="news-type-label">Photo Gallery</h3>
+	    {% for image in project.photo_set.all %}
+	    <div class="col-md-4 project-gallery-col">
+		<img src="{{image.picture.url}}" alt="image.alt_text" class="project-gallery">
+	    </div>
+	    {% endfor %}
+	</div>
+	<div class="row">
+	    <h3 class="news-type-label">People</h3>
+	    {% for member in project.people.all %}
+            <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths project-people-col">
+		<a href="{% url 'website:member' member.id %}">
+                    <img src="{% thumbnail member.image 245x245 box=member.cropping crop detail %}" class="img-responsive"/>
+		</a>
+		<div class="item-info">
+                    <a href="{% url 'website:member' member.id %}">
+			<h5>{{ member.get_full_name }}</h5>
+                    </a>
+		    {% if member.position_set.all|length > 0 %}
+		    {% with member.position_set.all|first as position %}
+                    {{ position.title }}, {{ position.get_department_abbreviated }}
+                    <br/>
+                    {{ position.school }}
+		    {% endwith %}
+		    {% endif %}
+		</div>
+            </div>
+	    {% endfor %}
 	</div>
     </div>
 </div>

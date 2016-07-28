@@ -178,6 +178,22 @@ class Project_header(models.Model):
         unique_url = self.video_url[self.video_url.find("/", 9):]
         return base_url+unique_url
 
+class Photo(models.Model):
+    picture = models.ImageField(upload_to='projects/images/', max_length=255)
+    caption = models.CharField(max_length=255, blank=True, null=True)
+    alt_text = models.CharField(max_length=255, blank=True, null=True)
+    project = models.ForeignKey(Project, blank=True, null=True)
+    picture.help_text = 'You must select "Save and continue editing" at the bottom of the page after uploading a new image for cropping. Please note that since we are using a responsive design with fixed height banners, your selected image may appear differently on various screens.'
+
+    # Copied from person model
+    # LS: Added image cropping to fixed ratio
+    # See https://github.com/jonasundderwolf/django-image-cropping
+    # size is "width x height"
+    # TODO: update with desired aspect ratio and maximum resolution
+    cropping = ImageRatioField('picture', '368x245', size_warning=True)
+    def __str__(self):
+        return self.caption
+
 class Video(models.Model):
     #title = models.CharField(max_length=255)
     #Do we want a title? The youtube embedded thing includes the title already so it might not be necessary

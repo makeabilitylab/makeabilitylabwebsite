@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Person, Publication, Position, Talk, Project, Poster, Keyword, News, Banner, Video, Project_header
+from .models import Person, Publication, Position, Talk, Project, Poster, Keyword, News, Banner, Video, Project_header, Photo
 
 from django.http import HttpResponse
 from datetime import datetime
@@ -38,6 +38,9 @@ class ProjectHeaderInline(ImageCroppingMixin, admin.StackedInline):
 
 #Uses format as per https://github.com/jonasundderwolf/django-image-cropping to add cropping to the admin page
 class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
+    pass
+
+class PhotoAdmin(ImageCroppingMixin, admin.ModelAdmin):
     pass
 
 class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
@@ -133,3 +136,4 @@ admin.site.register(Keyword)
 admin.site.register(News, NewsAdmin)
 admin.site.register(Banner, BannerAdmin)
 admin.site.register(Video)
+admin.site.register(Photo, PhotoAdmin)
