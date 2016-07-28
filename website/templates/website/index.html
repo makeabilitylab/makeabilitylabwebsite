@@ -88,13 +88,15 @@
 				    <p>{{item.title}}</p>
 				</a>
 			    </div>
-			    <p class="news_date">{{item.short_date}} | {{item.author}}</p><!--</p><p class="news_date">{{item.author}}</p>-->
+			    <p class="news_date">{{item.short_date}} | <a href="{% url 'website:member' item.author.id %}">{{item.author}}</a></p><!--</p><p class="news_date">{{item.author}}</p>-->
 			</div>
 		    </div>
 		    <div class="row news_body">
 			<!-- Truncation now uses a set number of lines which can be modified in news.css content-clamp class by changing -webkit-line-clamp -->
 			<div class="news_content content-clamp">
+			    {% autoescape off %}
 			    <p>{{item.content}}</p>
+			    {% endautoescape %}
 			</div>
 		    </div>
 		    {% endfor %}
