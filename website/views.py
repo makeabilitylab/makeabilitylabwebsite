@@ -188,7 +188,7 @@ def projects(request):
 
 def project_ind(request, project_name):
    project = get_object_or_404(Project, name=project_name)
-   all_banners = Banner.objects.filter(page=Banner.INDPROJECT)
+   all_banners = project.banner_set.all()
    displayed_banners = choose_banners(all_banners)
    context = {'banners': displayed_banners, 'project': project, 'debug':settings.DEBUG}
    return render(request, 'website/indproject.html', context)

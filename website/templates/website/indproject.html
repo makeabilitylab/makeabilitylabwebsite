@@ -81,18 +81,22 @@
 		<p class="project-about">
 		    <div style="float: right">
 			<div class="header-visual">
-			    {% if project.header_visual %}
-			    <iframe class="video-about" src="{{project.header_visual.get_visual}}" frameborder="0" allowfullscreen></iframe>
+			    {% if project.project_header_set.all|length > 0 %}
+			    {% with project.project_header_set.all|first as header %}
+			    {% autoescape off %}
+			    {{header.get_visual}}
+			    {% endautoescape %}
 			    <br/>
-			    <span class="header-visual-title">{{project.header_visual_title}}</span><br/>
-			    {% if project.header_visual_caption %}
-			    <span class="header-visual-caption">{{project.header_visual_caption}}</span>
+			    <span class="header-visual-title">{{header.title}}</span><br/>
+			    {% if header.caption %}
+			    <span class="header-visual-caption">{{header.caption}}</span>
 			    {% endif %}
+			    {% endwith %}
 			    {% else %}
 			    {% with project.video_set.all|first as first_video %}
 			    <iframe class="video-about" src="{{first_video.get_embed}}" frameborder="0" allowfullscreen></iframe><br/>
 			    <span class="header-visual-title">{{first_video.title}}</span><br/>
-			    {% if project.header_visual_caption %}
+			    {% if first_video.caption %}
 			    <span class="header-visual-caption">{{first_video.caption}}</span>
 			    {% endif %}
 			    {% endwith %}

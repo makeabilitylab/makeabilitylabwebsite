@@ -6,58 +6,13 @@ from django.db.models.signals import pre_delete
 from datetime import date
 from website.utils.fileutils import UniquePathAndRename
 
-class Banner(models.Model):
-    FRONTPAGE = "FRONTPAGE"
-    PEOPLE = "PEOPLE"
-    PUBLICATIONS = "PUBLICATIONS"
-    TALKS = "TALKS"
-    PROJECTS = "PROJECTS"
-    INDPROJECT = "INDPROJECT"
-    PAGE_CHOICES = (
-         (FRONTPAGE, "Front Page"),
-         (PEOPLE, "People"),
-         (PUBLICATIONS, "Publications"),
-         (TALKS, "Talks"),
-         (PROJECTS, "Projects"),
-         (INDPROJECT, "Ind_Project")
-    )
-    page = models.CharField(max_length=50, choices=PAGE_CHOICES, default="FRONTPAGE")
-    image = models.ImageField(blank=True, upload_to=UniquePathAndRename("banner", True), max_length=255)
-    # def image_preview(self):
-    #     if self.image:
-    #         return u'<img src="%s" style="width:100%%"/>' % self.image.url
-    #     else:
-    #         return '(Please upload an image)'
-    # image_preview.short_description = 'Image Preview'
-    # image_preview.allow_tags = True
-    cropping = ImageRatioField('image', '2000x500', free_crop=True)
-    image.help_text = 'You must select "Save and continue editing" at the bottom of the page after uploading a new image for cropping. Please note that since we are using a responsive design with fixed height banners, your selected image may appear differently on various screens.'
-    title = models.CharField(max_length=50, blank=True, null=True)
-    caption = models.CharField(max_length=1024, blank=True, null=True)
-    alt_text = models.CharField(max_length=1024, blank=True, null=True)
-    link = models.CharField(max_length=1024, blank=True, null=True)
-    favorite = models.BooleanField(default=False)
-    favorite.help_text = 'Check this box if this image should appear before other (non-favorite) banner images on the same page.'
-    date_added = models.DateField(auto_now=True)
-
-    def __str__(self):
-        if self.title and self.page:
-            return self.title + ' (' + self.get_page_display() + ')'
-        else:
-            return "Banner object"
-
-@receiver(pre_delete, sender=Banner)
-def banner_delete(sender, instance, **kwargs):
-    if instance.image:
-        instance.image.delete(False)
-
 class Person(models.Model):
     first_name = models.CharField(max_length=40)
     middle_name = models.CharField(max_length=50, blank=True, null=True)
     last_name = models.CharField(max_length=50)
     email = models.EmailField(blank=True, null=True)
     personal_website = models.URLField(blank=True, null=True)
-    bio = models.CharField(max_length=2048, blank=True, null=True)
+    bio = models.TextField(blank=True, null=True)
 
     # Note: the ImageField requires the pillow library, which can be installed using pip
     # pip3 install Pillow
@@ -187,23 +142,6 @@ class Keyword(models.Model):
 
     def __str__(self):
         return self.keyword    
-
-class Project_header(models.Model):
-    video_url = models.URLField(blank=True, null=True)
-    title = models.CharField(max_length=255)
-    caption = models.CharField(max_length=255, blank=True, null=True)
-    image = models.ImageField(upload_to='projects/images/', editable=False, blank=True, null=True, max_length=255)
-
-    def get_visual(self):
-        if self.video_url:
-            return self.get_embed
-        elif self.image:
-            return "<img src=\""+self.image+"\">"
-
-    def get_embed(self):
-        base_url = "https://youtube.com/embed"
-        unique_url = self.video_url[self.video_url.find("/", 9):]
-        return base_url+unique_url
     
 class Project(models.Model):
     name = models.CharField(max_length=255)
@@ -212,14 +150,33 @@ class Project(models.Model):
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True, blank=True)
 
-    header_visual = models.ForeignKey(Project_header, blank=True, null=True)
+    #header_visual = models.ForeignKey(Project_header, blank=True, null=True)
     people = models.ManyToManyField(Person, blank=True, null=True)
     keywords = models.ManyToManyField(Keyword, blank=True, null=True)
     #pis = models.ManyToOneField(Person, blank=True, null=True)
 
-    about = models.CharField(max_length = 8192, blank=True, null=True)
+    about = models.TextField()
     def __str__(self):
         return self.name
+
+class Project_header(models.Model):
+    video_url = models.URLField(blank=True, null=True)
+    title = models.CharField(max_length=255)
+    caption = models.CharField(max_length=255, blank=True, null=True)
+    image = models.ImageField(upload_to='projects/images/', blank=True, null=True, max_length=255)
+    project = models.ForeignKey(Project, blank=True, null=True)
+
+    def get_visual(self):
+        if self.video_url:
+            url=self.get_embed()
+            return '<iframe class=\"video-about\" src=\"'+url+'\" frameborder="0" allowfullscreen></iframe>'
+        elif self.image:
+            return "<img class=\"video-about\" src=\""+self.image.url+"\">"
+
+    def get_embed(self):
+        base_url = "https://youtube.com/embed"
+        unique_url = self.video_url[self.video_url.find("/", 9):]
+        return base_url+unique_url
 
 class Video(models.Model):
     #title = models.CharField(max_length=255)
@@ -439,7 +396,7 @@ class News(models.Model):
     caption = models.CharField(max_length=1024, blank=True, null=True)
     alt_text = models.CharField(max_length=1024, blank=True, null=True)
 
-    project = models.ForeignKey(Project, blank=True, null=True)
+    project = models.ManyToManyField(Project, blank=True, null=True)
     
     def short_date(self):
         month=self.date.strftime('%b')
@@ -458,5 +415,51 @@ class News(models.Model):
 
 @receiver(pre_delete, sender=News)
 def news_delete(sender, instance, **kwards):
+    if instance.image:
+        instance.image.delete(False)
+
+class Banner(models.Model):
+    FRONTPAGE = "FRONTPAGE"
+    PEOPLE = "PEOPLE"
+    PUBLICATIONS = "PUBLICATIONS"
+    TALKS = "TALKS"
+    PROJECTS = "PROJECTS"
+    INDPROJECT = "INDPROJECT"
+    PAGE_CHOICES = (
+         (FRONTPAGE, "Front Page"),
+         (PEOPLE, "People"),
+         (PUBLICATIONS, "Publications"),
+         (TALKS, "Talks"),
+         (PROJECTS, "Projects"),
+         (INDPROJECT, "Ind_Project")
+    )
+    page = models.CharField(max_length=50, choices=PAGE_CHOICES, default="FRONTPAGE")
+    image = models.ImageField(blank=True, upload_to=UniquePathAndRename("banner", True), max_length=255)
+    project = models.ForeignKey(Project, blank=True, null=True)
+    # def image_preview(self):
+    #     if self.image:
+    #         return u'<img src="%s" style="width:100%%"/>' % self.image.url
+    #     else:
+    #         return '(Please upload an image)'
+    # image_preview.short_description = 'Image Preview'
+    # image_preview.allow_tags = True
+    cropping = ImageRatioField('image', '2000x500', free_crop=True)
+    image.help_text = 'You must select "Save and continue editing" at the bottom of the page after uploading a new image for cropping. Please note that since we are using a responsive design with fixed height banners, your selected image may appear differently on various screens.'
+    title = models.CharField(max_length=50, blank=True, null=True)
+    caption = models.CharField(max_length=1024, blank=True, null=True)
+    alt_text = models.CharField(max_length=1024, blank=True, null=True)
+    link = models.CharField(max_length=1024, blank=True, null=True)
+    favorite = models.BooleanField(default=False)
+    favorite.help_text = 'Check this box if this image should appear before other (non-favorite) banner images on the same page.'
+    date_added = models.DateField(auto_now=True)
+
+    def __str__(self):
+        if self.title and self.page:
+            return self.title + ' (' + self.get_page_display() + ')'
+        else:
+            return "Banner object for "+self.get_page_display()
+
+@receiver(pre_delete, sender=Banner)
+def banner_delete(sender, instance, **kwargs):
     if instance.image:
         instance.image.delete(False)

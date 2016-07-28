@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Person, Publication, Position, Talk, Project, Poster, Keyword, News, Banner, Video
+from .models import Person, Publication, Position, Talk, Project, Poster, Keyword, News, Banner, Video, Project_header
 
 from django.http import HttpResponse
 from datetime import datetime
@@ -19,10 +19,11 @@ from image_cropping import ImageCroppingMixin
 
 class BannerAdmin(ImageCroppingMixin, admin.ModelAdmin):
     fieldsets = [
-        (None, {'fields': ["page", "title", "caption", "alt_text", "link", "favorite"]}),
+        (None, {'fields': ["page", "title", "caption", "alt_text", "link", "favorite", "project"]}),
         # ('Image', {'fields': ["image", "image_preview"]})
         ('Image', {'fields': ["image", "cropping"]})
     ]
+    pass
     # readonly_fields = ["image_preview"]
 
 
@@ -31,10 +32,17 @@ class RoleInline(admin.StackedInline):
     model = Position
     extra = 1
 
+class ProjectHeaderInline(ImageCroppingMixin, admin.StackedInline):
+    model = Project_header
+    extra = 1
+
 #Uses format as per https://github.com/jonasundderwolf/django-image-cropping to add cropping to the admin page
 class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
     pass
-    
+
+class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
+    inlines = [ProjectHeaderInline]
+
 class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
     inlines = [RoleInline]
 
@@ -119,7 +127,7 @@ admin.site.register(Person, PersonAdmin)
 # admin.site.register(Member)
 admin.site.register(Publication, PublicationAdmin)
 admin.site.register(Talk)
-admin.site.register(Project)
+admin.site.register(Project, ProjectAdmin)
 admin.site.register(Poster)
 admin.site.register(Keyword)
 admin.site.register(News, NewsAdmin)
