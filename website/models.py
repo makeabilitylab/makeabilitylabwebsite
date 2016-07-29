@@ -18,7 +18,7 @@ class Person(models.Model):
     # pip3 install Pillow
     # We use the get_unique_path function because otherwise if two people use the same
     # filename (something generic like picture.jpg), one will overwrite the other.
-    image = models.ImageField(blank=True, upload_to=UniquePathAndRename("person", True), max_length=255)
+    image = models.ImageField(blank=True, upload_to="person", max_length=255)
     # image_cropped = models.ImageField(editable=False)
     image.help_text = 'You must select "Save and continue editing" at the bottom of the page after uploading a new image for cropping.'
 
