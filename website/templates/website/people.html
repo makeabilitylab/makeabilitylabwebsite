@@ -61,7 +61,7 @@
         <h1 name="profgrad" style="margin-top:0">Professor and Graduate Students</h1>
         <h4>{{ active_prof|length }} Prof, 
             {% if active_postdoc %} {{ active_postdoc|length }} Postdoc, {% endif %}
-            {% if active_phd %} {{ active_phd|length }} PhD {% if active_ms %},{% endif %} {% endif %}
+            {% if active_phd %} {{ active_phd|length }} PhD, {% if active_ms %}{% endif %} {% endif %}
             {% if active_ms %} {{ active_ms|length }} MS{% endif %}
         </h4>
         <div class="row main-content">
