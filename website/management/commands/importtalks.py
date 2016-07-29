@@ -6,6 +6,7 @@ import requests
 from django.utils import timezone
 from datetime import date, datetime
 import os
+from random import choice
 
 
 #Takes a key and a dictionary, returns the val if the key exists and otherwise returns none
@@ -49,6 +50,21 @@ def parse_authors(author_list):
             ret.append(auth)
     return ret
 
+def isimage(filename):
+    """true if the filename's extension is in the content-type lookup"""
+    ext2conttype = {"jpg": "image/jpeg",
+                "jpeg": "image/jpeg",
+                "png": "image/png",
+                "gif": "image/gif"}
+    filename = filename.lower()
+    return filename[filename.rfind(".")+1:] in ext2conttype
+
+def get_random_starwars(direc):
+    """Gets a random star wars picture to assign to new author"""
+    images = [f for f in os.listdir(direc) if isimage(f)]
+    return choice(images)
+
+
 #Takes a list of authors in the form [(first, middle, last)] and returns a list of author objects, creating those that don't already exist
 #Created People don't have a position or any information besides a name
 #Info on how to do the queries came from here https://docs.djangoproject.com/en/1.9/topics/db/queries/
@@ -59,7 +75,10 @@ def get_authors(author_list):
         if len(test_p)>0:
             ret.append(test_p[0])
         else:
-            new_person=Person(first_name=author[0], last_name=author[2], middle_name=author[1])
+            direc = "import/images/StarWarsFiguresFullSquare/Rebels/"
+            starwars = get_random_starwars(direc)
+            image = File(open(direc+starwars, 'rb'))
+            new_person=Person(first_name=author[0], last_name=author[2], middle_name=author[1], image=image)
             new_person.save()
             ret.append(new_person)
     return ret
