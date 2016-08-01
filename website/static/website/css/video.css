@@ -26,6 +26,7 @@
 	word-wrap: break-word;
 	text-overflow: ellipsis;
 	padding-top: 5px;
+	margin: 0px;
 }
 
 .video-location {
