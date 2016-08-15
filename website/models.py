@@ -37,6 +37,10 @@ class Person(models.Model):
     def __str__(self):
         return self.get_full_name()
 
+    class Meta:
+        ordering = ['last_name', 'first_name']
+        verbose_name_plural = 'People'
+
 @receiver(pre_delete, sender=Person)
 def person_delete(sender, instance, **kwargs):
     if instance.image:
