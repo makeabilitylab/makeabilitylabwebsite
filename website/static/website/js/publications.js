@@ -290,6 +290,7 @@ function formatPublication(pub, filter) {
 	else
 	    award_icon=pub.honorable_mention;
 	publicationData.find(".publication-id").append("<img src=\""+award_icon+"\" align=\"center\" class=\"award-icon\"/>");
+	publicationData.find(".publication-thumbnail-link").append("<img src=\""+pub.award_banner+"\" class=\"publication-award-banner\"/>");
 	publicationData.find(".publication-award-text").html(addHighlight(pub.award, filter));
     } else {
 	publicationData.find(".publication-award").css("display", "none");

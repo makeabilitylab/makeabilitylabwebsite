@@ -63,7 +63,7 @@ def index(request):
     publications = Publication.objects.order_by('-date')[:papers_num]
     talks = Talk.objects.order_by('-date')[:talks_num]
     videos = Video.objects.order_by('-date')[:videos_num]
-    context = { 'people': Person.objects.all(), 'banners': displayed_banners, 'news': news_item_lengths, 'publications': publications, 'talks': talks, 'videos':videos, 'debug': settings.DEBUG }
+    context = { 'people': Person.objects.all(), 'banners': displayed_banners, 'news': news_items, 'publications': publications, 'talks': talks, 'videos':videos, 'debug': settings.DEBUG }
     return render(request, 'website/index.html', context)
 
 def people(request):

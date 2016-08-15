@@ -69,6 +69,10 @@
     .publication-thumbnail {
 	display: none;
     }
+
+    .publication-award-banner {
+	display: none;
+    }
 }
 
 @media (min-width: 375px){
@@ -79,14 +83,22 @@
 	vertical-align: top;
 	padding-right:10px;
 	position: relative;
+	top: 0px;
+	left: 0px;
+	z-index: 10;
+    }
+
+    .publication-award-banner {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	height: 40px;
+	width: 40px;
+	z-index: 20;
     }
 }
 
-.publication-award-banner {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-}
+
 
 
 
