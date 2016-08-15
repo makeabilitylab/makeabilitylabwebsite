@@ -166,7 +166,8 @@
 	    $(this).html(removeHighlight($(this).html()));
 	});
     }
-    
+
+    //This will check each entry and highlight text as appropriate.
     $.fn.applyTextFilter = function(){
 	var filter= $("#filter-textbox").val().toLowerCase() || $("#filter-textbox-backup").val().toLowerCase();
 	var groups=settings.groupsForCategory[currCategory];

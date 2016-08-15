@@ -32,6 +32,7 @@ def parse_authors(author_list):
         ret.append(name)
     return ret
 
+#Simple check to seee if a file is an image. Not strictly necessary but included for safety
 def isimage(filename):
     """true if the filename's extension is in the content-type lookup"""
     ext2conttype = {"jpg": "image/jpeg",
@@ -41,6 +42,7 @@ def isimage(filename):
     filename = filename.lower()
     return filename[filename.rfind(".")+1:] in ext2conttype
 
+#Randomly selects an image from the given directory
 def get_random_starwars(direc):
     """Gets a random star wars picture to assign to new author"""
     images = [f for f in os.listdir(direc) if isimage(f)]
@@ -56,9 +58,9 @@ def get_authors(author_list):
         if len(test_p)>0:
             ret.append(test_p[0])
         else:
+            #Hard coded location of current import directory, in this case starwars rebel minifigs.
             direc = "import/images/StarWarsFiguresFullSquare/Rebels/"
             starwars = get_random_starwars(direc)
-            print(starwars)
             image = File(open(direc+starwars, 'rb'))
             new_person=Person(first_name=author[0], last_name=author[2], middle_name=author[1], image=image) 
             new_person.save()
@@ -102,7 +104,9 @@ def exists(title):
         return False
 
 class Command(BaseCommand):
-    
+
+    help='This is an importer for bibtex publication entries. It will read all files from ./import/bibtex and attempt to add them to the database. PDFs for these files are pulled form Jons site, cs.umd.edu/~jonf/. The importer handles adding of authors and keywords if they do not exist already.'
+   
     def handle(self, *args, **options):
         for bib_file in os.listdir(os.getcwd()+"/import/bibtex"):
             print("Parsing file "+bib_file)
@@ -146,6 +150,7 @@ class Command(BaseCommand):
                         page_end=None
                     date=datetime.strptime(date_text, '%B, %Y')
                     print(date.date())
+                    #Check type of pub and convert it to appropriate value
                     if pub_type==None:
                         pub_venue_type="Other"
                     elif "conference" in pub_type:
@@ -197,12 +202,7 @@ class Command(BaseCommand):
                     else:
                         award=None
             
-                    #Create the new publication
-                        
-                    #Items have to be saved before you can do many to many queries
-                   
-
-            
+                    #Import file from web, then write it to a file, and finally open it as a File for django
                     res=requests.get(pdf_file_loc)
                     temp_file=open("import/temp/"+title+".pdf", 'wb')
                     temp_file.write(res.content)
@@ -214,9 +214,11 @@ class Command(BaseCommand):
                         video=get_video(video_url, preview_video_url, date.date(), title, book_title_short)
                     else:
                         video = None
+                    #Create the new publication
+                    #Items have to be saved before you can do many to many queries
                     new_pub=Publication(title=title, geo_location=geo_location, book_title=book_title, book_title_short=book_title_short, num_pages=num_pages, pub_venue_type=pub_venue_type, peer_reviewed=peer_reviewed, total_papers_accepted=total_papers_accepted, total_papers_submitted=total_papers_submitted, award=award, pdf_file=pdf_file, date=date.date(), video=video, series=series, isbn=isbn, doi=doi, publisher=publisher, publisher_address=publisher_address, acmid=acmid, page_num_start=page_start, page_num_end=page_end, official_url=url)
                     new_pub.save()
-                    #Info on how to do the many to many crap is from here https://docs.djangoproject.com/en/1.9/topics/db/examples/many_to_many/
+                    #Info on how to do the many to many stuff is from here https://docs.djangoproject.com/en/1.9/topics/db/examples/many_to_many/
                     #Parse authors
                     author_str_list=parse_authors(get_val_key("author", entry))
                     author_obj_list=get_authors(author_str_list)
@@ -228,6 +230,7 @@ class Command(BaseCommand):
                 
                     for keyword in keyword_obj_list:
                         new_pub.keywords.add(keyword)
+        #Clean out import/temp
         os.system("rm import/temp/*")
 
             

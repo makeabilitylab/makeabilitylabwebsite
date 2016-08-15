@@ -58,7 +58,7 @@ def isimage(filename):
                 "gif": "image/gif"}
     filename = filename.lower()
     return filename[filename.rfind(".")+1:] in ext2conttype
-
+#select random image from given directory
 def get_random_starwars(direc):
     """Gets a random star wars picture to assign to new author"""
     images = [f for f in os.listdir(direc) if isimage(f)]
@@ -75,6 +75,7 @@ def get_authors(author_list):
         if len(test_p)>0:
             ret.append(test_p[0])
         else:
+            #hardcoded location of directory to pull sample iamges from
             direc = "import/images/StarWarsFiguresFullSquare/Rebels/"
             starwars = get_random_starwars(direc)
             image = File(open(direc+starwars, 'rb'))
@@ -114,7 +115,8 @@ def exists(title):
         return False
 
 class Command(BaseCommand):
-
+    help='This is a command to import talks from jons talk xml format. It will handle adding of new authors/keywords as needed. Pulls pdfs and pptx files from Jons site cs.umd.edu/~jonf'
+    
     def handle(self, *args, **options):
         file_dic={}
         for talk_file in os.listdir(os.getcwd()+"/import/xml"):
@@ -143,6 +145,7 @@ class Command(BaseCommand):
                             temp_file.write(chunk)
                     temp_file.close()
                     pptx_file = File(open('import/temp/'+title+'.pptx', 'rb'))
+                #If this talk has already been read we can reuse the same PDF.
                 if title in file_dic.keys():
                     pdf_file = file_dic[title]
                     print("Using existing copy of pdf...")
@@ -182,4 +185,5 @@ class Command(BaseCommand):
                     keyword_list = get_keywords(parse_keywords(get_val_key('keywords', entry)))
                     for keyword in keyword_list:
                         new_talk.keywords.add(keyword)
+        #Clean out the temp directory when you're done
         os.system("rm import/temp/*")

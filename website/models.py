@@ -146,6 +146,7 @@ class Keyword(models.Model):
 class Project(models.Model):
     name = models.CharField(max_length=255)
     short_name = models.CharField(max_length=255)
+    #Sponsors is currently a simple list of sponsors but could be updated to a many to many field if a sponsors model is desired.
     sponsors = models.CharField(max_length=255)
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True, blank=True)
@@ -159,6 +160,7 @@ class Project(models.Model):
     def __str__(self):
         return self.name
 
+#This class contains the iamge or video which will appear in the top description of each project. It functions as a combination of Photo and Video, but is seperated to make it simpler to have a specific video or photo as the projects header.
 class Project_header(models.Model):
     video_url = models.URLField(blank=True, null=True)
     title = models.CharField(max_length=255)
@@ -449,6 +451,7 @@ class Banner(models.Model):
     )
     page = models.CharField(max_length=50, choices=PAGE_CHOICES, default="FRONTPAGE")
     image = models.ImageField(blank=True, upload_to=UniquePathAndRename("banner", True), max_length=255)
+    #This field is only needed if the banner has been assigned to a specific project. The field is used by project_ind to select project specific banners so we don't have to add each project to the PAGE_CHOICES dictionary.
     project = models.ForeignKey(Project, blank=True, null=True)
     # def image_preview(self):
     #     if self.image:
