@@ -48,6 +48,8 @@ class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
 class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
     inlines = [RoleInline]
+    #info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin 
+    list_display = ('get_full_name', 'get_quick_position')
 
 class PublicationAdmin(admin.ModelAdmin):
     fieldsets = [

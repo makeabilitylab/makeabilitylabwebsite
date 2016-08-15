@@ -28,11 +28,20 @@ class Person(models.Model):
     # TODO: update with desired aspect ratio and maximum resolution
     cropping = ImageRatioField('image', '245x245', size_warning=True)
 
+    def get_quick_position(self):
+        role_info = ''
+        for role in self.position_set.all():
+            print(self.get_full_name()+role.__str__())
+            role_info = role.title+" "+role.role+" "+"Active" if role.is_active_member() else "Inactive"+" "
+        return role_info
+    get_quick_position.short_description="Roles"
+    
     def get_full_name(self, includeMiddle=True):
         if self.middle_name and includeMiddle:
             return u"{0} {1} {2}".format(self.first_name, self.middle_name, self.last_name)
         else:
             return u"{0} {1}".format(self.first_name, self.last_name)
+    get_full_name.short_description = "Full Name"
 
     def __str__(self):
         return self.get_full_name()
