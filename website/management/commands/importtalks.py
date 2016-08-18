@@ -136,7 +136,7 @@ def get_project(project_name, project_umbrellas, authors, keywords, talk):
                 proj.keywords.add(keyword)
         umbrellas = get_umbrellas(parse_umbrellas(project_umbrellas))
         for umbrella in umbrellas:
-            pub.project_umbrellas.add(umbrella)
+            talk.project_umbrellas.add(umbrella)
             test_umb = proj.project_umbrellas.filter(name=umbrella.name)
             if len(test_umb) == 0:
                 proj.project_umbrellas.add(umbrella)
