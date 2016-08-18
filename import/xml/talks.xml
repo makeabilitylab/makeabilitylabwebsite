@@ -2,6 +2,20 @@
   <!-- Invited Talk -->
   <talk>
     <type>invited talk</type>
+    <authors>Jon Froehlich</authors>
+    <title>Social Fabrics: Designing Wearable Electronics Textiles for Interaction, Introspection, and Inquiry</title>
+    <forum>Under Armour Lighthouse Partner Meeting</forum>
+    <location>College Park, Maryland</location>
+    <date>August 10, 2016</date>
+    <conference_daterange>August 10, 2016</conference_daterange>
+	<talk_pdf>talks/pdfs/Froehlich_SocialFabrics_UnderArmour2016.pdf</talk_pdf>
+    <icon>talks/icons/Froehlich_SocialFabrics_UnderArmour2016_pptx_icon.png</icon>
+    <keywords>e-textiles, electronic textiles, educating makers, maker movement, bodyvis, ilikethisshirt, social fabric fitness, makerwear</keywords>
+	<project_umbrellas>Educational Technology, E-Textiles, Maker Tools, Behavior Change Technology &amp; Research</project_umbrellas>
+  </talk>
+  
+  <talk>
+    <type>invited talk</type>
     <authors>Jon Froehlich and Majeed Kazemitabaar</authors>
     <title>MakerWear: Early Explorations of Wearable Construction Kits for Children</title>
     <forum>33rd Annual HCIL Symposium</forum>
@@ -11,7 +25,9 @@
 	<talk_pdf>talks/pdfs/FroehlichAndKazemitabaar_MakerWear_HCILSymposium2016.pdf</talk_pdf>
     <icon>talks/icons/FroehlichAndKazemitabaar_MakerWear_HCILSymposium2016_pptx_icon.png</icon>
     <keywords>e-textiles, electronic textiles, educating makers, maker movement, construction kits, makerwear, makershoe, children</keywords>
+	<project_umbrellas>Educational Technology, E-Textiles, Maker Tools</project_umbrellas>
   </talk>
+  
   <talk>
     <type>invited talk</type>
     <authors>Jon Froehlich</authors>
@@ -23,7 +39,9 @@
 	<talk_pdf>talks/pdfs/Froehlich_SocialFabrics_CorporateAffiliatesTalk2016.pdf</talk_pdf>
     <icon>talks/icons/Froehlich_SocialFabrics_CorporateAffiliatesTalk2016_pptx_icon.png</icon>
     <keywords>e-textiles, electronic textiles, educating makers, maker movement, fabric mousepad, bodyvis, ilikethisshirt, social fabric fitness</keywords>
+	<project_umbrellas>Educational Technology, E-Textiles, Maker Tools, Behavior Change Technology &amp; Research</project_umbrellas>
   </talk>
+  
   <talk>
     <type>invited talk</type>
     <authors>Jon Froehlich</authors>
@@ -36,6 +54,7 @@
 	<talk_pdf>talks/pdfs/Froehlich_SocialFabrics_HCILSymposium2015.pdf</talk_pdf>
     <icon>talks/icons/Froehlich_SocialFabrics_HCILSymposium2015_pptx_icon.png</icon>
     <keywords>e-textiles, electronic textiles, educating makers, maker movement, fabric mousepad, bodyvis, ilikethisshirt, social fabric fitness</keywords>
+	<project_umbrellas>Educational Technology, E-Textiles, Maker Tools, Behavior Change Technology &amp; Research</project_umbrellas>
   </talk>
   
    <talk>
@@ -52,6 +71,7 @@
 	<talk_pdf>talks/pdfs/Froehlich_MakingWithASocialPurpose_SocialHack2015_v3_public.pdf</talk_pdf>
     <icon>talks/icons/Froehlich_MakingWithASocialPurpose_SocialHack2015_v3_public_pptx_icon.png</icon>
     <keywords>hydrosense, eco-feedback, persuasive technology, environmental sustainability, water usage sensing, disaggregated sensing, water usage visualization, e-textiles, bodyvis, social fabric fitness, hcil hackerspace</keywords>
+	<project_umbrellas>Educational Technology, E-Textiles, Environmental Sustainability, Behavior Change Technology &amp; Research</project_umbrellas>
   </talk>
   
   <talk>
@@ -68,6 +88,7 @@
 	<talk_pdf>talks/pdfs/Froehlich_MakingWithASocialPurpose_AmericanUniversity2015.pdf</talk_pdf>
     <icon>talks/icons/Froehlich_MakingWithASocialPurpose_AmericanUniversity2015_pptx_icon.png</icon>
     <keywords>crowdsourcing, computer vision, machine learning, smart task allocation, physical world access, accessibility, google street view, urban informatics, e-textiles, electronic textiles, educating makers, maker movement, bodyvis, social fabric fitness, hcil hackerspace</keywords>
+	<project_umbrellas>Educational Technology, E-Textiles, Environmental Sustainability, Behavior Change Technology &amp; Research, Accessibility, Urban Informatics</project_umbrellas>
   </talk>
   
   <talk>
@@ -85,6 +106,7 @@
 	<talk_pdf>talks/pdfs/Froehlich_CrowdPoweredStreetViewAccessibility_CMU-HCII_v6_Public.pdf</talk_pdf>
     <icon>talks/icons/Froehlich_CrowdPoweredStreetViewAccessibility_CMU-HCII_v6_Public_pptx_icon.png</icon>
     <keywords>crowdsourcing, computer vision, machine learning, smart task allocation, physical world access, accessibility, google street view, urban informatics</keywords>
+	<project_umbrellas>Accessibility, Urban Informatics</project_umbrellas>
   </talk>
 
   <talk>
@@ -100,6 +122,7 @@
 	<talk_pdf>talks/pdfs/Froehlich_SocialFabrics_NAS-DASER2014.pdf</talk_pdf>
     <icon>talks/icons/Froehlich_SocialFabrics_NAS-DASER2014_pptx_icon.png</icon>
     <keywords>e-textiles, electronic textiles, educating makers, maker movement, fabric mousepad, bodyvis, ilikethisshirt, social fabric fitness</keywords>
+	<project_umbrellas>Educational Technology, E-Textiles, Behavior Change Technology &amp; Research</project_umbrellas>
   </talk>
 
   <talk>
@@ -113,6 +136,7 @@
     <icon>talks/icons/Froehlich_MakingWithASocialPurpose_CollegeParkScholars2014_public_pptx_icon.png</icon>
     <deck>talks/Froehlich_MakingWithASocialPurpose_CollegeParkScholars2014_public.pptx</deck>
     <keywords>making, making with a social purpose, bodyvis, tangible interactive computing, creativity,  fitness, health and wellness, social fabric fitness, wearables, hcil hackerspace</keywords>
+	<project_umbrellas>Educational Technology, E-Textiles, Behavior Change Technology &amp; Research</project_umbrellas>
   </talk>
   
   <talk>
@@ -128,6 +152,7 @@
     <deck>talks/Froehlich_SocialFabrics_NAS-DASER2014.pptx</deck>
     <icon>talks/icons/Froehlich_SocialFabrics_NAS-DASER2014_pptx_icon.png</icon>
     <keywords>e-textiles, electronic textiles, educating makers, maker movement, fabric mousepad, bodyvis, ilikethisshirt, social fabric fitness</keywords>
+	<project_umbrellas>Educational Technology, E-Textiles, Behavior Change Technology &amp; Research, Maker Tools</project_umbrellas>
   </talk>
 
   <talk>
@@ -142,6 +167,7 @@
     <deck>talks/Froehlich_MakingInTheHCIL_HCILSymposium2014_v5-Public.pptx</deck>
     <icon>talks/icons/Froehlich_MakingInTheHCIL_HCILSymposium2014_v5-Public_pptx_icon.png</icon>
     <keywords>makerspaces, hackerspaces, making, tangible interactive computing, creativity, cmsc838f, instructables, educating makers</keywords>
+	<project_umbrellas>Educational Technology, E-Textiles, Behavior Change Technology &amp; Research, Maker Tools</project_umbrellas>
   </talk>
   
   <talk>
@@ -155,6 +181,7 @@
     <icon>talks/icons/Froehlich_MakingPlusHealth-SocialFabricFitness_KatieSiekClass2014_public_pptx_icon.png</icon>
     <deck>talks/Froehlich_MakingPlusHealth-SocialFabricFitness_KatieSiekClass2014_public.pptx</deck>
     <keywords>making, making with a social purpose, tangible interactive computing, creativity,  fitness, health and wellness, social fabric fitness, wearables, hcil hackerspace</keywords>
+	<project_umbrellas>E-Textiles, Behavior Change Technology</project_umbrellas>
   </talk>
   
   <talk>
@@ -167,7 +194,8 @@
     <conference_daterange>March 27, 2014</conference_daterange>
     <icon>talks/icons/Froehlich_MakingWithASocialPurpose_CollegeParkScholars2014_public_pptx_icon.png</icon>
     <deck>talks/Froehlich_MakingWithASocialPurpose_CollegeParkScholars2014_public.pptx</deck>
-    <keywords>making, making with a social purpose, bodyvis, tangible interactive computing, creativity,  fitness, health and wellness, social fabric fitness, wearables, hcil hackerspace</keywords>
+    <keywords>making, making with a social purpose, bodyvis, tangible interactive computing, creativity, fitness, health and wellness, social fabric fitness, wearables, hcil hackerspace</keywords>
+	<project_umbrellas>Educational Technology, E-Textiles, Behavior Change Technology &amp; Research, Maker Tools</project_umbrellas>
   </talk>
   
    <talk>
@@ -180,7 +208,8 @@
     <conference_daterange>March 24, 2014</conference_daterange>
     <icon>talks/icons/Froehlich_MakingInTheHCIL_CSDepartmentExternalReview2014_pptx_icon.png</icon>
     <deck>talks/Froehlich_MakingInTheHCIL_CSDepartmentExternalReview2014.pptx</deck>
-    <keywords>making, making with a social purpose, bodyvis, tangible interactive computing, creativity,  fitness, health and wellness, social fabric fitness, wearables, hcil hackerspace</keywords>
+    <keywords>making, making with a social purpose, bodyvis, tangible interactive computing, creativity, fitness, health and wellness, social fabric fitness, wearables, hcil hackerspace</keywords>
+	<project_umbrellas>Educational Technology, E-Textiles, Behavior Change Technology &amp; Research, Maker Tools</project_umbrellas>
   </talk>
   
   <talk>
@@ -195,6 +224,7 @@
     <icon>talks/icons/Froehlich_MakingWithASocialPurpose_GMU2014_public_pptx_icon.png</icon>
     <deck>talks/Froehlich_MakingWithASocialPurpose_GMU2014_public.pptx</deck>
     <keywords>making, hydrosense, making with a social purpose, hydrosense, eco-feedback, bodyvis, tangible interactive computing, creativity, accessibility, fitness, health and wellness, social fabric fitness, wearables, crowd-powered streetview accessibility</keywords>
+	<project_umbrellas>Educational Technology, E-Textiles, Environmental Sustainability, Behavior Change Technology &amp; Research, Accessibility, Urban Informatics</project_umbrellas>
   </talk>
   
   <talk>
@@ -209,6 +239,7 @@
     <icon>talks/icons/Froehlich_MakingWithASocialPurpose_NorthwesternSegalInstitute2013_v2b_public_pptx_icon.png</icon>
     <deck>talks/Froehlich_MakingWithASocialPurpose_NorthwesternSegalInstitute2013_v2b_public.pptx</deck>
     <keywords>making, hydrosense, making with a social purpose, hydrosense, eco-feedback, bodyvis, tangible interactive computing, creativity, accessibility, fitness, health and wellness, social fabric fitness, wearables, crowd-powered streetview accessibility</keywords>
+	<project_umbrellas>Educational Technology, E-Textiles, Environmental Sustainability, Behavior Change Technology &amp; Research, Accessibility, Urban Informatics</project_umbrellas>
   </talk>
   
   <talk>
@@ -223,6 +254,7 @@
     <icon>talks/icons/Froehlich_GoMobileDesigningAccessibleMobileExperiences_EnabledByDesign2013_pptx_icon.png</icon>
     <deck>talks/Froehlich_GoMobileDesigningAccessibleMobileExperiences_EnabledByDesign2013.pptx</deck>
     <keywords>acessibility, crowdsourcing, visual impairments, mobility impairments, universal design, inclusive design</keywords>
+	<project_umbrellas>Accessibility, Urban Informatics</project_umbrellas>
   </talk>
   
   <talk>
@@ -236,6 +268,7 @@
     <icon>talks/icons/Froehlich_MakingWithASocialPurpose_CSCorporateAffiliates2013_pptx_icon.png</icon>
     <deck>talks/Froehlich_MakingWithASocialPurpose_CSCorporateAffiliates2013.pptx</deck>
     <keywords>making, hydrosense, making with a social purpose, hydrosense, eco-feedback, bodyvis, tangible interactive computing, creativity, accessibility, fitness, health and wellness</keywords>
+	<project_umbrellas>Educational Technology, E-Textiles, Environmental Sustainability, Behavior Change Technology &amp; Research, Accessibility, Urban Informatics</project_umbrellas>
   </talk>
   
   <talk>
@@ -249,6 +282,7 @@
     <icon>talks/icons/Froehlich_MakingWithASocialPurpose_GradSeminar2013_pptx_icon.png</icon>
     <deck>talks/Froehlich_MakingWithASocialPurpose_GradSeminar2013.pptx</deck>
     <keywords>making, hydrosense, making with a social purpose, hydrosense, eco-feedback, bodyvis, tangible interactive computing, creativity, accessibility, fitness, health and wellness</keywords>
+	<project_umbrellas>Educational Technology, E-Textiles, Environmental Sustainability, Behavior Change Technology &amp; Research, Accessibility, Urban Informatics</project_umbrellas>
   </talk>
   
   <talk>
@@ -263,6 +297,7 @@
     <icon>talks/icons/Froehlich_MakingWithASocialPurpose_UMDFARSeminar2013_pptx_icon.png</icon>
     <deck>talks/Froehlich_MakingWithASocialPurpose_UMDFARSeminar2013.pptx</deck>
     <keywords>making, hydrosense, making with a social purpose, hydrosense, eco-feedback, bodyvis, tangible interactive computing, creativity, accessibility, fitness, health and wellness</keywords>
+	<project_umbrellas>Educational Technology, E-Textiles, Environmental Sustainability, Behavior Change Technology &amp; Research, Accessibility, Urban Informatics</project_umbrellas>
   </talk>
   
   <talk>
@@ -277,6 +312,7 @@
     <icon>talks/icons/Froehlich_MakingWithASocialPurpose_SilverSpringMakerFaire2013_v3-Final_pptx_icon.png</icon>
     <deck>talks/Froehlich_MakingWithASocialPurpose_SilverSpringMakerFaire2013_v3-Final.pptx</deck>
     <keywords>making, hydrosense, making with a social purpose, hydrosense, eco-feedback, bodyvis, tangible interactive computing, creativity, accessibility, fitness, health and wellness</keywords>
+	<project_umbrellas>Educational Technology, E-Textiles, Environmental Sustainability, Behavior Change Technology &amp; Research, Accessibility, Urban Informatics</project_umbrellas>
   </talk>
   
   <talk>
@@ -316,6 +352,7 @@
     <icon>talks/icons/Froehlich_FromYouToTheCity_3MTalk2013_pptx_icon.png</icon>
     <deck></deck>
     <keywords>persuasive design, eco-feedback, accessibility, crowdsourcing, google street view, wearables, makeability lab</keywords>
+	<project_umbrellas>Educational Technology, E-Textiles, Environmental Sustainability, Behavior Change Technology &amp; Research, Accessibility, Urban Informatics</project_umbrellas>
   </talk>
   
   <talk>
@@ -329,6 +366,8 @@
     <icon>talks/icons/Findlater_AccessibilityResearchAtMarylandsHCIL_UnitedCerebralPalsyLifeLabs2013_pptx_icon.png</icon>
     <deck></deck>
     <keywords>accessibility, touchscreens, inclusive design, makeability lab, hcil, google street view, accessible sidewalks, accessible bus stops, youtube, large-scale accessibility research</keywords>
+	
+	<project_umbrellas>Accessibility, Urban Informatics</project_umbrellas>
   </talk>
   
   <talk>
@@ -343,6 +382,8 @@
     <deck>talks/Froehlich_GamifyingGreen_HCILSymposium2013.pptx</deck>
     <icon>talks/icons/Froehlich_GamifyingGreen_HCILSymposium2013_pptx_icon.png</icon>
     <keywords>gamification, gamifying green, green gamification, behavior change, environmental sustainability, technology-mediated behavior change, persuasive technology</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research</project_umbrellas>
   </talk>
   
   <talk>
@@ -357,6 +398,7 @@
     <deck>talks/Froehlich_SensingAndPredictingThePulseOfTheCityThroughSharedBicycling_BSSWorkshopParis2012.pptx</deck>
     <icon>talks/icons/Froehlich_SensingAndPredictingThePulseOfTheCityThroughSharedBicycling_BSSWorkshopParis2012_pptx_icon.png</icon>
     <keywords>shared bicycling, velib, bicing, human behavior, sustainable transport, prediction, smart cities, system modeling, urban informatics</keywords>
+	<project_umbrellas>Urban Informatics</project_umbrellas>
   </talk>
   
   <talk>
@@ -364,13 +406,14 @@
     <authors>Jon Froehlich</authors>
     <title>Reflections of Ourselves: Sensing and Feedback to Inform Everyday Human Behavior</title>
     <forum>University of Colorado: Joint Colloquium between Computer Science and the Environmental Design Program</forum>
-    <forum_url>http://events.colorado.edu/EventList.aspx?fromdate=11/10/2012&amp;todate=12/23/2012&amp;display=&amp;type=public&amp;eventidn=12963&amp;view=EventDetails&amp;information_id=63286</forum_url>
+    <forum_url>http://events.colorado.edu/EventList.aspx?fromdate=11/10/2012&amp;amp;todate=12/23/2012&amp;amp;display=&amp;amp;type=public&amp;amp;eventidn=12963&amp;amp;view=EventDetails&amp;amp;information_id=63286</forum_url>
     <location>Boulder, Colorado</location>
     <date>November 29, 2012</date>
     <conference_daterange>November 29, 2012</conference_daterange>
     <deck>talks/Froehlich_ReflectionsOfOurselves-SensingAndFeedbackToInformEverydayHumanBehavior_UColoradoColloquiumSeries2012.pptx</deck>
     <icon>talks/icons/Froehlich_ReflectionsOfOurselves-SensingAndFeedbackToInformEverydayHumanBehavior_UColoradoColloquiumSeries2012_pptx_icon.png</icon>
     <keywords>personal informatics, quantified self, health behavior change, environmental sustainability, persuasive technology, eco-feedback, water usage, hydrosense</keywords>
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
   
   <talk>
@@ -386,6 +429,8 @@
     <deck>talks/Froehlich_ApplyingIterativeDesignToTheEcoFeedbackDesignProcess_BECC2012.pptx</deck>
     <icon>talks/icons/Froehlich_ApplyingIterativeDesignToTheEcoFeedbackDesignProcess_BECC2012_ppt_icon.png</icon>
     <keywords>eco-feedback, iterative design, design processes, design knowledge, design space</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research</project_umbrellas>
   </talk>
   
   <talk>
@@ -400,6 +445,8 @@
     <deck>talks/Froehlich_SensingAndVisualizingHumanBehaviorThroughCityInfrastructure_SeSyncWorkshop2012.pptx</deck>
     <icon>talks/icons/Froehlich_SensingAndVisualizingHumanBehaviorThroughCityInfrastructure_SeSyncWorkshop2012_pptx_icon.png</icon>
     <keywords>ubigreen, water usage feedback, bikeshare, hydrosense, environmental sustainability, visualization, smart cities, urban informatics</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
   
   <talk>
@@ -414,6 +461,9 @@
     <deck>talks/Froehlich_UnderPressureTransformingTheWayWeThinkAboutAndUseWaterInTheHome_JohnsHopkins2012.pptx</deck>
     <icon>talks/icons/Froehlich_UnderPressureTransformingTheWayWeThinkAboutAndUseWaterInTheHome_JohnsHopkins2012_pptx_icon.png</icon>
     <keywords>hydrosense, disaggregated water sensing, water usage sensing, field deployments, pressure sensing, environmental sustainability, water usage feedback, water usage disaggregation, eco-feedback, iterative design</keywords>
+	
+	<project>HydroSense: Sensing &amp; Visualizing Fixture-Level Water Usage</project>
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
   
   <talk>
@@ -430,6 +480,9 @@
     <icon>talks/icons/Froehlich_TheDesignAndEvaluationOfPrototypeEcoFeedbackDisplaysForFixtureLevelWaterUsageData_CHI2012_pptx_icon.png</icon>    
     <paper>publications/Froehlich_TheDesignAndEvaluationOfPrototypeEcoFeedbackDisplaysForFixtureLevelWaterUsageData_CHI2012.pdf</paper>
     <keywords>environmental sustainability, water usage feedback, water usage disaggregation, eco-feedback, iterative design</keywords>
+	
+	<project>HydroSense: Sensing &amp; Visualizing Fixture-Level Water Usage</project>
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
   
   <talk>
@@ -443,6 +496,8 @@
     <deck>talks/Froehlich_ReflectionsOfOurselvesSensingAndFeedbackToInformEverydayHumanBehavior_HCIL2012.pptx</deck>
     <icon>talks/icons/Froehlich_ReflectionsOfOurselvesSensingAndFeedbackToInformEverydayHumanBehavior_HCIL2012_pptx_icon.png</icon>
     <keywords>personal informatics, quantified self, health behavior change, environmental sustainability, persuasive technology</keywords>
+  
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research</project_umbrellas>
   </talk>
 
   <talk>
@@ -457,6 +512,8 @@
     <deck>talks/Froehlich_RethinkingTheCompositionOfComputerScience_UMD22ndAnnualHighSchoolProgContest2012.pptx</deck>
     <icon>talks/icons/Froehlich_RethinkingTheCompositionOfComputerScience_UMD22ndAnnualHighSchoolProgContest2012_pptx_icon.png</icon>
     <keywords>hackers, makers movement, arduino, squishy circuits, lilypad, diy, art and design</keywords>
+	
+	<project_umbrellas>Educational Technology, E-Textiles, Maker Tools</project_umbrellas>
   </talk>
   
   <talk>
@@ -470,6 +527,8 @@
     <deck>talks/Froehlich_SensingAndFeedbackToPromoteEnvironmentallySustainableBehaviors_VirginiaTechSeminar2012.pptx</deck>
     <icon>talks/icons/Froehlich_SensingAndFeedbackToPromoteEnvironmentallySustainableBehaviors_VirginiaTechSeminar2012_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
   
   <talk>
@@ -484,6 +543,8 @@
     <deck>talks/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011.pptx</deck>
     <icon>talks/icons/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
 
   <talk>
@@ -498,6 +559,8 @@
     <deck>talks/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011.pptx</deck>
     <icon>talks/icons/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
 
   <talk>
@@ -512,6 +575,8 @@
     <deck>talks/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011.pptx</deck>
     <icon>talks/icons/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
 
   <talk>
@@ -526,6 +591,8 @@
     <deck>talks/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011.pptx</deck>
     <icon>talks/icons/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
 
   <talk>
@@ -540,6 +607,8 @@
     <deck>talks/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011.pptx</deck>
     <icon>talks/icons/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
 
   <talk>
@@ -554,6 +623,8 @@
     <deck>talks/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011.pptx</deck>
     <icon>talks/icons/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
 
   <talk>
@@ -568,6 +639,8 @@
     <deck>talks/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011.pptx</deck>
     <icon>talks/icons/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
 
   <talk>
@@ -582,6 +655,8 @@
     <deck>talks/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011.pptx</deck>
     <icon>talks/icons/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
 
   <talk>
@@ -596,6 +671,8 @@
     <deck>talks/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011.pptx</deck>
     <icon>talks/icons/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
 
   <talk>
@@ -610,6 +687,8 @@
     <deck>talks/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011.pptx</deck>
     <icon>talks/icons/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
 
   <talk>
@@ -624,6 +703,8 @@
     <deck>talks/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011.pptx</deck>
     <icon>talks/icons/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
 
   <talk>
@@ -638,6 +719,8 @@
     <deck>talks/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011.pptx</deck>
     <icon>talks/icons/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
   
   <talk>
@@ -652,6 +735,8 @@
     <deck>talks/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011.pptx</deck>
     <icon>talks/icons/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
   
   <talk>
@@ -666,6 +751,8 @@
     <deck>talks/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011.pptx</deck>
     <icon>talks/icons/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
 
   <talk>
@@ -679,6 +766,8 @@
     <deck>talks/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011.pptx</deck>
     <icon>talks/icons/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
 
   <talk>
@@ -693,6 +782,8 @@
     <deck>talks/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011.pptx</deck>
     <icon>talks/icons/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_JobTalk2011_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
   
   <talk>
@@ -708,6 +799,8 @@
     <deck>talks/Froehlich_MovingBeyondLineGraphs_BECC2010.pptx</deck>
     <icon>talks/icons/Froehlich_MovingBeyondLineGraphs_BECC2010_ppt_icon.png</icon>
     <keywords>eco-feedback, ambient displays, design, norman doors, motivational affordances, persuasive design</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
 
   <talk>
@@ -722,6 +815,9 @@
     <deck>talks/Froehlich_UnderPressure-TransformingTheWayWeThinkAboutWaterInTheHome_DorkbotSeattle2010.pptx</deck>
     <icon>talks/icons/Froehlich_UnderPressure-TransformingTheWayWeThinkAboutWaterInTheHome_DorkbotSeattle2010_pptx_icon.png</icon>
     <keywords>hydrosense, disaggregated water sensing, water usage sensing, field deployments, pressure sensing</keywords>
+	
+	<project>HydroSense: Sensing &amp; Visualizing Fixture-Level Water Usage</project>
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
   
   <talk>
@@ -736,6 +832,8 @@
     <deck>talks/Froehlich_ClosingTheGapBetweenActionAndEffect-UsingComputersToSenseAndFeedbackResourceConsumptionInformationInTheHome_UWCSEAffiliates2010.pptx</deck>
     <icon>talks/icons/Froehlich_ClosingTheGapBetweenActionAndEffect-UsingComputersToSenseAndFeedbackResourceConsumptionInformationInTheHome_UWCSEAffiliates2010_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback, hydrosense, electrisense</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
   
   <talk>
@@ -749,6 +847,8 @@
     <deck>talks/Froehlich_MirrorsTellYouOneThing-DataCanTellYouAnother_UW-RitsumeikanComputersAndSociety2010.pptx</deck>
     <icon>talks/icons/Froehlich_MirrorsTellYouOneThing-DataCanTellYouAnother_UW-RitsumeikanComputersAndSociety2010_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback, hydrosense</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
   
   <talk>
@@ -763,6 +863,8 @@
     <deck>talks/Froehlich_MirrorsTellYouOneThing-DataCanTellYouAnother_UW-CS4HS2010.pptx</deck>
     <icon>talks/icons/Froehlich_MirrorsTellYouOneThing-DataCanTellYouAnother_UW-CS4HS2010_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
   
   <talk>
@@ -777,6 +879,8 @@
     <deck>talks/Froehlich_MirrorsTellYouOneThing-DataCanTellYouAnother_UW-SummerAcademyForDeafAndHardOfHearingInComputing2010.pptx</deck>
     <icon>talks/icons/Froehlich_MirrorsTellYouOneThing-DataCanTellYouAnother_UW-SummerAcademyForDeafAndHardOfHearingInComputing2010_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
   
   <talk>
@@ -792,6 +896,8 @@
     <deck>talks/Froehlich_SensingOpportunitiesAndZeroEffortApplicationsForMobileHealthPersuasion_MobileHealth2010.pptx</deck>
     <icon>talks/icons/Froehlich_SensingOpportunitiesAndZeroEffortApplicationsForMobileHealthPersuasion_MobileHealth2010_pptx_icon.png</icon>
     <keywords>persuasive design, persuasive technology, ubifit, ubigreen, mobile health, sensing and feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research</project_umbrellas>
   </talk>
   
   <talk>
@@ -805,6 +911,7 @@
     <deck>talks/Froehlich_MirrorsTellYouOneThing-DataCanTellYouAnother_UW-Honors263D.pptx</deck>
     <icon>talks/icons/Froehlich_MirrorsTellYouOneThing-DataCanTellYouAnother_UW-Honors263D_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
   
   <talk>
@@ -819,6 +926,8 @@
     <deck>talks/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_PugetSoundSustainability2010.pptx</deck>
     <icon>talks/icons/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_PugetSoundSustainability2010_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
   
   <talk>
@@ -833,6 +942,8 @@
     <deck>talks/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_UrbanEcology2010.pptx</deck>
     <icon>talks/icons/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_UrbanEcology2010_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
   
   <talk>
@@ -847,6 +958,8 @@
     <deck>talks/Froehlich_EnablingDisaggregatedFeedbackViaSinglePointResourceUsageSensing_StanfordARPAeWorkshop2010.pptx</deck>
     <icon>talks/icons/Froehlich_EnablingDisaggregatedFeedbackViaSinglePointResourceUsageSensing_StanfordARPAeWorkshop2010_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
 
   <talk>
@@ -860,6 +973,8 @@
     <deck>talks/Froehlich_InfrastructureMediatedSensingForAssistiveEnvironments_SangMook2009.pptx</deck>
     <icon>talks/icons/Froehlich_InfrastructureMediatedSensingForAssistiveEnvironments_SangMook2009_pptx_icon.png</icon>
     <keywords>activity inference, activity recognition, infrastructure-mediated sensing, assisted living, aging in place, eldercare</keywords>
+	
+	<project_umbrellas>Accessibility, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
   
   <talk>
@@ -874,6 +989,8 @@
     <deck>talks/Froehlich_TechnologyAsAMirror_GarfieldHighSchool2009.pptx</deck>
     <icon>talks/icons/Froehlich_TechnologyAsAMirror_GarfieldHighSchool2009_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
   
   <talk>
@@ -888,6 +1005,8 @@
     <deck>talks/Froehlich_AccurateAndEasy-To-DeployIn-HomeEnergySensing_BECC2009.pptx</deck>
     <icon>talks/icons/Froehlich_AccurateAndEasy-To-DeployIn-HomeEnergySensing_BECC2009_pptx_icon.png</icon>
     <keywords>environmental sustainability, sensing and feedback, eco-feedback, ubigreen, sustainable transportation, water usage sensing, disaggregation, water usage feedback</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
   
   <talk>
@@ -902,6 +1021,8 @@
     <deck>talks/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_UWCSEAffiliates2009.pptx</deck>
     <icon>talks/icons/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_UWCSEAffiliates2009_pptx_icon.png</icon>
     <keywords>eco-feedback, ubifit, ubigreen, ambient displays, mobile phones, sensing, environmental sustainability, sustainable transportation</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
   
   <talk>
@@ -916,6 +1037,8 @@
     <deck>talks/Froehlich_TheFeetbackCycle-LeveragingEverydayTechnologiesToChangeTheWayWeMove_Walk21-2009.pptx</deck>
     <icon>talks/icons/Froehlich_TheFeetbackCycle-LeveragingEverydayTechnologiesToChangeTheWayWeMove_Walk21-2009_pptx_icon.png</icon>
     <keywords>eco-feedback, ubifit, ubigreen, ambient displays, mobile phones, sensing, environmental sustainability, sustainable transportation</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research</project_umbrellas>
   </talk>
 
   <talk>
@@ -930,6 +1053,8 @@
     <deck>talks/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_ShodaPsychologyLab2009.pptx</deck>
     <icon>talks/icons/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_ShodaPsychologyLab2009_pptx_icon.png</icon>
     <keywords>eco-feedback, ubifit, ubigreen, ambient displays, mobile phones, sensing, environmental sustainability, sustainable transportation</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
 
   <talk>
@@ -944,6 +1069,8 @@
     <deck>talks/Froehlich_UbiGreen-UsingMobilePhonesAsAPersuasiveTechnologyToAffectDailyTransportationPractices_BECC2008.pptx</deck>
     <icon>talks/icons/Froehlich_UbiGreen-UsingMobilePhonesAsAPersuasiveTechnologyToAffectDailyTransportationPractices_BECC2008_pptx_icon.png</icon>
     <keywords>eco-feedback, ambient displays, mobile phones, sensing, environmental sustainability, sustainable transportation</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research</project_umbrellas>
   </talk>
   
   <talk>
@@ -958,6 +1085,8 @@
     <deck>talks/Froehlich_UbiGreen-InvestigatingAMobileToolForTrackingAndSupportingGreenTransportationHabits_UWCSEAffiliates2008.pptx</deck>
     <icon>talks/icons/Froehlich_UbiGreen-InvestigatingAMobileToolForTrackingAndSupportingGreenTransportationHabits_UWCSEAffiliates2008_pptx_icon.png</icon>
     <keywords>eco-feedback, ambient displays, mobile phones, sensing, environmental sustainability, sustainable transportation</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research</project_umbrellas>
   </talk>
 
   <talk>
@@ -972,6 +1101,8 @@
     <deck>talks/Froehlich_UsingMobilePhonesToLearnAndPersuadeHumanBehavior_TelefonicaResearchSeminar2008.pptx</deck>
     <icon>talks/icons/Froehlich_UsingMobilePhonesToLearnAndPersuadeHumanBehavior_TelefonicaResearchSeminar2008_pptx_icon.png</icon>
     <keywords>field studies, persuasive design, ubifit, myexperience</keywords>
+	
+	<project_umbrellas>Behavior Change Technology &amp; Research</project_umbrellas>
   </talk>
   
   <talk>
@@ -1015,6 +1146,9 @@
     <icon>talks/icons/Froehlich_TheDesignAndEvaluationOfPrototypeEcoFeedbackDisplaysForFixtureLevelWaterUsageData_CHI2012_pptx_icon.png</icon>
     <paper>publications/Froehlich_TheDesignAndEvaluationOfPrototypeEcoFeedbackDisplaysForFixtureLevelWaterUsageData_CHI2012.pdf</paper>
     <keywords>environmental sustainability, water usage feedback, water usage disaggregation, eco-feedback, iterative design</keywords>
+  
+	<project>HydroSense: Sensing &amp; Visualizing Fixture-Level Water Usage</project>
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
   
   <talk>
@@ -1029,6 +1163,9 @@
     <icon>talks/icons/Froehlich_ALongitudinalStudyOfPressureSensingToInferRealWorldWaterUsageEventsInTheHome_Pervasive2011_pptx_icon.png</icon>
     <paper>publications/Froehlich_ALongitudinalStudyOfPressureSensingToInferRealWorldWaterUsageEventsInTheHome_Pervasive2011.pdf</paper>
     <keywords>environmental sustainability, water sensing, water usage disaggregation, home resource management, deployment, longitudinal study, machine learning</keywords>
+	
+	<project>HydroSense: Sensing &amp; Visualizing Fixture-Level Water Usage</project>
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
 
   <talk>
@@ -1044,6 +1181,8 @@
     <icon>talks/icons/Froehlich_TheDesignOfEcoFeedbackTechnology_CHI2010_pptx_icon.png</icon>
     <paper>publications/Froehlich_TheDesignOfEcoFeedbackTechnology_CHI2010.pdf</paper>
     <keywords>eco-feedback, environmental hci, reflective hci, survey, environmental sustainability</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research</project_umbrellas>
   </talk>
 
   <talk>
@@ -1058,6 +1197,9 @@
     <icon>talks/icons/Froehlich_HydroSense-InfrastructureMediatedSinglePointSensingOfWholeHomeWaterActivity_UbiComp2009_pptx_icon.png</icon>
     <paper>publications/Froehlich_HydroSense-InfrastructureMediatedSinglePointSensingOfWholeHomeWaterActivity_UbiComp2009.pdf</paper>
     <keywords>shared bicycling, sustainable transport, prediction, smart cities, system modeling, machine learning, urban informatics</keywords>
+	
+	<project>HydroSense: Sensing &amp; Visualizing Fixture-Level Water Usage</project>
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
   
   <talk>
@@ -1072,6 +1214,8 @@
     <icon>talks/icons/Froehlich_SensingAndPredictingThePulseOfTheCityThroughSharedBicycling_IJCAI2009_pptx_icon.png</icon>
     <paper>publications/Froehlich_SensingAndPredictingThePulseOfTheCityThroughSharedBicycling_IJCAI2009.pdf</paper>
     <keywords>shared bicycling, sustainable transport, prediction, smart cities, system modeling, machine learning, urban informatics</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Urban Informatics</project_umbrellas>
   </talk>
 
   <talk>
@@ -1086,6 +1230,8 @@
     <icon>talks/icons/Froehlich_UbiGreen-InvestigatingAMobileToolForTrackingAndSupportingGreenTransportationHabits_CHI2009_pptx_icon.png</icon>
     <paper>publications/Froehlich_UbiGreen-InvestigatingAMobileToolForTrackingAndSupportingGreenTransportationHabits_CHI2009.pdf</paper>
     <keywords>eco-feedback, ambient displays, mobile phones, sensing, environmental sustainability, sustainable transportation</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research</project_umbrellas>
   </talk>
 
   <talk>
@@ -1100,6 +1246,8 @@
     <icon>talks/icons/Froehlich_RoutePredictionFromTripObservations_SAE2008_pptx_icon.png</icon>
     <paper>publications/Froehlich_RoutePredictionFromTripObservations_SAE2008.pdf</paper>
     <keywords>gps, trip prediction, human prediction, driving behavior analysis, repeat trips, automatically detecting routes, urban informatics</keywords>
+	
+	<project_umbrellas>Urban Informatics</project_umbrellas>
   </talk>
 
   <talk>
@@ -1114,6 +1262,10 @@
     <icon>talks/icons/Froehlich_BarrierPointing-UsingPhysicalEdgesToAssistTargetAcquisitionOnMobileDeviceTouchScreens_ASSETS2007_pptx_icon.png</icon>
     <paper>publications/Froehlich_BarrierPointing-UsingPhysicalEdgesToAssistTargetAcquisitionOnMobileDeviceTouchScreens_ASSETS2007.pdf</paper>
     <keywords>accessible interfaces, mobile phones, motor impairments, target acquisition, touch screens</keywords>
+	
+	<project>Touchscreen Accessibility</project>
+	<project_umbrellas>Accessibility</project_umbrellas>
+	
   </talk>
 
   <talk>
@@ -1142,6 +1294,8 @@
     <icon>talks/icons/Froehlich_VotingWithYourFeet-AnInvestigativeStudyOfTheRelationshipBetweenPlaceVisitBehaviorAndPreference_UbiComp2006_ppt_icon.png</icon>
     <paper>publications/Froehlich_VotingWithYourFeet-AnInvestigativeStudyOfTheRelationshipBetweenPlaceVisitBehaviorAndPreference_UbiComp2006.pdf</paper>
     <keywords>context-aware systems, recommendation systems, field studies, location-aware computing, urban informatics, experience sampling method (ESM)</keywords>
+	
+	<project_umbrellas>Urban Informatics</project_umbrellas>
   </talk>
   
   <talk>
@@ -1212,6 +1366,8 @@
     <deck>talks/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_PhdDefense2011.pptx</deck>
     <icon>talks/icons/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_PhDDefense2011_pptx_icon.png</icon>
     <keywords>thesis, water, transportation, eco-feedback, ubigreen, hydrosense, sensing and feedback, disaggregation, environmental sustainability</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
 
   <!-- Doctoral Colloquium -->
@@ -1227,6 +1383,8 @@
     <icon>talks/icons/Froehlich_MeasuringThePulseOfTheCityThroughSharedBicyclePrograms_UrbanSense2008_pptx_icon.png</icon>
     <paper>publications/Froehlich_MeasuringThePulseOfTheCityThroughSharedBicyclePrograms_UrbanSense2008.pdf</paper>
     <keywords>thesis, water, transportation, eco-feedback, ubigreen, hydrosense, sensing and feedback, disaggregation, environmental sustainability</keywords>
+	
+	<project_umbrellas>Environmental Sustainability, Behavior Change Technology &amp; Research, Disaggregated Resource Sensing &amp; Visualization</project_umbrellas>
   </talk>
   
   <!-- Guest Lecture -->

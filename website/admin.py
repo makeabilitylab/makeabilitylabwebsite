@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Person, Publication, Position, Talk, Project, Poster, Keyword, News, Banner, Video, Project_header, Photo
+from .models import Person, Publication, Position, Talk, Project, Poster, Keyword, News, Banner, Video, Project_header, Photo, Project_umbrella
 
 from django.http import HttpResponse
 from datetime import datetime
@@ -60,7 +60,7 @@ class PublicationAdmin(admin.ModelAdmin):
         ('Video Info',              {'fields': ['video']}),
         ('Page Info',               {'fields': ['num_pages', 'page_num_start', 'page_num_end']}),
         ('Talk Info',               {'fields': ['talk']}),
-        ('Project Info',            {'fields': ['projects']}),
+        ('Project Info',            {'fields': ['projects', 'project_umbrellas']}),
         ('Keyword Info',            {'fields': ['keywords']}),
     ]
     list_display = ('title', 'book_title_short')
@@ -139,3 +139,4 @@ admin.site.register(News, NewsAdmin)
 admin.site.register(Banner, BannerAdmin)
 admin.site.register(Video)
 admin.site.register(Photo, PhotoAdmin)
+admin.site.register(Project_umbrella)

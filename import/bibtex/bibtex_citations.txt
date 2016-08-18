@@ -1,5 +1,39 @@
 
 CONFERENCE PAPERS
+@inproceedings{StearnsICPR2016,
+	author = {Stearns, Lee and Oh, Uran and Cheng, Bridge J. and Findlater, Leah and Ross, David A. and Chellappa, Rama and Froehlich, Jon E.},
+	title = {Localization of Skin Features on the Hand and Wrist from Small Image Patches},
+	booktitle = {Proceedings of the 23rd International Conference on Pattern Recognition},
+	series = {ICPR '16},
+	year = {2016},
+	month = {December},
+	isbn = {tbd},
+	location = {Cancun, Mexico},
+	pages = {tbd},
+	numpages = {8},
+	url = {tbd},
+	doi = {tbd},
+	acmid = {tbd},
+	publisher = {ACM},
+	address = {New York, NY, USA},
+    keywords = {HandSight, computer vision, on-body interaction, skin-based localization, skin texture classification, biometrics},
+	project = {HandSight},
+	project_umbrellas = {Accessibility},
+
+    local_pdf = {},
+	pdf_icon = {publications/icons/Stearns_LocalizationOfSkinFeaturesOnTheHandAndWristFromSmallImagePatches_ICPR2016_pdf_icon.png},
+	video_url = {},
+	video_preview_url = { },
+	talk_slides_pdf = { },
+	talk_slides_pptx = { },
+	talk_slides_slideshare = { },
+	talk_video_url = { },
+	booktitle_short = {Proceedings of ICPR 2016},
+	pub_type = {conference},
+	pub_length = {full},
+	peer_reviewed = {yes},
+}
+
 @inproceedings{KangIDC2016,
 	author = {Kang, Seokbin and Norooz, Leyla and Oguamanam, Vanessa and Plane, Angelisa and Clegg, Tamara L. and Froehlich, Jon E.},
 	title = {SharedPhys: Live Physiological Sensing, Whole-Body Interaction, and Large-Screen Visualizations to Support Shared Inquiry Experiences},
@@ -17,7 +51,9 @@ CONFERENCE PAPERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
     keywords = {SharedPhys, BodyVis, physiological sensing, large-screen displays, mixed-reality, scientific inquiry, collaborative learning, STEM, wearables},
-
+	project = {BodyVis},
+	project_umbrellas = {Educational Technology},
+	
     local_pdf = {publications/Kang_SharedPhys-LivePhysiologicalSensingWholeBodyInteractionAndLargeScreenVisToSupportSharedInquiry_IDC2016.pdf},
 	pdf_icon = {publications/icons/Kang_SharedPhys-LivePhysiologicalSensingWholeBodyInteractionAndLargeScreenVisToSupportSharedInquiry_IDC2016_pdf.png},
 	video_url = {},
@@ -49,7 +85,9 @@ CONFERENCE PAPERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
     keywords = {SharedVis, BodyVis, Physiological sensing, large-screen displays, mixed-reality, scientific inquiry, collaborative learning, STEM, wearables},
-
+	project = {BodyVis},
+	project_umbrellas = {Educational Technology},
+	
     local_pdf = {},
 	pdf_icon = {publications/icons/Norooz_ThatsYourHeart-LivePhysiologicalSensingAndVisualizationToolsForLifeRelevantAndCollaborativeSTEMLearning_ICLS2016ShortPaper.png},
 	video_url = {},
@@ -64,7 +102,7 @@ CONFERENCE PAPERS
 	peer_reviewed = {yes},
 }
 
-@inproceedings{NoroozICLS2016,
+@inproceedings{HongGI2016,
 	author = {Hong, Jonggi and Stearns, Lee and Cheng, Tony and Froehlich, Jon E. and Ross, David and Findlater, Leah},
 	title = {Evaluating Angular Accuracy of Wrist-based Haptic Directional Guidance for Hand Movement},
 	booktitle = {Proceedings of the International Conference on Graphics Interface},
@@ -81,6 +119,8 @@ CONFERENCE PAPERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
     keywords = {Wearables, haptics, non-visual directional guidance, HandSight},
+	project = {HandSight},
+	project_umbrellas = {Accessibility},
 
     local_pdf = {publications/Hong_EvaluatingAngularAccuracyOfWristBasedHapticDirectionalGuidanceForHandMovement_GI2016.pdf},
 	pdf_icon = {publications/icons/Hong_EvaluatingAngularAccuracyOfWristBasedHapticDirectionalGuidanceForHandMovement_GI2016_pdf_icon.png},
@@ -114,7 +154,9 @@ CONFERENCE PAPERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
     keywords = {Accessibility, mobility impairments, formative study, gis, navigation, trip planning},
-
+	project = {Crowd-Powered Street View Accessibility},
+	project_umbrellas = {Urban Informatics, Accessibility},
+	
     local_pdf = {publications/Hara_TheDesignOfAssistiveLocationBasedTechnologiesForPeopleWithAmbulatoryDisabilities-AFormativeStudy_CHI2016.pdf},
 	pdf_icon = {publications/icons/Hara_TheDesignOfAssistiveLocationBasedTechnologiesForPeopleWithAmbulatoryDisabilities-AFormativeStudy_CHI2016_pdf_icon.png},
 	video_url = {},
@@ -148,7 +190,9 @@ CONFERENCE PAPERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
     keywords = {Wearables, interactive body learning, physiological sensing, tangible interactive computing},
-
+	project = {BodyVis},
+	project_umbrellas = {Educational Technology},
+	
     local_pdf = {publications/Norooz_BodyVis-ANewApproachToBodyLearningThroughWearableSensingAndVisualization_CHI2015.pdf},
 	pdf_icon = {publications/icons/Norooz_BodyVis-ANewApproachToBodyLearningThroughWearableSensingAndVisualization_CHI2015_pdf_icon.png},
 	video_url = {http://youtu.be/3zh_yaslOnY},
@@ -183,7 +227,9 @@ CONFERENCE PAPERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
     keywords = {Wearables, deaf, hard of hearing, head-mounted display, wearable, sound visualization, conversation support, accessibility},
-
+	project = {GlassEar},
+	project_umbrellas = {Accessibility},
+	
     local_pdf = {publications/Jain_HeadMountedDisplayVisualizationsToSupportSoundAwarenessForTheDeafAndHardOfHearing_CHI2015.pdf},
 	pdf_icon = {publications/icons/Jain_HeadMountedDisplayVisualizationsToSupportSoundAwarenessForTheDeafAndHardOfHearing_CHI2015_pdf_icon.png},
 	video_url = {http://youtu.be/2jwWHcQv0s8},
@@ -212,7 +258,9 @@ CONFERENCE PAPERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
     keywords = {Energy audits, thermography, robotics, formative inquiry, design probes, Sustainable HCI, human-robotic interaction},
-
+	project = {Scalable Thermography},
+	project_umbrellas = {Urban Informatics, Environmental Sustainability},
+	
     local_pdf = {publications/Mauriello_UnderstandingTheRoleOfThermographyInEnergyAuditing-CurrentPracticesAndThePotentialForAutomatedSolutions_CHI2015.pdf},
 	pdf_icon = {publications/icons/Mauriello_UnderstandingTheRoleOfThermographyInEnergyAuditing-CurrentPracticesAndThePotentialForAutomatedSolutions_CHI2015_pdf_icon.png},
 	video_url = {http://youtu.be/KZqKiOgRHZY},
@@ -242,6 +290,8 @@ CONFERENCE PAPERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
     keywords = {Crowdsourcing accessibility, computer vision, Google Street View, Amazon Mechanical Turk},
+	project = {Crowd-Powered Street View Accessibility},
+	project_umbrellas = {Urban Informatics, Accessibility},
 
     local_pdf = {publications/Hara_Tohme-DetectingCurbRampsInGoogleStreetViewUsingCrowdsourcingComputerVisionAndMachineLearning_UIST2014.pdf},
 	pdf_icon = {publications/icons/Hara_Tohme-DetectingCurbRampsInGoogleStreetViewUsingCrowdsourcingComputerVisionAndMachineLearning_UIST2014_pdf_icon.png},
@@ -270,6 +320,8 @@ CONFERENCE PAPERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
     keywords = {wearables, wearable displays, e-textiles, personal informatics, running, sports, health, fitness},
+	project = {Social Fabric Fitness},
+	project_umbrellas = {Behavior Change Technology & Research},
 
     local_pdf = {publications/Mauriello_SocialFabricFitness-DesignAndEvalOfWearableETextileDisplays_CHI2014.pdf},
 	pdf_icon = {publications/icons/Mauriello_SocialFabricFitness-DesignAndEvalOfWearableETextileDisplays_CHI2014_pdf_icon.png},
@@ -299,6 +351,8 @@ CONFERENCE PAPERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {google street view, accessible public transit, blind, low-vision, accessible urban navigation, crowdsourcing accessibility, mechanical turk, data collection, accessible cities},
+	project = {Crowd-Powered Street View Accessibility},
+	project_umbrellas = {Urban Informatics, Accessibility},
  
 	local_pdf = {publications/Hara_ImprovingPublicTransitAccessibilityForBlindRidersByCrowdsourcingBusStopLandmarkLocationsWithGoogleStreetView_ASSETS2013.pdf},
 	pdf_icon = {publications/icons/Hara_ImprovingPublicTransitAccessibilityForBlindRidersByCrowdsourcingBusStopLandmarkLocationsWithGoogleStreetView_ASSETS2013_pdf_icon.png},
@@ -328,6 +382,8 @@ CONFERENCE PAPERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {google street view, physical accessibility, wheelchair, urban informatics, accessible urban navigation, crowdsourcing accessibility, mechanical turk, data collection, accessible cities},
+	project = {Crowd-Powered Street View Accessibility},
+	project_umbrellas = {Urban Informatics, Accessibility},
  
 	local_pdf = {publications/Hara_CombiningCrowdsourcingAndGoogleStreetViewToIdentifyStreet-levelAccessibilityProblems_CHI2013.pdf},
 	pdf_icon = {publications/icons/Hara_CombiningCrowdsourcingAndGoogleStreetViewToIdentifyStreet-levelAccessibilityProblems_CHI2013_pdf_icon.png},
@@ -356,6 +412,7 @@ CONFERENCE PAPERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {behavioral science, behavioral theory, persuasive technology, persuasive design, health, behavior change, environmental sustainability, eco-feedback},
+	project_umbrellas = {Behavior Change Technology & Research},
  
 	local_pdf = {publications/Hekler_MindTheTheoreticalGap-InterpretingUsingAndDevelopingBehavioralTheoryInHCIResearch_CHI2013.pdf},
 	pdf_icon = {publications/icons/Hekler_MindTheTheoreticalGap-InterpretingUsingAndDevelopingBehavioralTheoryInHCIResearch_CHI2013_pdf_icon.png},
@@ -385,6 +442,8 @@ CONFERENCE PAPERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {touchscreen accessibility, older adults, motor impaired users, controlled lab study},
+	project = {Touchscreen Accessibility},
+	project_umbrellas = {Urban Informatics, Accessibility},
  
 	local_pdf = {publications/Findlater_AgeRelatedDifferencesInPerformanceWithTouchscreensComparedToTraditionalMouseInput_CHI2013.pdf},
 	pdf_icon = {publications/icons/Findlater_AgeRelatedDifferencesInPerformanceWithTouchscreensComparedToTraditionalMouseInput_CHI2013_pdf_icon.png},
@@ -414,6 +473,8 @@ CONFERENCE PAPERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {eco-feedback, water, environmental hci, water conservation, iterative design, persuasive design},
+	project = {HydroSense: Sensing & Visualizing Fixture-Level Water Usage},
+	project_umbrellas = {Behavior Change Technology & Research, Environmental Sustainability, Disaggregated Resource Sensing & Visualization},
  
 	local_pdf = {publications/Froehlich_TheDesignAndEvaluationOfPrototypeEcoFeedbackDisplaysForFixtureLevelWaterUsageData_CHI2012.pdf},
 	pdf_icon = {publications/icons/CHI2012_WaterVis_pdf_icon.png},
@@ -443,6 +504,8 @@ CONFERENCE PAPERS
 	volume = {6696},
 	url = {http://dx.doi.org/10.1007/978-3-642-21726-5_4},
 	doi = {http://dx.doi.org/10.1007/978-3-642-21726-5_4},
+	project = {HydroSense: Sensing & Visualizing Fixture-Level Water Usage},
+	project_umbrellas = {Environmental Sustainability, Disaggregated Resource Sensing & Visualization},
 	
 	local_pdf = {publications/Froehlich_ALongitudinalStudyOfPressureSensingToInferRealWorldWaterUsageEventsInTheHome_Pervasive2011.pdf},
 	pdf_icon = {publications/icons/Pervasive2011_HydroSenseLongitudinal_pdf_icon.png},
@@ -470,7 +533,8 @@ CONFERENCE PAPERS
 	publisher = {IEEE Computer Society},
 	address = {Washington, DC, USA},
 	keywords = {urban informatics, smart cities, Intelligent Transport Systems, Personalization, Data Mining, Automated Fare Collection},
-
+	project_umbrellas = {Urban Informatics},
+	
 	local_pdf = {publications/Lathia_MiningPublicTransportUsageForPersonalisedIntelligentTransportSystems_ICDM2010.pdf},
 	pdf_icon = {publications/icons/ICDM2010_PersonalisedLondonTube_pdf_icon.png},
 	booktitle_short = {Proceedings of ICDM 2010},
@@ -498,6 +562,8 @@ CONFERENCE PAPERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {power harvesting, sensing, water conservation, hydrosense},
+	project = {HydroSense: Sensing & Visualizing Fixture-Level Water Usage},
+	project_umbrellas = {Environmental Sustainability, Disaggregated Resource Sensing & Visualization},
 
 	local_pdf = {publications/Campbell_WATTr-AMethodForSelfPoweredWirelessSensingOfWaterActivityInTheHome_UbiComp2010.pdf},
 	pdf_icon = {publications/icons/UbiComp2010_WATTr_pdf_icon.png},
@@ -525,6 +591,7 @@ CONFERENCE PAPERS
 	volume = {6030},
 	url = {http://dx.doi.org/10.1007/978-3-642-12654-3_16},
 	doi = {http://dx.doi.org/10.1007/978-3-642-12654-3_16},
+	project_umbrellas = {Environmental Sustainability, Disaggregated Resource Sensing & Visualization},
 	
 	local_pdf = {publications/Cohn_GasSense-ApplianceLevelSinglePointSensingOfGasActivityInTheHome_Pervasive2010.pdf},
 	pdf_icon = {publications/icons/Pervasive2010_GasSense_pdf_icon.png},
@@ -553,6 +620,7 @@ CONFERENCE PAPERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {eco-feedback, environmental hci, reflective hci, survey, sustainability},
+	project_umbrellas = {Behavior Change Technology & Research, Environmental Sustainability},
  
 	local_pdf = {publications/Froehlich_TheDesignOfEcoFeedbackTechnology_CHI2010.pdf},
 	pdf_icon = {publications/icons/CHI2010_EcoFeedback_pdf_icon.png},
@@ -582,6 +650,8 @@ CONFERENCE PAPERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {activity sensing, infrastructure-mediated sensing, water sensing, disaggregation, hydrosense},
+	project = {HydroSense: Sensing & Visualizing Fixture-Level Water Usage},
+	project_umbrellas = {Environmental Sustainability, Disaggregated Resource Sensing & Visualization},
 
 	local_pdf = {publications/Froehlich_HydroSense-InfrastructureMediatedSinglePointSensingOfWholeHomeWaterActivity_UbiComp2009.pdf},
 	pdf_icon = {publications/icons/UbiComp09_HydroSense_pdf_icon.png},
@@ -610,6 +680,8 @@ CONFERENCE PAPERS
 	publisher = {Morgan Kaufmann Publishers Inc.},
 	address = {San Francisco, CA, USA},
 	keywords = {shared bicycling, bicing, sustainable transport, smart cities, system modeling, machine learning, urban informatics},
+	
+	project_umbrellas = {Urban Informatics, Environmental Sustainability},
 
 	local_pdf = {publications/Froehlich_SensingAndPredictingThePulseOfTheCityThroughSharedBicycling_IJCAI2009.pdf},
 	pdf_icon = {publications/icons/IJCAI09_Bicing_pdf_icon.png},
@@ -638,7 +710,8 @@ CONFERENCE PAPERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {eco-feedback, ambient displays, mobile phones, sensing, sustainability, transportation},
-
+	project_umbrellas = {Environmental Sustainability, Behavior Change Technology & Research},
+	
 	local_pdf = {publications/Froehlich_UbiGreen-InvestigatingAMobileToolForTrackingAndSupportingGreenTransportationHabits_CHI2009.pdf},
 	pdf_icon = {publications/icons/CHI2009_UbiGreen_pdf_icon.png},
 	booktitle_short = {Proceedings of CHI 2009},
@@ -666,6 +739,7 @@ CONFERENCE PAPERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {ambient display, activity sensing, calm technology, field experiment, fitness, mobile phone, persuasive technology, physical activity},
+	project_umbrellas = {Behavior Change Technology & Research},
 
 	local_pdf = {publications/Consolvo_FlowersOrARobotArmy-EncouragingAwarenessAndActivityWithPersonalMobileDisplays_UbiComp2008.pdf},
 	pdf_icon = {publications/icons/UbiComp2008_FlowersOrRobotArmy_pdf_icon.png},
@@ -717,7 +791,8 @@ CONFERENCE PAPERS
 	url = {http://papers.sae.org/2008-01-0201},
 	doi = {http://dx.doi.org/10.4271/2008-01-0201},
 	keywords = {GPS, Global Positioning System, Trip Prediction, Driving Behavior Analysis, Repeat Trips, Automatically Detecting Routes},
-
+	project_umbrellas = {Urban Informatics},
+	
 	local_pdf = {publications/Froehlich_RoutePredictionFromTripObservations_SAE2008.pdf},
 	pdf_icon = {publications/icons/SAE2008_RoutePrediction_pdf_icon.png},
 	booktitle_short = {Proceedings of SAE 2008},
@@ -743,6 +818,7 @@ CONFERENCE PAPERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {activity inference, activity-based applications, ambient display, fitness, mobile phone, persuasive technology, physical activity, sensing},
+	project_umbrellas = {Behavior Change Technology & Research},
 
 	local_pdf = {publications/Consolvo_ActivitySensingInTheWild-AFieldTrialOfUbiFitGarden_CHI2008.pdf},
 	pdf_icon = {publications/icons/CHI2008_UbiFitGarden_pdf_icon.png},
@@ -771,7 +847,9 @@ CONFERENCE PAPERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {PDAs, accessible interfaces, corners, edges, mobile phones, motor impairments, target acquisition, touch screens},
-
+	project = {Touchscreen Accessibility},
+	project_umbrellas = {Accessibility},
+	
 	local_pdf = {publications/Froehlich_BarrierPointing-UsingPhysicalEdgesToAssistTargetAcquisitionOnMobileDeviceTouchScreens_ASSETS2007.pdf},
 	pdf_icon = {publications/icons/ASSETS2007_BarrierPointing_pdf_icon.png},
 	booktitle_short = {Proceedings of ASSETS 2007},
@@ -827,7 +905,7 @@ CONFERENCE PAPERS
 	url = {http://dx.doi.org/10.1007/11853565_20},
 	note = {10.1007/11853565_20},
 	keywords = {context-aware systems, experience sampling method (ESM), field studies, location-aware computing, urban informatics},
-
+	project_umbrellas = {Urban Informatics},
 
 	local_pdf = {publications/Froehlich_VotingWithYourFeet-AnInvestigativeStudyOfTheRelationshipBetweenPlaceVisitBehaviorAndPreference_UbiComp2006.pdf},
 	pdf_icon = {publications/icons/UbiComp2006_VotingWithFeet_pdf_icon.png},
@@ -908,6 +986,8 @@ JOURNAL PAPERS
 	doi = {tbd},
 	url = {tbd},
 	keywords = {Accessibility, Wearables, Visual Impairments, HandSight, Real-Time OCR, Blind Reading},
+	project = {HandSight},
+	project_umbrellas = {Accessibility},
 	
 	local_pdf = {publications/Stearns_EvaluatingHapticAndAuditoryDirectionalGuidanceToAssistBlindPeopleInReadingPrintedTextUsingFingerMountedCameras_ACMTACCESS2016.pdf},
 	pdf_icon = {publications/icons/Stearns_EvaluatingHapticAndAuditoryDirectionalGuidanceToAssistBlindPeopleInReadingPrintedTextUsingFingerMountedCameras_ACMTACCESS2016_pdf_icon.png},
@@ -931,6 +1011,8 @@ JOURNAL PAPERS
 	doi = {tbd},
 	url = {tbd},
 	keywords = {Public Transport, Accessibility, Crowdsourcing Accessibility, Bus Stop Auditing, Google Street View, Crowdsourcing, Low-Vision, Blind Users, Accessible Bus Stops, Remote Data Collection},
+	project = {Crowd-Powered Street View Accessibility},
+	project_umbrellas = {Accessibility, Urban Informatics},
 	
 	local_pdf = {publications/Hara_ImprovingPublicTransitAccessibilityUsingGoogleStreetView-AnExtendedAnalysis_TACCESS2015.pdf},
 	pdf_icon = {publications/icons/Hara_ImprovingPublicTransitAccessibilityUsingGoogleStreetView-AnExtendedAnalysis_TACCESS2015_pdf_icon.png},
@@ -954,6 +1036,7 @@ JOURNAL PAPERS
 	doi = {tbd},
 	url = {tbd},
 	keywords = {Public Transport, Urban Informatics, Smart Cities, Urban Data Mining, Personalization},
+	project_umbrellas = {Urban Informatics},
 	
 	local_pdf = {publications/Lathia_IndividualsAmongCommuters-BuildingPersonalisedTransportInformationServicesFromFareCollectionSystems_PervasiveAndMobileComputing2012.pdf},
 	pdf_icon = {publications/icons/Lathia_IndividualsAmongCommuters_PMC2012_pdf_icon.png},
@@ -980,7 +1063,9 @@ JOURNAL PAPERS
 	url = {http://www.sciencedirect.com/science/article/pii/S1574119210000842},
 	keywords = {Activity sensing, Infrastructure-mediated sensing, Sensing, Water usage, Sustainability},
 	abstract = {We present an extended analysis of our previous work on the HydroSense technology, which is a low-cost and easily installed single-point sensor of pressure for automatically disaggregating water usage activities in the home (Froehlich et al., 2009 [53]). We expand upon this work by providing a survey of existing and emerging water disaggregation techniques, a more comprehensive description of the theory of operation behind our approach, and an expanded analysis section that includes hot versus cold water valve usage classification and a comparison between two classification approaches: the template-based matching scheme used in Froehlich et al. (2009) [53] and a new stochastic approach using a Hidden Markov Model. We show that both are successful in identifying valve- and fixture-level water events with greater than 90% accuracies. We conclude with a discussion of the limitations in our experimental methodology and open problems going forward.},
-
+	project = {HydroSense: Sensing & Visualizing Fixture-Level Water Usage},
+	project_umbrellas = {Environmental Sustainability, Disaggregated Resource Sensing & Visualization},
+	
 	local_pdf = {publications/Larson_DisaggregatedWaterSensingFromASinglePressureBasedSensor-AnExtendedAnalysisOfHydroSenseUsingStagedExperiments_PMC2010.pdf},
 	pdf_icon = {publications/icons/PMC2010_HydroSense_pdf_icon.png},
 	booktitle_short = {Pervasive and Mobile Computing (PMC) 2010},
@@ -1008,6 +1093,7 @@ JOURNAL PAPERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {Ability-based design, adaptive user interfaces, assistive technology, computer access, design for all, inclusive design, universal design, universal usability, user interfaces for all},
+	project_umbrellas = {Accessibility},
 
 	local_pdf = {publications/Wobbrock_AbilityBasedDesign-ConceptPrinciplesAndExamples_TACCESS2011.pdf},
 	pdf_icon = {publications/icons/TACESSS2010_AbilityBasedDesign_pdf_icon.png},
@@ -1030,6 +1116,7 @@ JOURNAL PAPERS
 	publisher = {IEEE Computer Society},
 	address = {Los Alamitos, CA, USA},
 	keywords = {sensing, disaggregation, home resource consumption, electricity, gas, water, smart grid},
+	project_umbrellas = {Environmental Sustainability, Disaggregated Resource Sensing & Visualization},
 
 	local_pdf = {publications/Froehlich_DisaggregatedEndUseEnergySensingForTheSmartGrid_IEEEPervasive2011.pdf},
 	pdf_icon = {publications/icons/IEEEPervasive2011_Disaggregation_pdf_icon.png},
@@ -1081,6 +1168,7 @@ BOOKS/BOOK CHAPTERS
 	editor = {Walz, Steffen P. and Deterding, Sebastian},
 	address = {},
     keywords = {gamification, environmental sustainability, ubigreen, nest, opower, persuasive technology, bikeshare, eco-driving, toyota prius, nissan leaf, recyclebank, ethics, gamifying green, motivation, credibility},
+	project_umbrellas = {Environmental Sustainability, Behavior Change Technology & Research},
 
     local_pdf = {publications/Froehlich_GamifyingGreen_EarlyDraft-22000words_GamefulWorldBook.pdf},
 	pdf_icon = {publications/icons/Froehlich_GamifyingGreen_EarlyDraft-22000words_GamefulWorldBook_pdf_icon.png},
@@ -1103,6 +1191,7 @@ DOCTORAL COLLOQUIUM
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {doctoral colloquia, water, bicycling, transportation, eco-feedback, thesis},
+	project_umbrellas = {Environmental Sustainability, Behavior Change Technology & Research},
  
 	local_pdf = {publications/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentallySustainableBehaviors_UbiComp2009.pdf},
 	pdf_icon = {publications/icons/UbiComp09_DC_SensingAndFeedback_pdf_icon.png},
@@ -1125,6 +1214,7 @@ THESES
 	location = {Seattle, WA, USA},
 	numpages = {407},
 	keywords = {thesis, water, transportation, eco-feedback, ubigreen, hydrosense, sensing and feedback, disaggregation},
+	project_umbrellas = {Environmental Sustainability, Behavior Change Technology & Research},
  
 	local_pdf = {publications/Froehlich_SensingAndFeedbackOfEverydayActivitiesToPromoteEnvironmentalBehaviors_UWPhdDissertation2011.pdf},
 	pdf_icon = {publications/icons/Froehlich_PhdDissertation2011_pdf_icon.png},
@@ -1171,6 +1261,8 @@ WORKSHOPS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {Thermography, human-building interaction, thermal cameras},
+	project = {Scalable Thermography},
+	project_umbrellas = {Environmental Sustainability},
 
 	local_pdf = {publications/Mauriello_TheFutureRoleOfThermographyInHumanBuildingInteraction_CHI2016WorkshopOnHBI.pdf},
 	pdf_icon = {publications/icons/Mauriello_TheFutureRoleOfThermographyInHumanBuildingInteraction_CHI2016WorkshopOnHBI_pdf_icon.png},
@@ -1197,6 +1289,9 @@ WORKSHOPS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {Accessibility, Wearables, Real-time OCR, Text Reading for Blind},
+	
+	project = {HandSight},
+	project_umbrellas = {Accessibility},
 
 	video_url = {https://youtu.be/AWCEDYdwBAc},
 	
@@ -1225,6 +1320,8 @@ WORKSHOPS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {quantified self, personal informatics, failures, field studies},
+	
+	project_umbrellas = {Behavior Change Technology & Research},
 
 	local_pdf = {publications/Froehlich_DisastersInPersonalInformaticsTheUnpublishedStoriesOfFailureandLessonsLearned_UbiComp14Workshop.pdf},
 	pdf_icon = {publications/icons/Froehlich_DisastersInPersonalInformaticsTheUnpublishedStoriesOfFailureandLessonsLearned_UbiComp14Workshop_pdf_icon.png},
@@ -1243,6 +1340,9 @@ WORKSHOPS
 	month = {June},
 	location = {Pacific Grove, California, USA},
 	keywords = {physical world accessibility, street-level accessibility, computer vision, google street view, crowdsourcing, machine learning},
+	
+	project = {Crowd-Powered Street View Accessibility},
+	project_umbrellas = {Accessibility, Urban Informatics},
 
 	local_pdf = {publications/Hara_ExploringEarlySolutionsForAutomaticallyIdentifyingInaccessibleSidewalksInThePhysicalWorldUsingGoogleStreetView_HCIC2013.pdf},
 	pdf_icon = {publications/icons/Hara_ExploringEarlySolutionsForAutomaticallyIdentifyingInaccessibleSidewalksInThePhysicalWorldUsingGoogleStreetView_HCIC2013_pdf_icon.png},
@@ -1269,6 +1369,8 @@ WORKSHOPS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {quantified self, personal informatics, reflective interfaces, health, wellbeing},
+	
+	project_umbrellas = {Behavior Change Technology & Research},
 
 	local_pdf = {publications/Li_PersonalInformaticsInTheWild-HackingHabitsForHealthAndHappiness_CHI2013Workshop.pdf},
 	pdf_icon = {publications/icons/Li_PersonalInformaticsInTheWild-HackingHabitsForHealthAndHappiness_CHI2013Workshop_pdf_icon.png},
@@ -1295,6 +1397,8 @@ WORKSHOPS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {quantified self, personal informatics, reflective interfaces, health, wellbeing},
+	
+	project_umbrellas = {Behavior Change Technology & Research},
 
 	local_pdf = {publications/Li_PersonalInformaticsInPractice-ImprovingQualityOfLifeThroughData_CHI2012Workshop.pdf},
 	pdf_icon = {publications/icons/Li_PersonalInformaticsWorkshop2012_pdf_icon.png},
@@ -1304,7 +1408,7 @@ WORKSHOPS
 	peer_reviewed = {yes},
 }
 
-@article{Froehlich2010:MERW,
+@article{Zhao2010:MERW,
     author = {Zhao, Chen and Froehlich, Jon and Landay, James A.},
     title = {Exploring the Cross-Cultural Effects of Feedback for Pro-Environmental Behavior Change},
     booktitle = {Microsoft Environmental Research Workshop},
@@ -1312,6 +1416,8 @@ WORKSHOPS
 	month = {July},
 	location = {Redmond, WA, USA},
 	keywords = {sustainability, culture, eco-feedback},
+	
+	project_umbrellas = {Environmental Sustainability, Behavior Change Technology & Research},
 
 	local_pdf = {publications/Froehlich_GoingHomeForData-InHomeSensingForEScience_MicrosoftEnvironmentalResearchWorkshop2010.pdf},
 	pdf_icon = {publications/icons/Froehlich_HomeAsEScience_MSREnvironmentalWorkshop_pdf_icon.png},
@@ -1321,7 +1427,7 @@ WORKSHOPS
 	peer_reviewed = {no},
 }
 
-@article{Zhao2010:MERW,
+@article{Froehlich2010:MERW,
     author = {Froehlich, Jon},
     title = {Going Home for Data: In-Home Sensing for e-Science},
     booktitle = {Microsoft Environmental Research Workshop},
@@ -1347,7 +1453,7 @@ WORKSHOPS
 	month = {September},
 	isbn = {978-1-60558-281-8},
 	location = {Bonn, Germany},
-	pages = {1--2},
+	pages = {107:1--107:2},
 	articleno = {107},
 	numpages = {2},
 	url = {http://doi.acm.org/10.1145/1613858.1613981},
@@ -1374,6 +1480,8 @@ WORKSHOPS
 	month = {March},
 	location = {Boston, MA, USA},
 	keywords = {environmental sensing, resource consumption, sustainability, eco-feedback},
+	
+	project_umbrellas = {Environmental Sustainability, Behavior Change Technology & Research},
 
 	local_pdf = {publications/Froehlich_SensingOpportunitiesForPersonalizedFeedbackTechnologyToReduceConsumption_CHI2009Workshop.pdf},
 	pdf_icon = {publications/icons/CHI09SustainabilityWorkshop-SensingOpportunities_pdf_icon.png},
@@ -1392,6 +1500,8 @@ WORKSHOPS
 	month = {February},
 	location = {Snow Mountain Ranch, Fraser, Colorado, USA},
 	keywords = {home sensing, resource consumption, sustainability},
+	
+	project_umbrellas = {Environmental Sustainability, Behavior Change Technology & Research},
 
 	local_pdf = {publications/Froehlich_PromotingEnergyEfficientBehavirosInTheHomeThroughFeedback-TheRoleOfHumanComputerInteraction_HCIC2009.pdf},
 	pdf_icon = {publications/icons/HCIC09_RoleOfFeedback_pdf_icon.png},
@@ -1410,6 +1520,8 @@ WORKSHOPS
 	month = {November},
 	location = {Raleigh, North Carolina, USA},
 	keywords = {shared bicycling, bicing, urban informatics, smart cities, transportation, data mining},
+	
+	project_umbrellas = {Urban Informatics, Environmental Sustainability},
 
 	local_pdf = {publications/Froehlich_MeasuringThePulseOfTheCityThroughSharedBicyclePrograms_UrbanSense2008.pdf},
 	pdf_icon = {publications/icons/UrbanSense08_SensingPulseOfCityBicing_pdf_icon.png},
@@ -1454,7 +1566,7 @@ POSTERS
 	month = {September},
 	isbn = {},
 	location = {Seattle, WA, USA},
-	pages = {tbd},
+	pages = {},
 	numpages = {4},
 	url = {},
 	doi = {},
@@ -1462,6 +1574,9 @@ POSTERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {3D thermography; Aerial robotics; Automated energy auditing; Building assessment; Environmental sustainability},
+	
+	project = {Scalable Thermography},
+	project_umbrellas = {Environmental Sustainability, Urban Informatics},
 	
 	local_pdf = {publications/Mauriello_TowardsAutomatedThermalProfilingofBuildingsAtScaleUsingUnmannedAerialVehiclesAnd3D-Reconstruction_UbiComp2014Poster.pdf},
 	pdf_icon = {publications/icons/Mauriello_TowardsAutomatedThermalProfilingofBuildingsAtScaleUsingUnmannedAerialVehiclesAnd3D-Reconstruction_UbiComp2014Poster_pdf_icon.png},
@@ -1480,7 +1595,7 @@ POSTERS
 	month = {November},
 	isbn = {},
 	location = {Palm Springs, California, USA},
-	pages = {tbd},
+	pages = {},
 	numpages = {2},
 	url = {},
 	doi = {},
@@ -1488,6 +1603,9 @@ POSTERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {physical accessibility, computer vision, crowdsourcing, google streetview, crowd verification, accessible urban navigation, mechanical turk, data collection, accessible cities},
+	
+	project = {Crowd-Powered Street View Accessibility},
+	project_umbrellas = {Accessibility, Urban Informatics},
 	
 	local_pdf = {publications/Hara_AnInitialStudyOfAutomaticCurbRampDetectionWithCrowdsourcedVerificationUsingGoogleStreetViewImages_HCOMP2013Poster.pdf},
 	pdf_icon = {publications/icons/Hara_AnInitialStudyOfAutomaticCurbRampDetectionWithCrowdsourcedVerificationUsingGoogleStreetViewImages_HCOMP2013Poster_pdf_icon.png},
@@ -1506,7 +1624,7 @@ POSTERS
 	month = {October},
 	isbn = {},
 	location = {Lisbon, Portugal},
-	pages = {tbd},
+	pages = {},
 	numpages = {2},
 	url = {},
 	doi = {},
@@ -1514,6 +1632,9 @@ POSTERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {finger camera, visual impairments, blind, touch vision, computer vision},
+	
+	project = {HandSight},
+	project_umbrellas = {Accessibility},
 	
 	local_pdf = {publications/Findlater_SupportingEverydayActivitiesForPersonsWithVisualImpairmentsThroughComputerVision-AugmentedTouch_ASSETS2015Poster.pdf},
 	pdf_icon = {publications/icons/Findlater_SupportingEverydayActivitiesForPersonsWithVisualImpairmentsThroughComputerVision-AugmentedTouch_ASSETS2015Poster_pdf_icon.png},
@@ -1532,7 +1653,7 @@ POSTERS
 	month = {October},
 	isbn = {},
 	location = {Bellevue, Washington, USA},
-	pages = {tbd},
+	pages = {},
 	numpages = {2},
 	url = {},
 	doi = {},
@@ -1540,6 +1661,9 @@ POSTERS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {accessible touchscreens, motor impairments, accessibility, smartphones, tablets},
+	
+	project = {Touchscreen Accessibility},
+	project_umbrellas = {Accessibility},
 	
 	local_pdf = {publications/Kim_SurveyingTheAccessibilityOfMobileTouchscreenGamesForPersonsWithMotorImpairments-APreliminaryAnalysis_ASSETS2013Poster.pdf},
 	pdf_icon = {publications/icons/Kim_SurveyingTheAccessibilityOfMobileTouchscreenGamesForPersonsWithMotorImpairments-APreliminaryAnalysis_ASSETS2013Poster_pdf_icon.png},
@@ -1569,6 +1693,9 @@ POSTERS
 	address = {New York, NY, USA},
 	keywords = {accessible urban navigation, crowdsourcing accessibility, google street view, mechanical turk},
 	
+	project = {Crowd-Powered Street View Accessibility},
+	project_umbrellas = {Accessibility, Urban Informatics},
+	
 	local_pdf = {publications/Hara_AFeasibilityStudyOfCrowdsourcingAndGoogleStreetViewToDetermineSidewalkAccessibility_ASSETS2012PosterPaper.pdf},
 	pdf_icon = {publications/icons/Hara_AFeasibilityStudyOfCrowdsourcingAndGoogleStreetViewToDetermineSidewalkAccessibility_ASSETS2012PosterPaper_pdf_icon.png},
 	booktitle_short = {Poster Proceedings of ASSETS 2012},
@@ -1587,6 +1714,9 @@ POSTERS
 	location = {Washington, DC, USA},
 	keywords = {activity sensing, water sensing, disaggregation, hydrosense, environmental sustainability},
 	
+	project = {HydroSense: Sensing & Visualizing Fixture-Level Water Usage},
+	project_umbrellas = {Environmental Sustainability, Disaggregated Resource Sensing & Visualization},
+	
 	local_pdf = {publications/Froehlich_WhereDoesYourWaterGo-HydroSenseKnows_BECC2009.pdf},
 	pdf_icon = {publications/icons/BECC2009_Poster_HydroSense_pdf_icon.png},
 	booktitle_short = {Poster Proceedings of BECC 2009},
@@ -1604,6 +1734,8 @@ POSTERS
 	month = {December},
 	location = {Washington, DC, USA},
 	keywords = {shared bicycling, bicing, sustainable transport, smart cities, system modeling, machine learning, urban informatics},
+	
+	project_umbrellas = {Urban Informatics},
 	
 	local_pdf = {publications/Froehlich_UnderstandingAndMotivatingSharedBicyclingUsers_BECC2009.pdf},
 	pdf_icon = {publications/icons/BECC2009_Poster_Bicing_pdf_icon.png},
@@ -1626,6 +1758,8 @@ EXTENDED ABSTRACTS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {Construction kits, electronic textiles, e-textiles, wearables, children, making},
+	
+	project_umbrellas = {Educational Technology, Maker Tools},
  
 	local_pdf = {publications/Kazemitabaar_ReWear-EarlyExplorationsOfAModularWearableConstructionKitForYoungChildren_CHI2016LBW.pdf},
 	pdf_icon = {publications/icons/Kazemitabaar_ReWear-EarlyExplorationsOfAModularWearableConstructionKitForYoungChildren_CHI2016LBW_pdf_icon.png},
@@ -1650,6 +1784,8 @@ EXTENDED ABSTRACTS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {Construction kits, electronic textiles, e-textiles, wearables, children, making},
+	
+	project_umbrellas = {Educational Technology, Maker Tools},
  
 	local_pdf = {publications/Kazemitabaar_MakerShoeTowardsAnETextileConstructionKitToSupportCreativityPlayfulMakingAndSelfExpression_IDC2015Demo.pdf},
 	pdf_icon = {publications/icons/Kazemitabaar_MakerShoe-TowardsAnE-TextileConstructionKitToSupportCreativityPlayMakingAndSelfExpression_IDC2015Demo_pdf_icon.png},
@@ -1732,6 +1868,8 @@ EXTENDED ABSTRACTS
 	address = {New York, NY, USA},
 	keywords = {tangible user interfaces, physical computing, making, makers, pixel, sensors, actuators, children, programming, materials},
  
+	project_umbrellas = {Educational Technology, Maker Tools},
+ 
 	local_pdf = {publications/Gubbels_PhysicallyComputingPhysicalComputing-CreativeToolsForBuildingWithPhysicalMaterialsAndComputation_IDC2014.pdf},
 	pdf_icon = {publications/icons/Gubbels_PhysicallyComputingPhysicalComputing-CreativeToolsForBuildingWithPhysicalMaterialsAndComputation_IDC2014_pdf_icon.png},
 	booktitle_short = {IDC '14 Extended Abstracts},
@@ -1752,6 +1890,9 @@ EXTENDED ABSTRACTS
 	publisher = {ACM},
 	address = {New York, NY, USA},
 	keywords = {e-textiles, wearables, sensing and feedback, live physiology, educational technology, teaching, anatomy, children, body learning},
+	
+	project = {BodyVis},
+	project_umbrellas = {Educational Technology},
  
 	local_pdf = {publications/Norooz_ExploringEarlyDesignsForTeachingAnatomyAndPhysiologyToChildrenUsingWearableE-Textiles_IDC2013Demo.pdf},
 	pdf_icon = {publications/icons/Norooz_ExploringEarlyDesignsForTeachingAnatomyAndPhysiologyToChildrenUsingWearableE-Textiles_IDC2013Demo_pdf_icon.jpg},
@@ -1802,6 +1943,8 @@ EXTENDED ABSTRACTS
 	address = {New York, NY, USA},
 	keywords = {design, environment, sustainability; community, user behavior},
 	
+	project_umbrellas = {Environmental Sustainability},
+	
 	local_pdf = {publications/Khan_CHI2011SustainabilityCommunityInvitedPanel-ChallengesAhead_CHI2011ExtendedAbstracts.pdf},
 	pdf_icon = {publications/icons/Khan_CHI2011SustainabilityCommunityInvitedPanel-ChallengesAhead_CHI2011ExtendedAbstracts_pdf_icon.png},
 	booktitle_short = {CHI '11 Extended Abstracts},
@@ -1824,6 +1967,9 @@ OTHER
 	publisher = {ACM},
 	address = {New York, NY, USA},
     keywords = {Crowdsourcing accessibility, computer vision, Google Street View, Amazon Mechanical Turk, personalized routing, accessibility map visualizations},
+	
+	project = {Crowd-Powered Street View Accessibility},
+	project_umbrellas = {Accessibility, Urban Informatics},
 
     local_pdf = {publications/Hara_CharacterizingAndVisualizingPhysicalWorldAccessibilityAtScaleUsingCrowdsourcingComputerVisionAndMachineLearning_SIGACCESSNewsletter2015.pdf},
 	pdf_icon = {publications/icons/Hara_CharacterizingAndVisualizingPhysicalWorldAccessibilityAtScaleUsingCrowdsourcingComputerVisionAndMachineLearning_SIGACCESSNewsletter2015_pdf_icon.png},

@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from website.models import Person, Keyword, Talk
+from website.models import Person, Keyword, Talk, Project, Project_umbrella
 import xmltodict as xd
 from django.core.files import File
 import requests
@@ -106,6 +106,55 @@ def get_keywords(keyword_list):
             ret.append(new_keyword)
     return ret
 
+
+def parse_umbrellas(umbrellas):
+    return [word.strip() for word in umbrellas.split(",")]
+
+def get_umbrellas(umbrellas):
+    ret=[]
+    for umbrella in umbrellas:
+        test_um = Project_umbrella.objects.filter(name=umbrella)
+        if len(test_um) > 0:
+            ret.append(test_um[0])
+        else:
+            new_umbrella = Project_umbrella(name=umbrella, short_name=umbrella.lower().replace(" ", ""))
+            new_umbrella.save()
+            ret.append(new_umbrella)
+    return ret
+
+def get_project(project_name, project_umbrellas, authors, keywords, talk):
+    test_proj = Project.objects.filter(name=project_name)
+    if len(test_proj) > 0:
+        proj = test_proj[0]
+        for author in authors:
+            test_auth = proj.people.filter(first_name=author.first_name, last_name=author.last_name)
+            if len(test_auth) == 0:
+                proj.people.add(author)
+        for keyword in keywords:
+            test_key = proj.keywords.filter(keyword=keyword.keyword)
+            if len(test_key) == 0:
+                proj.keywords.add(keyword)
+        umbrellas = get_umbrellas(parse_umbrellas(project_umbrellas))
+        for umbrella in umbrellas:
+            pub.project_umbrellas.add(umbrella)
+            test_umb = proj.project_umbrellas.filter(name=umbrella.name)
+            if len(test_umb) == 0:
+                proj.project_umbrellas.add(umbrella)
+        return proj
+    else:
+        short_title=project_name.lower().replace(" ", "")
+        proj = Project(name=project_name, short_name=short_title)
+        proj.save()
+        umbrellas = get_umbrellas(parse_umbrellas(project_umbrellas))
+        for umbrella in umbrellas:
+            proj.project_umbrellas.add(umbrella)
+            talk.project_umbrellas.add(umbrella)
+        for author in authors:
+            proj.people.add(author)
+        for keyword in keywords:
+            proj.keywords.add(keyword)
+        return proj
+
 #Returns true if a title already exists in the database to avoid duplication
 def exists(title):
     test_title=Publication.objects.filter(title=title)
@@ -185,5 +234,15 @@ class Command(BaseCommand):
                     keyword_list = get_keywords(parse_keywords(get_val_key('keywords', entry)))
                     for keyword in keyword_list:
                         new_talk.keywords.add(keyword)
+                    project = get_val_key('project', entry)
+                    project_umbrellas = get_val_key('project_umbrellas', entry)
+                    if project != None and len(project)>0:
+                        project_obj=get_project(project, project_umbrellas, speaker_list, keyword_list, new_talk)
+                        print(project_obj)
+                        new_pub.projects.add(project_obj)
+                    elif project_umbrellas != None and len(project_umbrellas) > 0:
+                        umbrellas = get_umbrellas(parse_umbrellas(project_umbrellas))
+                        for umbrella in umbrellas:
+                            new_talk.project_umbrellas.add(umbrella)
         #Clean out the temp directory when you're done
         os.system("rm import/temp/*")

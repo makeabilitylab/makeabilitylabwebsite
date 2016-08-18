@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from website.models import Person, Position, Keyword, Publication, Video
+from website.models import Person, Position, Keyword, Publication, Video, Project, Project_umbrella
 import bibtexparser
 from django.core.files import File
 import requests
@@ -94,6 +94,54 @@ def get_video(url, preview_url, date, title, caption):
     new_video.save()
     return new_video
 
+def parse_umbrellas(umbrellas):
+    return [word.strip() for word in umbrellas.split(",")]
+
+def get_umbrellas(umbrellas):
+    ret=[]
+    for umbrella in umbrellas:
+        test_um = Project_umbrella.objects.filter(name=umbrella)
+        if len(test_um) > 0:
+            ret.append(test_um[0])
+        else:
+            new_umbrella = Project_umbrella(name=umbrella, short_name=umbrella.lower().replace(" ", ""))
+            new_umbrella.save()
+            ret.append(new_umbrella)
+    return ret
+
+def get_project(project_name, project_umbrellas, authors, keywords, pub):
+    test_proj = Project.objects.filter(name=project_name)
+    if len(test_proj) > 0:
+        proj = test_proj[0]
+        for author in authors:
+            test_auth = proj.people.filter(first_name=author.first_name, last_name=author.last_name)
+            if len(test_auth) == 0:
+                proj.people.add(author)
+        for keyword in keywords:
+            test_key = proj.keywords.filter(keyword=keyword.keyword)
+            if len(test_key) == 0:
+                proj.keywords.add(keyword)
+        umbrellas = get_umbrellas(parse_umbrellas(project_umbrellas))
+        for umbrella in umbrellas:
+            pub.project_umbrellas.add(umbrella)
+            test_umb = proj.project_umbrellas.filter(name=umbrella.name)
+            if len(test_umb) == 0:
+                proj.project_umbrellas.add(umbrella)
+        return proj
+    else:
+        short_title=project_name.lower().replace(" ", "")
+        proj = Project(name=project_name, short_name=short_title)
+        proj.save()
+        umbrellas = get_umbrellas(parse_umbrellas(project_umbrellas))
+        for umbrella in umbrellas:
+            proj.project_umbrellas.add(umbrella)
+            pub.project_umbrellas.add(umbrella)
+        for author in authors:
+            proj.people.add(author)
+        for keyword in keywords:
+            proj.keywords.add(keyword)
+        return proj
+        
 
 #Returns true if a title already exists in the database to avoid duplication
 def exists(title):
@@ -118,7 +166,7 @@ class Command(BaseCommand):
             for entry in bib_database.entries:
                 pdf_file_loc="http://cs.umd.edu/~jonf/"+get_val_key('local_pdf', entry)
                 title=get_val_key('title', entry)
-                print(exists(title))
+                print(str(exists(title))+" "+title)
                 #This is important because if local_pdf is not set then this part will crash, if a PDF is not included nothing will be done
                 #TODO see what to do if no PDF is included
                 #skip entry if PDF is missing, title is missing, or if title is already in the database
@@ -142,9 +190,19 @@ class Command(BaseCommand):
                     page_range=get_val_key('pages', entry)
                     acmid=get_val_key('acmid', entry)
                     url=get_val_key('url', entry)
-                    if page_range != None and page_range != 'tbd' and page_range != '-':
-                        page_start = page_range.split('--')[0]
-                        page_end = page_range.split('--')[1]
+                    # There are many ways that page range doesn't exist so this is to cover those cases
+                    if page_range != None and page_range != 'tbd' and page_range != '-' and page_range != "":
+                        # This is a workaround for entries with only one - instead of two
+                        if "-" in page_range and not "--" in page_range:
+                            page_start = page_range.split('-')[0]
+                            page_end = page_range.split('-')[1]
+                        else:
+                            page_start = page_range.split('--')[0]
+                            page_end = page_range.split('--')[1]
+                        # This is a workaround for entries with this form {9:1--9:27},
+                        if ":" in page_start:
+                            page_start=page_start.split(":")[1]
+                            page_end=page_end.split(":")[1]
                     else:
                         page_start=None
                         page_end=None
@@ -227,9 +285,18 @@ class Command(BaseCommand):
                     #Parse keywords
                     keyword_str_list=parse_keywords(get_val_key('keyword', entry))
                     keyword_obj_list=get_keywords(keyword_str_list)
-                
                     for keyword in keyword_obj_list:
                         new_pub.keywords.add(keyword)
+                    project = get_val_key('project', entry)
+                    project_umbrellas = get_val_key('project_umbrellas', entry)
+                    if project != None and len(project)>0:
+                        project_obj=get_project(project, project_umbrellas, author_obj_list, keyword_obj_list, new_pub)
+                        print(project_obj)
+                        new_pub.projects.add(project_obj)
+                    elif project_umbrellas != None and len(project_umbrellas) > 0:
+                        umbrellas = get_umbrellas(parse_umbrellas(project_umbrellas))
+                        for umbrella in umbrellas:
+                            new_pub.project_umbrellas.add(umbrella)
         #Clean out import/temp
         os.system("rm import/temp/*")
 

@@ -155,21 +155,34 @@ class Keyword(models.Model):
 
     def __str__(self):
         return self.keyword    
+
+class Project_umbrella(models.Model):
+    name = models.CharField(max_length=255)
+    #Short name is used for urls, and should be name.lower().replace(" ", "")
+    short_name = models.CharField(max_length=255)
+    short_name.help_text="This should be the same as your name but lower case with no spaces. It is used in the url of the project"
+    keywords = models.ManyToManyField(Keyword, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+    
     
 class Project(models.Model):
     name = models.CharField(max_length=255)
+    #Short name is used for urls, and should be name.lower().replace(" ", "")
     short_name = models.CharField(max_length=255)
+    short_name.help_text="This should be the same as your name but lower case with no spaces. It is used in the url of the project"
     #Sponsors is currently a simple list of sponsors but could be updated to a many to many field if a sponsors model is desired.
-    sponsors = models.CharField(max_length=255)
-    start_date = models.DateField(null=True)
+    sponsors = models.CharField(max_length=255, null=True, blank=True)
+    start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
-
+    project_umbrellas = models.ManyToManyField(Project_umbrella, blank=True, null=True)
     #header_visual = models.ForeignKey(Project_header, blank=True, null=True)
     people = models.ManyToManyField(Person, blank=True, null=True)
     keywords = models.ManyToManyField(Keyword, blank=True, null=True)
     #pis = models.ManyToOneField(Person, blank=True, null=True)
 
-    about = models.TextField()
+    about = models.TextField(null=True, blank=True)
     def __str__(self):
         return self.name
 
@@ -232,7 +245,7 @@ class Talk(models.Model):
 
     # A talk can be about more than one project
     projects = models.ManyToManyField(Project, blank=True, null=True)
-
+    project_umbrellas = SortedManyToManyField(Project_umbrella, blank=True, null=True)
     # TODO: remove the null = True from all of the following objects
     # including forum_name, forum_url, location, speakers, date, slideshare_url
     keywords = models.ManyToManyField(Keyword, blank=True, null=True)
@@ -242,7 +255,7 @@ class Talk(models.Model):
 
     # Most of the time talks are given by one person, but sometimes they are given by two people
     speakers = models.ManyToManyField(Person, null=True)
-
+    
     date = models.DateField(null=True)
     slideshare_url = models.URLField(blank=True, null=True)
 
@@ -289,6 +302,7 @@ class Publication(models.Model):
 
     # A publication can be about more than one project
     projects = SortedManyToManyField(Project, blank=True, null=True)
+    project_umbrellas = SortedManyToManyField(Project_umbrella, blank=True, null=True)
     keywords = SortedManyToManyField(Keyword, blank=True, null=True)
 
     # TODO, see if there is an IntegerRangeField or something like that for page_num_start and end

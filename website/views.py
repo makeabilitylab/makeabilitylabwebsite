@@ -186,7 +186,7 @@ def projects(request):
 
 #This is the view for individual projects, rather than the overall projects page
 def project_ind(request, project_name):
-   project = get_object_or_404(Project, name=project_name)
+   project = get_object_or_404(Project, short_name__iexact=project_name)
    all_banners = project.banner_set.all()
    displayed_banners = choose_banners(all_banners)
    context = {'banners': displayed_banners, 'project': project, 'debug':settings.DEBUG}
