@@ -212,14 +212,17 @@
 	    <h3 class="news-type-label">Photo Gallery</h3>
 	    {% for image in project.photo_set.all %}
 	    <div class="col-md-4 project-gallery-col">
-		<img src="{{image.picture.url}}" alt="image.alt_text" class="project-gallery">
+		<img src="{% thumbnail image.picture 368x245 box=image.cropping crop detail}" alt="{{image.alt_text}}" class="project-gallery">
+		<div class="overlay">
+		    <p class="image-gallery-caption">{{image.caption}}</p>
+		</div>
 	    </div>
 	    {% endfor %}
 	</div>
 	<div class="row">
 	    <h3 class="news-type-label">People</h3>
 	    {% for member in project.people.all %}
-            <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths project-people-col">
+            <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 project-people-col">
 		<a href="{% url 'website:member' member.id %}">
                     <img src="{% thumbnail member.image 245x245 box=member.cropping crop detail %}" class="img-responsive"/>
 		</a>
