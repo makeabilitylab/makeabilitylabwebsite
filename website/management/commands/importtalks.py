@@ -239,7 +239,7 @@ class Command(BaseCommand):
                     if project != None and len(project)>0:
                         project_obj=get_project(project, project_umbrellas, speaker_list, keyword_list, new_talk)
                         print(project_obj)
-                        new_pub.projects.add(project_obj)
+                        new_talk.projects.add(project_obj)
                     elif project_umbrellas != None and len(project_umbrellas) > 0:
                         umbrellas = get_umbrellas(parse_umbrellas(project_umbrellas))
                         for umbrella in umbrellas:
