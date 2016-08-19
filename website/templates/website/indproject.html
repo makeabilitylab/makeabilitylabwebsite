@@ -212,7 +212,7 @@
 	    <h3 class="news-type-label">Photo Gallery</h3>
 	    {% for image in project.photo_set.all %}
 	    <div class="col-md-4 project-gallery-col">
-		<img src="{% thumbnail image.picture 368x245 box=image.cropping crop detail}" alt="{{image.alt_text}}" class="project-gallery">
+		<img src="{% thumbnail image.picture 368x245 box=image.cropping crop detail %}" alt="{{image.alt_text}}" class="project-gallery">
 		<div class="overlay">
 		    <p class="image-gallery-caption">{{image.caption}}</p>
 		</div>
