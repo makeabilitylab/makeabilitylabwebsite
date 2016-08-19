@@ -32,7 +32,7 @@
 		{% for talk in talks %}
 		{
 			"id": "A.###",
-			"title": "{{talk.title}}",
+			"title": "{{talk.get_title}}",
 			"speakers": [
 				{% for speaker in talk.speakers.all %}
 				{

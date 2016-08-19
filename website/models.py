@@ -272,6 +272,11 @@ class Talk(models.Model):
     # raw_file = models.FileField(upload_to='talks/')
     # print("In talk model!")
 
+    def get_title(self):
+        #Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
+        cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
+        return cap_title
+
     def __str__(self):
         return self.title
 @receiver(pre_delete, sender=Talk)
@@ -370,6 +375,11 @@ class Publication(models.Model):
     )
     award = models.CharField(max_length=50, choices=AWARD_CHOICES, blank=True, null=True)
 
+    def get_title(self):
+        #Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
+        cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
+        return cap_title
+    
     def get_acceptance_rate(self):
         if self.total_papers_accepted and self.total_papers_submitted:
             return self.total_papers_accepted / self.total_papers_submitted
