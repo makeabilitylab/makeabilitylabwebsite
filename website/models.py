@@ -22,6 +22,8 @@ class Person(models.Model):
     # image_cropped = models.ImageField(editable=False)
     image.help_text = 'You must select "Save and continue editing" at the bottom of the page after uploading a new image for cropping.'
 
+    easter_egg = models.ImageField(blank=True, null=True, upload_to="person", max_length=255)
+    
     # LS: Added image cropping to fixed ratio
     # See https://github.com/jonasundderwolf/django-image-cropping
     # size is "width x height"

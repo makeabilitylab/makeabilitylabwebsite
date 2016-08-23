@@ -79,7 +79,7 @@ def get_authors(author_list):
             direc = "import/images/StarWarsFiguresFullSquare/Rebels/"
             starwars = get_random_starwars(direc)
             image = File(open(direc+starwars, 'rb'))
-            new_person=Person(first_name=author[0], last_name=author[2], middle_name=author[1], image=image)
+            new_person=Person(first_name=author[0], last_name=author[2], middle_name=author[1], image=image, easter_egg=image)
             new_person.save()
             ret.append(new_person)
     return ret
