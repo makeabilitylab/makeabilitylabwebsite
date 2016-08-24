@@ -1,4 +1,3 @@
-
 CONFERENCE PAPERS
 @inproceedings{StearnsICPR2016,
 	author = {Stearns, Lee and Oh, Uran and Cheng, Bridge J. and Findlater, Leah and Ross, David A. and Chellappa, Rama and Froehlich, Jon E.},
