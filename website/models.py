@@ -192,7 +192,6 @@ class Project(models.Model):
     end_date = models.DateField(null=True, blank=True)
     project_umbrellas = models.ManyToManyField(Project_umbrella, blank=True, null=True)
     #header_visual = models.ForeignKey(Project_header, blank=True, null=True)
-    people = models.ManyToManyField(Person, blank=True, null=True)
     keywords = models.ManyToManyField(Keyword, blank=True, null=True)
     #pis = models.ManyToOneField(Person, blank=True, null=True)
     gallery_image = models.ImageField(upload_to='projects/images', blank=True, null=True, max_length=255)

@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from website.models import Person, Position, Keyword, Publication, Video, Project, Project_umbrella
+from website.models import Person, Position, Keyword, Publication, Video, Project, Project_umbrella, Project_Role
 import bibtexparser
 from django.core.files import File
 import requests
@@ -114,9 +114,11 @@ def get_project(project_name, project_umbrellas, authors, keywords, pub):
     if len(test_proj) > 0:
         proj = test_proj[0]
         for author in authors:
-            test_auth = proj.people.filter(first_name=author.first_name, last_name=author.last_name)
+            test_auth = proj.project_role_set.filter(person=author)
             if len(test_auth) == 0:
-                proj.people.add(author)
+                start_date = proj.start_date if proj.start_date else datetime.now()
+                proj_role=Project_Role(person=author, project=proj, start_date=start_date)
+                proj_role.save()
         for keyword in keywords:
             test_key = proj.keywords.filter(keyword=keyword.keyword)
             if len(test_key) == 0:
@@ -137,7 +139,9 @@ def get_project(project_name, project_umbrellas, authors, keywords, pub):
             proj.project_umbrellas.add(umbrella)
             pub.project_umbrellas.add(umbrella)
         for author in authors:
-            proj.people.add(author)
+            start_date = proj.start_date if proj.start_date else datetime.now()
+            proj_role=Project_Role(person=author, project=proj, start_date=start_date)
+            proj_role.save()
         for keyword in keywords:
             proj.keywords.add(keyword)
         return proj
