@@ -189,5 +189,27 @@ def project_ind(request, project_name):
    project = get_object_or_404(Project, short_name__iexact=project_name)
    all_banners = project.banner_set.all()
    displayed_banners = choose_banners(all_banners)
-   context = {'banners': displayed_banners, 'project': project, 'debug':settings.DEBUG}
+   members = project.project_role_set.all()
+   active_members = []
+   alumni =[]
+   for member in members:
+      if member.is_active():
+         active_members.append(member)
+      else:
+         alumni.append(member)
+   active_members.sort(key=operator.attrgetter('start_date'))
+   alumni.sort(key=operator.attrgetter('start_date'))
+   for role in active_members:
+      if role.pi_member == "CoPI":
+         active_members.insert(0, active_members.pop(active_members.index(role)))
+   for role in active_members:
+      if role.pi_member == "PI":
+         active_members.insert(0, active_members.pop(active_members.index(role)))
+   for role in alumni:
+      if role.pi_member == "CoPI":
+         alumni.insert(0, alumni.pop(alumni.index(role)))
+   for role in alumni:
+      if role.pi_member == "PI":
+         alumni.insert(0, alumni.pop(alumni.index(role)))
+   context = {'banners': displayed_banners, 'project': project, 'active': active_members, 'alumni': alumni, 'debug':settings.DEBUG}
    return render(request, 'website/indproject.html', context)
