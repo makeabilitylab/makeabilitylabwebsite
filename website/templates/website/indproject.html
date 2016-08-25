@@ -236,7 +236,10 @@
 	    {% endfor %}
 	</div>
 	<div class="row">
+	    {% ifequal active|length 0 %}
+	    {% else %}
 	    <h3 class="news-type-label">Active Members</h3>
+	    {% endifequal %}
 	    {% for member in active %}
             <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths">
 		<a href="{% url 'website:member' member.id %}">
@@ -261,7 +264,10 @@
 	    {% endfor %}
 	</div>
 	<div class ="row">
+	    {% ifequal alumni|length 0 %}
+	    {% else %}
 	    <h3 class="news-type-label">Alumni Member</h3>
+	    {% endifequal %}
 	    {% for member in alumni %}
 	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths">
 		<a href="{% url 'website:member' member.id %}">
