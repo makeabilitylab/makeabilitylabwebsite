@@ -26,7 +26,26 @@
 		    <b>Project Date</b>
 		    {{project.start_date}} - {% if project.end_date %}{{project.end_date}}{% else %}Present{% endif %}
 		    <br/>
-		    <b>Keywords</b>
+		    <b>PIs: </b>
+		    {% with project.get_pi as pi %}
+		    {% if pi %}
+		    <a href="{% url 'website:member' pi.id %}">{{pi.get_full_name}}</a> (PI)<br/>
+		    {% endif %}
+		    {% endwith %}
+		    {% with project.get_co_pi as copi %}
+		    {% if copi %}
+		    <a href="{% url 'website:member' copi.id %}">{{copi.get_full_name}}</a> (co-PI)<br/>
+		    {% endif %}
+		    {% endwith %}
+		    <b>Sponsors: </b>
+		    {% for sponsor in project.sponsors.all %}
+		    <a href="{{sponsor.url}}">
+			<img src="{{sponsor.icon}}" class="sponsor-icon">
+			<span class="sponsor-name">{{sponsor.name}}</span>
+		    </a>
+		    {% endfor %}
+		    <br/>
+		    <b>Keywords: </b>
 		    {% for keyword in project.keywords.all %}
 		    {% if forloop.last %}
 		    {{keyword.keyword}}
@@ -34,9 +53,6 @@
 		    {{keyword.keyword}},
 		    {% endif %}
 		    {% endfor %}
-		    <br/>
-		    <b>Sponsors</b>
-		    {{project.sponsors}}
 		</p>
 	    </div>
 	    <div class="row">

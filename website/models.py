@@ -56,7 +56,8 @@ class Person(models.Model):
 def person_delete(sender, instance, **kwargs):
     if instance.image:
         instance.image.delete(False)
-
+    
+        
 class Position(models.Model):
     person = models.ForeignKey(Person)
     start_date = models.DateField()
@@ -158,6 +159,14 @@ class Keyword(models.Model):
     def __str__(self):
         return self.keyword    
 
+class Sponsor(models.Model):
+    name = models.CharField(max_length=255)
+    icon = models.ImageField(upload_to='projects/sponsors/', blank=True, null=True, max_length=255)
+    url = models.URLField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+    
 class Project_umbrella(models.Model):
     name = models.CharField(max_length=255)
     #Short name is used for urls, and should be name.lower().replace(" ", "")
@@ -167,6 +176,9 @@ class Project_umbrella(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name="Project Umbrella"
     
     
 class Project(models.Model):
@@ -175,7 +187,7 @@ class Project(models.Model):
     short_name = models.CharField(max_length=255)
     short_name.help_text="This should be the same as your name but lower case with no spaces. It is used in the url of the project"
     #Sponsors is currently a simple list of sponsors but could be updated to a many to many field if a sponsors model is desired.
-    sponsors = models.CharField(max_length=255, null=True, blank=True)
+    sponsors = models.ManyToManyField(Sponsor, blank=True, null=True)
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     project_umbrellas = models.ManyToManyField(Project_umbrella, blank=True, null=True)
@@ -183,10 +195,47 @@ class Project(models.Model):
     people = models.ManyToManyField(Person, blank=True, null=True)
     keywords = models.ManyToManyField(Keyword, blank=True, null=True)
     #pis = models.ManyToOneField(Person, blank=True, null=True)
+    gallery_image = models.ImageField(upload_to='projects/images', blank=True, null=True, max_length=255)
 
     about = models.TextField(null=True, blank=True)
+
+    def get_pi(self):
+        return self.project_role_set.get(pi_member="PI").person
+
+    def get_co_pi(self):
+        return self.project_role_set.get(pi_member="CoPI").person
     def __str__(self):
         return self.name
+        
+class Project_Role(models.Model):
+    person = models.ForeignKey(Person)
+    project = models.ForeignKey(Project)
+    role = models.TextField(blank=True, null=True)
+    start_date = models.DateField()
+    end_date = models.DateField(blank=True, null=True)
+    PI = "PI"
+    CoPI = "CoPI"
+
+    PIMEMBER_CHOICES = (
+        (PI, "PI"),
+        (CoPI, "Co-PI")
+    )
+
+    pi_member = models.CharField(max_length=50, blank=True, null=True, choices=PIMEMBER_CHOICES, default=None)
+
+    def get_date_range_as_str(self):
+        if self.start_date is not None and self.end_date is None:
+            return "{}-".format(self.start_date.year)
+        elif self.start_date is not None and self.end_date is not None and self.start_date.year == self.end_date.year:
+            return "{}".format(self.start_date.year)
+        else:
+            return "{}-{}".format(self.start_date.year, self.end_date.year)
+        
+    def is_active(self):
+        return self.start_date is not None and self.start_date <= date.today() and self.end_date is None or (self.end_date is not None and self.end_date >= date.today())
+
+    def __str__(self):
+        return "Name={}, PI/Co-PI={}".format(self.person.get_full_name(), self.pi_member)
 
 #This class contains the iamge or video which will appear in the top description of each project. It functions as a combination of Photo and Video, but is seperated to make it simpler to have a specific video or photo as the projects header.
 class Project_header(models.Model):

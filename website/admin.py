@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Person, Publication, Position, Talk, Project, Poster, Keyword, News, Banner, Video, Project_header, Photo, Project_umbrella
+from .models import Person, Publication, Position, Talk, Project, Poster, Keyword, News, Banner, Video, Project_header, Photo, Project_umbrella, Project_Role, Sponsor
 
 from django.http import HttpResponse
 from datetime import datetime
@@ -32,6 +32,10 @@ class RoleInline(admin.StackedInline):
     model = Position
     extra = 1
 
+class ProjectRoleInline(admin.StackedInline):
+    model = Project_Role
+    extra = 1
+
 class ProjectHeaderInline(ImageCroppingMixin, admin.StackedInline):
     model = Project_header
     extra = 1
@@ -47,7 +51,7 @@ class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
     inlines = [ProjectHeaderInline]
 
 class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
-    inlines = [RoleInline]
+    inlines = [RoleInline, ProjectRoleInline]
     #info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin 
     list_display = ('get_full_name', 'get_quick_position')
 
@@ -140,3 +144,4 @@ admin.site.register(Banner, BannerAdmin)
 admin.site.register(Video)
 admin.site.register(Photo, PhotoAdmin)
 admin.site.register(Project_umbrella)
+admin.site.register(Sponsor)
