@@ -37,7 +37,11 @@
 		    <a href="{% url 'website:member' copi.id %}">{{copi.get_full_name}}</a> (co-PI)<br/>
 		    {% endif %}
 		    {% endwith %}
+		    {% ifequal project.sponsors|length 0 %}
+		    {% else %}
+		    <br/>
 		    <b>Sponsors: </b>
+		    {% endifequal %}
 		    {% for sponsor in project.sponsors.all %}
 		    <a href="{{sponsor.url}}">
 			<img src="{{sponsor.icon}}" class="sponsor-icon">
@@ -128,7 +132,10 @@
 		</p>
 	    </div>
 	    <div class="row">
+		{% ifequal project.publication_set|length 0 %}
+		{% else %}
 		<h3 class="news-type-label">Publications</h3>
+		{% endifequal %}
 		{% for pub in project.publication_set.all %}
 		<div class="row publication-template">
 		    <div class="publication-thumbnail">
@@ -170,7 +177,10 @@
     </div>
     <div class="row" id="below-sidebar"
 	<div class="row">
+	    {% ifequal project.video_set|length 0 %}
+	    {% else %}
 	    <h3 class="news-type-lable"><b>Recent Videos</b></h3>
+	    {% endifequal %}
 	    {% for video in project.video_set.all %}
 	    <div class="col-xs-12 col-md-6 video-column">
 		<div class="video-container">
@@ -190,7 +200,10 @@
 	    {% endfor %}
 	</div>
 	<div class="row">
+	    {% ifequal project.talk_set|length 0 %}
+	    {% else %}
 	    <h3 class="news-type-label"><b>Recent Talks</b></h3>
+	    {% endifequal %}
 	    <div class="col-xs-12 no-margin">
 		<div class="row">
 		<!-- Create a div for each talk passed in -->
@@ -225,7 +238,10 @@
 	    </div>
 	</div>
 	<div class="row">
+	    {% ifequal project.photo_set|length 0 %}
+	    {% else %}
 	    <h3 class="news-type-label">Photo Gallery</h3>
+	    {% endifequal %}
 	    {% for image in project.photo_set.all %}
 	    <div class="col-md-4 project-gallery-col">
 		<img src="{% thumbnail image.picture 368x245 box=image.cropping crop detail %}" alt="{{image.alt_text}}" class="project-gallery">

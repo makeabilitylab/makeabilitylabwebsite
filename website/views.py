@@ -153,13 +153,15 @@ def people(request):
 
 
 def member(request, member_id):
-    # try:
-    #     person = Person.objects.get(pk=member_id)
-    # except Person.DoesNotExist:
-    #     raise Http404("Person does not exist")
-    # return render(request, 'website/member.html', {'person': person})
-    person = get_object_or_404(Person, pk=member_id)
-    return render(request, 'website/member.html', {'person': person, 'debug': settings.DEBUG})
+   # try:
+   #     person = Person.objects.get(pk=member_id)
+   # except Person.DoesNotExist:
+   #     raise Http404("Person does not exist")
+   # return render(request, 'website/member.html', {'person': person})
+   all_banners = Banner.objects.filter(page=Banner.PEOPLE)
+   displayed_banners = choose_banners(all_banners)
+   person = get_object_or_404(Person, pk=member_id)
+   return render(request, 'website/member.html', {'person': person, 'banners': displayed_banners, 'debug': settings.DEBUG})
 
 def publications(request, filter=None):
     all_banners = Banner.objects.filter(page=Banner.PUBLICATIONS)
