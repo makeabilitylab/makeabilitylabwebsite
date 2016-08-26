@@ -226,3 +226,4 @@ def project_ind(request, project_name):
          alumni.insert(0, alumni.pop(alumni.index(role)))
    context = {'banners': displayed_banners, 'project': project, 'active': active_members, 'alumni': alumni, 'publications': publications, 'talks': talks, 'videos': videos, 'news': news, 'photos': photos, 'debug':settings.DEBUG}
    return render(request, 'website/indproject.html', context)
+

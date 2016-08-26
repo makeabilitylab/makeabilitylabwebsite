@@ -55,7 +55,7 @@
     <div id="header" class="container">
 	<div class="row" id="about-header">
 	    <div class="col-sm-6 col-md-3 hidden-xs">
-		<img src="{% thumbnail person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+		<img src="{% thumbnail person.image 245x245 box=person.cropping crop detail %}" class="img-responsive"/>
 	    </div>
 	    <div class="col-xs-4 col-sm-6 col-md-3">
 		<h3 class="news-type-label">{{person.get_full_name}}</h3>

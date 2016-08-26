@@ -1,0 +1,16 @@
+.content-container {
+    margin-top: 25px;
+}
+
+.project-display {
+    padding-bottom: 25px;
+}
+
+.project-name {
+    font-family: adelle-regular;
+    font-weight: bold;
+    color: #464D59;
+    font-size: 20px;
+    word-wrap: break-word;
+    text-overflow: ellipsis;
+}

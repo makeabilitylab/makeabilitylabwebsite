@@ -199,7 +199,14 @@ class Project(models.Model):
     keywords = models.ManyToManyField(Keyword, blank=True, null=True)
     #pis = models.ManyToOneField(Person, blank=True, null=True)
     gallery_image = models.ImageField(upload_to='projects/images', blank=True, null=True, max_length=255)
-    gallery_image.help_text = "This is the image which will show up on the project gallery page. It is not displayed anywhere else"
+    gallery_image.help_text = "This is the image which will show up on the project gallery page. It is not displayed anywhere else. You must select 'Save and continue editing' at the bottom of the page after uploading a new image for cropping. Please note that since we are using a responsive design with fixed height banners, your selected image may appear differently on various screens."
+
+    # Copied from person model
+    # LS: Added image cropping to fixed ratio
+    # See https://github.com/jonasundderwolf/django-image-cropping
+    # size is "width x height"
+    # TODO: update with desired aspect ratio and maximum resolution
+    cropping = ImageRatioField('gallery_image', '1000x1000', size_warning=True)
 
     about = models.TextField(null=True, blank=True)
 

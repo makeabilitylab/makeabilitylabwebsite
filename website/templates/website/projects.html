@@ -1,0 +1,78 @@
+{% extends 'website/base.html' %}
+
+{% block pagetitle %}Project Gallery{% endblock %}
+
+{% load staticfiles %}
+{% load cropping %}
+{% load thumbnail %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{% static 'website/css/projects.css'  %}">
+{% endblock %}
+
+{% block maincarousel %}
+<div id="mainCarousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="10000" data-pause="false">    
+    <div class="page-title shadow-left">
+        <div class="container carousel-container">
+            <div class="overlay-title">Projects</div>
+        </div>
+    </div>
+    <!-- Wrapper for slides -->
+    <div class="carousel-inner" role="listbox">
+        {% for banner in banners %}
+        <div class="item {% if forloop.first %}active{% endif %}">
+            <div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})" aria-label="{{ banner.alt_text }}" title="{{ banner.alt_text }}"></div>
+            <!-- <div class="overlay">
+                 <div class="container carousel-container">
+                 <div class="carousel-caption carousel-caption-right">
+                 {% autoescape off %} {# enable HTML tags #}
+                 <div class="carousel-caption-title">
+                 {{ banner.title }}
+                 </div>
+                 <div class="carousel-caption-text">
+                 {{ banner.caption }}
+                 </div>
+                 {% endautoescape %}
+                 </div>
+                 </div>
+                 </div> -->
+        </div>
+        {% endfor %}
+    </div>
+    <ol class="carousel-indicators"  {% if banners|length < 2 %} style="display: none" {% endif %}>
+        {% for banner in banners %}
+        <li data-target="#mainCarousel" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
+        {% endfor %}
+    </ol>
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content" class="container content-container" data-spy="scroll">
+    <div class="row header">
+	<!-- Project Umbrella links will go here -->
+    </div>
+    <div class="row">
+	<div class="col-md-2 hidden-xs hidden-sm sidebar">
+	    <!-- Sidebar stuff will go here -->
+	</div>
+	<div class="col-md-10 col-xs-12 project-block">
+	    <div class="row">
+		{% for project in projects %}
+		<div class="col-xs-12 col-sm-6 col-md-4 project-display">
+		    <a href="{% url 'website:project_ind' project.short_name %}">
+			<img src="{% thumbnail project.gallery_image 1000x1000 box=project.cropping crop detail %}" class="img-responsive"/>
+		    </a>
+		    <a href="{% url 'website:project_ind' project.short_name %}">
+			<span class="project-name">{{project.name}}</span>
+		    </a>
+		</div>
+		{% endfor %}
+	    </div>
+	</div>
+    </div>
+</div>
+{% endblock %}
+
+
+
