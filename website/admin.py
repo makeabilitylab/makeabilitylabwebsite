@@ -28,10 +28,10 @@ class BannerAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
 
 #class ChoiceInline(admin.StackedInline):
-class RoleInline(admin.StackedInline):
+class AdvisorInLine(admin.StackedInline):
     model = Position
-    extra = 1
-
+    fk_name="cludge"
+    
 class ProjectRoleInline(admin.StackedInline):
     model = Project_Role
     extra = 1
@@ -51,9 +51,9 @@ class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
     inlines = [ProjectHeaderInline]
 
 class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
-    inlines = [RoleInline, ProjectRoleInline]
+    inlines = [AdvisorInLine, ProjectRoleInline]
     #info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin 
-    list_display = ('get_full_name', 'get_quick_position')
+    list_display = ('get_full_name', 'get_quick_position', 'get_start_date', 'get_end_date')
 
 class PublicationAdmin(admin.ModelAdmin):
     fieldsets = [
