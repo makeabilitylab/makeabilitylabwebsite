@@ -199,6 +199,7 @@ class Project(models.Model):
     keywords = models.ManyToManyField(Keyword, blank=True, null=True)
     #pis = models.ManyToOneField(Person, blank=True, null=True)
     gallery_image = models.ImageField(upload_to='projects/images', blank=True, null=True, max_length=255)
+    gallery_image.help_text = "This is the image which will show up on the project gallery page. It is not displayed anywhere else"
 
     about = models.TextField(null=True, blank=True)
 
@@ -549,6 +550,7 @@ class Banner(models.Model):
     image = models.ImageField(blank=True, upload_to=UniquePathAndRename("banner", True), max_length=255)
     #This field is only needed if the banner has been assigned to a specific project. The field is used by project_ind to select project specific banners so we don't have to add each project to the PAGE_CHOICES dictionary.
     project = models.ForeignKey(Project, blank=True, null=True)
+    project.help_text = "If this banner is for a specific project, set the page to Ind_Project. You must also set this field to the desired project for your banner to be displayed on that projects page."
     # def image_preview(self):
     #     if self.image:
     #         return u'<img src="%s" style="width:100%%"/>' % self.image.url
