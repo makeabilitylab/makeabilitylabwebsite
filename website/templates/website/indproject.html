@@ -8,11 +8,11 @@
 
 {% block stylesheets %}
 <link rel="stylesheet" href="{% static 'website/css/indproject.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/news.css' %}">
 <link rel="stylesheet" href="{% static 'website/css/video.css' %}">
 <link rel="stylesheet" href="{% static 'website/css/talks.css' %}">
 <link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
 <link rel="stylesheet" href="{% static 'website/css/landing.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/news.css' %}">
 {% endblock %}
 
 
@@ -261,6 +261,7 @@
                     <a href="{% url 'website:member' member.person.id %}">
 			<h5>{{ member.person.get_full_name }}</h5>
                     </a>
+		    {{member.start_date}} - {% if member.end_date %}{{member.end_date}}{% else %}Present{% endif %}<br/>
 		    {% if member.pi_member %}
 		    {{member.pi_member}} | 
 		    {% endif %}
@@ -278,7 +279,7 @@
 	<div class ="row">
 	    {% ifequal alumni|length 0 %}
 	    {% else %}
-	    <h3 class="news-type-label">Alumni Member</h3>
+	    <h3 class="news-type-label">Alumni Members</h3>
 	    {% endifequal %}
 	    {% for member in alumni %}
 	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths">
@@ -289,6 +290,7 @@
                     <a href="{% url 'website:member' member.person.id %}">
 			<h5>{{ member.person.get_full_name }}</h5>
                     </a>
+		    {{member.start_date}} - {% if member.end_date %}{{member.end_date}}{% else %}Present{% endif %}<br/>
 		    {% if member.pi_member %}
 		    {{member.pi_member}} | 
 		    {% endif %}
