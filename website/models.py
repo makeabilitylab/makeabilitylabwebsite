@@ -15,10 +15,6 @@ class Person(models.Model):
     github = models.URLField(blank=True, null=True)
     twitter = models.URLField(blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
-    advisor = models.ForeignKey('self', blank=True, null=True, related_name='Advisor')
-    co_advisor = models.ForeignKey('self', blank=True, null=True, related_name='Co-Advisor+')
-    grad_mentor = models.ForeignKey('self', blank=True, null=True, related_name='Grad Mentor+')
-
     # Note: the ImageField requires the pillow library, which can be installed using pip
     # pip3 install Pillow
     # We use the get_unique_path function because otherwise if two people use the same
@@ -38,9 +34,23 @@ class Person(models.Model):
     def get_quick_position(self):
         role_info = ''
         for role in self.position_set.all():
-            role_info = role.title+" "+role.role+" "+"Active since "+str(role.start_date) if role.is_active_member() else "Inactive"+" from "+str(role.start_date)+" until "+str(role.end_date)
+            role_info = role.title+" "+role.role+" "+"Active" if role.is_active_member() or role.is_active_collaborator() else "Inactive"
         return role_info
     get_quick_position.short_description="Roles"
+
+    def get_start_date(self):
+        start_date=""
+        for role in self.position_set.all():
+            start_date = str(role.start_date)
+        return start_date
+    get_start_date.short_description="Start Date"
+
+    def get_end_date(self):
+        end_date=""
+        for role in self.position_set.all():
+            end_date = str(role.end_date) if role.end_date != None else "Present"
+        return end_date
+    get_end_date.short_description="End Date"
     
     def get_full_name(self, includeMiddle=True):
         if self.middle_name and includeMiddle:
@@ -66,6 +76,11 @@ class Position(models.Model):
     person = models.ForeignKey(Person)
     start_date = models.DateField()
     end_date = models.DateField(blank=True, null=True)
+    advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Advisor')
+    co_advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Co_Advisor')
+    grad_mentor = models.ForeignKey('Person', blank=True, null=True, related_name='Grad_Mentor')
+    cludge = models.ForeignKey('Person', blank=True, null=True, related_name='Cludge')
+
 
     # According to Django docs, best to have field choices within the primary
     # class that uses them. See https://docs.djangoproject.com/en/1.9/ref/models/fields/#choices
