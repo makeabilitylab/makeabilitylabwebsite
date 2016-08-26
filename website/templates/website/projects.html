@@ -64,7 +64,7 @@
 		<h4 class="header-label">Recent Projects</h4>
 		{% for project in recent %}
 		<a href="{% url 'website:project_ind' project.short_name %}">
-		    <img src="{% thumbnail project.gallery_image 245x245 box=project.cropping crop detail %}" class="img-responsive recent-image"/>
+		    <img src="{% thumbnail project.gallery_image 250x200 box=project.cropping crop detail %}" class="img-responsive recent-image"/>
 		</a>
 		<a href="{% url 'website:project_ind' project.short_name %}">
 		    <span class="recent-project-name">{{project.name}}</span>
@@ -77,7 +77,7 @@
 		{% for project in projects %}
 		<div class="col-xs-12 col-sm-6 col-md-4 project-display">
 		    <a href="{% url 'website:project_ind' project.short_name %}">
-			<img src="{% thumbnail project.gallery_image 1000x1000 box=project.cropping crop detail %}" class="img-responsive"/>
+			<img src="{% thumbnail project.gallery_image 500x400 box=project.cropping crop detail %}" class="img-responsive"/>
 		    </a>
 		    <a href="{% url 'website:project_ind' project.short_name %}">
 			<span class="project-name">{{project.name}}</span>

@@ -221,7 +221,7 @@ class Project(models.Model):
     # See https://github.com/jonasundderwolf/django-image-cropping
     # size is "width x height"
     # TODO: update with desired aspect ratio and maximum resolution
-    cropping = ImageRatioField('gallery_image', '1000x1000', size_warning=True)
+    cropping = ImageRatioField('gallery_image', '500x400', size_warning=True)
 
     about = models.TextField(null=True, blank=True)
 
