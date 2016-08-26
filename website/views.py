@@ -193,6 +193,9 @@ def project_ind(request, project_name):
    displayed_banners = choose_banners(all_banners)
    members = project.project_role_set.all()
    active_members = []
+   publications = project.publication_set.order_by('-date')
+   videos = project.video_set.order_by('-date')
+   talks = project.talk_set.order_by('-date')
    alumni =[]
    for member in members:
       if member.is_active():
@@ -213,5 +216,5 @@ def project_ind(request, project_name):
    for role in alumni:
       if role.pi_member == "PI":
          alumni.insert(0, alumni.pop(alumni.index(role)))
-   context = {'banners': displayed_banners, 'project': project, 'active': active_members, 'alumni': alumni, 'debug':settings.DEBUG}
+   context = {'banners': displayed_banners, 'project': project, 'active': active_members, 'alumni': alumni, 'publications': publications, 'talks': talks, 'videos': videos, 'debug':settings.DEBUG}
    return render(request, 'website/indproject.html', context)

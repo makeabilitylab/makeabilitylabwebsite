@@ -33,8 +33,7 @@ class Person(models.Model):
     def get_quick_position(self):
         role_info = ''
         for role in self.position_set.all():
-            print(self.get_full_name()+role.__str__())
-            role_info = role.title+" "+role.role+" "+"Active" if role.is_active_member() else "Inactive"+" "
+            role_info = role.title+" "+role.role+" "+"Active since "+str(role.start_date) if role.is_active_member() else "Inactive"+" from "+str(role.start_date)+" until "+str(role.end_date)
         return role_info
     get_quick_position.short_description="Roles"
     

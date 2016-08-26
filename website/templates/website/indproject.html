@@ -136,7 +136,7 @@
 		{% else %}
 		<h3 class="news-type-label">Publications</h3>
 		{% endifequal %}
-		{% for pub in project.publication_set.all %}
+		{% for pub in publications %}
 		<div class="row publication-template">
 		    <div class="publication-thumbnail">
 			<a href="../../media/{{pub.pdf_file}}" class="publication-thumbnail-link">
@@ -181,7 +181,7 @@
 	    {% else %}
 	    <h3 class="news-type-lable"><b>Recent Videos</b></h3>
 	    {% endifequal %}
-	    {% for video in project.video_set.all %}
+	    {% for video in videos %}
 	    <div class="col-xs-12 col-md-6 video-column">
 		<div class="video-container">
 		    <iframe class="video" src="{{video.get_embed}}" frameborder="0" allowfullscreen></iframe>
@@ -207,7 +207,7 @@
 	    <div class="col-xs-12 no-margin">
 		<div class="row">
 		<!-- Create a div for each talk passed in -->
-		    {% for talk in project.talk_set.all %}
+		    {% for talk in talks %}
 		    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 talk-template-landing landing-talk-fix">
 			<div class="talk-info">
 			    <div class="talk-thumbnail">
