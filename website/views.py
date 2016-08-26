@@ -158,10 +158,14 @@ def member(request, member_id):
    # except Person.DoesNotExist:
    #     raise Http404("Person does not exist")
    # return render(request, 'website/member.html', {'person': person})
+   news_items_num = 5 # Defines the number of news items that will be selected
    all_banners = Banner.objects.filter(page=Banner.PEOPLE)
    displayed_banners = choose_banners(all_banners)
    person = get_object_or_404(Person, pk=member_id)
-   return render(request, 'website/member.html', {'person': person, 'banners': displayed_banners, 'debug': settings.DEBUG})
+   news = person.news_set.order_by('-date')[:news_items_num]
+   publications = person.publication_set.order_by('-date')
+   talks = person.talk_set.order_by('-date')
+   return render(request, 'website/member.html', {'person': person, 'news': news, 'talks': talks, 'publications': publications, 'banners': displayed_banners, 'debug': settings.DEBUG})
 
 def publications(request, filter=None):
     all_banners = Banner.objects.filter(page=Banner.PUBLICATIONS)

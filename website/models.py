@@ -12,6 +12,8 @@ class Person(models.Model):
     last_name = models.CharField(max_length=50)
     email = models.EmailField(blank=True, null=True)
     personal_website = models.URLField(blank=True, null=True)
+    github = models.URLField(blank=True, null=True)
+    twitter = models.URLField(blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
     advisor = models.ForeignKey('self', blank=True, null=True, related_name='Advisor')
     co_advisor = models.ForeignKey('self', blank=True, null=True, related_name='Co-Advisor+')
