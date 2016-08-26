@@ -194,6 +194,8 @@ def projects(request):
 def project_ind(request, project_name):
    project = get_object_or_404(Project, short_name__iexact=project_name)
    all_banners = project.banner_set.all()
+   if len(all_banners) == 0:
+      all_banners = Banner.objects.all()
    displayed_banners = choose_banners(all_banners)
    members = project.project_role_set.all()
    active_members = []
