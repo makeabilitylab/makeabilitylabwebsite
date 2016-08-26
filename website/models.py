@@ -129,7 +129,7 @@ class Position(models.Model):
         elif "ischool" in self.department.lower():
             return 'iSchool'
         else:
-            "".join(e[0] for e in self.department.split())
+            return "".join(e[0] for e in self.department.split(" "))
 
     def get_date_range_as_str(self):
         if self.start_date is not None and self.end_date is None:
