@@ -34,7 +34,7 @@
 		    {% endwith %}
 		    {% with project.get_co_pi as copi %}
 		    {% if copi %}
-		    <a href="{% url 'website:member' copi.id %}">{{copi.get_full_name}}</a> (co-PI)<br/>
+		    <a href="{% url 'website:member' copi.id %}">{{copi.get_full_name}}</a> (Co-PI)<br/>
 		    {% endif %}
 		    {% endwith %}
 		    {% ifequal project.sponsors|length 0 %}

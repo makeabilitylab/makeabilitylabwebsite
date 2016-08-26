@@ -202,13 +202,13 @@ def project_ind(request, project_name):
    active_members.sort(key=operator.attrgetter('start_date'))
    alumni.sort(key=operator.attrgetter('start_date'))
    for role in active_members:
-      if role.pi_member == "CoPI":
+      if role.pi_member == "Co-PI":
          active_members.insert(0, active_members.pop(active_members.index(role)))
    for role in active_members:
       if role.pi_member == "PI":
          active_members.insert(0, active_members.pop(active_members.index(role)))
    for role in alumni:
-      if role.pi_member == "CoPI":
+      if role.pi_member == "Co-PI":
          alumni.insert(0, alumni.pop(alumni.index(role)))
    for role in alumni:
       if role.pi_member == "PI":

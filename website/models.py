@@ -202,7 +202,7 @@ class Project(models.Model):
         return self.project_role_set.get(pi_member="PI").person
 
     def get_co_pi(self):
-        return self.project_role_set.get(pi_member="CoPI").person
+        return self.project_role_set.get(pi_member="Co-PI").person
     def __str__(self):
         return self.name
         
@@ -213,7 +213,7 @@ class Project_Role(models.Model):
     start_date = models.DateField()
     end_date = models.DateField(blank=True, null=True)
     PI = "PI"
-    CoPI = "CoPI"
+    CoPI = "Co-PI"
 
     PIMEMBER_CHOICES = (
         (PI, "PI"),
