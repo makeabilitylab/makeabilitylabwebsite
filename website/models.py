@@ -203,8 +203,13 @@ class Project(models.Model):
     def get_pi(self):
         return self.project_role_set.get(pi_member="PI").person
 
-    def get_co_pi(self):
-        return self.project_role_set.get(pi_member="Co-PI").person
+    def get_co_pis(self):
+        copi_arr = self.project_role_set.filter(pi_member="Co-PI")
+        ret = []
+        for copi in copi_arr:
+            ret.append(copi.person)
+        return ret
+            
     def __str__(self):
         return self.name
         

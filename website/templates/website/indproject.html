@@ -32,11 +32,9 @@
 		    <a href="{% url 'website:member' pi.id %}">{{pi.get_full_name}}</a> (PI)<br/>
 		    {% endif %}
 		    {% endwith %}
-		    {% with project.get_co_pi as copi %}
-		    {% if copi %}
+		    {% for copi in project.get_co_pis %}
 		    <a href="{% url 'website:member' copi.id %}">{{copi.get_full_name}}</a> (Co-PI)<br/>
-		    {% endif %}
-		    {% endwith %}
+		    {% endfor %}
 		    {% ifequal project.sponsors|length 0 %}
 		    {% else %}
 		    <br/>
