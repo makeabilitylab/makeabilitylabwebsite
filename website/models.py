@@ -13,6 +13,9 @@ class Person(models.Model):
     email = models.EmailField(blank=True, null=True)
     personal_website = models.URLField(blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
+    advisor = models.ForeignKey('self', blank=True, null=True, related_name='Advisor')
+    co_advisor = models.ForeignKey('self', blank=True, null=True, related_name='Co-Advisor+')
+    grad_mentor = models.ForeignKey('self', blank=True, null=True, related_name='Grad Mentor+')
 
     # Note: the ImageField requires the pillow library, which can be installed using pip
     # pip3 install Pillow
