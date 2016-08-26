@@ -59,7 +59,7 @@
 	    </div>
 	    <div class="row">
 		{% if news %}
-		<h3 class="news-type-label">Recent News</h3>
+		<h3 class="news-type-label">Recent News</h>
 		{% endif %}
 		<div class="well news-well">
 		    {% for item in news %}
@@ -78,7 +78,7 @@
 			    <!-- https://css-tricks.com/line-clampin/ This seems to be a good way to do multi line wrapping, also referenced in relevant news.css file -->
 			    <div class="news_title line-clamp">
 				<!-- TODO link to the full news item -->
-				<a href="">
+				<a href="{% url 'website:news' item.id %}">
 				    <p>{{item.title}}</p>
 				</a>
 			    </div>

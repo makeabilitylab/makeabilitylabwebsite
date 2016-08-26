@@ -233,3 +233,25 @@ def project_ind(request, project_name):
    context = {'banners': displayed_banners, 'project': project, 'active': active_members, 'alumni': alumni, 'publications': publications, 'talks': talks, 'videos': videos, 'news': news, 'photos': photos, 'debug':settings.DEBUG}
    return render(request, 'website/indproject.html', context)
 
+
+def news(request, news_id):
+   all_banners = Banner.objects.all()
+   displayed_banners = choose_banners(all_banners)
+   news = get_object_or_404(News, pk=news_id)
+   max_extra_items = 4 # Maximum number of authors 
+   all_author_news = news.author.news_set.all()
+   author_news = []
+   for item in all_author_news:
+      if item != news:
+         author_news.append(item)
+   project_news = {}
+   if news.project != None:
+      for project in news.project.all():
+         ind_proj_news = []
+         all_proj_news = project.news_set.all()
+         for item in all_proj_news:
+            if item != news:
+               ind_proj_news.append(item)
+         project_news[project] = ind_proj_news[:max_extra_items]
+   context = {'banners': displayed_banners, 'news': news, 'author_news': author_news[:max_extra_items], 'project_news': project_news, 'debug': settings.DEBUG}
+   return render(request, 'website/news.html', context)

@@ -84,7 +84,7 @@
 			    <!-- https://css-tricks.com/line-clampin/ This seems to be a good way to do multi line wrapping, also referenced in relevant news.css file -->
 			    <div class="news_title line-clamp">
 				<!-- TODO link to the full news item -->
-				<a href="">
+				<a href="{% url 'website:news' item.id %}">
 				    <p>{{item.title}}</p>
 				</a>
 			    </div>
