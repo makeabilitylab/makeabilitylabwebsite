@@ -23,6 +23,7 @@ class BannerAdmin(ImageCroppingMixin, admin.ModelAdmin):
         # ('Image', {'fields': ["image", "image_preview"]})
         ('Image', {'fields': ["image", "cropping"]})
     ]
+    list_display = ('__str__', 'admin_thumbnail')
     pass
     # readonly_fields = ["image_preview"]
 
@@ -49,6 +50,7 @@ class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
     pass
 
 class PhotoAdmin(ImageCroppingMixin, admin.ModelAdmin):
+    list_display = ('__str__', 'admin_thumbnail')
     pass
 
 class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):

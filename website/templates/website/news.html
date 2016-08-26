@@ -51,7 +51,7 @@
 {% block content %}
 <div class="container content-container">
     <div class="row">
-	<div class="col-xs-12 col-md-10">
+	<div class="col-xs-12 col-md-10 main-content">
 	    <div class="row">
 		<div class="col-sm-4 hideden-xs">
 		    {% if news.image %}
@@ -123,7 +123,9 @@
 	    {% endif %}
 	    {% for project, proj_news in project_news.items %}
 	    <div class="row">
+		{% if proj_news %}
 		<h3 class="news-type-label">Recent News from <a href="{% url 'website:project_ind' project.short_name %}">{{project.name}}</a></h3>
+		{% endif %}
 		<div class="well news-well">
 		    {% for item in proj_news %}
 		    <!-- Create a row for each news item which has been passed in -->

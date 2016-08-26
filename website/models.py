@@ -155,6 +155,9 @@ class Position(models.Model):
     def is_grad(self):
         return self.title == Position.MS_STUDENT or self.title == Position.PHD_STUDENT or self.title == Position.POST_DOC
 
+    def is_high_school(self):
+        return self.title == Position.HIGH_SCHOOL
+
     # Returns true if member is still active based on end date
     def is_active_member(self):
         return self.is_member() and \
@@ -302,6 +305,11 @@ class Photo(models.Model):
     # size is "width x height"
     # TODO: update with desired aspect ratio and maximum resolution
     cropping = ImageRatioField('picture', '368x245', size_warning=True)
+    def admin_thumbnail(self):
+        return u'<img src="%s" height="100"/>' % (self.picture.url)
+    admin_thumbnail.short_description = 'Thumbnail'
+    admin_thumbnail.allow_tags = True
+    
     def __str__(self):
         return self.caption
 
@@ -590,6 +598,11 @@ class Banner(models.Model):
     favorite = models.BooleanField(default=False)
     favorite.help_text = 'Check this box if this image should appear before other (non-favorite) banner images on the same page.'
     date_added = models.DateField(auto_now=True)
+
+    def admin_thumbnail(self):
+        return u'<img src="%s" height="100"/>' % (self.image.url)
+    admin_thumbnail.short_description = 'Thumbnail'
+    admin_thumbnail.allow_tags = True
 
     def __str__(self):
         if self.title and self.page:

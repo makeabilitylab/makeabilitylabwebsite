@@ -267,7 +267,11 @@
 		    {% endif %}
 		    {% if member.person.position_set.all|length > 0 %}
 		    {% with member.person.position_set.all|first as position %}
-                    {{ position.title }}, {{ position.get_department_abbreviated }}
+                    {{ position.title }},
+		    {% if position.is_high_school %}
+		    {% else %}
+		    {{ position.get_department_abbreviated }}
+		    {% endif %}
                     <br/>
                     {{ position.school }}
 		    {% endwith %}
@@ -296,7 +300,11 @@
 		    {% endif %}
 		    {% if member.person.position_set.all|length > 0 %}
 		    {% with member.person.position_set.all|first as position %}
-                    {{ position.title }}, {{ position.get_department_abbreviated }}
+                    {{ position.title }},
+		    {% if position.is_high_school %}
+		    {% else %}
+		    {{ position.get_department_abbreviated }}
+		    {% endif %}
                     <br/>
                     {{ position.school }}
 		    {% endwith %}
