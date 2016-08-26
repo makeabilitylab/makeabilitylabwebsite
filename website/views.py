@@ -1,7 +1,7 @@
 import operator, datetime, random
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, render
-from .models import Person, Publication, Talk, Position, Banner, News, Keyword, Video, Project
+from .models import Person, Publication, Talk, Position, Banner, News, Keyword, Video, Project, Project_umbrella
 from django.conf import settings
 from datetime import date
 
@@ -183,11 +183,17 @@ def website_analytics(request):
    return render(request, 'admin/analytics.html')
 
 
-def projects(request):
+def projects(request, filter=None):
    all_banners = Banner.objects.filter(page=Banner.PROJECTS)
    displayed_banners = choose_banners(all_banners)
    projects = Project.objects.all()
-   context = {'projects': projects, 'banners': displayed_banners, 'debug': settings.DEBUG}
+   all_proj_len = len(projects)
+   if filter != None:
+      filter_umbrella = Project_umbrella.objects.get(short_name=filter)
+      projects = filter_umbrella.project_set.all()
+   umbrellas = Project_umbrella.objects.all()
+   recent_projects = Project.objects.order_by('-id')[:2] # This is a stand in for getting the most recently updated projects
+   context = {'projects': projects, 'all_proj_len': all_proj_len, 'banners': displayed_banners, 'recent': recent_projects, 'umbrellas': umbrellas, 'filter': filter, 'debug': settings.DEBUG}
    return render(request, 'website/projects.html', context)
 
 #This is the view for individual projects, rather than the overall projects page

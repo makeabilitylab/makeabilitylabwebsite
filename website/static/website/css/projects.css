@@ -7,10 +7,43 @@
 }
 
 .project-name {
-    font-family: adelle-regular;
+    	font-family: adelle-regular;
+	font-weight: bold;
+	color: #464D59;
+	font-size: 20px;
+	word-wrap: break-word;
+	text-overflow: ellipsis;
+}
+
+.recent-project-name {
     font-weight: bold;
-    color: #464D59;
-    font-size: 20px;
-    word-wrap: break-word;
-    text-overflow: ellipsis;
+    font-size: 10px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin: 0 auto;
+    line-height: 75%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.recent-image {
+    height: 50px;
+    width: 50px;
+    float: left;
+    padding-right: 5px;
+    padding-bottom: 0px;
+    padding-top: 2px;
+    vertical-align: top;
+}
+
+.header-label {
+    padding-top: 0px;
+    text-align: left;
+    margin: 0 auto;
+    padding-bottom: 5px;
+}
+
+.sidebar-container {
+    margin: 0 auto;
+    padding-bottom: 10px;
 }
