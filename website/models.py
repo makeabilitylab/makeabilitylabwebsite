@@ -157,6 +157,10 @@ class Position(models.Model):
             return 'iSchool'
         elif "ischool" in self.department.lower():
             return 'iSchool'
+        elif 'building science' in self.department.lower():
+            return 'BuildSci'
+        elif 'computer engineering' in self.department.lower():
+            return 'CprE'
         else:
             return "".join(e[0] for e in self.department.split(" "))
 
