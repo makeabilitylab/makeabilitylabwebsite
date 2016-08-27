@@ -254,7 +254,7 @@
 	    {% endifequal %}
 	    {% for member in active %}
             <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths">
-		<a href="{% url 'website:member' member.id %}">
+		<a href="{% url 'website:member' member.person.id %}">
                     <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
 		</a>
 		<div class="item-info">
@@ -267,10 +267,10 @@
 		    {% endif %}
 		    {% if member.person.position_set.all|length > 0 %}
 		    {% with member.person.position_set.all|first as position %}
-                    {{ position.title }},
+                    {{ position.title }}
 		    {% if position.is_high_school %}
 		    {% else %}
-		    {{ position.get_department_abbreviated }}
+		    , {{ position.get_department_abbreviated }}
 		    {% endif %}
                     <br/>
                     {{ position.school }}
