@@ -33,6 +33,7 @@ class AdvisorInLine(admin.StackedInline):
     model = Position
     # This specifies that the Inline is linked to the main owner of the position rather than any of the advisor roles.
     fk_name="person"
+    # This specifies that the field appears only once.
     extra = 1
     
 class ProjectRoleInline(admin.StackedInline):

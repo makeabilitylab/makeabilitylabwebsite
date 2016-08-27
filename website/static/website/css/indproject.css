@@ -6,10 +6,19 @@
     padding-right: 30px;
 }
 
-.video-about {
-    height: 300px;
-    width: 535px; /*1.78 * height*/
+@media (max-width: 768px){
+    .video-about {
+	width: 100%;
+    }
 }
+
+@media (min-width: 769px){
+    .video-about {
+	height: 300px;
+	width: 535px; /*1.78 * height*/
+    }
+}
+
 
 .header-visual {
     padding-right: 10px;
