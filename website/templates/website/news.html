@@ -68,7 +68,7 @@
 		    <span class="big-news-published">Pubished {{news.short_date}}</span>
 		    <br/>
 		    {% for project in news.project.all %}
-		    <span class="big-news-project"><a href="{% url 'website:project_ind' project.short_name}">{{project.name}}</a></span>
+		    <span class="big-news-project"><a href="{% url 'website:project_ind' project.short_name %}">{{project.name}}</a></span>
 		    <br/>
 		    {% endfor %}
 		</div>
@@ -106,7 +106,7 @@
 				    <p>{{item.title}}</p>
 				</a>
 			    </div>
-			    <p class="news_date">{{item.short_date}} | <a href="{% url 'website:member' item.author.id %}">{{item.author}}</a></p><!--</p><p class="news_date">{{item.author}}</p>-->
+			    <p class="news_date">{{item.short_date}} | <a href="{% url 'website:member' item.author.id %}">{{item.author.first_name}}</a></p><!--</p><p class="news_date">{{item.author}}</p>-->
 			</div>
 		    </div>
 		    <div class="row news_body">
@@ -147,7 +147,7 @@
 				    <p>{{item.title}}</p>
 				</a>
 			    </div>
-			    <p class="news_date">{{item.short_date}} | <a href="{% url 'website:member' item.author.id %}">{{item.author}}</a></p><!--</p><p class="news_date">{{item.author}}</p>-->
+			    <p class="news_date">{{item.short_date}} | <a href="{% url 'website:member' item.author.id %}">{{item.author.first_name}}</a></p><!--</p><p class="news_date">{{item.author}}</p>-->
 			</div>
 		    </div>
 		    <div class="row news_body">

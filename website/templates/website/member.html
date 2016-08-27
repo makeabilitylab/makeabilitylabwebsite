@@ -61,10 +61,10 @@
 		<h3 class="news-type-label">{{person.get_full_name}}</h3>
 		{% with person.position_set.all|first as position %}
 		{% if position %}
-		{{position.title}},
+		{{position.title}}
 		{% if position.is_high_school %}
 		{% else %}
-		{{position.get_department_abbreviated}}
+		, {{position.get_department_abbreviated}}
 		{% endif %}
 		<br/>
 		{{position.school}}<br/>
