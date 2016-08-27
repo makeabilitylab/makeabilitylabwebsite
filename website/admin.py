@@ -31,11 +31,9 @@ class BannerAdmin(ImageCroppingMixin, admin.ModelAdmin):
 #class ChoiceInline(admin.StackedInline):
 class AdvisorInLine(admin.StackedInline):
     model = Position
-    # This is a kludge. By setting fk_name to "kludge" which also exists as an extra, never used, foreign key to person from position, the other foreign keys to person will all display
-    # This kludge is based off of this http://stackoverflow.com/questions/24493145/django-inline-forms-with-multiple-foreign-keys
-    # The implementation described there creates many instances of the admin, each showing all but the foreign key in fk_name
-    # That's why Jamie decided to do this kludge
-    fk_name="kludge"
+    # This specifies that the Inline is linked to the main owner of the position rather than any of the advisor roles.
+    fk_name="person"
+    extra = 1
     
 class ProjectRoleInline(admin.StackedInline):
     model = Project_Role

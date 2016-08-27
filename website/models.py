@@ -79,10 +79,7 @@ class Position(models.Model):
     advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Advisor')
     co_advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Co_Advisor')
     grad_mentor = models.ForeignKey('Person', blank=True, null=True, related_name='Grad_Mentor')
-    #This extra foreign key exists so that the admin can use it as fk_name allowing the other foreign keys to load correctly.
-    kludge = models.ForeignKey('Person', blank=True, null=True, related_name='Kludge')
-
-
+   
     # According to Django docs, best to have field choices within the primary
     # class that uses them. See https://docs.djangoproject.com/en/1.9/ref/models/fields/#choices
     MEMBER = "Member"
