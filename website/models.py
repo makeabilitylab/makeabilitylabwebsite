@@ -5,6 +5,25 @@ from django.dispatch import receiver
 from django.db.models.signals import pre_delete
 from datetime import date
 from website.utils.fileutils import UniquePathAndRename
+import os
+from random import choice
+from django.core.files import File
+
+#Simple check to seee if a file is an image. Not strictly necessary but included for safety
+def isimage(filename):
+    """true if the filename's extension is in the content-type lookup"""
+    ext2conttype = {"jpg": "image/jpeg",
+                "jpeg": "image/jpeg",
+                "png": "image/png",
+                "gif": "image/gif"}
+    filename = filename.lower()
+    return filename[filename.rfind(".")+1:] in ext2conttype
+
+#Randomly selects an image from the given directory
+def get_random_starwars(direc):
+    """Gets a random star wars picture to assign to new author"""
+    images = [f for f in os.listdir(direc) if isimage(f)]
+    return choice(images)
 
 class Person(models.Model):
     first_name = models.CharField(max_length=40)
@@ -62,10 +81,23 @@ class Person(models.Model):
     def __str__(self):
         return self.get_full_name()
 
+    def save(self, *args, **kwargs):
+        dir_path = os.path.dirname(os.path.dirname(__file__))
+        star_wars_dir = dir_path+"/import/images/StarWarsFiguresFullSquare/Rebels/"
+        image_choice = File(open(star_wars_dir+get_random_starwars(star_wars_dir), 'rb'))
+        if not self.image:
+            self.image = image_choice
+        if self.pk is None:
+            self.easter_egg = image_choice
+            #Get a star wars pic
+        super(Person, self).save(*args, **kwargs)
+    
     class Meta:
         ordering = ['last_name', 'first_name']
         verbose_name_plural = 'People'
 
+
+        
 @receiver(pre_delete, sender=Person)
 def person_delete(sender, instance, **kwargs):
     if instance.image:
