@@ -169,30 +169,34 @@
             {% for banner in banners %}
                 <div class="item {% if forloop.first %}active{% endif %}">
 		    {% if banner.project %}
+		    {% if banner.link% }<a href="{{banner.link}}">
+		    {% else %}
+		    {% if banner.project %}
 		    <a href="{% url 'website:project_ind' banner.project.short_name %}">
 			{% endif %}
-                    {% if banner.link %}<a href="{{ banner.link }}">{% endif %}
-                      <div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})" aria-label="{{ banner.alt_text }}"  title="{{ banner.alt_text }}"></div>
-                    {% if banner.link %}</a>{% endif %}
-                    <div class="overlay shadow-left" style="pointer-events: none;">
-                      <div class="container carousel-container">
-                        <div class="carousel-caption carousel-caption-left" style="pointer-events: auto;">
-                          {% autoescape off %}
-                          <div class="carousel-caption-title">
-                            {{ banner.title }}
-                          </div>
-                          <div class="carousel-caption-text">
-                            {{ banner.caption }}
-                          </div>
-                          {% endautoescape %}
-                        </div>
-                      </div>
-                    </div>
+			{% endif %}
+			<div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})" aria-label="{{ banner.alt_text }}"  title="{{ banner.alt_text }}"></div>
+			
+			<div class="overlay shadow-left" style="pointer-events: none;">
+			    <div class="container carousel-container">
+				<div class="carousel-caption carousel-caption-left" style="pointer-events: auto;">
+				    {% autoescape off %}
+				    <div class="carousel-caption-title">
+					{{ banner.title }}
+				    </div>
+				    <div class="carousel-caption-text">
+					{{ banner.caption }}
+				    </div>
+				    {% endautoescape %}
+				</div>
+			    </div>
+			</div>
+			{% if banner.link %}</a>{% endif %}
 		    {% if banner.project %}
 		    </a>
 		    {% endif %}
                 </div>
-            {% endfor %}
+		{% endfor %}
             </div>
 	    <ol class="carousel-indicators" {% if banners|length < 2 %} style="display: none" {% endif %}>
               {% for banner in banners %}
