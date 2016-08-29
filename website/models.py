@@ -34,6 +34,9 @@ class Person(models.Model):
     github = models.URLField(blank=True, null=True)
     twitter = models.URLField(blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
+    next_position = models.CharField(max_length=255, blank=True, null=True)
+    next_position.help_text = "This is a field to track the next position held by alumni of the lab. This field stores text information about their position and the next field stores a url which can be linked to."
+    next_position_url = models.URLField(blank=True, null=True)
     # Note: the ImageField requires the pillow library, which can be installed using pip
     # pip3 install Pillow
     # We use the get_unique_path function because otherwise if two people use the same
@@ -43,6 +46,7 @@ class Person(models.Model):
     image.help_text = 'You must select "Save and continue editing" at the bottom of the page after uploading a new image for cropping.'
 
     easter_egg = models.ImageField(blank=True, null=True, upload_to="person", max_length=255)
+
     
     # LS: Added image cropping to fixed ratio
     # See https://github.com/jonasundderwolf/django-image-cropping
