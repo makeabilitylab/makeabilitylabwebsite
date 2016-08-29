@@ -342,6 +342,9 @@ class Project_header(models.Model):
         unique_url = self.video_url[self.video_url.find("/", 9):]
         return base_url+unique_url
 
+    class Meta:
+        verbose_name = "Project About Visual"
+
 class Photo(models.Model):
     picture = models.ImageField(upload_to='projects/images/', max_length=255)
     caption = models.CharField(max_length=255, blank=True, null=True)
@@ -650,7 +653,10 @@ class Banner(models.Model):
     date_added = models.DateField(auto_now=True)
 
     def admin_thumbnail(self):
-        return u'<img src="%s" height="100"/>' % (self.image.url)
+        if self.image:
+            return u'<img src="%s" height="100"/>' % (self.image.url)
+        else:
+            return "No image found"
     admin_thumbnail.short_description = 'Thumbnail'
     admin_thumbnail.allow_tags = True
 

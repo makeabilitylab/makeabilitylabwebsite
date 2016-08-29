@@ -233,7 +233,7 @@ def project_ind(request, project_name):
 
 
 def news(request, news_id):
-   all_banners = Banner.objects.all()
+   all_banners = Banner.objects.filter(page=Banner.FRONTPAGE)
    displayed_banners = choose_banners(all_banners)
    news = get_object_or_404(News, pk=news_id)
    max_extra_items = 4 # Maximum number of authors 
