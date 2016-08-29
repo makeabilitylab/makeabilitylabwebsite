@@ -313,8 +313,9 @@
 		    {% endif %}
 
 		    {% with member.person.position_set.all|first as position %}
-                    {{ position.title }}{% if position.is_high_school %}{% else %},
-		    {{ position.get_department_abbreviated }}
+                    {{ position.title }}
+		    {% if position.is_high_school %}{% else %}
+		    <br/>		    {{ position.department }}
 		    {% endif %}
                     <br/>
                     {{ position.school }}
@@ -347,7 +348,8 @@
                     {{ position.title }}
 		    {% if position.is_high_school %}
 		    {% else %}
-		    , {{ position.get_department_abbreviated }}
+		    <br/>
+		    {{ position.department }}
 		    {% endif %}
                     <br/>
                     {{ position.school }}
