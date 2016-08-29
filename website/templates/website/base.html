@@ -168,8 +168,8 @@
             <div class="carousel-inner" role="listbox">
             {% for banner in banners %}
                 <div class="item {% if forloop.first %}active{% endif %}">
-		    {% if banner.project %}
-		    {% if banner.link% }<a href="{{banner.link}}">
+		    {% if banner.link %}
+		    <a href="{{banner.link}}">
 		    {% else %}
 		    {% if banner.project %}
 		    <a href="{% url 'website:project_ind' banner.project.short_name %}">

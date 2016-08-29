@@ -23,18 +23,14 @@
     <div class="carousel-inner" role="listbox">
         {% for banner in banners %}
         <div class="item {% if forloop.first %}active{% endif %}">
-	    {% if banner.project %}
-	    {% if banner.link% }<a href="{{banner.link}}">
-	    {% else %}
-	    {% if banner.project %}
-	    <a href="{% url 'website:project_ind' banner.project.short_name %}">
-		{% endif %}
+	    {% if banner.link %}
+	    <a href="{{banner.link}}">
 		{% endif %}
 		<div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})" aria-label="{{ banner.alt_text }}"  title="{{ banner.alt_text }}"></div>
-		
 		<div class="overlay shadow-left" style="pointer-events: none;">
 		    <div class="container carousel-container">
 			<div class="carousel-caption carousel-caption-left" style="pointer-events: auto;">
+			    {% if banner.title %}
 			    {% autoescape off %}
 			    <div class="carousel-caption-title">
 				{{ banner.title }}
@@ -43,11 +39,15 @@
 				{{ banner.caption }}
 			    </div>
 			    {% endautoescape %}
+			    {% else %}
+			    <div class="carousel-caption-title">
+				{{ project.name }}
+			    </div>
+			    {% endif %}
 			</div>
 		    </div>
 		</div>
-		{% if banner.link %}</a>{% endif %}
-	    {% if banner.project %}
+		{% if banner.link %}
 	    </a>
 	    {% endif %}
         </div>
@@ -286,7 +286,7 @@
 	    {% for image in photos %}
 	    <div class="col-md-4 project-gallery-col">
 		<img src="{% thumbnail image.picture 368x245 box=image.cropping crop detail %}" alt="{{image.alt_text}}" class="project-gallery">
-		<div class="overlay">
+		<div class="overlay-image">
 		    <p class="image-gallery-caption">{{image.caption}}</p>
 		</div>
 	    </div>

@@ -69,7 +69,7 @@
     margin: 0px;
 }
 
-.project-gallery-col:hover .overlay{
+.project-gallery-col:hover .overlay-image{
     opacity: 1;
 }
 
@@ -81,7 +81,7 @@
     padding-left: 0px;
 }
 
-.overlay {
+.overlay-image {
     bottom: 0;left: 0; top: 0; right: 0;
     height: 100%;
     width: 100%;
