@@ -74,6 +74,7 @@
                         <a href="{% url 'website:member' member.person.id %}">
                             <h5>{{ member.person.get_full_name }}</h5>
                         </a>
+			{{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
                         {{ member.title }}, {{ member.get_department_abbreviated }}
                         <br/>
                         {{ member.school }}
@@ -96,6 +97,7 @@
                         <a href="{% url 'website:member' member.person.id %}">
                             <h5>{{ member.person.get_full_name }}</h5>
                         </a>
+			{{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
                         {{ member.title }}, {{ member.get_department_abbreviated }}
                         <br/>
                         {{ member.school }}
@@ -118,6 +120,7 @@
                         <a href="{% url 'website:member' member.person.id %}">
                             <h5>{{ member.person.get_full_name }}</h5>
                         </a>
+			{{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
                         {{ member.title }}
                         <br/>
                         {{ member.school }}
@@ -140,10 +143,9 @@
                         <a href="{% url 'website:member' member.person.id %}">
                             <h5>{{ member.person.get_full_name }}</h5>
                         </a>
-                        {{ member.title }}
-			{% if member.is_high_school %}
-			{% else %}
-			, {{ member.get_department_abbreviated }}
+			{{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
+                        {{ member.title }}{% if member.is_high_school %}{% else %},
+			{{ member.get_department_abbreviated }}
 			{% endif %}
                         <br/>
                         {{ member.school }}
@@ -166,10 +168,9 @@
                         <a href="{% url 'website:member' collaborator.person.id %}">
                             <h5>{{ collaborator.person.get_full_name }}</h5>
                         </a>
-                        {{ collaborator.title }}
-			{% if collaborator.is_high_school %}
-			{% else %}
-			, {{ collaborator.get_department_abbreviated }}
+			{{collaborator.get_start_date_short}} - {{collaborator.get_end_date_short}}<br/>
+                        {{ collaborator.title }}{% if collaborator.is_high_school %}{% else %},
+			{{ collaborator.get_department_abbreviated }}
 			{% endif %}
                         <br/>
                         {{ collaborator.school }}
@@ -192,10 +193,9 @@
                         <a href="{% url 'website:member' collaborator.person.id %}">
                             <h5>{{ collaborator.person.get_full_name }}</h5>
                         </a>
-                        {{ collaborator.title }}
-			{% if collaborator.is_high_school %}
-			{% else %}
-			, {{ collaborator.get_department_abbreviated }}
+			{{collaborator.get_start_date_short}} - {{collaborator.get_end_date_short}}<br/>
+                        {{ collaborator.title }}{% if collaborator.is_high_school %}{% else %},
+			{{ collaborator.get_department_abbreviated }}
 			{% endif %}
                         <br/>
                         {{ collaborator.school }}

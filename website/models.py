@@ -149,6 +149,12 @@ class Position(models.Model):
     department = models.CharField(max_length=50, default="Computer Science")
     school = models.CharField(max_length=60, default="University of Maryland")
 
+    def get_start_date_short(self):
+        return self.start_date.strftime('%b %Y')
+
+    def get_end_date_short(self):
+        return self.end_date.strftime('%b %Y') if self.end_date != None else "Present"
+    
     # Returns an abbreviated version of the department field
     def get_department_abbreviated(self):
         if self.department.lower() == "computer science":
@@ -161,6 +167,10 @@ class Position(models.Model):
             return 'BuildSci'
         elif 'computer engineering' in self.department.lower():
             return 'CprE'
+        elif 'architecture' in self.department.lower():
+            return 'Arch'
+        elif 'bioengineering' in self.department.lower():
+            return 'BIOE'
         else:
             return "".join(e[0] for e in self.department.split(" "))
 
@@ -290,6 +300,12 @@ class Project_Role(models.Model):
     )
 
     pi_member = models.CharField(max_length=50, blank=True, null=True, choices=PIMEMBER_CHOICES, default=None)
+
+    def get_start_date_short(self):
+        return self.start_date.strftime('%b %Y')
+
+    def get_end_date_short(self):
+        return self.end_date.strftime('%b %Y') if self.end_date != None else "Present"
 
     def get_date_range_as_str(self):
         if self.start_date is not None and self.end_date is None:

@@ -261,16 +261,14 @@
                     <a href="{% url 'website:member' member.person.id %}">
 			<h5>{{ member.person.get_full_name }}</h5>
                     </a>
-		    {{member.start_date}} - {% if member.end_date %}{{member.end_date}}{% else %}Present{% endif %}<br/>
+		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
 		    {% if member.pi_member %}
 		    {{member.pi_member}} | 
 		    {% endif %}
 		    {% if member.person.position_set.all|length > 0 %}
 		    {% with member.person.position_set.all|first as position %}
-                    {{ position.title }}
-		    {% if position.is_high_school %}
-		    {% else %}
-		    , {{ position.get_department_abbreviated }}
+                    {{ position.title }}{% if position.is_high_school %}{% else %},
+		    {{ position.get_department_abbreviated }}
 		    {% endif %}
                     <br/>
                     {{ position.school }}
@@ -294,7 +292,7 @@
                     <a href="{% url 'website:member' member.person.id %}">
 			<h5>{{ member.person.get_full_name }}</h5>
                     </a>
-		    {{member.start_date}} - {% if member.end_date %}{{member.end_date}}{% else %}Present{% endif %}<br/>
+		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
 		    {% if member.pi_member %}
 		    {{member.pi_member}} | 
 		    {% endif %}
