@@ -75,7 +75,8 @@
                             <h5>{{ member.person.get_full_name }}</h5>
                         </a>
 			{{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-                        {{ member.title }}, {{ member.get_department_abbreviated }}
+                        {{ member.title }}<br/>
+			{{ member.department }}
                         <br/>
                         {{ member.school }}
                     </div>
@@ -98,7 +99,8 @@
                             <h5>{{ member.person.get_full_name }}</h5>
                         </a>
 			{{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-                        {{ member.title }}, {{ member.get_department_abbreviated }}
+                        {{ member.title }}<br/>
+			{{ member.department}}
                         <br/>
                         {{ member.school }}
                     </div>
@@ -144,8 +146,9 @@
                             <h5>{{ member.person.get_full_name }}</h5>
                         </a>
 			{{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-                        {{ member.title }}{% if member.is_high_school %}{% else %},
-			{{ member.get_department_abbreviated }}
+                        {{ member.title }}
+			{% if member.is_high_school %}{% else %}<br/>
+			{{ member.department }}
 			{% endif %}
                         <br/>
                         {{ member.school }}
@@ -169,8 +172,9 @@
                             <h5>{{ collaborator.person.get_full_name }}</h5>
                         </a>
 			{{collaborator.get_start_date_short}} - {{collaborator.get_end_date_short}}<br/>
-                        {{ collaborator.title }}{% if collaborator.is_high_school %}{% else %},
-			{{ collaborator.get_department_abbreviated }}
+                        {{ collaborator.title }}
+			{% if collaborator.is_high_school %}{% else %}<br/>
+			{{ collaborator.department}}
 			{% endif %}
                         <br/>
                         {{ collaborator.school }}
@@ -194,8 +198,9 @@
                             <h5>{{ collaborator.person.get_full_name }}</h5>
                         </a>
 			{{collaborator.get_start_date_short}} - {{collaborator.get_end_date_short}}<br/>
-                        {{ collaborator.title }}{% if collaborator.is_high_school %}{% else %},
-			{{ collaborator.get_department_abbreviated }}
+                        {{ collaborator.title }}
+			{% if collaborator.is_high_school %}{% else %}<br/>
+			{{ collaborator.department }}
 			{% endif %}
                         <br/>
                         {{ collaborator.school }}
