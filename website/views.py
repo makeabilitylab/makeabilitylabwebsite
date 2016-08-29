@@ -183,11 +183,12 @@ def website_analytics(request):
    return render(request, 'admin/analytics.html')
 
 
-def projects(request, filter=None):
+def projects(request):
    all_banners = Banner.objects.filter(page=Banner.PROJECTS)
    displayed_banners = choose_banners(all_banners)
    projects = Project.objects.all()
    all_proj_len = len(projects)
+   filter = request.GET.get('filter')
    if filter != None:
       filter_umbrella = Project_umbrella.objects.get(short_name=filter)
       projects = filter_umbrella.project_set.all()

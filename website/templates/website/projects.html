@@ -68,7 +68,7 @@
 		<h4 class="header-label">Project Umbrellas</h4>
 		<span class="project-umbrella-link"><a href="{% url 'website:projects' %}">All ({{all_proj_len}})</a></span><br/>
 		{% for umbrella in umbrellas %}
-		<span class="project-umbrella-link"><a href="{% url 'website:projects' umbrella.short_name%}">{{umbrella.name}} ({{umbrella.project_set.all|length}})</a></span><br/>
+		<span class="project-umbrella-link"><a href="{% url 'website:projects'%}?filter={{umbrella.short_name}}">{{umbrella.name}} ({{umbrella.project_set.all|length}})</a></span><br/>
 		{% endfor %}
 	    </div>
 	    <div class="sidebar-container">
