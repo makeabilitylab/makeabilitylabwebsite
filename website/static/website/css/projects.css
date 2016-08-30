@@ -47,3 +47,13 @@
     margin: 0 auto;
     padding-bottom: 10px;
 }
+
+.popular-project{
+    margin: 0;
+    padding: 0;
+}
+
+.popular-project img {
+    width: 100%;
+}
+
