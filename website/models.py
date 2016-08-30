@@ -276,6 +276,7 @@ class Project(models.Model):
 
     about = models.TextField(null=True, blank=True)
 
+    updated = models.DateField(auto_now=True)
     def get_pi(self):
         return self.project_role_set.get(pi_member="PI").person
 

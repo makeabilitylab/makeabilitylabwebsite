@@ -227,6 +227,25 @@ def website_analytics(request):
    return render(request, 'admin/analytics.html')
 
 
+def get_most_recent(projects):
+   updated = []
+   print(projects)
+   for project in projects:
+      #Adding more times to the time array will allow you to add additional fields in the future
+      times = []
+      if project.updated != None:
+         times.append(project.updated)
+      if len(project.publication_set.all()) > 0:
+         times.append(project.publication_set.order_by('-date')[0].date)
+      if len(project.talk_set.all()) > 0:
+         times.append(project.talk_set.order_by('-date')[0].date)
+      if len(project.video_set.all()) > 0:
+         times.append(project.video_set.order_by('-date')[0].date)
+      times.sort()
+      updated.append({'proj': project, 'updated': times[0]})
+   sorted_list = sorted(updated, key=lambda k: k['updated'], reverse=True)
+   return [item['proj'] for item in sorted_list]
+
 def projects(request):
    all_banners = Banner.objects.filter(page=Banner.PROJECTS)
    displayed_banners = choose_banners(all_banners)
@@ -237,7 +256,8 @@ def projects(request):
       filter_umbrella = Project_umbrella.objects.get(short_name=filter)
       projects = filter_umbrella.project_set.all()
    umbrellas = Project_umbrella.objects.all()
-   recent_projects = Project.objects.order_by('-id')[:2] # This is a stand in for getting the most recently updated projects
+   
+   recent_projects = get_most_recent(Project.objects.order_by('-updated'))[:2]
    context = {'projects': projects, 'all_proj_len': all_proj_len, 'banners': displayed_banners, 'recent': recent_projects, 'umbrellas': umbrellas, 'filter': filter, 'debug': settings.DEBUG}
    return render(request, 'website/projects.html', context)
 
@@ -282,7 +302,7 @@ def news(request, news_id):
    displayed_banners = choose_banners(all_banners)
    news = get_object_or_404(News, pk=news_id)
    max_extra_items = 4 # Maximum number of authors 
-   all_author_news = news.author.news_set.all()
+   all_author_news = news.author.news_set.order_by('-date')
    author_news = []
    for item in all_author_news:
       if item != news:
@@ -291,7 +311,7 @@ def news(request, news_id):
    if news.project != None:
       for project in news.project.all():
          ind_proj_news = []
-         all_proj_news = project.news_set.all()
+         all_proj_news = project.news_set.order_by('-date')
          for item in all_proj_news:
             if item != news:
                ind_proj_news.append(item)
