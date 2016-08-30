@@ -116,10 +116,10 @@ def people(request):
                  alumni_phd.append(position)
               elif position.title == Position.MS_STUDENT:
                  alumni_ms.append(position)
-              elif position.title == Position.UGRAD:
-                 alumni_undergrad.append(position)
-              elif position.title == Position.HIGH_SCHOOL:
-                 alumni_highschool.append(position)
+           elif position.title == Position.UGRAD:
+              alumni_undergrad.append(position)
+           elif position.title == Position.HIGH_SCHOOL:
+              alumni_highschool.append(position)
         elif position.is_collaborator():
             if position.is_active_collaborator():
                 cur_collaborators.append(position)
@@ -167,6 +167,8 @@ def people(request):
     all_banners = Banner.objects.filter(page=Banner.PEOPLE)
     displayed_banners = choose_banners(all_banners)
 
+    print(alumni_undergrad)
+
     context = {
         'people' : Person.objects.all(),
         'active_members' : active_members,
@@ -177,7 +179,6 @@ def people(request):
         'active_ms' : active_ms,
         'active_undergrad' : active_undergrad,
         'active_highschool' : active_highschool,
-        'alumni_members' : alumni_members,
         'alumni_members' : alumni_members,
         'alumni_prof' : alumni_prof,
         'alumni_postdoc' : alumni_postdoc,
