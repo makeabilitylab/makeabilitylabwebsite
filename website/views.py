@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, render
 from .models import Person, Publication, Talk, Position, Banner, News, Keyword, Video, Project, Project_umbrella
 from django.conf import settings
 from datetime import date
+from . import googleanalytics
 
 max_banners = 7
 
@@ -246,6 +247,36 @@ def get_most_recent(projects):
    sorted_list = sorted(updated, key=lambda k: k['updated'], reverse=True)
    return [item['proj'] for item in sorted_list]
 
+#Get the page views per page including their first and second level paths
+def get_ind_pageviews(service, profile_id):
+  return service.data().ga().get(
+    ids='ga:' + profile_id,
+    start_date='30daysAgo',
+    end_date='today',
+    metrics='ga:pageviews',
+    dimensions='ga:PagePathLevel1,ga:PagePathLevel2'
+  ).execute().get('rows')
+
+def get_project(page):
+   proj = None
+   for project in Project.objects.all():
+      if project.short_name in page.lower():
+         proj = project
+   return proj
+
+def sort_popular_projects(projects):
+   page_views = {}
+   for path, subpage, count in projects:
+      if 'project' in path:
+         proj=get_project(subpage)
+         if proj != None:
+            if proj in page_views.keys():
+               page_views[proj]+=int(count)
+            else:
+               page_views[proj]=int(count)
+   project_popularity=sorted([{'proj': key, 'views': page_views[key]} for key in page_views.keys()], key=lambda k: k['views'], reverse=True)
+   return [item['proj'] for item in project_popularity]
+      
 def projects(request):
    all_banners = Banner.objects.filter(page=Banner.PROJECTS)
    displayed_banners = choose_banners(all_banners)
@@ -256,9 +287,9 @@ def projects(request):
       filter_umbrella = Project_umbrella.objects.get(short_name=filter)
       projects = filter_umbrella.project_set.all()
    umbrellas = Project_umbrella.objects.all()
-   
+   popular_projects = sort_popular_projects(googleanalytics.run(get_ind_pageviews))[:4]
    recent_projects = get_most_recent(Project.objects.order_by('-updated'))[:2]
-   context = {'projects': projects, 'all_proj_len': all_proj_len, 'banners': displayed_banners, 'recent': recent_projects, 'umbrellas': umbrellas, 'filter': filter, 'debug': settings.DEBUG}
+   context = {'projects': projects, 'all_proj_len': all_proj_len, 'banners': displayed_banners, 'recent': recent_projects, 'popular': popular_projects, 'umbrellas': umbrellas, 'filter': filter, 'debug': settings.DEBUG}
    return render(request, 'website/projects.html', context)
 
 #This is the view for individual projects, rather than the overall projects page

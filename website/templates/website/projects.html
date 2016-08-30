@@ -64,22 +64,37 @@
     </div>
     <div class="row">
 	<div class="col-md-2 hidden-xs hidden-sm sidebar">
-	    <div class="sidebar-container">
+	    <div class="sidebar-container row">
 		<h4 class="header-label">Project Umbrellas</h4>
 		<span class="project-umbrella-link"><a href="{% url 'website:projects' %}">All ({{all_proj_len}})</a></span><br/>
 		{% for umbrella in umbrellas %}
 		<span class="project-umbrella-link"><a href="{% url 'website:projects'%}?filter={{umbrella.short_name}}">{{umbrella.name}} ({{umbrella.project_set.all|length}})</a></span><br/>
 		{% endfor %}
 	    </div>
-	    <div class="sidebar-container">
+	    <div class="sidebar-container row">
 		<h4 class="header-label">Recent Projects</h4>
 		{% for project in recent %}
-		<a href="{% url 'website:project_ind' project.short_name %}">
-		    <img src="{% thumbnail project.gallery_image 250x200 box=project.cropping crop detail %}" class="img-responsive recent-image"/>
-		</a>
-		<a href="{% url 'website:project_ind' project.short_name %}">
-		    <span class="recent-project-name">{{project.name}}</span>
-		</a>
+		<div class="sidebar-container row">
+		    <a href="{% url 'website:project_ind' project.short_name %}">
+			<img src="{% thumbnail project.gallery_image 250x200 box=project.cropping crop detail %}" class="img-responsive recent-image"/>
+		    </a>
+		    <a href="{% url 'website:project_ind' project.short_name %}">
+			<span class="recent-project-name">{{project.name}}</span>
+		    </a>
+		</div>
+		{% endfor %}
+	    </div>
+	    <div class="sidebar-container row">
+		<h4 class="header-label">Popular Projects</h4>
+		{% for project in popular %}
+		<div class="col-xs-6 popular-project">
+		    <a href="{% url 'website:project_ind' project.short_name %}">
+			<img src="{% thumbnail project.gallery_image 250x200 box=project.cropping crop detail %}" class="img-responsive"/>
+		    </a>
+		    <div class="overlay-popular">
+			<p class="popular-name">{{project.name}}</p>
+		    </div>
+		</div>
 		{% endfor %}
 	    </div>
 	</div>
