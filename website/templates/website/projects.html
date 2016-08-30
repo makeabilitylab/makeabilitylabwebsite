@@ -91,9 +91,6 @@
 		    <a href="{% url 'website:project_ind' project.short_name %}">
 			<img src="{% thumbnail project.gallery_image 250x200 box=project.cropping crop detail %}" class="img-responsive"/>
 		    </a>
-		    <div class="overlay-popular">
-			<p class="popular-name">{{project.name}}</p>
-		    </div>
 		</div>
 		{% endfor %}
 	    </div>
