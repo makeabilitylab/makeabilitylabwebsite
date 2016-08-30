@@ -149,30 +149,157 @@
     {% endif %}
     {% if alumni_members %}
         <h1 name="alumni">Alumni</h1>
-        <h4>{{ alumni_members|length}} {% if alumni_members|length > 1 %} Alumni {% else %} Alumnus {% endif %}</h4>
-        <div class="row">
-            {% for member in alumni_members %}
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
+	{%endif%}
+	{% if alumni_prof %}
+	<h4>{% if alumni_prof|length > 1 %} Alumni {% else %} Alumnus {% endif %} Prof ({{alumni_prof|length}})</h4>
+	<div class="row">
+	{% for member in alumni_prof %}
+	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
+                <a href="{% url 'website:member' member.person.id %}">
+                    <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+                </a>
+                <div class="item-info">
                     <a href="{% url 'website:member' member.person.id %}">
-                        <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+                        <h5>{{ member.person.get_full_name }}</h5>
                     </a>
-                    <div class="item-info">
-                        <a href="{% url 'website:member' member.person.id %}">
-                            <h5>{{ member.person.get_full_name }}</h5>
-                        </a>
-			{{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-                        {{ member.title }}
-			{% if member.is_high_school %}{% else %}<br/>
-			{{ member.department }}
-			{% endif %}
-                        <br/>
-                        {{ member.school }}
-                    </div>
+		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
+                    {{ member.title }}
+		    {% if member.is_high_school %}{% else %}<br/>
+		    {{ member.department }}
+		    {% endif %}
+                    <br/>
+                    {{ member.school }}
                 </div>
+            </div>
             {% endfor %}
         </div>
-        {% if cur_collaborators or past_collaborators %}<hr>{% endif %}
-    {% endif %}
+	<hr/>
+	{% endif %}
+	{% if alumni_postdoc %}
+	<h4>{% if alumni_postdoc|length > 1 %} Alumni {% else %} Alumnus {% endif %} Postdoc ({{alumni_postdoc|length}})</h4>
+	<div class="row">
+	    {% for member in alumni_postdoc %}
+	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
+                <a href="{% url 'website:member' member.person.id %}">
+                    <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+                </a>
+                <div class="item-info">
+                    <a href="{% url 'website:member' member.person.id %}">
+                        <h5>{{ member.person.get_full_name }}</h5>
+                    </a>
+		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
+                    {{ member.title }}
+		    {% if member.is_high_school %}{% else %}<br/>
+		    {{ member.department }}
+		    {% endif %}
+                    <br/>
+                    {{ member.school }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+	<hr/>
+	{% endif %}
+	{% if alumni_phd %}
+	<h4>{% if alumni_phd|length > 1 %} Alumni {% else %} Alumnus {% endif %} PhD ({{alumni_phd|length}})</h4>
+	<div class="row">
+	    {% for member in alumni_phd %}
+	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
+                <a href="{% url 'website:member' member.person.id %}">
+                    <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+                </a>
+                <div class="item-info">
+                    <a href="{% url 'website:member' member.person.id %}">
+                        <h5>{{ member.person.get_full_name }}</h5>
+                    </a>
+		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
+                    {{ member.title }}
+		    {% if member.is_high_school %}{% else %}<br/>
+		    {{ member.department }}
+		    {% endif %}
+                    <br/>
+                    {{ member.school }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+	<hr/>
+	{% endif %}
+	{% if alumni_ms %}
+	<h4>{% if alumni_ms|length > 1 %} Alumni {% else %} Alumnus {% endif %} MS ({{alumni_ms|length}})</h4>
+	<div class="row">
+	    {% for member in alumni_ms %}
+	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
+                <a href="{% url 'website:member' member.person.id %}">
+                    <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+                </a>
+                <div class="item-info">
+                    <a href="{% url 'website:member' member.person.id %}">
+                        <h5>{{ member.person.get_full_name }}</h5>
+                    </a>
+		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
+                    {{ member.title }}
+		    {% if member.is_high_school %}{% else %}<br/>
+		    {{ member.department }}
+		    {% endif %}
+                    <br/>
+                    {{ member.school }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+	<hr/>
+	{% endif %}
+	{% if alumni_undergrad %}
+	<h4>{% if alumni_undergrad|length > 1 %} Alumni {% else %} Alumnus {% endif %} Undergraduate Students ({{alumni_undergrad|length}})</h4>
+	<div class="row">
+	    {% for member in alumni_undergrad %}
+	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
+                <a href="{% url 'website:member' member.person.id %}">
+                    <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+                </a>
+                <div class="item-info">
+                    <a href="{% url 'website:member' member.person.id %}">
+                        <h5>{{ member.person.get_full_name }}</h5>
+                    </a>
+		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
+                    {{ member.title }}
+		    {% if member.is_high_school %}{% else %}<br/>
+		    {{ member.department }}
+		    {% endif %}
+                    <br/>
+                    {{ member.school }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+	<hr/>
+	{% endif %}
+	{% if alumni_highschool %}
+	<h4>{% if alumni_highschool|length > 1 %} Alumni {% else %} Alumnus {% endif %} Highschool Students ({{alumni_highschool|length}})</h4>
+	<div class="row">
+	    {% for member in alumni_highschool %}
+	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
+                <a href="{% url 'website:member' member.person.id %}">
+                    <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+                </a>
+                <div class="item-info">
+                    <a href="{% url 'website:member' member.person.id %}">
+                        <h5>{{ member.person.get_full_name }}</h5>
+                    </a>
+		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
+                    {{ member.title }}
+		    {% if member.is_high_school %}{% else %}<br/>
+		    {{ member.department }}
+		    {% endif %}
+                    <br/>
+                    {{ member.school }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+	<hr/>
+	{% endif %}
     {% if cur_collaborators %}
         <h1 name="collaborators">Collaborators</h1>
         <h4>{{ cur_collaborators|length}} {% if cur_collaborators|length > 1 %} Collaborators {% else %} Collaborator {% endif %}</h4>

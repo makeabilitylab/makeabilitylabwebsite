@@ -82,6 +82,12 @@ def people(request):
     active_undergrad = []
     active_highschool = []
     alumni_members = []
+    alumni_prof = []
+    alumni_postdoc = []
+    alumni_phd = []
+    alumni_ms = []
+    alumni_undergrad = []
+    alumni_highschool = []
     cur_collaborators = []
     past_collaborators = []
 
@@ -101,7 +107,19 @@ def people(request):
             elif position.title == Position.HIGH_SCHOOL:
                 active_highschool.append(position)
         elif position.is_alumni_member():
-            alumni_members.append(position)
+           if position.is_prof() or position.is_grad():
+              if position.is_prof():
+                 alumni_prof.append(position)
+              elif position.title == Position.POST_DOC:
+                 alumni_postdoc.append(position)
+              elif position.title == Position.PHD_STUDENT:
+                 alumni_phd.append(position)
+              elif position.title == Position.MS_STUDENT:
+                 alumni_ms.append(position)
+              elif position.title == Position.UGRAD:
+                 alumni_undergrad.append(position)
+              elif position.title == Position.HIGH_SCHOOL:
+                 alumni_highschool.append(position)
         elif position.is_collaborator():
             if position.is_active_collaborator():
                 cur_collaborators.append(position)
@@ -117,6 +135,12 @@ def people(request):
     active_undergrad.sort(key=operator.attrgetter('start_date'))
     active_highschool.sort(key=operator.attrgetter('start_date'))
     alumni_members.sort(key=operator.attrgetter('end_date'))
+    alumni_prof.sort(key=operator.attrgetter('-end_date'))
+    alumni_postdoc.sort(key=operator.attrgetter('-end_date'))
+    alumni_phd.sort(key=operator.attrgetter('-end_date'))
+    alumni_ms.sort(key=operator.attrgetter('-end_date'))
+    alumni_undergrad.sort(key=operator.attrgetter('-end_date'))
+    alumni_highschool.sort(key=operator.attrgetter('-end_date'))
     alumni_members.reverse()
     cur_collaborators.sort(key=operator.attrgetter('start_date'))
     past_collaborators.sort(key=operator.attrgetter('end_date'))
@@ -127,6 +151,12 @@ def people(request):
     active_prof_grad.extend(active_postdoc)
     active_prof_grad.extend(active_phd)
     active_prof_grad.extend(active_ms)
+    alumni_members.extend(alumni_prof)
+    alumni_members.extend(alumni_postdoc)
+    alumni_members.extend(alumni_phd)
+    alumni_members.extend(alumni_ms)
+    alumni_members.extend(alumni_undergrad)
+    alumni_members.extend(alumni_highschool)
 
     all_banners = Banner.objects.filter(page=Banner.PEOPLE)
     displayed_banners = choose_banners(all_banners)
@@ -142,6 +172,13 @@ def people(request):
         'active_undergrad' : active_undergrad,
         'active_highschool' : active_highschool,
         'alumni_members' : alumni_members,
+        'alumni_members' : alumni_members,
+        'alumni_prof' : alumni_prof,
+        'alumni_postdoc' : alumni_postdoc,
+        'alumni_phd' : alumni_phd,
+        'alumni_ms' : alumni_ms,
+        'alumni_undergrad' : alumni_undergrad,
+        'alumni_highschool' : alumni_highschool,
         'cur_collaborators' : cur_collaborators,
         'past_collaborators' : past_collaborators,
         'positions' : positions,
