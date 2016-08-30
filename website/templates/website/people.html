@@ -6,6 +6,10 @@
 {% load thumbnail %}
 {% load cropping %}
 
+{% block external_scripts %}
+<script src="{% static 'website/js/peopleHeightFix.js' %}"></script>
+{% endblock %}
+
 {% block maincarousel %}
     <div id="mainCarousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="10000" data-pause="false">    
         <div class="page-title shadow-left">
@@ -77,7 +81,7 @@
         </h4>
         <div class="row main-content">
             {% for member in active_prof_grad %}
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths">
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
                     <a href="{% url 'website:member' member.person.id %}">
                         <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
                     </a>
@@ -101,7 +105,7 @@
         <h4>{{ active_undergrad|length}} Undergrad</h4>
         <div class="row">
             {% for member in active_undergrad %}
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths">
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
                     <a href="{% url 'website:member' member.person.id %}">
                         <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
                     </a>
@@ -125,7 +129,7 @@
         <h4>{{ active_highschool|length}} HS</h4>
         <div class="row">
             {% for member in active_highschool %}
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths">
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
                     <a href="{% url 'website:member' member.person.id %}">
                         <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
                     </a>
@@ -148,7 +152,7 @@
         <h4>{{ alumni_members|length}} {% if alumni_members|length > 1 %} Alumni {% else %} Alumnus {% endif %}</h4>
         <div class="row">
             {% for member in alumni_members %}
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths">
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
                     <a href="{% url 'website:member' member.person.id %}">
                         <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
                     </a>
@@ -174,7 +178,7 @@
         <h4>{{ cur_collaborators|length}} {% if cur_collaborators|length > 1 %} Collaborators {% else %} Collaborator {% endif %}</h4>
         <div class="row">
             {% for collaborator in cur_collaborators %}
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths">
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
                     <a href="{% url 'website:member' collaborator.person.id %}">
                         <img src="{% thumbnail collaborator.person.image 245x245 box=collaborator.person.cropping crop detail %}" class="img-responsive"/>
                     </a>
@@ -200,7 +204,7 @@
         <h4>{{ past_collaborators|length}} {% if past_collaborators|length > 1 %} Collaborators {% else %} Collaborator {% endif %}</h4>
         <div class="row">
             {% for collaborator in past_collaborators %}
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths">
+                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
                     <a href="{% url 'website:member' collaborator.person.id %}">
                         <img src="{% thumbnail collaborator.person.image 245x245 box=collaborator.person.cropping crop detail %}" class="img-responsive"/>
                     </a>

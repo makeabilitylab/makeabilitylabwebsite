@@ -15,6 +15,10 @@
 <link rel="stylesheet" href="{% static 'website/css/news.css' %}">
 {% endblock %}
 
+{% block external_scripts %}
+<script src="{% static 'website/js/peopleHeightFix.js' %}"></script>
+{% endblock %}
+
 
 {% block maincarousel %}
 <div id="mainCarousel" class="carousel slide carousel-fade" data-ride="carousel" data-interval="10000" data-pause="true">
@@ -219,7 +223,7 @@
 	    </div>
 	</div>
     </div>
-    <div class="row" id="below-sidebar"
+    <div class="row" id="below-sidebar">
 	<div class="row">
 	    {% if videos %}
 	    <h3 class="news-type-lable"><b>Recent Videos</b></h3>
@@ -292,14 +296,13 @@
 	    </div>
 	    {% endfor %}
 	</div>
-	<div class="row">
+	<div class="row row-eq-height">
 	    {% ifequal active|length 0 %}
 	    {% else %}
 	    <h3 class="news-type-label">Active Members</h3>
 	    {% endifequal %}
 	    {% for member in active %}
-	    {% if member.person.position_set.all|length > 0 %}	    
-            <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths">
+            <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
 		<a href="{% url 'website:member' member.person.id %}">
                     <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
 		</a>
@@ -322,7 +325,6 @@
 		    {% endwith %}
 		</div>
             </div>
-	    {% endif %}
 	    {% endfor %}
 	</div>
 	<div class ="row">
@@ -331,7 +333,7 @@
 	    <h3 class="news-type-label">Alumni Members</h3>
 	    {% endifequal %}
 	    {% for member in alumni %}
-	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths">
+	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
 		<a href="{% url 'website:member' member.person.id %}">
                     <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
 		</a>
