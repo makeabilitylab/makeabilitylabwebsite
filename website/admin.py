@@ -34,15 +34,15 @@ class AdvisorInLine(admin.StackedInline):
     # This specifies that the Inline is linked to the main owner of the position rather than any of the advisor roles.
     fk_name="person"
     # This specifies that the field appears only once.
-    extra = 1
+    extra = 0
     
 class ProjectRoleInline(admin.StackedInline):
     model = Project_Role
-    extra = 1
+    extra = 0
 
 class ProjectHeaderInline(ImageCroppingMixin, admin.StackedInline):
     model = Project_header
-    extra = 1
+    extra = 0
 
 #Uses format as per https://github.com/jonasundderwolf/django-image-cropping to add cropping to the admin page
 class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
