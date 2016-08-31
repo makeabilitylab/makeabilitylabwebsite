@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="{% static 'website/css/news.css' %}">
 <link rel="stylesheet" href="{% static 'website/css/landing.css' %}">
 <link rel="stylesheet" href="{% static 'website/css/video.css' %}">
-
+<link rel="stylesheet" href="{% static 'website/css/projects.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -119,7 +119,22 @@
 	<!-- This column will contain the recent publications and talks  -->
 	<div class="col-xs-12 col-md-10 col-md-pull-2 landing-content">
 	    <div class="row">
-		<h3 class="news-type-lable"><b>Recent Videos</b></h3>
+		{% comment %}
+		<h3 class="news-type-label"><b>Popular Projects</b></h3>
+		{% for project in projects %}
+		<div class="col-xs-12 col-sm-6 col-md-4 project-display">
+		    <a href="{% url 'website:project_ind' project.short_name %}">
+			<img src="{% thumbnail project.gallery_image 500x400 box=project.cropping crop detail %}" class="img-responsive"/>
+		    </a>
+		    <a href="{% url 'website:project_ind' project.short_name %}">
+			<span class="project-name">{{project.name}}</span>
+		    </a>
+		</div>
+		{% endfor %}
+	    </div>
+	    {% endcomment %}
+	    <div class="row">
+		<h3 class="news-type-label"><b>Recent Videos</b></h3>
 		{% for video in videos %}
 		<div class="col-xs-12 col-md-6 video-column">
 		    <div class="video-container">
