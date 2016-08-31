@@ -26,7 +26,7 @@
 	height: 25px;
 	display: block;
 	margin-bottom: 7px;
-	background: #ddd url(../img/up-arrow.png) no-repeat center center;
+	background: rgba(221,221,221,0.5) url(../img/up-arrow.png) no-repeat center center;
 	background-size: 100% 100%;
 	
 	/* rounded corners */
@@ -63,7 +63,7 @@
 	height: 75px;
 	display: block;
 	margin-bottom: 7px;
-	background: #ddd url(../img/up-arrow.png) no-repeat center center;
+	background: rgba(0,0,0,0.4) url(../img/up-arrow.png) no-repeat center center;
 	
 	/* rounded corners */
 	-webkit-border-radius: 15px;
@@ -81,12 +81,12 @@
 
 
 #back-top a:hover {
-    color: #000;
+    color: rgba(0,0,0,0.5);
 }
 
 /* arrow icon (span tag) */
 
 
 #back-top a:hover span {
-    background-color: #777;
+    background-color: rgba(0, 0, 0, 0.7);
 }

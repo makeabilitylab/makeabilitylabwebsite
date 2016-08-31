@@ -8,6 +8,55 @@ from . import googleanalytics
 
 max_banners = 7
 
+def get_most_recent(projects):
+   updated = []
+   print(projects)
+   for project in projects:
+      #Adding more times to the time array will allow you to add additional fields in the future
+      times = []
+      if project.updated != None:
+         times.append(project.updated)
+      if len(project.publication_set.all()) > 0:
+         times.append(project.publication_set.order_by('-date')[0].date)
+      if len(project.talk_set.all()) > 0:
+         times.append(project.talk_set.order_by('-date')[0].date)
+      if len(project.video_set.all()) > 0:
+         times.append(project.video_set.order_by('-date')[0].date)
+      times.sort()
+      updated.append({'proj': project, 'updated': times[0]})
+   sorted_list = sorted(updated, key=lambda k: k['updated'], reverse=True)
+   return [item['proj'] for item in sorted_list]
+
+#Get the page views per page including their first and second level paths
+def get_ind_pageviews(service, profile_id):
+  return service.data().ga().get(
+    ids='ga:' + profile_id,
+    start_date='30daysAgo',
+    end_date='today',
+    metrics='ga:pageviews',
+    dimensions='ga:PagePathLevel1,ga:PagePathLevel2'
+  ).execute().get('rows')
+
+def get_project(page):
+   proj = None
+   for project in Project.objects.all():
+      if project.short_name in page.lower():
+         proj = project
+   return proj
+
+def sort_popular_projects(projects):
+   page_views = {}
+   for path, subpage, count in projects:
+      if 'project' in path:
+         proj=get_project(subpage)
+         if proj != None:
+            if proj in page_views.keys():
+               page_views[proj]+=int(count)
+            else:
+               page_views[proj]=int(count)
+   project_popularity=sorted([{'proj': key, 'views': page_views[key]} for key in page_views.keys()], key=lambda k: k['views'], reverse=True)
+   return [item['proj'] for item in project_popularity]
+
 def weighted_choice(choices):
    total = sum(w for c, w in choices)
    r = random.uniform(0, total)
@@ -56,6 +105,7 @@ def index(request):
     papers_num = 3 # Defines the number of papers which will be selected
     talks_num = 8 # Defines the number of talks which will be selected
     videos_num = 2 # Defines the number of videos which will be selected
+    projects_num = 3 # Defines the number of projects which will be selected
     all_banners = Banner.objects.filter(page=Banner.FRONTPAGE)
     displayed_banners = choose_banners(all_banners)
     print(settings.DEBUG)
@@ -64,7 +114,8 @@ def index(request):
     publications = Publication.objects.order_by('-date')[:papers_num]
     talks = Talk.objects.order_by('-date')[:talks_num]
     videos = Video.objects.order_by('-date')[:videos_num]
-    context = { 'people': Person.objects.all(), 'banners': displayed_banners, 'news': news_items, 'publications': publications, 'talks': talks, 'videos':videos, 'debug': settings.DEBUG }
+    projects = sort_popular_projects(googleanalytics.run(get_ind_pageviews))[:projects_num]
+    context = { 'people': Person.objects.all(), 'banners': displayed_banners, 'news': news_items, 'publications': publications, 'talks': talks, 'videos':videos, 'projects': projects, 'debug': settings.DEBUG }
     return render(request, 'website/index.html', context)
 
 def people(request):
@@ -228,54 +279,7 @@ def website_analytics(request):
    return render(request, 'admin/analytics.html')
 
 
-def get_most_recent(projects):
-   updated = []
-   print(projects)
-   for project in projects:
-      #Adding more times to the time array will allow you to add additional fields in the future
-      times = []
-      if project.updated != None:
-         times.append(project.updated)
-      if len(project.publication_set.all()) > 0:
-         times.append(project.publication_set.order_by('-date')[0].date)
-      if len(project.talk_set.all()) > 0:
-         times.append(project.talk_set.order_by('-date')[0].date)
-      if len(project.video_set.all()) > 0:
-         times.append(project.video_set.order_by('-date')[0].date)
-      times.sort()
-      updated.append({'proj': project, 'updated': times[0]})
-   sorted_list = sorted(updated, key=lambda k: k['updated'], reverse=True)
-   return [item['proj'] for item in sorted_list]
 
-#Get the page views per page including their first and second level paths
-def get_ind_pageviews(service, profile_id):
-  return service.data().ga().get(
-    ids='ga:' + profile_id,
-    start_date='30daysAgo',
-    end_date='today',
-    metrics='ga:pageviews',
-    dimensions='ga:PagePathLevel1,ga:PagePathLevel2'
-  ).execute().get('rows')
-
-def get_project(page):
-   proj = None
-   for project in Project.objects.all():
-      if project.short_name in page.lower():
-         proj = project
-   return proj
-
-def sort_popular_projects(projects):
-   page_views = {}
-   for path, subpage, count in projects:
-      if 'project' in path:
-         proj=get_project(subpage)
-         if proj != None:
-            if proj in page_views.keys():
-               page_views[proj]+=int(count)
-            else:
-               page_views[proj]=int(count)
-   project_popularity=sorted([{'proj': key, 'views': page_views[key]} for key in page_views.keys()], key=lambda k: k['views'], reverse=True)
-   return [item['proj'] for item in project_popularity]
       
 def projects(request):
    all_banners = Banner.objects.filter(page=Banner.PROJECTS)

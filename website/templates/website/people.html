@@ -83,7 +83,12 @@
             {% for member in active_prof_grad %}
                 <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
                     <a href="{% url 'website:member' member.person.id %}">
-                        <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+			<div class="easter-egg-col">
+			    <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+			    <div class="overlay-easter-egg">
+				<img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
+			    </div>
+			</div>
                     </a>
                     <div class="item-info">
                         <a href="{% url 'website:member' member.person.id %}">
@@ -107,7 +112,12 @@
             {% for member in active_undergrad %}
                 <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
                     <a href="{% url 'website:member' member.person.id %}">
-                        <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+                        <div class="easter-egg-col">
+			    <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+			    <div class="overlay-easter-egg">
+				<img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
+			    </div>
+			</div>
                     </a>
                     <div class="item-info">
                         <a href="{% url 'website:member' member.person.id %}">
@@ -131,7 +141,12 @@
             {% for member in active_highschool %}
                 <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
                     <a href="{% url 'website:member' member.person.id %}">
-                        <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+                        <div class="easter-egg-col">
+			    <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+			    <div class="overlay-easter-egg">
+				<img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
+			    </div>
+			</div>
                     </a>
                     <div class="item-info">
                         <a href="{% url 'website:member' member.person.id %}">
@@ -156,7 +171,12 @@
 	{% for member in alumni_prof %}
 	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
                 <a href="{% url 'website:member' member.person.id %}">
-                    <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+                    <div class="easter-egg-col">
+			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+			<div class="overlay-easter-egg">
+			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
+			</div>
+		    </div>
                 </a>
                 <div class="item-info">
                     <a href="{% url 'website:member' member.person.id %}">
@@ -181,7 +201,12 @@
 	    {% for member in alumni_postdoc %}
 	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
                 <a href="{% url 'website:member' member.person.id %}">
-                    <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+                    <div class="easter-egg-col">
+			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+			<div class="overlay-easter-egg">
+			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
+			</div>
+		    </div>
                 </a>
                 <div class="item-info">
                     <a href="{% url 'website:member' member.person.id %}">
@@ -206,7 +231,12 @@
 	    {% for member in alumni_phd %}
 	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
                 <a href="{% url 'website:member' member.person.id %}">
-                    <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+                    <div class="easter-egg-col">
+			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+			<div class="overlay-easter-egg">
+			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
+			</div>
+		    </div>
                 </a>
                 <div class="item-info">
                     <a href="{% url 'website:member' member.person.id %}">
@@ -231,7 +261,12 @@
 	    {% for member in alumni_ms %}
 	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
                 <a href="{% url 'website:member' member.person.id %}">
-                    <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+                    <div class="easter-egg-col">
+			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+			<div class="overlay-easter-egg">
+			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
+			</div>
+		    </div>
                 </a>
                 <div class="item-info">
                     <a href="{% url 'website:member' member.person.id %}">
@@ -256,7 +291,12 @@
 	    {% for member in alumni_undergrad %}
 	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
                 <a href="{% url 'website:member' member.person.id %}">
-                    <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+                    <div class="easter-egg-col">
+			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+			<div class="overlay-easter-egg">
+			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
+			</div>
+		    </div>
                 </a>
                 <div class="item-info">
                     <a href="{% url 'website:member' member.person.id %}">
@@ -281,7 +321,12 @@
 	    {% for member in alumni_highschool %}
 	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
                 <a href="{% url 'website:member' member.person.id %}">
-                    <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+                    <div class="easter-egg-col">
+			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+			<div class="overlay-easter-egg">
+			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
+			</div>
+		    </div>
                 </a>
                 <div class="item-info">
                     <a href="{% url 'website:member' member.person.id %}">
@@ -307,7 +352,12 @@
             {% for collaborator in cur_collaborators %}
                 <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
                     <a href="{% url 'website:member' collaborator.person.id %}">
-                        <img src="{% thumbnail collaborator.person.image 245x245 box=collaborator.person.cropping crop detail %}" class="img-responsive"/>
+                        <div class="easter-egg-col">
+			    <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+			    <div class="overlay-easter-egg">
+				<img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
+			    </div>
+			</div>
                     </a>
                     <div class="item-info">
                         <a href="{% url 'website:member' collaborator.person.id %}">
@@ -333,7 +383,12 @@
             {% for collaborator in past_collaborators %}
                 <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
                     <a href="{% url 'website:member' collaborator.person.id %}">
-                        <img src="{% thumbnail collaborator.person.image 245x245 box=collaborator.person.cropping crop detail %}" class="img-responsive"/>
+                        <div class="easter-egg-col">
+			    <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail %}" class="img-responsive"/>
+			    <div class="overlay-easter-egg">
+				<img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
+			    </div>
+			</div>
                     </a>
                     <div class="item-info">
                         <a href="{% url 'website:member' collaborator.person.id %}">
