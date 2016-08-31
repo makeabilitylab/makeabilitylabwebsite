@@ -134,6 +134,7 @@ def people(request):
     active_undergrad = []
     active_highschool = []
     alumni_members = []
+    alumni_prof_grad = []
     alumni_prof = []
     alumni_postdoc = []
     alumni_phd = []
@@ -209,6 +210,10 @@ def people(request):
     active_prof_grad.extend(active_postdoc)
     active_prof_grad.extend(active_phd)
     active_prof_grad.extend(active_ms)
+    alumni_prof_grad.extend(alumni_prof)
+    alumni_prof_grad.extend(alumni_postdoc)
+    alumni_prof_grad.extend(alumni_phd)
+    alumni_prof_grad.extend(alumni_ms)
     alumni_members.extend(alumni_prof)
     alumni_members.extend(alumni_postdoc)
     alumni_members.extend(alumni_phd)
@@ -218,8 +223,6 @@ def people(request):
 
     all_banners = Banner.objects.filter(page=Banner.PEOPLE)
     displayed_banners = choose_banners(all_banners)
-
-    print(alumni_undergrad)
 
     context = {
         'people' : Person.objects.all(),
@@ -232,6 +235,7 @@ def people(request):
         'active_undergrad' : active_undergrad,
         'active_highschool' : active_highschool,
         'alumni_members' : alumni_members,
+        'alumni_prof_grad': alumni_prof_grad,
         'alumni_prof' : alumni_prof,
         'alumni_postdoc' : alumni_postdoc,
         'alumni_phd' : alumni_phd,
