@@ -611,7 +611,7 @@ class News(models.Model):
     
     class Meta:
         # These names are used in the admin display, see https://docs.djangoproject.com/en/1.9/ref/models/options/#verbose-name
-        ordering=['date', 'title']
+        ordering=['-date', 'title']
         verbose_name = 'News Item'
         verbose_name_plural = 'News'
         
