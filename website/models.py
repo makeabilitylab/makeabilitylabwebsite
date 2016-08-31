@@ -53,7 +53,7 @@ class Person(models.Model):
     # size is "width x height"
     # TODO: update with desired aspect ratio and maximum resolution
     cropping = ImageRatioField('image', '245x245', size_warning=True)
-
+    easter_egg_crop = ImageRatioField('easter_egg', '245x245', size_warning=True)
     def get_quick_position(self):
         role_info = ''
         for role in self.position_set.all():
