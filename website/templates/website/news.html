@@ -104,7 +104,7 @@
 			<a href="">
 			    <!-- Use the items image if it exists, otherwise use the default icon -->
 			    {% if item.image %}
-			    <img src="{{item.image.url}}" class="news_image" height="50" width="50" alt="{{item.alt_text}}">
+			    <img src="{% thumbnail item.image 250x250 box=item.cropping crop detail %}" class="news_image" height="50" width="50" alt="{{item.alt_text}}">
 			    {% else %}
 			    <img src="{% static 'website/img/news_icon.png' %}" class="news_image" height="50" width="50">			
 			    {% endif %}
@@ -145,7 +145,7 @@
 			<a href="">
 			    <!-- Use the items image if it exists, otherwise use the default icon -->
 			    {% if item.image %}
-			    <img src="{{item.image.url}}" class="news_image" height="50" width="50" alt="{{item.alt_text}}">
+			    <img src="{% thumbnail item.image 250x250 box=item.cropping crop detail %}" class="news_image" height="50" width="50" alt="{{item.alt_text}}">
 			    {% else %}
 			    <img src="{% static 'website/img/news_icon.png' %}" class="news_image" height="50" width="50">			
 			    {% endif %}
