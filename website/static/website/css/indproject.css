@@ -69,17 +69,6 @@
     margin: 0px;
 }
 
-.project-gallery-col:hover .overlay-image{
-    opacity: 1;
-}
-
-.project-gallery-col:hover .project-gallery{
-    opacity: 0.7;
-}
-
-.project-people-col {
-    padding-left: 0px;
-}
 
 .overlay-image {
     bottom: 0;left: 0; top: 0; right: 0;

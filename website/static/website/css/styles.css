@@ -395,3 +395,34 @@ body {
 .well {
 	border-radius: 0 !important;
 }
+
+.easter-egg-col:hover .overlay-easter-egg {
+    opacity: 1;
+}
+
+.easter-egg-col:hover .main-image {
+    opacity: 0;
+}
+
+.easter-egg-col {
+    position: relative;
+}
+
+.overlay-easter-egg {
+    bottom: 0;left: 0; top: 0; right: 0;
+    position: absolute;
+    opacity: 0;
+}
+
+.project-gallery-col:hover .overlay-image{
+    opacity: 1;
+}
+
+.project-gallery-col:hover .project-gallery{
+    opacity: 0.7;
+}
+
+.project-people-col {
+    padding-left: 0px;
+}
+
