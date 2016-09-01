@@ -13,7 +13,7 @@
 	font: 5px/100% Arial, Helvetica, sans-serif;
 	text-transform: uppercase;
 	text-decoration: none;
-	color: #bbb;
+	color: rgba(0,0,0,0.7);
 	
 	/* transition */
 	-webkit-transition: 1s;
@@ -26,7 +26,7 @@
 	height: 25px;
 	display: block;
 	margin-bottom: 7px;
-	background: rgba(221,221,221,0.5) url(../img/up-arrow.png) no-repeat center center;
+	background: rgba(0,0,0,0.4) url(../img/up-arrow.png) no-repeat center center;
 	background-size: 100% 100%;
 	
 	/* rounded corners */
@@ -50,7 +50,7 @@
 	font: 11px/100% Arial, Helvetica, sans-serif;
 	text-transform: uppercase;
 	text-decoration: none;
-	color: #bbb;
+	color: rgba(0,0,0,0.7);
 	
 	/* transition */
 	-webkit-transition: 1s;
@@ -81,7 +81,7 @@
 
 
 #back-top a:hover {
-    color: rgba(0,0,0,0.5);
+    color: rgba(0,0,0,0.7);
 }
 
 /* arrow icon (span tag) */
