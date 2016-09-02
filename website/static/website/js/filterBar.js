@@ -84,6 +84,11 @@
 		debounce(filterBar.applyTextFilter(), 500);
 	    });
 
+	    filterBar.applyFilter();
+	    if(initialFilter && initialFilter.length > 0 && initialFilter != "None"){
+		$('#filter-textbox').val(initialFilter);
+		filterBar.applyTextFilter();
+	    }
 	    
 	    return this;
 
@@ -190,7 +195,6 @@
 		    	$(this).html(addHighlight($(this).text(), filter));
 		    });
 		    $(this).find('.publication-authors').children().each(function(){
-			console.log($(this).find('a').text());
 		    	$(this).find('a').html(addHighlight($(this).find('a').text(), filter));
 		    });
 		    $(this).find('.publication-title').each(function(){

@@ -74,9 +74,7 @@ $(window).load(function () {
 	        afterDisplay: afterDisplay,
 	    keywords: getAllKeywords()
 	});
-	if(initialFilter && initialFilter.length > 0 && initialFilter != "None")
-		$('#filter-textbox').val(initialFilter);
-	$('#filter-bar').applyFilter();
+	
 });
 
 // run some additional processing on the publications
@@ -261,7 +259,7 @@ function formatGroup(group) {
 // helper function to populate the template with the publication data
 function formatPublication(pub, filter) {
 	if(filter) filter = filter.toLowerCase();
-
+    console.log("Fromating pub "+pub.title);
 	var publicationData = publicationTemplate.clone();
 	publicationData.find(".publication-id").html(pub.id);
 	publicationData.find(".publication-thumbnail-link").attr("href", pub.pdf);

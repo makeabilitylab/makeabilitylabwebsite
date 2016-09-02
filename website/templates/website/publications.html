@@ -30,9 +30,11 @@
 {% endblock %}
 
 {% block scripts %}
+{% for pub in publications %}
+{% endfor %}
 	var publications = [
 		{% for pub in publications %}
-		{
+{
 			"id": "A.###",
 			"title": "{{pub.get_title}}",
 			"authors": [
