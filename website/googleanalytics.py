@@ -11,6 +11,8 @@ from oauth2client import file
 from oauth2client import tools
 import os
 
+import ANALYTICS_ACCOUNT
+
 
 
 def get_service(api_name, api_version, scope, key_file_location,
@@ -90,7 +92,7 @@ def run(request_func):
 
   # Use the developer console and replace the values with your
   # service account email and relative location of your key file.
-  service_account_email = 'makeabilityserver@summer-sector-141918.iam.gserviceaccount.com'
+  service_account_email = googleaccount.ANALYTICS_ACCOUNT
   file_path=os.path.dirname(os.path.abspath(__file__))
   key_file_location = file_path+'/googlekey.p12'
 
