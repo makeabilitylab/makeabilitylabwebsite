@@ -214,12 +214,38 @@ def people(request):
     alumni_prof_grad.extend(alumni_postdoc)
     alumni_prof_grad.extend(alumni_phd)
     alumni_prof_grad.extend(alumni_ms)
-    alumni_members.extend(alumni_prof)
-    alumni_members.extend(alumni_postdoc)
-    alumni_members.extend(alumni_phd)
-    alumni_members.extend(alumni_ms)
+   
+    seen = [] 
+    for member in alumni_prof_grad:
+       if member.person in seen:
+           alumni_prof_grad.remove(member)
+       else:
+          seen.append(member.person)
+
+    seen = [] 
+    for member in alumni_undergrad:
+       if member.person in seen:
+           alumni_undergrad.remove(member)
+       else:
+          seen.append(member.person)
+
+    seen = [] 
+    for member in alumni_highschool:
+       if member.person in seen:
+          alumni_highschool.remove(member)
+       else:
+          seen.append(member.person)
+    
+    alumni_members.extend(alumni_prof_grad)
     alumni_members.extend(alumni_undergrad)
     alumni_members.extend(alumni_highschool)
+
+    seen = []
+    for member in alumni_members:
+       if member.person in seen:
+          alumni_members.remove(member)
+       else:
+          seen.append(member.person)
 
     all_banners = Banner.objects.filter(page=Banner.PEOPLE)
     displayed_banners = choose_banners(all_banners)
