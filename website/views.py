@@ -267,15 +267,17 @@ def member(request, member_id):
    talks = person.talk_set.order_by('-date')
    return render(request, 'website/member.html', {'person': person, 'news': news, 'talks': talks, 'publications': publications, 'banners': displayed_banners, 'debug': settings.DEBUG})
 
-def publications(request, filter=None):
+def publications(request):
     all_banners = Banner.objects.filter(page=Banner.PUBLICATIONS)
     displayed_banners = choose_banners(all_banners)
+    filter = request.GET.get('filter', None)
     context = { 'publications': Publication.objects.filter(date__range=["2012-01-01", date.today()]), 'banners': displayed_banners, 'filter': filter, 'debug': settings.DEBUG }
     return render(request, 'website/publications.html', context)
 
-def talks(request, filter=None):
+def talks(request):
     all_banners = Banner.objects.filter(page=Banner.TALKS)
     displayed_banners = choose_banners(all_banners)
+    filter = request.GET.get('filter', None)
     context = { 'talks': Talk.objects.filter(date__range=["2012-01-01", date.today()]), 'banners': displayed_banners, 'filter': filter, 'debug': settings.DEBUG }
     return render(request, 'website/talks.html', context)
 
