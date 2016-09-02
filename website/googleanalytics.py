@@ -11,7 +11,7 @@ from oauth2client import file
 from oauth2client import tools
 import os
 
-import ANALYTICS_ACCOUNT
+from . import googleaccount
 
 
 
