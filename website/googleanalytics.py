@@ -92,6 +92,7 @@ def run(request_func):
 
   # Use the developer console and replace the values with your
   # service account email and relative location of your key file.
+  # service account in git ignored file
   service_account_email = googleaccount.ANALYTICS_ACCOUNT
   file_path=os.path.dirname(os.path.abspath(__file__))
   key_file_location = file_path+'/googlekey.p12'
