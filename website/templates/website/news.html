@@ -76,7 +76,7 @@
 		    <br/>
 		    <span class="big-news-author"><a href="{% url 'website:member' news.author.id %}">{{news.author.get_full_name}}</a></span>
 		    <br/>
-		    <span class="big-news-published">Pubished {{news.short_date}}</span>
+		    <span class="big-news-published">Published {{news.short_date}}</span>
 		    <br/>
 		    {% for project in news.project.all %}
 		    <span class="big-news-project"><a href="{% url 'website:project_ind' project.short_name %}">{{project.name}}</a></span>
