@@ -61,6 +61,12 @@ class Person(models.Model):
         return role_info
     get_quick_position.short_description="Roles"
 
+    def get_latest_position(self):
+        for position in self.position_set.all():
+            print(position.start_date)
+        print(self.position_set.latest('start_date'))
+        return self.position_set.latest('start_date')
+
     def get_start_date(self):
         start_date=""
         for role in self.position_set.all():
