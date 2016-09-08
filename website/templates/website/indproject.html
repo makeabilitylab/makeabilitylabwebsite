@@ -105,10 +105,10 @@
 		    {% endfor %}
 		</p>
 	    </div>
+	    {% if news %}
+	    <!-- Create a row for the well which will contain news from our feeds -->
 	    <div class="row">
-		{% if news %}
-		<h3 class="news-type-label">Recent News</h>
-		{% endif %}
+		<h3 class="news-type-label">Recent News</h3>
 		<div class="well news-well">
 		    {% for item in news %}
 		    <!-- Create a row for each news item which has been passed in -->
@@ -144,6 +144,7 @@
 		    {% endfor %}
 		</div>
 	    </div>
+	    {% endif %}
 	</div>
 	<div class="col-md-10 col-md-pull-2 project-intro-content">
 	    <div class="row about-row">
