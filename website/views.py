@@ -114,7 +114,10 @@ def index(request):
     publications = Publication.objects.order_by('-date')[:papers_num]
     talks = Talk.objects.order_by('-date')[:talks_num]
     videos = Video.objects.order_by('-date')[:videos_num]
-    projects = sort_popular_projects(googleanalytics.run(get_ind_pageviews))[:projects_num]
+    if settings.DEBUG:
+      projects = Project.objects.all()[:projects_num];
+    else:
+      projects = sort_popular_projects(googleanalytics.run(get_ind_pageviews))[:projects_num]
     context = { 'people': Person.objects.all(), 'banners': displayed_banners, 'news': news_items, 'publications': publications, 'talks': talks, 'videos':videos, 'projects': projects, 'debug': settings.DEBUG }
     return render(request, 'website/index.html', context)
 
