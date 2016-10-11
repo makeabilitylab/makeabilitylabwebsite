@@ -68,14 +68,14 @@ def weighted_choice(choices):
    # assert False, "Shouldn't get here"
    return choices[0][0]
 
-def choose_banners(banners):
+def choose_banners_helper(banners, count):
     banner_weights = []
     total_weight = 0
     for banner in banners:
         elapsed = (datetime.datetime.now().date() - banner.date_added).days / 31.0
         if elapsed <= 0:
             elapsed = 1.0 / 31.0
-        weight = (100 if banner.favorite==True else 1) + 1.0 / elapsed
+        weight = 1.0 + 1.0 / elapsed
         banner_weights.append((banner, weight))
         total_weight += weight
     for i in range(0, len(banner_weights)):
@@ -83,7 +83,7 @@ def choose_banners(banners):
         print(banner_weights[i][1])
 
     selected_banners = []
-    for i in range(0, max_banners):
+    for i in range(0, count):
         if len(selected_banners) == len(banners):
             break
         banner = weighted_choice(banner_weights)
@@ -97,6 +97,23 @@ def choose_banners(banners):
             banner_weights[i] = (banner_weights[i][0], banner_weights[i][1] / total_weight)
 
     return selected_banners
+
+def choose_banners(banners):
+  favorite_banners = []
+  other_banners = []
+  for banner in banners:
+    if banner.favorite == True:
+      favorite_banners.append(banner)
+    else:
+      other_banners.append(banner)
+
+  selected_banners = choose_banners_helper(favorite_banners, max_banners)
+  if len(selected_banners) < max_banners:
+    temp = choose_banners_helper(other_banners, max_banners - len(selected_banners))
+    for banner in temp:
+      selected_banners.append(banner)
+
+  return selected_banners
 
 #Every view is passed settings.DEBUG. This is used to insert the appropriate google analytics tracking when in production, and to not include it for development
  
