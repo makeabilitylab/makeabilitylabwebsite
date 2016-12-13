@@ -266,10 +266,14 @@ class Command(BaseCommand):
             
                     #Import file from web, then write it to a file, and finally open it as a File for django
                     res=requests.get(pdf_file_loc)
-                    temp_file=open("import/temp/"+title+".pdf", 'wb')
+                    filename = "import/temp/"+title+".pdf"
+                    dirname = os.path.dirname(filename)
+                    if not os.path.exists(dirname):
+                        os.makedirs(dirname)
+                    temp_file=open(filename, 'wb')
                     temp_file.write(res.content)
                     temp_file.close()
-                    pdf_file=File(open("import/temp/"+title+".pdf", 'rb'))
+                    pdf_file=File(open(filename, 'rb'))
                     video_url = get_val_key('video_url', entry)
                     preview_video_url = get_val_key('video_preview_url', entry)
                     if video_url != None and len(video_url)>0:

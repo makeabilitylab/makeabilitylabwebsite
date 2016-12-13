@@ -218,10 +218,14 @@ class Command(BaseCommand):
                     deck_url = "http://cs.umd.edu/~jonf/talks/autogen_pdfs/"+file_name_short+".pdf"
                     print(deck_url)
                     res = requests.get(deck_url)
-                    temp_file = open('import/temp/'+file_name_short+".pdf", 'wb')
+                    filename = 'import/temp/'+file_name_short+".pdf"
+                    dirname = os.path.dirname(filename)
+                    if not os.path.exists(dirname):
+                        os.makedirs(dirname)
+                    temp_file = open(filename, 'wb')
                     temp_file.write(res.content)
                     temp_file.close()
-                    pdf_file = File(open('import/temp/'+file_name_short+".pdf", 'rb'))
+                    pdf_file = File(open(filename, 'rb'))
                     file_dic[title] = pdf_file
 
                 if pdf_file!=None:
