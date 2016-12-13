@@ -44,7 +44,7 @@
 				},
 				{% endfor %}
 			],
-			"date": new Date("{{talk.date.isoformat}}"),
+			"date": new Date("{{talk.date}}"),
 			"pdf": "{{ talk.pdf_file }}",
             "pptx": "{{ talk.raw_file }}",
             "video": "{{ talk.video_url }}",
