@@ -254,11 +254,11 @@
 		<div class="row">
 		<!-- Create a div for each talk passed in -->
 		    {% for talk in talks %}
-		    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 talk-template-landing landing-talk-fix">
+		    <div class="col-ts-12 col-xs-6 col-sm-6 col-md-4 col-lg-3 talk-template-landing landing-talk-fix">
 			<div class="talk-info">
 			    <div class="talk-thumbnail">
 				<a href="../../media/{{talk.pdf_file}}" class="talk-thumbnail-link">
-				    <img src="{% thumbnail talk.thumbnail 200x0 detail %}" class="talk-thumbnail-image img-responsive talk-image-fix"/>
+				    <img src="{% thumbnail talk.thumbnail 420x0 detail %}" class="talk-thumbnail-image img-responsive talk-image-fix"/>
 				</a>
 			    </div>
 			    <p class="talk-title line-clamp">
