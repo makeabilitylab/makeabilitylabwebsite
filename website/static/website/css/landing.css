@@ -18,6 +18,12 @@ h1{
     font-variant: normal;
 }
 
+@media (max-width:480px) {
+    #short-statement {
+        font-size: 28px;
+    }
+}
+
 .page-link{
     margin: 0;
     text-align: left;
@@ -26,6 +32,21 @@ h1{
 
 .landing-talk-fix {
     /*min-width: 240px;*/
+    padding-left:0;
+}
+
+.landing-publications {
+    /*padding-left: 0;
+    padding-right: 0;*/
+}
+
+.no-margin {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.landing-content {
+    /*padding-left: 0;*/
 }
 
 @media (min-width: 769px){
@@ -39,4 +60,7 @@ h1{
     padding-right: 25px;
 }
 
-
+.row {
+    /*margin-left: 0;
+    margin-right: 0;*/
+}

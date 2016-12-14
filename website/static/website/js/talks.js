@@ -379,3 +379,10 @@ function debounce( fn, threshold ) {
     timeout = setTimeout( delayed, threshold || 100 );
   }
 }
+
+$(window).resize(debounce(function() {
+	// hack to force the ellipsis to redraw, so that it's in the correct position
+	$.each($('.line-clamp'), function(index, item) {
+		$(item).hide().show(0);
+	});
+}));

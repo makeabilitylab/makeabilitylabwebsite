@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="{% static 'website/css/fixed_side_bar.css' %}">
 <link rel="stylesheet" href="{% static 'website/css/jquery-ui.min.css' %}">
 <link rel="stylesheet" href="{% static 'website/css/jquery-ui.theme.min.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}">
 {% endblock %}
 
 {% block external_scripts %}
@@ -49,7 +50,7 @@
             "pptx": "{{ talk.raw_file }}",
             "video": "{{ talk.video_url }}",
             "slideshare": "{{ talk.slideshare_url }}",
-			"thumbnail": "{% thumbnail talk.thumbnail 300x0 detail %}",
+			"thumbnail": "{% thumbnail talk.thumbnail 420x0 detail %}",
 			"location": "{{talk.location}}",
 			"talk_type": "{{talk.talk_venue_type}}",
 			{% if talk.award %}"award": "{{ talk.award }}",{% endif %}
@@ -141,7 +142,7 @@
 
             Loading content... (Please make sure JavaScript is enabled)
             <h1 class="group-template row" name="Group Name"></h1>
-            <div class="talk-template col-xs-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="talk-template col-ts-12 col-xs-6 col-sm-6 col-md-4 col-lg-3">
             	<div class="talk-info">
                     <div class="talk-thumbnail">
                         <a href="link" class="talk-thumbnail-link">
