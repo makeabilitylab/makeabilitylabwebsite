@@ -66,7 +66,7 @@
 	<div class="col-xs-12 col-md-2 col-md-push-10 newstwitter-bar">
 	    {% if news %}
 	    <!-- Create a row for the well which will contain news from our feeds -->
-	    <div class="row">
+	    <div class="row no-margin">
 		<h3 class="news-type-label">Recent News</h3>
 		<div class="well news-well">
 		    {% for item in news %}
@@ -104,7 +104,7 @@
 		</div>
 	    </div>
 	    {% endif %}
-	    <div class="row hidden-xs twitter-row">
+	    <div class="row hidden-xs twitter-row no-margin">
 		<h3 class="news-type-label">Recent Tweets</h3>
 		<!-- See https://dev.twitter.com/docs/embedded-timelines#customization -->
 		<a class="twitter-timeline" href="https://twitter.com/makeabilitylab" width="600"
