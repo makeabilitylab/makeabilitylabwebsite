@@ -6,6 +6,12 @@
 {% load thumbnail %}
 {% load cropping %}
 
+{% block stylesheets %}
+
+<link rel="stylesheet" href="{% static 'website/css/people.css' %}">
+
+{% endblock %}
+
 {% block external_scripts %}
 <script src="{% static 'website/js/peopleHeightFix.js' %}"></script>
 {% endblock %}
@@ -108,7 +114,7 @@
     {% if active_undergrad %}
         <h1 name="undergrad">Undergraduate Students</h1>
         <h4>{{ active_undergrad|length}} Undergrad</h4>
-        <div class="row">
+        <div class="row main-content">
             {% for member in active_undergrad %}
                 <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
                     <a href="{% url 'website:member' member.person.id %}">
@@ -137,7 +143,7 @@
     {% if active_highschool %}
         <h1 name="highschool">High School Students</h1>
         <h4>{{ active_highschool|length}} HS</h4>
-        <div class="row">
+        <div class="row main-content">
             {% for member in active_highschool %}
                 <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
                     <a href="{% url 'website:member' member.person.id %}">
@@ -178,7 +184,7 @@
             {% if alumni_phd %} {{ alumni_phd|length }} PhD{% if alumni_ms %}, {% endif %} {% endif %}
             {% if alumni_ms %} {{ alumni_ms|length }} MS{% endif %}
         </h4>
-	<div class="row">
+	<div class="row main-content">
 	{% for member in alumni_prof_grad %}
 	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
                 <a href="{% url 'website:member' member.person.id %}">
@@ -208,7 +214,7 @@
 	{% endif %}
 	{% if alumni_undergrad %}
 	<h4 name="alumniundergrad">{% comment %}{% if alumni_undergrad|length > 1 %} Alumni {% else %} Alumnus {% endif %}{% endcomment %} Undergraduate Students ({{alumni_undergrad|length}})</h4>
-	<div class="row">
+	<div class="row main-content">
 	    {% for member in alumni_undergrad %}
 	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
                 <a href="{% url 'website:member' member.person.id %}">
@@ -238,7 +244,7 @@
 	{% endif %}
 	{% if alumni_highschool %}
 	<h4 name="alumnihighschool">{% comment %}{% if alumni_highschool|length > 1 %} Alumni {% else %} Alumnus {% endif %}{% endcomment %} Highschool Students ({{alumni_highschool|length}})</h4>
-	<div class="row">
+	<div class="row main-content">
 	    {% for member in alumni_highschool %}
 	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
                 <a href="{% url 'website:member' member.person.id %}">
@@ -269,7 +275,7 @@
     {% if cur_collaborators %}
         <h1 name="collaborators">Collaborators</h1>
         <h4>{{ cur_collaborators|length}} {% if cur_collaborators|length > 1 %} Collaborators {% else %} Collaborator {% endif %}</h4>
-        <div class="row">
+        <div class="row main-content">
             {% for collaborator in cur_collaborators %}
                 <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
                     <a href="{% url 'website:member' collaborator.person.id %}">
@@ -300,7 +306,7 @@
     {% if past_collaborators %}
         <h1 name="pastcollaborators">Past Collaborators</h1>
         <h4>{{ past_collaborators|length}} {% if past_collaborators|length > 1 %} Collaborators {% else %} Collaborator {% endif %}</h4>
-        <div class="row">
+        <div class="row main-content">
             {% for collaborator in past_collaborators %}
                 <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
                     <a href="{% url 'website:member' collaborator.person.id %}">

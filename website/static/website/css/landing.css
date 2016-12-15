@@ -12,6 +12,11 @@
     text-align: center;
 }
 
+.no-margin {
+    margin-left: 0;
+    margin-right: 0;
+}
+
 
 h1{
     text-transform: none;
@@ -38,11 +43,6 @@ h1{
 .landing-publications {
     /*padding-left: 0;
     padding-right: 0;*/
-}
-
-.no-margin {
-    margin-left: 0;
-    margin-right: 0;
 }
 
 .landing-content {
