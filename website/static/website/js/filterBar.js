@@ -111,7 +111,7 @@
 			groupList.css("display", "block");
 			var data = "<h1>" + currCategory.toUpperCase() + "</h1>\n"
 			for(var i=0; i<settings.groupsForCategory[currCategory].length; i++) {
-				data += "<li><a href=\"#" + this.cleanName(settings.groupsForCategory[currCategory][i].name) + "\" class=\"scroll\">" + settings.groupsForCategory[currCategory][i].name + " (" + settings.groupsForCategory[currCategory][i].items.length + ")</a></li>\n";
+				data += "<li><a href=\"#" + this.cleanName(settings.groupsForCategory[currCategory][i].name) + "\" class=\"scroll\" title=\"" + settings.groupsForCategory[currCategory][i].name + "\"><span class=\"filter-group\">" + settings.groupsForCategory[currCategory][i].name + "</span><span class=\"filter-group-count\"> (" + settings.groupsForCategory[currCategory][i].items.length + ")</span></a></li>\n";
 			}
 			groupList[0].innerHTML = data;
 		}

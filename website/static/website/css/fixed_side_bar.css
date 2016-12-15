@@ -30,4 +30,20 @@
 	font-size: 12px;
 	list-style: none;
 	cursor: pointer;
+	width: 100%;
+}
+
+#filter-bar .filter-group {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	display: inline-block;
+	width: 105px;
+	vertical-align: middle;
+}
+
+#filter-bar .filter-group-count {
+	display: inline-block;
+	width: 20px;
+	vertical-align: middle;
 }
