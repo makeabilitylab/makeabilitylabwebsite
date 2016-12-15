@@ -85,7 +85,8 @@
 
 .talk-info {
 	padding-bottom:20px; /* height of the downloads bar */
-	display:table-cell;
+	/*display:table-cell;*/
+	display:block;
 	vertical-align: top;
 	/*width: 240px;*/
 	position: relative;
@@ -99,7 +100,7 @@
 	width: 10000px;
 	display:table-cell;
 	vertical-align: middle;
-	padding-right:10px;
+	/*padding-right:10px;*/
 }
 
 .talk-thumbnail-image{
@@ -127,7 +128,7 @@
 	font-size: 14px;
 	text-overflow: ellipsis;
 	overflow: hidden;
-	width: 230px;
+	/*width: 230px;*/
 	margin-bottom:4px;
 }
 
@@ -135,7 +136,7 @@
 	text-overflow: ellipsis;
 	overflow: hidden;
 	height:1.5em;
-	width: 230px;
+	/*width: 230px;*/
 	white-space:nowrap;
 	margin-bottom:0;
 }
@@ -145,7 +146,7 @@
 	text-overflow: ellipsis;
 	overflow: hidden;
 	height:1.5em;
-	width: 230px;
+	/*width: 230px;*/
 	white-space:nowrap;
 	margin-bottom:0;
 }
