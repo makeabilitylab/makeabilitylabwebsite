@@ -1,4 +1,4 @@
 $(window).load(function(){
-	heightFix('.people-column');
+	heightFix('.people-col');
     heightFix('.video-column');
 });
