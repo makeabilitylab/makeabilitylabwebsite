@@ -317,14 +317,16 @@ def publications(request):
     all_banners = Banner.objects.filter(page=Banner.PUBLICATIONS)
     displayed_banners = choose_banners(all_banners)
     filter = request.GET.get('filter', None)
-    context = { 'publications': Publication.objects.filter(date__range=["2012-01-01", date.today()]), 'banners': displayed_banners, 'filter': filter, 'debug': settings.DEBUG }
+    groupby = request.GET.get('groupby', "No-Group")
+    context = { 'publications': Publication.objects.filter(date__range=["2012-01-01", date.today()]), 'banners': displayed_banners, 'filter': filter, 'groupby': groupby, 'debug': settings.DEBUG }
     return render(request, 'website/publications.html', context)
 
 def talks(request):
     all_banners = Banner.objects.filter(page=Banner.TALKS)
     displayed_banners = choose_banners(all_banners)
     filter = request.GET.get('filter', None)
-    context = { 'talks': Talk.objects.filter(date__range=["2012-01-01", date.today()]), 'banners': displayed_banners, 'filter': filter, 'debug': settings.DEBUG }
+    groupby = request.GET.get('groupby', "No-Group")
+    context = { 'talks': Talk.objects.filter(date__range=["2012-01-01", date.today()]), 'banners': displayed_banners, 'filter': filter, 'groupby': groupby, 'debug': settings.DEBUG }
     return render(request, 'website/talks.html', context)
 
 def website_analytics(request):

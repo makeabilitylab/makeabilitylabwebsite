@@ -86,8 +86,23 @@
 
 	    filterBar.applyFilter();
 	    if(initialFilter && initialFilter.length > 0 && initialFilter != "None"){
-		$('#filter-textbox').val(initialFilter);
-		filterBar.applyTextFilter();
+			$('#filter-textbox').val(initialFilter);
+			filterBar.applyTextFilter();
+	    }
+
+	    if(initialGroupBy) {
+	    	var matchesGroup = false;
+	    	for(var i = 0; i < settings.categories.length; i++)
+	    		if(initialGroupBy.toLowerCase() === settings.categories[i].toLowerCase())
+	    		{
+	    			matchesGroup = true;
+	    			initialGroupBy = settings.categories[i];
+	    		}
+
+	    	if(matchesGroup) {
+				filterBar.applyFilter(initialGroupBy);
+		    	console.log("applied filter: " + initialGroupBy);
+		    }
 	    }
 	    
 	    return this;
