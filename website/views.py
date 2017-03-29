@@ -402,6 +402,8 @@ def project_ind(request, project_name):
                active_undergrad.append(member)
             elif position.title == Position.HIGH_SCHOOL:
                active_highschool.append(member)
+            else:
+               active_other.append(member)
          else:
             active_other.append(member)
       else:
@@ -424,6 +426,8 @@ def project_ind(request, project_name):
                alumni_undergrad.append(member)
             elif position.title == Position.HIGH_SCHOOL:
                alumni_highschool.append(member)
+            else:
+               alumni_other.append(member)
          else:
             alumni_other.append(member)
    context = {'banners': displayed_banners, 'project': project, 'active': active, 'active_pis': active_pis, 'active_copis': active_copis, 'active_prof': active_prof, 'active_postdoc': active_postdoc, 'active_phd': active_phd, 'active_ms': active_ms, 'active_undergrad': active_undergrad, 'active_highschool': active_highschool, 'active_other': active_other, 'alumni': alumni, 'alumni_pis': alumni_pis, 'alumni_copis': alumni_copis, 'alumni_prof': alumni_prof, 'alumni_postdoc': alumni_postdoc, 'alumni_phd': alumni_phd, 'alumni_ms': alumni_ms, 'alumni_undergrad': alumni_undergrad, 'alumni_highschool': alumni_highschool, 'alumni_other':alumni_other, 'publications': publications, 'talks': talks, 'videos': videos, 'news': news, 'photos': photos, 'debug':settings.DEBUG}
