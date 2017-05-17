@@ -1,5 +1,5 @@
 # Makeability Lab Website
-The Makeability Lab is a research lablet within the Human-Computer Interaction Lab (HCIL)—one of the oldest and most well-known HCI labs in the world—at the University of Maryland. Founded in 2012 by Dr. Jon Froehlich and students, the Makeability Lab focuses on designing and studying novel interactive experiences that cross between bits and atoms—the virtual and the physical—and back again to confront some of the world's greatest challenges in environmental sustainability, health and wellness, education, and universal accessibility. This repository contains the labs Django 1.9 (python 3.5) based site.
+The Makeability Lab is a research lablet within the Human-Computer Interaction Lab (HCIL)—one of the oldest and most well-known HCI labs in the world—at the University of Maryland. Founded in 2012 by Dr. Jon Froehlich and students, the Makeability Lab focuses on designing and studying novel interactive experiences that cross between bits and atoms—the virtual and the physical—and back again to confront some of the world's greatest challenges in environmental sustainability, health and wellness, education, and universal accessibility. This repository contains the Makeability Lab's Django 1.9 (python 3.5) based site.
 
 # Installation
 
