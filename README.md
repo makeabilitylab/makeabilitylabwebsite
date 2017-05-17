@@ -30,8 +30,9 @@ Optional dependencies
 2. Create the local database. On development we use sqlite. This can be done using `make migrate` if make is installed. Otherwise one must run `python manage.py makemigrations website && python manage.py migrate`
 3. Create a super user using `python manage.py createsuperuser` to manage the admin interface.
 4. The scripts `python manage.py importpubs` and `python manage.py importtalks` will import from bibtex and xml files located under the import directory respectively. These files are designed for use by the Makeability lab and will import from Jon Froehlich's website cs.umd.edu/~jonf
-5. add googleaccount.py containing `ANALYTICS_ACCOUNT = 'your_google_analytics_email' and the accounts p12 file googlekey.p12 to the website directory. Instructions for this step can be found [here](https://developers.google.com/analytics/devguides/reporting/core/v3/quickstart/service-py)
-6. Run server using `make run` or `python manage.py runserver` if make is not installed.
+5. Add a file googleaccount.py in the website directory. This file should contain only the line ANALYTICS_ACCOUNT = 'your_google_analytics_email'. Replace your_google_analytics_email with whatever google account has been set up to track the domain in google analytics.
+6. Follow the instructions [here](https://developers.google.com/analytics/devguides/reporting/core/v3/quickstart/service-py) to install google analytics api using pip, and to download the p12 private key from google analytics for authentication. This file should also go in the website directory along with the googleaccount.py file.
+7. Run server using `make run` or `python manage.py runserver` if make is not installed.
 
 ## Production
 Your production settings will vary. The makeability lab uses gunicorn and nginx to server our site in production.
