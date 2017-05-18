@@ -18,6 +18,7 @@ The full step-by-step instructions for installation are [here](https://docs.goog
 * django-image-cropping (pip)
 * easy-thumbnails (pip)
 * django-sortedm2m (pip)
+* requests (pip)
 * sqlite3 (for development)
 * postgres (for production)
 * gunicorn (for production)
