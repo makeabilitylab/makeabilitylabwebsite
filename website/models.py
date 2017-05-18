@@ -35,7 +35,7 @@ class Person(models.Model):
     twitter = models.URLField(blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
     next_position = models.CharField(max_length=255, blank=True, null=True)
-    next_position.help_text = "This is a field to track the next position held by alumni of the lab. This field stores text information about their position and the next field stores a url which can be linked to."
+    next_position.help_text = "This is a field to track the next position held by alumni of the lab. This field stores text information about their position and the next field stores a url for that position."
     next_position_url = models.URLField(blank=True, null=True)
 
     # Note: the ImageField requires the pillow library, which can be installed using pip
@@ -59,29 +59,52 @@ class Person(models.Model):
     def get_quick_position(self):
         role_info = ''
         for role in self.position_set.all():
-            role_info = role.title+" "+role.role+" "+"Active" if role.is_active_member() or role.is_active_collaborator() else "Inactive"
+            role_info = role.title + " " + role.role + " " + "Current" if role.is_current_member() or role.is_current_collaborator() else "Inactive"
         return role_info
-    get_quick_position.short_description="Roles"
+    get_quick_position.short_description = "Roles"
 
+    # Returns True if person is current member of the lab. False otherwise
+    def is_current_member(self):
+        latest_position = self.get_latest_position()
+        if latest_position is not None:
+            return latest_position.is_current_member()
+        else:
+            return False
+
+    # Returns the latest position for the person
     def get_latest_position(self):
-        for position in self.position_set.all():
-            print(position.start_date)
-        print(self.position_set.latest('start_date'))
-        return self.position_set.latest('start_date')
+        print(self.position_set.exists())
+        if self.position_set.exists() is False:
+            print("The person '{}' has no position set".format(self.get_full_name()))
+            return None
+        else:
+            print("self.position_set is not None")
+            # The Person model can access its positions because of the foreign key relationship
+            # See: https://docs.djangoproject.com/en/1.11/topics/db/queries/#related-objects
+            print("Printing all positions for " + self.get_full_name())
+            for position in self.position_set.all():
+                print(position.start_date)
 
+            print("The latest position for " + self.get_full_name())
+            print(self.position_set.latest('start_date'))
+
+            return self.position_set.latest('start_date')
+
+    # TODO: Figure if what uses this method and why
     def get_start_date(self):
-        start_date=""
-        for role in self.position_set.all():
-            start_date = str(role.start_date)
+        start_date = ""
+        for pos in self.position_set.all():
+            start_date = str(pos.start_date)
         return start_date
-    get_start_date.short_description="Start Date"
+    get_start_date.short_description = "Start Date"
 
+    # TODO: Figure out what uses this method and why
     def get_end_date(self):
-        end_date=""
-        for role in self.position_set.all():
-            end_date = str(role.end_date) if role.end_date != None else "Present"
+        end_date = ""
+        for pos in self.position_set.all():
+            end_date = str(pos.end_date) if pos.end_date != None else "Present"
         return end_date
-    get_end_date.short_description="End Date"
+    get_end_date.short_description = "End Date"
     
     def get_full_name(self, includeMiddle=True):
         if self.middle_name and includeMiddle:
@@ -186,6 +209,7 @@ class Position(models.Model):
         else:
             return "".join(e[0] for e in self.department.split(" "))
 
+    # Returns the start and end dates as strings
     def get_date_range_as_str(self):
         if self.start_date is not None and self.end_date is None:
             return "{}-".format(self.start_date.year)
@@ -213,18 +237,19 @@ class Position(models.Model):
     def is_high_school(self):
         return self.title == Position.HIGH_SCHOOL
 
-    # Returns true if member is still active based on end date
-    def is_active_member(self):
+    # Returns true if member is current based on end date
+    def is_current_member(self):
         return self.is_member() and \
                self.start_date is not None and self.start_date <= date.today() and \
                self.end_date is None or (self.end_date is not None and self.end_date >= date.today())
 
-    # Returns true if member is still active based on end date
-    def is_active_collaborator(self):
+    # Returns true if member is current based on end date
+    def is_current_collaborator(self):
         return self.is_collaborator() and \
                self.start_date is not None and self.start_date <= date.today() and \
                self.end_date is None or (self.end_date is not None and self.end_date >= date.today())
 
+    # Returns true if member is an alumni member
     def is_alumni_member(self):
         return self.is_member() and self.end_date != None and self.end_date < date.today()
 

@@ -48,6 +48,24 @@ class ProjectHeaderInline(ImageCroppingMixin, admin.StackedInline):
 class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
     # TODO Look at: http://stackoverflow.com/questions/21497044/filter-a-field-in-a-dropdown-lit-in-django-admin
     # TODO Filter authors to only active members. Sort authors by firstname
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        print("formfield_for_foreignkey: db_field: {} db_field.name {} request: {}".format(db_field, db_field.name, request))
+        if db_field.name == "author":
+            #kwargs["queryset"] = Person.objects.filter(owner=request.user)
+            current_member_ids = [person.id for person in Person.objects.all() if person.is_current_member()]
+            print(current_member_ids)
+            filtered_persons = Person.objects.filter(id__in=current_member_ids).order_by('first_name')
+            print(filtered_persons)
+            kwargs["queryset"] = filtered_persons
+
+            # current_member_ids = []
+            #
+            # for person in Person.objects.all():
+            #     if person.is_current_member():
+            #         current_member_ids.append(person.id)
+            # print(current_member_ids)
+        return super(NewsAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
     pass
 
 class PhotoAdmin(ImageCroppingMixin, admin.ModelAdmin):

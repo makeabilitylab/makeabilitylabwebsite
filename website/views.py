@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, render
 from .models import Person, Publication, Talk, Position, Banner, News, Keyword, Video, Project, Project_umbrella
 from django.conf import settings
 from datetime import date
+
 from . import googleanalytics
 
 max_banners = 7
@@ -165,7 +166,7 @@ def people(request):
     past_collaborators = []
 
     for position in positions:
-        if position.is_active_member():
+        if position.is_current_member():
             if position.is_prof() or position.is_grad():
                 if position.is_prof():
                     active_prof.append(position)
@@ -194,7 +195,7 @@ def people(request):
            elif position.title == Position.HIGH_SCHOOL:
               alumni_highschool.append(position)
         elif position.is_collaborator():
-            if position.is_active_collaborator():
+            if position.is_current_collaborator():
                 cur_collaborators.append(position)
             else:
                 past_collaborators.append(position)
