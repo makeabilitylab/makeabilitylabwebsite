@@ -37,11 +37,13 @@ class Person(models.Model):
     next_position = models.CharField(max_length=255, blank=True, null=True)
     next_position.help_text = "This is a field to track the next position held by alumni of the lab. This field stores text information about their position and the next field stores a url which can be linked to."
     next_position_url = models.URLField(blank=True, null=True)
+
     # Note: the ImageField requires the pillow library, which can be installed using pip
     # pip3 install Pillow
     # We use the get_unique_path function because otherwise if two people use the same
     # filename (something generic like picture.jpg), one will overwrite the other.
     image = models.ImageField(blank=True, upload_to="person", max_length=255)
+    
     # image_cropped = models.ImageField(editable=False)
     image.help_text = 'You must select "Save and continue editing" at the bottom of the page after uploading a new image for cropping.'
 
