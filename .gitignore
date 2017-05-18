@@ -17,12 +17,9 @@ obj
 \#*\#
 output
 ssl_access_log
-.idea/inspectionProfiles/Project_Default.xml
-
+.idea/inspectionProfiles/Project_Default.xml\
 .idea/makeabilitylab.iml
 
 .idea/misc.xml
 
 .idea/misc.xml
-
-.idea/makeabilitylab.iml
