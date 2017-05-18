@@ -24,17 +24,36 @@ class BannerAdmin(ImageCroppingMixin, admin.ModelAdmin):
         ('Image', {'fields': ["image", "cropping"]})
     ]
     list_display = ('__str__', 'admin_thumbnail')
-    pass
     # readonly_fields = ["image_preview"]
 
 
-#class ChoiceInline(admin.StackedInline):
-class AdvisorInLine(admin.StackedInline):
+class PositionInline(admin.StackedInline):
     model = Position
+
     # This specifies that the Inline is linked to the main owner of the position rather than any of the advisor roles.
     fk_name="person"
-    # This specifies that the field appears only once.
+
+    # This specifies that the field appears only once (by default)
     extra = 0
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        print("PositionInline.formfield_for_foreignkey: db_field: {} db_field.name {} request: {}".format(db_field, db_field.name, request))
+
+        if db_field.name == "advisor" or db_field.name == "co_advisor":
+            # Filters advisors to professors and sorts by first name
+            # Based on: http://stackoverflow.com/a/30627555
+            professor_ids = [person.id for person in Person.objects.all() if person.is_professor()]
+            filtered_persons = Person.objects.filter(id__in=professor_ids).order_by('first_name')
+            print(filtered_persons)
+            kwargs["queryset"] = filtered_persons
+        elif db_field.name == "grad_mentor":
+            # Filters grad mentor list to grad students
+            grad_ids = [person.id for person in Person.objects.all() if person.is_grad_student()]
+            filtered_persons = Person.objects.filter(id__in=grad_ids).order_by('first_name')
+            print(filtered_persons)
+            kwargs["queryset"] = filtered_persons
+
+        return super(PositionInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
     
 class ProjectRoleInline(admin.StackedInline):
     model = Project_Role
@@ -44,41 +63,35 @@ class ProjectHeaderInline(ImageCroppingMixin, admin.StackedInline):
     model = Project_header
     extra = 0
 
-#Uses format as per https://github.com/jonasundderwolf/django-image-cropping to add cropping to the admin page
+# Uses format as per https://github.com/jonasundderwolf/django-image-cropping to add cropping to the admin page
 class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
-    # TODO Look at: http://stackoverflow.com/questions/21497044/filter-a-field-in-a-dropdown-lit-in-django-admin
-    # TODO Filter authors to only active members. Sort authors by firstname
-
+    # Filters authors only to current members and sorts by firstname
+    # Based on: http://stackoverflow.com/a/30627555
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        print("formfield_for_foreignkey: db_field: {} db_field.name {} request: {}".format(db_field, db_field.name, request))
+        print("NewsAdmin.formfield_for_foreignkey: db_field: {} db_field.name {} request: {}".format(db_field, db_field.name, request))
         if db_field.name == "author":
-            #kwargs["queryset"] = Person.objects.filter(owner=request.user)
             current_member_ids = [person.id for person in Person.objects.all() if person.is_current_member()]
-            print(current_member_ids)
             filtered_persons = Person.objects.filter(id__in=current_member_ids).order_by('first_name')
             print(filtered_persons)
             kwargs["queryset"] = filtered_persons
-
-            # current_member_ids = []
-            #
-            # for person in Person.objects.all():
-            #     if person.is_current_member():
-            #         current_member_ids.append(person.id)
-            # print(current_member_ids)
         return super(NewsAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
     pass
 
 class PhotoAdmin(ImageCroppingMixin, admin.ModelAdmin):
     list_display = ('__str__', 'admin_thumbnail')
-    pass
 
 class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
     inlines = [ProjectHeaderInline]
 
 class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
-    inlines = [AdvisorInLine, ProjectRoleInline]
-    #info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin 
+
+    # inlines allow us to edit models on the same page as a parent model
+    # see: https://docs.djangoproject.com/en/1.11/ref/contrib/admin/#inlinemodeladmin-objects
+    inlines = [PositionInline, ProjectRoleInline]
+
+    #info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
     list_display = ('get_full_name', 'get_quick_position', 'get_start_date', 'get_end_date')
+
 
 class PublicationAdmin(admin.ModelAdmin):
     fieldsets = [
@@ -158,7 +171,6 @@ class PublicationAdmin(admin.ModelAdmin):
     #         return super(PublicationAdmin, self).add_view(request, extra_context=extra_context, **kwargs)
 
 admin.site.register(Person, PersonAdmin)
-# admin.site.register(Member)
 admin.site.register(Publication, PublicationAdmin)
 admin.site.register(Talk)
 admin.site.register(Project, ProjectAdmin)

@@ -63,6 +63,22 @@ class Person(models.Model):
         return role_info
     get_quick_position.short_description = "Roles"
 
+    # Returns true if a professor
+    def is_professor(self):
+        latest_position = self.get_latest_position()
+        if latest_position is not None:
+            return latest_position.is_professor()
+        else:
+            return False
+
+    # Returns True if a grad student
+    def is_grad_student(self):
+        latest_position = self.get_latest_position()
+        if latest_position is not None:
+            return latest_position.is_grad_student()
+        else:
+            return False
+
     # Returns True if person is current member of the lab. False otherwise
     def is_current_member(self):
         latest_position = self.get_latest_position()
@@ -73,12 +89,13 @@ class Person(models.Model):
 
     # Returns the latest position for the person
     def get_latest_position(self):
-        print(self.position_set.exists())
+        # print(self.position_set.exists())
         if self.position_set.exists() is False:
             print("The person '{}' has no position set".format(self.get_full_name()))
             return None
         else:
             print("self.position_set is not None")
+
             # The Person model can access its positions because of the foreign key relationship
             # See: https://docs.djangoproject.com/en/1.11/topics/db/queries/#related-objects
             print("Printing all positions for " + self.get_full_name())
@@ -227,11 +244,11 @@ class Position(models.Model):
         return self.role == Position.MEMBER
 
     # Returns true if professor
-    def is_prof(self):
+    def is_professor(self):
         return self.title == Position.FULL_PROF or self.title == Position.ASSOCIATE_PROF or self.title == Position.ASSISTANT_PROF
 
     # Returns true if grad student
-    def is_grad(self):
+    def is_grad_student(self):
         return self.title == Position.MS_STUDENT or self.title == Position.PHD_STUDENT or self.title == Position.POST_DOC
 
     def is_high_school(self):

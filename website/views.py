@@ -167,8 +167,8 @@ def people(request):
 
     for position in positions:
         if position.is_current_member():
-            if position.is_prof() or position.is_grad():
-                if position.is_prof():
+            if position.is_professor() or position.is_grad_student():
+                if position.is_professor():
                     active_prof.append(position)
                 elif position.title == Position.POST_DOC:
                     active_postdoc.append(position)
@@ -181,8 +181,8 @@ def people(request):
             elif position.title == Position.HIGH_SCHOOL:
                 active_highschool.append(position)
         elif position.is_alumni_member():
-           if position.is_prof() or position.is_grad():
-              if position.is_prof():
+           if position.is_professor() or position.is_grad_student():
+              if position.is_professor():
                  alumni_prof.append(position)
               elif position.title == Position.POST_DOC:
                  alumni_postdoc.append(position)
@@ -391,7 +391,7 @@ def project_ind(request, project_name):
             active_copis.append(member)
          elif len(member.person.position_set.all()) > 0:
             position = member.person.position_set.order_by('-start_date')[0]
-            if position.is_prof():
+            if position.is_professor():
                active_prof.append(member)
             elif position.title == Position.POST_DOC:
                active_postdoc.append(member)
@@ -415,7 +415,7 @@ def project_ind(request, project_name):
             alumni_copis.append(member)
          elif len(member.person.position_set.all()) > 0:
             position = member.person.position_set.order_by('-start_date')[0]
-            if position.is_prof():
+            if position.is_professor():
                alumni_prof.append(member)
             elif position.title == Position.POST_DOC:
                alumni_postdoc.append(member)
