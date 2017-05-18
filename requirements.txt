@@ -11,5 +11,6 @@ easy_thumbnails==2.3
 xmltodict==0.10.2
 google-api-python-client==1.5.3
 pyOpenSSL==16.1.0
+requests
 
 
