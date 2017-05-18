@@ -46,6 +46,8 @@ class ProjectHeaderInline(ImageCroppingMixin, admin.StackedInline):
 
 #Uses format as per https://github.com/jonasundderwolf/django-image-cropping to add cropping to the admin page
 class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
+    # TODO Look at: http://stackoverflow.com/questions/21497044/filter-a-field-in-a-dropdown-lit-in-django-admin
+    # TODO Filter authors to only active members. Sort authors by firstname
     pass
 
 class PhotoAdmin(ImageCroppingMixin, admin.ModelAdmin):
