@@ -66,7 +66,7 @@ class CurrentMemberListFilter(admin.SimpleListFilter):
                                                                                       type(self.value())))
             if person.is_current_member() is True and self.value() is None:
                 filtered_person_ids.append(person.id)
-            elif person.is_current_member() is False and self.value() == "Past":
+            elif person.is_alumni_member() is True and self.value() == "Past":
                 filtered_person_ids.append(person.id)
             elif self.value() == "All":
                 filtered_person_ids.append(person.id)

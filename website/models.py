@@ -89,6 +89,20 @@ class Person(models.Model):
         else:
             return False
 
+    # Returns True if person is an alumni member of the lab. False otherwise
+    def is_alumni_member(self):
+        is_alumni_member = False
+        for position in self.position_set.all():
+            if position.is_member() is True:
+                is_alumni_member = True
+
+        latest_position = self.get_latest_position()
+        if latest_position is not None:
+            if latest_position.is_current_member():
+                is_alumni_member = False
+
+        return is_alumni_member
+
     # Returns the latest position for the person
     # TODO: consider renaming this to get_current_position
     def get_latest_position(self):
@@ -258,6 +272,7 @@ class Position(models.Model):
         return self.title == Position.HIGH_SCHOOL
 
     # Returns true if member is current based on end date
+    # TODO this is a weird function and is badly named. How is it different form is_member? Confusing.
     def is_current_member(self):
         return self.is_member() and \
                self.start_date is not None and self.start_date <= date.today() and \
