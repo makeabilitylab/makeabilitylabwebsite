@@ -56,6 +56,8 @@ class Person(models.Model):
     # TODO: update with desired aspect ratio and maximum resolution
     cropping = ImageRatioField('image', '245x245', size_warning=True)
     easter_egg_crop = ImageRatioField('easter_egg', '245x245', size_warning=True)
+
+    # TODO figure out where this is called and why. Rename function accordingly
     def get_quick_position(self):
         role_info = ''
         for role in self.position_set.all():
@@ -88,6 +90,7 @@ class Person(models.Model):
             return False
 
     # Returns the latest position for the person
+    # TODO: consider renaming this to get_current_position
     def get_latest_position(self):
         # print(self.position_set.exists())
         if self.position_set.exists() is False:
@@ -100,14 +103,14 @@ class Person(models.Model):
             # See: https://docs.djangoproject.com/en/1.11/topics/db/queries/#related-objects
             print("Printing all positions for " + self.get_full_name())
             for position in self.position_set.all():
-                print(position.start_date)
+               print(position.start_date)
 
             print("The latest position for " + self.get_full_name())
             print(self.position_set.latest('start_date'))
 
             return self.position_set.latest('start_date')
 
-    # TODO: Figure if what uses this method and why
+    # TODO: Figure out what uses this method and why
     def get_start_date(self):
         start_date = ""
         for pos in self.position_set.all():

@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from .models import Person, Publication, Position, Talk, Project, Poster, Keyword, News, Banner, Video, Project_header, Photo, Project_umbrella, Project_Role, Sponsor
+from website.admin_list_filters import CurrentMemberListFilter, PositionListFilter
 
 from django.http import HttpResponse
 from datetime import datetime
@@ -68,7 +69,7 @@ class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
     # Filters authors only to current members and sorts by firstname
     # Based on: http://stackoverflow.com/a/30627555
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        print("NewsAdmin.formfield_for_foreignkey: db_field: {} db_field.name {} request: {}".format(db_field, db_field.name, request))
+        # print("NewsAdmin.formfield_for_foreignkey: db_field: {} db_field.name {} request: {}".format(db_field, db_field.name, request))
         if db_field.name == "author":
             current_member_ids = [person.id for person in Person.objects.all() if person.is_current_member()]
             filtered_persons = Person.objects.filter(id__in=current_member_ids).order_by('first_name')
@@ -94,6 +95,8 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
     #TODO setup filter here that has diff categories (like active members, past, etc.):
     #https://www.elements.nl/2015/03/16/getting-the-most-out-of-django-admin-filters/
+    #related to: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/238
+    list_filter = (CurrentMemberListFilter, PositionListFilter)
 
 
 
