@@ -92,6 +92,10 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
     #info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
     list_display = ('get_full_name', 'get_quick_position', 'get_start_date', 'get_end_date')
 
+    #TODO setup filter here that has diff categories (like active members, past, etc.):
+    #https://www.elements.nl/2015/03/16/getting-the-most-out-of-django-admin-filters/
+
+
 
 class PublicationAdmin(admin.ModelAdmin):
     fieldsets = [

@@ -22,6 +22,7 @@
     <div id="header" class="container">
 	<center><h1 id="short-statement">We are the <font color="00B0F0">Makeability Lab</font>, dedicated to building and studying interaction technology for a social purpose</h1></center>
     </div>
+
     <div id="circles" class="row icon_row">
 	<!-- TODO Cleanup the icon files once they are accepted -->
 	<!-- TODO add links for each icon to the appropriate publications/projects page -->
@@ -84,7 +85,6 @@
 			<div class="news_info">
 			    <!-- https://css-tricks.com/line-clampin/ This seems to be a good way to do multi line wrapping, also referenced in relevant news.css file -->
 			    <div class="news_title line-clamp">
-				<!-- TODO link to the full news item -->
 				<a href="{% url 'website:news' item.id %}">
 				    <p>{{item.title}}</p>
 				</a>
