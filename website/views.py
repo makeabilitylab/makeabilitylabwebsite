@@ -119,11 +119,12 @@ def choose_banners(banners):
 #Every view is passed settings.DEBUG. This is used to insert the appropriate google analytics tracking when in production, and to not include it for development
  
 def index(request):
-    news_items_num = 5 # Defines the number of news items that will be selected
-    papers_num = 3 # Defines the number of papers which will be selected
+    news_items_num = 7 # Defines the number of news items that will be selected
+    papers_num = 5 # Defines the number of papers which will be selected
     talks_num = 8 # Defines the number of talks which will be selected
-    videos_num = 2 # Defines the number of videos which will be selected
+    videos_num = 4 # Defines the number of videos which will be selected
     projects_num = 3 # Defines the number of projects which will be selected
+
     all_banners = Banner.objects.filter(page=Banner.FRONTPAGE)
     displayed_banners = choose_banners(all_banners)
     print(settings.DEBUG)
