@@ -89,6 +89,14 @@ class Person(models.Model):
         else:
             return False
 
+    # Returns True if person is current collaborator of the lab. False otherwise
+    def is_current_collaborator(self):
+        latest_position = self.get_latest_position()
+        if latest_position is not None:
+            return latest_position.is_current_collaborator()
+        else:
+            return False
+
     # Returns True if person is an alumni member of the lab. False otherwise
     def is_alumni_member(self):
         is_alumni_member = False
@@ -463,6 +471,7 @@ class Talk(models.Model):
     # A talk can be about more than one project
     projects = models.ManyToManyField(Project, blank=True, null=True)
     project_umbrellas = SortedManyToManyField(Project_umbrella, blank=True, null=True)
+
     # TODO: remove the null = True from all of the following objects
     # including forum_name, forum_url, location, speakers, date, slideshare_url
     keywords = models.ManyToManyField(Keyword, blank=True, null=True)
@@ -490,12 +499,13 @@ class Talk(models.Model):
     # print("In talk model!")
 
     def get_title(self):
-        #Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
+        # Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
         cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
         return cap_title
 
     def __str__(self):
         return self.title
+
 @receiver(pre_delete, sender=Talk)
 def talk_delete(sender, instance, **kwargs):
     if instance.pdf_file:

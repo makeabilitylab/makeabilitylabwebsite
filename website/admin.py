@@ -76,7 +76,7 @@ class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
             print(filtered_persons)
             kwargs["queryset"] = filtered_persons
         return super(NewsAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
-    pass
+
 
 class PhotoAdmin(ImageCroppingMixin, admin.ModelAdmin):
     list_display = ('__str__', 'admin_thumbnail')
@@ -98,6 +98,17 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
     #related to: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/238
     list_filter = (CurrentMemberListFilter, PositionListFilter)
 
+class TalkAdmin(admin.ModelAdmin):
+    # Filters speakers only to current members and collaborators and sorts by first name
+    # Based on: https://stackoverflow.com/a/17457828
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        print("TalkAdmin.formfield_for_manytomany: db_field: {} db_field.name {} request: {}".format(db_field, db_field.name, request))
+        if db_field.name == "speakers":
+            current_member_and_collab_ids = [person.id for person in Person.objects.all() if person.is_current_member()]
+            filtered_persons = Person.objects.filter(id__in=current_member_and_collab_ids).order_by('first_name')
+            print(filtered_persons)
+            kwargs["queryset"] = filtered_persons
+        return super(TalkAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 class PublicationAdmin(admin.ModelAdmin):
@@ -179,7 +190,7 @@ class PublicationAdmin(admin.ModelAdmin):
 
 admin.site.register(Person, PersonAdmin)
 admin.site.register(Publication, PublicationAdmin)
-admin.site.register(Talk)
+admin.site.register(Talk, TalkAdmin)
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(Poster)
 admin.site.register(Keyword)
