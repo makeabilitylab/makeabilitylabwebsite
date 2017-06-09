@@ -38,11 +38,37 @@ if config.has_option('Django', 'DEBUG'):
 else:
     DEBUG = True
 
+# TODO: Take this out when done debugging production
+DEBUG = True
+
 if config.has_option('Django', 'ALLOWED_HOSTS'):
     USE_X_FORWARDED_HOST = True
     ALLOWED_HOSTS = config.get('Django', 'ALLOWED_HOSTS').split(',')
 else:
     ALLOWED_HOSTS = []
+
+# Added to try and log problems to file to debug talk upload issue: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/184
+# For Log settings examples, see:
+# 1. https://docs.djangoproject.com/en/1.11/topics/logging/#examples
+# 2. https://gist.github.com/palewire/1740398#file-settings-py
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'makeabilitylab_django.log'),
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
 
 
 # Application definition

@@ -31,3 +31,5 @@ ssl_access_log
 .idea/makeabilitylabwebsite.iml
 
 .idea/modules.xml
+
+makeabilitylab_django.log
