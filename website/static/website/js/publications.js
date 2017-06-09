@@ -259,7 +259,7 @@ function formatGroup(group) {
 // helper function to populate the template with the publication data
 function formatPublication(pub, filter) {
 	if(filter) filter = filter.toLowerCase();
-    console.log("Fromating pub "+pub.title);
+    console.log("Formatting pub "+pub.title);
 	var publicationData = publicationTemplate.clone();
 	publicationData.find(".publication-id").html(pub.id);
 	publicationData.find(".publication-thumbnail-link").attr("href", pub.pdf);

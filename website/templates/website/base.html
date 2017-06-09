@@ -24,14 +24,11 @@
     
     {% endblock %}
 
-    <!-- Old base.css class -->
-{#    <link rel="stylesheet" type="text/css" href="{% static 'website/css/base.css' %}"/> #}
-
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
 
     <!-- Back Top -->
-    <link rel="stylesheet" href="{% static 'website/css/backtop.css' %}"/>    
+    <link rel="stylesheet" href="{% static 'website/css/backtop.css' %}"/>
 
 	<!-- jQuery: v1.9.1 necessary for Bootstrap's JavaScript plugins -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -60,11 +57,11 @@
 
     {% endblock %}
 
-     $(document).ready(function () {
-	     console.log("{{debug}}");
-			$('.carousel').carousel();
-      $("#back-top").hide();
-		});
+    $(document).ready(function () {
+        console.log("{{debug}}");
+        $('.carousel').carousel();
+        // $("#back-top").hide();
+    });
 
     // allow for smooth scrolling to anchor links
     $(document).click(function (event) {
@@ -82,31 +79,6 @@
             $('html, body').animate({ scrollTop: target_top }, 500);
         }
     });
-
-    // auto-hide button scroll to top: http://webdesignerwall.com/demo/scroll-to-top/scrolltotop.html
-    // provide the back to top button
-    // hide #back-top first
-
-    // fade in #back-top
-    $(function () {
-        $(window).scroll(function () {
-            if ($(this).scrollTop() > 100) {
-                $('#back-top').fadeIn();
-            } else {
-                $('#back-top').fadeOut();
-            }
-        });
-
-        // scroll body to 0px on click
-        $('#back-top a').click(function () {
-            $('body,html').animate({
-                scrollTop: 0
-            }, 800);
-            return false;
-        });
-     });
-
-    
 
     </script>
 
