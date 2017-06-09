@@ -36,7 +36,7 @@ Optional dependencies
 7. Run server using `make run` or `python manage.py runserver` if make is not installed.
 
 ## Production
-Your production settings will vary. The makeability lab uses gunicorn and nginx to server our site in production.
+Your production settings will vary. The makeability lab uses gunicorn and nginx to serve our site in production.
 
 
 
