@@ -39,7 +39,7 @@ else:
     DEBUG = True
 
 # TODO: Take this out when done debugging production
-DEBUG = True
+# DEBUG = True
 
 if config.has_option('Django', 'ALLOWED_HOSTS'):
     USE_X_FORWARDED_HOST = True
@@ -51,24 +51,27 @@ else:
 # For Log settings examples, see:
 # 1. https://docs.djangoproject.com/en/1.11/topics/logging/#examples
 # 2. https://gist.github.com/palewire/1740398#file-settings-py
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'makeabilitylab_django.log'),
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-    },
-}
+
+# TODO: I had to comment this out because I couldn't get it to work on the production server
+# perhaps due to file write permissions on the log. I need to investigate further.
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'file': {
+#             'level': 'DEBUG',
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join(BASE_DIR, 'makeabilitylab_django.log'),
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['file'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+#     },
+# }
 
 
 # Application definition
