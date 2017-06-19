@@ -48,8 +48,8 @@ class PositionInline(admin.StackedInline):
             print(filtered_persons)
             kwargs["queryset"] = filtered_persons
         elif db_field.name == "grad_mentor":
-            # Filters grad mentor list to grad students
-            grad_ids = [person.id for person in Person.objects.all() if person.is_grad_student()]
+            # Filters grad mentor list to current grad students (either member or collaborator)
+            grad_ids = [person.id for person in Person.objects.all() if person.is_grad_student() and (person.is_current_member() or person.is_current_collaborator())]
             filtered_persons = Person.objects.filter(id__in=grad_ids).order_by('first_name')
             print(filtered_persons)
             kwargs["queryset"] = filtered_persons
