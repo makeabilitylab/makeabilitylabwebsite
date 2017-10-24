@@ -4,7 +4,9 @@
 # To build this Dockerfile:
 #   > docker build -t jonfroehlich/makelab_image .
 # To run the image:
-#   > docker run -p 8000:8000
+#   > docker run -p 8000:8000 jonfroehlich/makelab_image:latest
+# To stop the server, try ctrl-C in terminal, otherwise:
+#   > docker stop $(docker ps -aq) //this will stop all running containers
 
 # All Dockerfiles must start with a 'FROM' instruction, which specifies a base image
 # See: https://docs.docker.com/engine/reference/builder/#format
