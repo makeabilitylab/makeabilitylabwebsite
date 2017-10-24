@@ -120,7 +120,7 @@
 		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>-->
 	    </div>
 	</div>
-	<!-- This column will contain the recent publications and talks  -->
+	<!-- This is the main content column--and contains things like recent pubs, videos, talks, papers, etc.  -->
 	<div class="col-xs-12 col-md-10 col-md-pull-2 landing-content">
 	    <div class="row no-margin">
 		{% comment %}
@@ -138,22 +138,22 @@
 	    </div>
 	    {% endcomment %}
 	    <div class="row no-margin">
-		<h3 class="news-type-label"><b>Recent Videos</b></h3>
-		{% for video in videos %}
-		<div class="col-xs-12 col-md-6 video-column">
-		    <div class="video-container">
-			<iframe class="video" src="{{video.get_embed}}" frameborder="0" allowfullscreen></iframe>
-		    </div>
-		    <p class="video-title">{{video.title}}</p>
-		    <p class="video-location">{{video.caption}} </p>
-		    <p class="video-links">
-			<a href="{{video.video_url}}">YouTube</a>
-			{% if video.publication %}
-			| <a href="../../media/{{video.publication.pdf_file}}">Paper</a>
-			{% endif %}
-		    </p>
-		</div>
-		{% endfor %}
+            <h3 class="news-type-label"><b>Recent Videos</b></h3>
+            {% for video in videos %}
+                <div class="col-xs-12 col-md-6 video-column">
+                    <div class="video-container">
+                        <iframe class="video" src="{{video.get_embed}}" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <p class="video-title">{{video.title}}</p>
+                    <p class="video-location">{{video.caption}} </p>
+                    <p class="video-links">
+                    <a href="{{video.video_url}}">YouTube</a>
+                    {% if video.publication %}
+                    | <a href="../../media/{{video.publication.pdf_file}}">Paper</a>
+                    {% endif %}
+                    </p>
+                </div>
+            {% endfor %}
 	    </div>
 	    <div class="row no-margin">
 		<h3 class="news-type-label"><b>Recent Publications</b></h3>

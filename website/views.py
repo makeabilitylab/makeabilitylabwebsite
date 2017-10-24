@@ -5,7 +5,7 @@ from .models import Person, Publication, Talk, Position, Banner, News, Keyword, 
 from django.conf import settings
 from datetime import date
 
-from . import googleanalytics
+# from . import googleanalytics
 
 max_banners = 7
 
@@ -336,8 +336,8 @@ def videos(request):
     displayed_banners = choose_banners(all_banners)
     filter = request.GET.get('filter', None)
     groupby = request.GET.get('groupby', "No-Group")
-    context = { 'video': Video.objects.filter(date__range=["2012-01-01", date.today()]), 'banners': displayed_banners, 'filter': filter, 'groupby': groupby, 'debug': settings.DEBUG }
-    return render(request, 'website/video.html', context)
+    context = { 'videos': Video.objects.filter(date__range=["2012-01-01", date.today()]), 'banners': displayed_banners, 'filter': filter, 'groupby': groupby, 'debug': settings.DEBUG }
+    return render(request, 'website/videos.html', context)
 
 def website_analytics(request):
    return render(request, 'admin/analytics.html')
