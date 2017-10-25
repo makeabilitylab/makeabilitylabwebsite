@@ -606,13 +606,15 @@ class Publication(models.Model):
         #Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
         cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
         return cap_title
-    
+
+    # Returns the acceptance rate as a percentage
     def get_acceptance_rate(self):
         if self.total_papers_accepted and self.total_papers_submitted:
-            return self.total_papers_accepted / self.total_papers_submitted
+            return 100 * (self.total_papers_accepted / self.total_papers_submitted)
         else:
             return -1
 
+    # Returns true if the publication date happens in the future (e.g., tomorrow or later)
     def to_appear(self):
         return self.date and self.date > date.today()
 

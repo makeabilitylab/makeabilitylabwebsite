@@ -5,7 +5,7 @@ from .models import Person, Publication, Talk, Position, Banner, News, Keyword, 
 from django.conf import settings
 from datetime import date
 
-from . import googleanalytics
+#from . import googleanalytics
 
 max_banners = 7
 
@@ -333,9 +333,6 @@ def talks(request):
 
 def website_analytics(request):
    return render(request, 'admin/analytics.html')
-
-
-
       
 def projects(request):
    all_banners = Banner.objects.filter(page=Banner.PROJECTS)

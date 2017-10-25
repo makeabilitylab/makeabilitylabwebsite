@@ -204,7 +204,13 @@
 			<p class="publication-stats">
 			    <span class="publication-venue">{{pub.book_title_short}}</span>
 			    {% if pub.total_papers_accepted %}
-			    <span class="publication-acceptance-rate">| <span class="publication-acceptance-rate-text">Acceptance Rate: {{pub.get_acceptance_rate}}% ({{pub.total_papers_accepted}} / {{pub.total_papers_submitted}})</span></span>
+                    <span class="publication-acceptance-rate">|
+                        <span class="publication-acceptance-rate-text">
+                            <!-- formatting strings with Django templates: https://docs.djangoproject.com/en/1.11/ref/templates/builtins/#stringformat -->
+                            Acceptance Rate: {{pub.get_acceptance_rate|stringformat:".1f"}}%
+                            ({{pub.total_papers_accepted}} / {{pub.total_papers_submitted}})
+                        </span>
+                    </span>
 			    {% endif %}
     			</p>
         		<p class="publication-keywords hidden-xs">
@@ -219,7 +225,13 @@
 				{% endfor %}
 			    </span></span>
 	        	</p>
-        		<div class="publication-download">Download: <a href="../../media/{{pub.pdf_file}}" class="publication-download-link">[pdf]</a> <span class="publication-video-link-label">| {% if pub.video %}Video: <a href="{{pub.video.video_url}}" class="publication-video-link">[youtube]</a></span> | {% endif %}Export <a data-toggle="popover" data-html="true" data-trigger="manual" tabindex="0" title="Citation" data-content="Empty Citation" class="publication-citation-link">[Citation]</a></div>
+        		<div class="publication-download">
+                    Download: <a href="../../media/{{pub.pdf_file}}" class="publication-download-link">[pdf]</a>
+                    <span class="publication-video-link-label">|
+                        {% if pub.video %}
+                            Video: <a href="{{pub.video.video_url}}" class="publication-video-link">[youtube]</a></span> |
+                        {% endif %}
+                    Export <a data-toggle="popover" data-html="true" data-trigger="manual" tabindex="0" title="Citation" data-content="Empty Citation" class="publication-citation-link">[Citation]</a></div>
 		    </div>
 		</div>
 		{% endfor %}
