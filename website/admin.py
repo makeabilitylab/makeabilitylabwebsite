@@ -92,7 +92,7 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
     #info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
     #TODO: add one more field which is total time a lab member across different positions/roles, etc.
-    list_display = ('get_full_name', 'get_current_title', 'get_current_role', 'is_active', 'get_start_date', 'get_end_date', 'get_time_in_current_position')
+    list_display = ('get_full_name', 'get_current_title', 'get_current_role', 'is_active', 'get_start_date', 'get_end_date', 'get_time_in_current_position', 'get_total_time_as_member')
 
     #TODO setup filter here that has diff categories (like active members, past, etc.):
     #https://www.elements.nl/2015/03/16/getting-the-most-out-of-django-admin-filters/

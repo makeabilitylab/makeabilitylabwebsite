@@ -4,6 +4,7 @@ from sortedm2m.fields import SortedManyToManyField
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete
 from datetime import date
+from datetime import timedelta
 from website.utils.fileutils import UniquePathAndRename
 import os
 from random import choice
@@ -104,6 +105,20 @@ class Person(models.Model):
     def is_active(self):
         return self.is_current_member() or self.is_current_collaborator()
     is_active.short_description = "Is Active?"
+
+    # Returns the total time as in the specified role across all positions
+    def get_total_time_in_role(self, role):
+        totalTimeInRole = timedelta(0)
+        for position in self.position_set.all():
+            if position.role == role:
+                totalTimeInRole += position.get_time_in_this_position()
+        return totalTimeInRole
+    get_total_time_in_role.short_description = "Total Time In Role"
+
+    # Returns the total time as a member across all positions
+    def get_total_time_as_member(self):
+        return self.get_total_time_in_role(Position.MEMBER)
+    get_total_time_as_member.short_description = "Total Time As Member"
 
     # Returns True if person is current member of the lab. False otherwise
     def is_current_member(self):
