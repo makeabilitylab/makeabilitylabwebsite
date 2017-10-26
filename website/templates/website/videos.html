@@ -10,7 +10,7 @@
 
 {% block stylesheets %}
 
-<link rel="stylesheet" href="{% static 'website/css/talks.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/video.css' %}">
 <link rel="stylesheet" href="{% static 'website/css/jquery-ui.min.css' %}">
 <link rel="stylesheet" href="{% static 'website/css/jquery-ui.theme.min.css' %}">
 <link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}">
@@ -74,17 +74,24 @@
     <div id="content" class="container">
         <div class="talk-list" id="main-content">
             {% for video in videos %}
-                <div class="col-xs-12 col-md-6 video-column">
+                <!-- col-xs is the Bootstrap prefix for extra small devices (<768px)
+                     col-md is the Bootstrap prefix for medium devices (≥992px)
+                     See: https://getbootstrap.com/docs/3.3/css/#grid-options
+                     Grids always have 12 columns in Bootstrap.
+                     So, for example, col-xs-12 col-md-6 states that on small devices, a single column should
+                     stretch across all 12 grid cells. On a medium device, a single column should stretch across
+                     6 cells (so two columns). In our case, we have 1 column on mobile and 3 columns on larger screens -->
+                <div class="col-xs-12 col-md-4 video-column">
                     <div class="video-container">
                         <iframe class="video" src="{{video.get_embed}}" frameborder="0" allowfullscreen></iframe>
                     </div>
-                    <p class="video-title">{{video.title}}</p>
+                    <p class="video-title line-clamp">{{video.title}}</p>
                     <p class="video-location">{{video.caption}} </p>
                     <p class="video-links">
-                    <a href="{{video.video_url}}">YouTube</a>
-                    {% if video.publication %}
-                    | <a href="../../media/{{video.publication.pdf_file}}">Paper</a>
-                    {% endif %}
+                        <a href="{{video.video_url}}">YouTube</a>
+                        {% if video.publication %}
+                        | <a href="../../media/{{video.publication.pdf_file}}">Paper</a>
+                        {% endif %}
                     </p>
                 </div>
             {% endfor %}

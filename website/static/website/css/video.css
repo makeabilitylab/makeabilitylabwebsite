@@ -16,31 +16,54 @@
 .video-column {
     padding-left: 0px;
     padding-bottom: 20px;
+    min-height: 350px;
 }
 
 .video-title {
-	font-family: adelle-regular;
-	font-weight: bold;
-	color: #464D59;
-	font-size: 15px;
-	word-wrap: break-word;
-	text-overflow: ellipsis;
-	padding-top: 5px;
-	margin: 0px;
+    font-family: adelle-regular;
+    font-weight: bold;
+    color: #464D59;
+    font-size: 14px;
+    word-wrap: break-word;
+    text-overflow: ellipsis;
+    padding-top: 5px;
+    margin: 0px;
 }
 
 .video-location {
-    margin-top: 0px;
+    font-size: 13px;
+    margin-top: 1px;
+    margin-bottom: 0px;
     color: #7F7F7F;
 }
 
 .video-links {
-	position: absolute;
-	font-size: 12px;
-	width:100%;
-	height: 20px;
-	bottom:0;
-	right:0px;
-	margin-left:5px;
-	margin-top: 5px;
+    /*position: absolute;*/
+    font-size: 11px;
+    width: 100%;
+    margin-top: 0px;
+    margin-top: 1px;
+    /*height: 20px;*/
+    /*bottom:0;*/
+    /*right:0px;*/
+    /*margin-left:5px;*/
+    /*margin-top: 5px;*/
+}
+
+/**
+ * https://css-tricks.com/line-clampin/ relevant to text wrapping
+ * Firefox support comes from here http://jsfiddle.net/danield770/DpQ7e/30/ and
+ * http://stackoverflow.com/questions/20594995/why-webkit-line-clamping-does-not-work-in-firefox
+ */
+@supports (-webkit-line-clamp: 2) {
+    .line-clamp {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .line-clamp:after {
+        display: none;
+    }
 }
