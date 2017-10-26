@@ -317,6 +317,7 @@
             {% endfor %}
         </div>
 
+        {# TODO: Still need to add back in sorting by position possibly#}
         {% for project_member_header_str, project_members in project_members_dict.items %}
             <div class="row row-eq-height row-adjust-margins people-row">
                 {% ifequal project_members|length 0 %}
