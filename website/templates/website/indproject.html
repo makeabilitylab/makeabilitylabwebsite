@@ -244,657 +244,116 @@
 	</div>
     </div>
     <div class="row no-margin" id="below-sidebar">
-	<div class="row row-adjust-margins">
-	    {% if videos %}
-	    <h3 class="news-type-lable"><b>Recent Videos</b></h3>
-	    {% endif %}
-	    {% for video in videos %}
-	    <div class="col-xs-12 col-md-6 video-column">
-		<div class="video-container">
-		    <iframe class="video" src="{{video.get_embed}}" frameborder="0" allowfullscreen></iframe>
-		</div>
-		<p class="video-title">{{video.title}}</p>
-		{% if video.caption %}
-		<p class="video-location">{{video.caption}} </p>
-		{% endif %}
-		<p class="video-links">
-		    <a href="{{video.video_url}}">YouTube</a>
-		    {% if video.publication %}
-		    | <a href="../../media/{{video.publication.pdf_file}}">Paper</a>
-		    {% endif %}
-		</p>
-	    </div>
-	    {% endfor %}
-	</div>
-	<div class="row row-adjust-margins">
-	    {% if talks %}
-	    <h3 class="news-type-label"><b>Recent Talks</b></h3>
-	    {% endif %}
-	    <div class="col-xs-12 no-margin">
-		<div class="row no-margin">
-		    <!-- Create a div for each talk passed in -->
-		    {% for talk in talks %}
-		    <div class="col-ts-12 col-xs-6 col-sm-6 col-md-4 col-lg-3 talk-template-landing landing-talk-fix">
-                <div class="talk-info">
-                    <div class="talk-thumbnail">
-                    <a href="../../media/{{talk.pdf_file}}" class="talk-thumbnail-link">
-                        <img src="{% thumbnail talk.thumbnail 420x0 detail %}" class="talk-thumbnail-image img-responsive talk-image-fix"/>
-                    </a>
-                    </div>
-                    <p class="talk-title line-clamp">
-                    {{talk.title}}
-                    </p>
-                    <p class="talk-speakers">
-                    {% for speaker in talk.speakers.all %}
-                    {% if forloop.last %}
-                    <span class="talk-speaker"><a href="{% url 'website:member' speaker.id %}">{{speaker.get_full_name}}</a></span>
-                    {% else %}
-                    <span class="talk-speaker"><a href="{% url 'website:member' speaker.id %}">{{speaker.get_full_name}}</a>,&nbsp;</span>
-                    {% endif %}
-                    {% endfor %}
-                    </p>
-                    <p class="talk-stats">
-                    <span class="talk-date">{{talk.date}}</span>
-                    <span class="talk-location">{{talk.location}}</span>
-                    </p>
-                </div>
-		    </div>
-		    {% endfor %}
-		</div>
-	    </div>
-	</div>
-	<div class="row row-adjust-margins">
-	    {% if photos %}
-	    <h3 class="news-type-label">Photo Gallery</h3>
-	    {% endif %}
-	    {% for image in photos %}
-	    <div class="col-md-4 project-gallery-col">
-		<img src="{% thumbnail image.picture 368x245 box=image.cropping crop detail %}" alt="{{image.alt_text}}" class="project-gallery">
-		<div class="overlay-image">
-		    <p class="image-gallery-caption">{{image.caption}}</p>
-		</div>
-	    </div>
-	    {% endfor %}
-	</div>
-
-	<div class="row row-eq-height row-adjust-margins people-row">
-	    {% ifequal active|length 0 %}
-	    {% else %}
-	    <h3 class="news-type-label">Current Project Members</h3>
-	    {% endifequal %}
-	    {% for member in active_pis %}
-            <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-		        <a href="{% url 'website:member' member.person.id %}">
-                    <div class="easter-egg-col">
-                        <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-                            <div class="overlay-easter-egg">
-                                <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
-                            </div>
-                    </div>
-		        </a>
-		        <div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}"><h5>{{ member.person.get_full_name }}</h5></a>
-		            {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-                    {% if member.pi_member %}
-                        {{member.pi_member}} |
-                    {% endif %}
-
-                    {% with member.person.position_set.all|first as position %}
-                            {{ position.title }}
-                        {% if position.is_high_school %}
-
+        <div class="row row-adjust-margins">
+            {% if videos %}
+            <h3 class="news-type-lable"><b>Recent Videos</b></h3>
+            {% endif %}
+            {% for video in videos %}
+            <div class="col-xs-12 col-md-6 video-column">
+            <div class="video-container">
+                <iframe class="video" src="{{video.get_embed}}" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <p class="video-title">{{video.title}}</p>
+            {% if video.caption %}
+            <p class="video-location">{{video.caption}} </p>
+            {% endif %}
+            <p class="video-links">
+                <a href="{{video.video_url}}">YouTube</a>
+                {% if video.publication %}
+                | <a href="../../media/{{video.publication.pdf_file}}">Paper</a>
+                {% endif %}
+            </p>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="row row-adjust-margins">
+            {% if talks %}
+            <h3 class="news-type-label"><b>Recent Talks</b></h3>
+            {% endif %}
+            <div class="col-xs-12 no-margin">
+            <div class="row no-margin">
+                <!-- Create a div for each talk passed in -->
+                {% for talk in talks %}
+                <div class="col-ts-12 col-xs-6 col-sm-6 col-md-4 col-lg-3 talk-template-landing landing-talk-fix">
+                    <div class="talk-info">
+                        <div class="talk-thumbnail">
+                        <a href="../../media/{{talk.pdf_file}}" class="talk-thumbnail-link">
+                            <img src="{% thumbnail talk.thumbnail 420x0 detail %}" class="talk-thumbnail-image img-responsive talk-image-fix"/>
+                        </a>
+                        </div>
+                        <p class="talk-title line-clamp">
+                        {{talk.title}}
+                        </p>
+                        <p class="talk-speakers">
+                        {% for speaker in talk.speakers.all %}
+                        {% if forloop.last %}
+                        <span class="talk-speaker"><a href="{% url 'website:member' speaker.id %}">{{speaker.get_full_name}}</a></span>
                         {% else %}
-                            <br/>{{ position.department }}
+                        <span class="talk-speaker"><a href="{% url 'website:member' speaker.id %}">{{speaker.get_full_name}}</a>,&nbsp;</span>
                         {% endif %}
-                        <br/>{{ position.school }}
-		            {% endwith %}
-		        </div>
+                        {% endfor %}
+                        </p>
+                        <p class="talk-stats">
+                        <span class="talk-date">{{talk.date}}</span>
+                        <span class="talk-location">{{talk.location}}</span>
+                        </p>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
-	    {% endfor %}
-	    {% for member in active_copis %}
-            <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-		<a href="{% url 'website:member' member.person.id %}">
-                    <div class="easter-egg-col">
-			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			<div class="overlay-easter-egg">
-			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
-			</div>
-		    </div>
-		</a>
-		<div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}">
-			<h5>{{ member.person.get_full_name }}</h5>
-                    </a>
-		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-		    {% if member.pi_member %}
-		    {{member.pi_member}} | 
-		    {% endif %}
+            </div>
+        </div>
+        <div class="row row-adjust-margins">
+            {% if photos %}
+            <h3 class="news-type-label">Photo Gallery</h3>
+            {% endif %}
+            {% for image in photos %}
+            <div class="col-md-4 project-gallery-col">
+            <img src="{% thumbnail image.picture 368x245 box=image.cropping crop detail %}" alt="{{image.alt_text}}" class="project-gallery">
+            <div class="overlay-image">
+                <p class="image-gallery-caption">{{image.caption}}</p>
+            </div>
+            </div>
+            {% endfor %}
+        </div>
 
-		    {% with member.person.position_set.all|first as position %}
-                    {{ position.title }}
-		    {% if position.is_high_school %}{% else %}
-		    <br/>		    {{ position.department }}
-		    {% endif %}
-                    <br/>
-                    {{ position.school }}
-		    {% endwith %}
-		</div>
-            </div>
-	    {% endfor %}
-	    {% for member in active_prof %}
-            <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-		<a href="{% url 'website:member' member.person.id %}">
-                    <div class="easter-egg-col">
-			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			<div class="overlay-easter-egg">
-			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
-			</div>
-		    </div>
-		</a>
-		<div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}">
-			<h5>{{ member.person.get_full_name }}</h5>
-                    </a>
-		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-		    {% if member.pi_member %}
-		    {{member.pi_member}} | 
-		    {% endif %}
+        {% for project_member_header_str, project_members in project_members_dict.items %}
+            <div class="row row-eq-height row-adjust-margins people-row">
+                {% ifequal project_members|length 0 %}
+                {% else %}
+                    <h3 class="news-type-label">{{ project_member_header_str }}</h3>
+                {% endifequal %}
+                {% for member in project_members %}
+                    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
+                        <a href="{% url 'website:member' member.person.id %}">
+                            <div class="easter-egg-col">
+                                <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
+                                    <div class="overlay-easter-egg">
+                                        <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
+                                    </div>
+                            </div>
+                        </a>
+                        <div class="item-info">
+                            <a href="{% url 'website:member' member.person.id %}"><h5>{{ member.person.get_full_name }}</h5></a>
+                            {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
+                            {% if member.pi_member %}
+                                {{member.pi_member}} |
+                            {% endif %}
 
-		    {% with member.person.position_set.all|first as position %}
-                    {{ position.title }}
-		    {% if position.is_high_school %}{% else %}
-		    <br/>		    {{ position.department }}
-		    {% endif %}
-                    <br/>
-                    {{ position.school }}
-		    {% endwith %}
-		</div>
-            </div>
-	    {% endfor %}
-	    {% for member in active_postdoc %}
-            <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-		<a href="{% url 'website:member' member.person.id %}">
-                    <div class="easter-egg-col">
-			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			<div class="overlay-easter-egg">
-			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
-			</div>
-		    </div>
-		</a>
-		<div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}">
-			<h5>{{ member.person.get_full_name }}</h5>
-                    </a>
-		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-		    {% if member.pi_member %}
-		    {{member.pi_member}} | 
-		    {% endif %}
+                            {% with member.person.position_set.all|first as position %}
+                                    {{ position.title }}
+                                {% if position.is_high_school %}
 
-		    {% with member.person.position_set.all|first as position %}
-                    {{ position.title }}
-		    {% if position.is_high_school %}{% else %}
-		    <br/>		    {{ position.department }}
-		    {% endif %}
-                    <br/>
-                    {{ position.school }}
-		    {% endwith %}
-		</div>
+                                {% else %}
+                                    <br/>{{ position.department }}
+                                {% endif %}
+                                <br/>{{ position.school }}
+                            {% endwith %}
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
-	    {% endfor %}
-	    {% for member in active_phd %}
-            <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-		<a href="{% url 'website:member' member.person.id %}">
-                    <div class="easter-egg-col">
-			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			<div class="overlay-easter-egg">
-			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
-			</div>
-		    </div>
-		</a>
-		<div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}">
-			<h5>{{ member.person.get_full_name }}</h5>
-                    </a>
-		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-		    {% if member.pi_member %}
-		    {{member.pi_member}} | 
-		    {% endif %}
-
-		    {% with member.person.position_set.all|first as position %}
-                    {{ position.title }}
-		    {% if position.is_high_school %}{% else %}
-		    <br/>		    {{ position.department }}
-		    {% endif %}
-                    <br/>
-                    {{ position.school }}
-		    {% endwith %}
-		</div>
-            </div>
-	    {% endfor %}
-	    {% for member in active_ms %}
-            <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-		<a href="{% url 'website:member' member.person.id %}">
-                    <div class="easter-egg-col">
-			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			<div class="overlay-easter-egg">
-			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
-			</div>
-		    </div>
-		</a>
-		<div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}">
-			<h5>{{ member.person.get_full_name }}</h5>
-                    </a>
-		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-		    {% if member.pi_member %}
-		    {{member.pi_member}} | 
-		    {% endif %}
-
-		    {% with member.person.position_set.all|first as position %}
-                    {{ position.title }}
-		    {% if position.is_high_school %}{% else %}
-		    <br/>		    {{ position.department }}
-		    {% endif %}
-                    <br/>
-                    {{ position.school }}
-		    {% endwith %}
-		</div>
-            </div>
-	    {% endfor %}
-	    {% for member in active_undergrad %}
-            <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-		<a href="{% url 'website:member' member.person.id %}">
-                    <div class="easter-egg-col">
-			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			<div class="overlay-easter-egg">
-			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
-			</div>
-		    </div>
-		</a>
-		<div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}">
-			<h5>{{ member.person.get_full_name }}</h5>
-                    </a>
-		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-		    {% if member.pi_member %}
-		    {{member.pi_member}} | 
-		    {% endif %}
-
-		    {% with member.person.position_set.all|first as position %}
-                    {{ position.title }}
-		    {% if position.is_high_school %}{% else %}
-		    <br/>		    {{ position.department }}
-		    {% endif %}
-                    <br/>
-                    {{ position.school }}
-		    {% endwith %}
-		</div>
-            </div>
-	    {% endfor %}
-	    {% for member in active_highschool %}
-            <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-		<a href="{% url 'website:member' member.person.id %}">
-                    <div class="easter-egg-col">
-			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			<div class="overlay-easter-egg">
-			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
-			</div>
-		    </div>
-		</a>
-		<div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}">
-			<h5>{{ member.person.get_full_name }}</h5>
-                    </a>
-		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-		    {% if member.pi_member %}
-		    {{member.pi_member}} | 
-		    {% endif %}
-
-		    {% with member.person.position_set.all|first as position %}
-                    {{ position.title }}
-		    {% if position.is_high_school %}{% else %}
-		    <br/>		    {{ position.department }}
-		    {% endif %}
-                    <br/>
-                    {{ position.school }}
-		    {% endwith %}
-		</div>
-            </div>
-	    {% endfor %}
-	    {% for member in active_other %}
-            <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-		<a href="{% url 'website:member' member.person.id %}">
-                    <div class="easter-egg-col">
-			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			<div class="overlay-easter-egg">
-			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
-			</div>
-		    </div>
-		</a>
-		<div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}">
-			<h5>{{ member.person.get_full_name }}</h5>
-                    </a>
-		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-		    {% if member.pi_member %}
-		    {{member.pi_member}} | 
-		    {% endif %}
-
-		    {% with member.person.position_set.all|first as position %}
-                    {{ position.title }}
-		    {% if position.is_high_school %}{% else %}
-		    <br/>		    {{ position.department }}
-		    {% endif %}
-                    <br/>
-                    {{ position.school }}
-		    {% endwith %}
-		</div>
-            </div>
-	    {% endfor %}
-	</div>
-	<div class ="row row-adjust-margins people-row">
-	    {% ifequal alumni|length 0 %}
-	    {% else %}
-	    <h3 class="news-type-label">Past Project Members</h3>
-	    {% endifequal %}
-	    {% for member in alumni_pis %}
-	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-		<a href="{% url 'website:member' member.person.id %}">
-                    <div class="easter-egg-col">
-			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			<div class="overlay-easter-egg">
-			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
-			</div>
-		    </div>
-		</a>
-		<div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}">
-			<h5>{{ member.person.get_full_name }}</h5>
-                    </a>
-		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-		    {% if member.pi_member %}
-		    {{member.pi_member}} | 
-		    {% endif %}
-		    {% if member.person.position_set.all|length > 0 %}
-		    {% with member.person.position_set.all|first as position %}
-                    {{ position.title }}
-		    {% if position.is_high_school %}
-		    {% else %}
-		    <br/>
-		    {{ position.department }}
-		    {% endif %}
-                    <br/>
-                    {{ position.school }}
-		    {% endwith %}
-		    {% endif %}
-		</div>
-            </div>
-	    {% endfor %}
-	    {% for member in alumni_copis %}
-	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-		<a href="{% url 'website:member' member.person.id %}">
-                    <div class="easter-egg-col">
-			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			<div class="overlay-easter-egg">
-			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
-			</div>
-		    </div>
-		</a>
-		<div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}">
-			<h5>{{ member.person.get_full_name }}</h5>
-                    </a>
-		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-		    {% if member.pi_member %}
-		    {{member.pi_member}} | 
-		    {% endif %}
-		    {% if member.person.position_set.all|length > 0 %}
-		    {% with member.person.position_set.all|first as position %}
-                    {{ position.title }}
-		    {% if position.is_high_school %}
-		    {% else %}
-		    <br/>
-		    {{ position.department }}
-		    {% endif %}
-                    <br/>
-                    {{ position.school }}
-		    {% endwith %}
-		    {% endif %}
-		</div>
-            </div>
-	    {% endfor %}
-	    {% for member in alumni_prof %}
-	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-		<a href="{% url 'website:member' member.person.id %}">
-                    <div class="easter-egg-col">
-			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			<div class="overlay-easter-egg">
-			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
-			</div>
-		    </div>
-		</a>
-		<div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}">
-			<h5>{{ member.person.get_full_name }}</h5>
-                    </a>
-		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-		    {% if member.pi_member %}
-		    {{member.pi_member}} | 
-		    {% endif %}
-		    {% if member.person.position_set.all|length > 0 %}
-		    {% with member.person.position_set.all|first as position %}
-                    {{ position.title }}
-		    {% if position.is_high_school %}
-		    {% else %}
-		    <br/>
-		    {{ position.department }}
-		    {% endif %}
-                    <br/>
-                    {{ position.school }}
-		    {% endwith %}
-		    {% endif %}
-		</div>
-            </div>
-	    {% endfor %}
-	    {% for member in alumni_postdoc %}
-	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-		<a href="{% url 'website:member' member.person.id %}">
-                    <div class="easter-egg-col">
-			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			<div class="overlay-easter-egg">
-			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
-			</div>
-		    </div>
-		</a>
-		<div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}">
-			<h5>{{ member.person.get_full_name }}</h5>
-                    </a>
-		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-		    {% if member.pi_member %}
-		    {{member.pi_member}} | 
-		    {% endif %}
-		    {% if member.person.position_set.all|length > 0 %}
-		    {% with member.person.position_set.all|first as position %}
-                    {{ position.title }}
-		    {% if position.is_high_school %}
-		    {% else %}
-		    <br/>
-		    {{ position.department }}
-		    {% endif %}
-                    <br/>
-                    {{ position.school }}
-		    {% endwith %}
-		    {% endif %}
-		</div>
-            </div>
-	    {% endfor %}
-	    {% for member in alumni_phd %}
-	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-		<a href="{% url 'website:member' member.person.id %}">
-                    <div class="easter-egg-col">
-			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			<div class="overlay-easter-egg">
-			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
-			</div>
-		    </div>
-		</a>
-		<div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}">
-			<h5>{{ member.person.get_full_name }}</h5>
-                    </a>
-		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-		    {% if member.pi_member %}
-		    {{member.pi_member}} | 
-		    {% endif %}
-		    {% if member.person.position_set.all|length > 0 %}
-		    {% with member.person.position_set.all|first as position %}
-                    {{ position.title }}
-		    {% if position.is_high_school %}
-		    {% else %}
-		    <br/>
-		    {{ position.department }}
-		    {% endif %}
-                    <br/>
-                    {{ position.school }}
-		    {% endwith %}
-		    {% endif %}
-		</div>
-            </div>
-	    {% endfor %}
-	    {% for member in alumni_ms %}
-	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-		<a href="{% url 'website:member' member.person.id %}">
-                    <div class="easter-egg-col">
-			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			<div class="overlay-easter-egg">
-			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
-			</div>
-		    </div>
-		</a>
-		<div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}">
-			<h5>{{ member.person.get_full_name }}</h5>
-                    </a>
-		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-		    {% if member.pi_member %}
-		    {{member.pi_member}} | 
-		    {% endif %}
-		    {% if member.person.position_set.all|length > 0 %}
-		    {% with member.person.position_set.all|first as position %}
-                    {{ position.title }}
-		    {% if position.is_high_school %}
-		    {% else %}
-		    <br/>
-		    {{ position.department }}
-		    {% endif %}
-                    <br/>
-                    {{ position.school }}
-		    {% endwith %}
-		    {% endif %}
-		</div>
-            </div>
-	    {% endfor %}
-	    {% for member in alumni_undergrad %}
-	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-		<a href="{% url 'website:member' member.person.id %}">
-                    <div class="easter-egg-col">
-			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			<div class="overlay-easter-egg">
-			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
-			</div>
-		    </div>
-		</a>
-		<div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}">
-			<h5>{{ member.person.get_full_name }}</h5>
-                    </a>
-		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-		    {% if member.pi_member %}
-		    {{member.pi_member}} | 
-		    {% endif %}
-		    {% if member.person.position_set.all|length > 0 %}
-		    {% with member.person.position_set.all|first as position %}
-                    {{ position.title }}
-		    {% if position.is_high_school %}
-		    {% else %}
-		    <br/>
-		    {{ position.department }}
-		    {% endif %}
-                    <br/>
-                    {{ position.school }}
-		    {% endwith %}
-		    {% endif %}
-		</div>
-            </div>
-	    {% endfor %}
-	    {% for member in alumni_highschool %}
-	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-		<a href="{% url 'website:member' member.person.id %}">
-                    <div class="easter-egg-col">
-			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			<div class="overlay-easter-egg">
-			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
-			</div>
-		    </div>
-		</a>
-		<div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}">
-			<h5>{{ member.person.get_full_name }}</h5>
-                    </a>
-		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-		    {% if member.pi_member %}
-		    {{member.pi_member}} | 
-		    {% endif %}
-		    {% if member.person.position_set.all|length > 0 %}
-		    {% with member.person.position_set.all|first as position %}
-                    {{ position.title }}
-		    {% if position.is_high_school %}
-		    {% else %}
-		    <br/>
-		    {{ position.department }}
-		    {% endif %}
-                    <br/>
-                    {{ position.school }}
-		    {% endwith %}
-		    {% endif %}
-		</div>
-            </div>
-	    {% endfor %}
-	    {% for member in alumni_other %}
-	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-		<a href="{% url 'website:member' member.person.id %}">
-                    <div class="easter-egg-col">
-			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			<div class="overlay-easter-egg">
-			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
-			</div>
-		    </div>
-		</a>
-		<div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}">
-			<h5>{{ member.person.get_full_name }}</h5>
-                    </a>
-		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-		    {% if member.pi_member %}
-		    {{member.pi_member}} | 
-		    {% endif %}
-		    {% if member.person.position_set.all|length > 0 %}
-		    {% with member.person.position_set.all|first as position %}
-                    {{ position.title }}
-		    {% if position.is_high_school %}
-		    {% else %}
-		    <br/>
-		    {{ position.department }}
-		    {% endif %}
-                    <br/>
-                    {{ position.school }}
-		    {% endwith %}
-		    {% endif %}
-		</div>
-            </div>
-	    {% endfor %}
-	</div>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}
