@@ -5,6 +5,10 @@
     padding-bottom: 56.25%;
 }
 
+.video-list{
+    margin-top: 20px;
+}
+
 .video {
     position: absolute;
     top: 0;
@@ -16,7 +20,7 @@
 .video-column {
     padding-left: 0px;
     padding-bottom: 20px;
-    min-height: 350px;
+    min-height: 340px;
 }
 
 .video-title {

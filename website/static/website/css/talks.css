@@ -47,6 +47,7 @@
 	margin: 0 auto;
     }
 }
+
 @media (min-width: 769px){
     .talk-template-landing {
 	padding-top:10px;
