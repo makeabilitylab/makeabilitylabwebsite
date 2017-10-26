@@ -382,16 +382,20 @@ class Project_umbrella(models.Model):
     
 class Project(models.Model):
     name = models.CharField(max_length=255)
+
     #Short name is used for urls, and should be name.lower().replace(" ", "")
     short_name = models.CharField(max_length=255)
     short_name.help_text="This should be the same as your name but lower case with no spaces. It is used in the url of the project"
+
     #Sponsors is currently a simple list of sponsors but could be updated to a many to many field if a sponsors model is desired.
     sponsors = models.ManyToManyField(Sponsor, blank=True, null=True)
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     project_umbrellas = models.ManyToManyField(Project_umbrella, blank=True, null=True)
+
     #header_visual = models.ForeignKey(Project_header, blank=True, null=True)
     keywords = models.ManyToManyField(Keyword, blank=True, null=True)
+
     #pis = models.ManyToOneField(Person, blank=True, null=True)
     gallery_image = models.ImageField(upload_to='projects/images', blank=True, null=True, max_length=255)
     gallery_image.help_text = "This is the image which will show up on the project gallery page. It is not displayed anywhere else. You must select 'Save and continue editing' at the bottom of the page after uploading a new image for cropping. Please note that since we are using a responsive design with fixed height banners, your selected image may appear differently on various screens."
@@ -455,7 +459,7 @@ class Project_Role(models.Model):
     def __str__(self):
         return "Name={}, PI/Co-PI={}".format(self.person.get_full_name(), self.pi_member)
 
-#This class contains the iamge or video which will appear in the top description of each project. It functions as a combination of Photo and Video, but is seperated to make it simpler to have a specific video or photo as the projects header.
+#This class contains the image or video which will appear in the top description of each project. It functions as a combination of Photo and Video, but is seperated to make it simpler to have a specific video or photo as the projects header.
 class Project_header(models.Model):
     title = models.CharField(max_length=255)
     title.help_text="These fields are used as the image in the about section. To add a banner to your page go to the banners table and assign banners to your project using the project field there. This field will accept both a video and an image. If both are provided the video will be used."

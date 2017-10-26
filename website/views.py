@@ -3,6 +3,7 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, render
 from .models import Person, Publication, Talk, Position, Banner, News, Keyword, Video, Project, Project_umbrella
 from django.conf import settings
+from operator import itemgetter, attrgetter, methodcaller
 from datetime import date
 
 #from . import googleanalytics
@@ -283,110 +284,41 @@ def project_ind(request, project_name):
    project = get_object_or_404(Project, short_name__iexact=project_name)
    all_banners = project.banner_set.all()
    displayed_banners = choose_banners(all_banners)
-   members = project.project_role_set.order_by('-start_date')
-   active = []
-   active_pis = []
-   active_copis = []
-   active_prof = []
-   active_postdoc = []
-   active_phd = []
-   active_ms = []
-   active_undergrad = []
-   active_highschool = []
-   active_other = []
-   alumni = []
-   alumni_pis = []
-   alumni_copis = []
-   alumni_prof = []
-   alumni_postdoc = []
-   alumni_phd = []
-   alumni_ms = []
-   alumni_undergrad = []
-   alumni_highschool = []
-   alumni_other = []
+   project_members = project.project_role_set.order_by('start_date')
+   current_members = [] # = project_members.filter(is_active=True) # can't use is_active in filter because it's a function
+   alumni_members = [] # = project_members.filter(is_active=False).order_by('end_date')
+
+   for member in project_members:
+       if member.is_active():
+           current_members.append(member)
+       else:
+           alumni_members.append(member)
+
+   #TODO: sort current members by PI, Co-PI first, then start date (oldest start date first), then role (e.g., professors, then grad, then undergrad),
+   #TODO: sorty alumni members by PI, CO-PI first, then date date (most recent end date first), then role
+   alumni_members = sorted(alumni_members, key=attrgetter('end_date'), reverse=True)
+
    publications = project.publication_set.order_by('-date')
    videos = project.video_set.order_by('-date')
    talks = project.talk_set.order_by('-date')
    news = project.news_set.order_by('-date')
    photos = project.photo_set.all()
-   for member in members:
-      if member.is_active():
-         active.append(member)
-         if member.pi_member == "PI":
-            active_pis.append(member)
-         elif member.pi_member == "Co-PI":
-            active_copis.append(member)
-         elif len(member.person.position_set.all()) > 0:
-            position = member.person.position_set.order_by('-start_date')[0]
-            if position.is_professor():
-               active_prof.append(member)
-            elif position.title == Position.POST_DOC:
-               active_postdoc.append(member)
-            elif position.title == Position.PHD_STUDENT:
-               active_phd.append(member)
-            elif position.title == Position.MS_STUDENT:
-               active_ms.append(member)
-            elif position.title == Position.UGRAD:
-               active_undergrad.append(member)
-            elif position.title == Position.HIGH_SCHOOL:
-               active_highschool.append(member)
-            else:
-               active_other.append(member)
-         else:
-            active_other.append(member)
-      else:
-         alumni.append(member)
-         if member.pi_member == "PI":
-            alumni_pis.append(member)
-         elif member.pi_member == "Co-PI":
-            alumni_copis.append(member)
-         elif len(member.person.position_set.all()) > 0:
-            position = member.person.position_set.order_by('-start_date')[0]
-            if position.is_professor():
-               alumni_prof.append(member)
-            elif position.title == Position.POST_DOC:
-               alumni_postdoc.append(member)
-            elif position.title == Position.PHD_STUDENT:
-               alumni_phd.append(member)
-            elif position.title == Position.MS_STUDENT:
-               alumni_ms.append(member)
-            elif position.title == Position.UGRAD:
-               alumni_undergrad.append(member)
-            elif position.title == Position.HIGH_SCHOOL:
-               alumni_highschool.append(member)
-            else:
-               alumni_other.append(member)
-         else:
-            alumni_other.append(member)
+   project_members_dict = {
+       'Current Project Members' : current_members,
+       'Past Project Members' : alumni_members
+   }
 
    context = { 'banners': displayed_banners,
                'project': project,
-               'active': active,
-               'active_pis': active_pis,
-               'active_copis': active_copis,
-               'active_prof': active_prof,
-               'active_postdoc': active_postdoc,
-               'active_phd': active_phd,
-               'active_ms': active_ms,
-               'active_undergrad': active_undergrad,
-               'active_highschool': active_highschool,
-               'active_other': active_other,
-               'alumni': alumni,
-               'alumni_pis': alumni_pis,
-               'alumni_copis': alumni_copis,
-               'alumni_prof': alumni_prof,
-               'alumni_postdoc': alumni_postdoc,
-               'alumni_phd': alumni_phd,
-               'alumni_ms': alumni_ms,
-               'alumni_undergrad': alumni_undergrad,
-               'alumni_highschool': alumni_highschool,
-               'alumni_other':alumni_other,
+               'project_members' : project_members,
+               'project_members_dict' : project_members_dict,
                'publications': publications,
                'talks': talks,
                'videos': videos,
                'news': news,
                'photos': photos,
                'debug': settings.DEBUG}
+
    return render(request, 'website/indproject.html', context)
 
 
