@@ -7,117 +7,11 @@ from datetime import date
 
 #from . import googleanalytics
 
-max_banners = 7
+max_banners = 7 # TODO: figure out best way to specify these settings... like, is it good to have them up here?
 filter_all_pubs_prior_to_date = datetime.date(2012, 1, 1) # Date Makeability Lab was formed
 
-def get_most_recent(projects):
-   updated = []
-   print(projects)
-   for project in projects:
-      #Adding more times to the time array will allow you to add additional fields in the future
-      times = []
-      if project.updated != None:
-         times.append(project.updated)
-      if len(project.publication_set.all()) > 0:
-         times.append(project.publication_set.order_by('-date')[0].date)
-      if len(project.talk_set.all()) > 0:
-         times.append(project.talk_set.order_by('-date')[0].date)
-      if len(project.video_set.all()) > 0:
-         times.append(project.video_set.order_by('-date')[0].date)
-      times.sort()
-      updated.append({'proj': project, 'updated': times[0]})
-   sorted_list = sorted(updated, key=lambda k: k['updated'], reverse=True)
-   return [item['proj'] for item in sorted_list]
-
-#Get the page views per page including their first and second level paths
-def get_ind_pageviews(service, profile_id):
-  return service.data().ga().get(
-    ids='ga:' + profile_id,
-    start_date='30daysAgo',
-    end_date='today',
-    metrics='ga:pageviews',
-    dimensions='ga:PagePathLevel1,ga:PagePathLevel2'
-  ).execute().get('rows')
-
-def get_project(page):
-   proj = None
-   for project in Project.objects.all():
-      if project.short_name in page.lower():
-         proj = project
-   return proj
-
-def sort_popular_projects(projects):
-   page_views = {}
-   for path, subpage, count in projects:
-      if 'project' in path:
-         proj=get_project(subpage)
-         if proj != None:
-            if proj in page_views.keys():
-               page_views[proj]+=int(count)
-            else:
-               page_views[proj]=int(count)
-   project_popularity=sorted([{'proj': key, 'views': page_views[key]} for key in page_views.keys()], key=lambda k: k['views'], reverse=True)
-   return [item['proj'] for item in project_popularity]
-
-def weighted_choice(choices):
-   total = sum(w for c, w in choices)
-   r = random.uniform(0, total)
-   upto = 0
-   for c, w in choices:
-      if upto + w >= r:
-         return c
-      upto += w
-   # assert False, "Shouldn't get here"
-   return choices[0][0]
-
-def choose_banners_helper(banners, count):
-    banner_weights = []
-    total_weight = 0
-    for banner in banners:
-        elapsed = (datetime.datetime.now().date() - banner.date_added).days / 31.0
-        if elapsed <= 0:
-            elapsed = 1.0 / 31.0
-        weight = 1.0 + 1.0 / elapsed
-        banner_weights.append((banner, weight))
-        total_weight += weight
-    for i in range(0, len(banner_weights)):
-        banner_weights[i] = (banner_weights[i][0], banner_weights[i][1] / total_weight)
-        print(banner_weights[i][1])
-
-    selected_banners = []
-    for i in range(0, count):
-        if len(selected_banners) == len(banners):
-            break
-        banner = weighted_choice(banner_weights)
-        selected_banners.append(banner)
-        index = [y[0] for y in banner_weights].index(banner)
-        total_weight -= banner_weights[index][1]
-        del banner_weights[index]
-        if len(banner_weights) == 0:
-            break
-        for i in range(0, len(banner_weights)):
-            banner_weights[i] = (banner_weights[i][0], banner_weights[i][1] / total_weight)
-
-    return selected_banners
-
-def choose_banners(banners):
-  favorite_banners = []
-  other_banners = []
-  for banner in banners:
-    if banner.favorite == True:
-      favorite_banners.append(banner)
-    else:
-      other_banners.append(banner)
-
-  selected_banners = choose_banners_helper(favorite_banners, max_banners)
-  if len(selected_banners) < max_banners:
-    temp = choose_banners_helper(other_banners, max_banners - len(selected_banners))
-    for banner in temp:
-      selected_banners.append(banner)
-
-  return selected_banners
-
-#Every view is passed settings.DEBUG. This is used to insert the appropriate google analytics tracking when in production, and to not include it for development
+#Every view is passed settings.DEBUG. This is used to insert the appropriate google analytics tracking when in
+# production, and to not include it for development
  
 def index(request):
     news_items_num = 7 # Defines the number of news items that will be selected
@@ -522,3 +416,112 @@ def news(request, news_id):
                'project_news': project_news,
                'debug': settings.DEBUG }
    return render(request, 'website/news.html', context)
+
+## Helper functions for views ##
+
+def get_most_recent(projects):
+   updated = []
+   print(projects)
+   for project in projects:
+      #Adding more times to the time array will allow you to add additional fields in the future
+      times = []
+      if project.updated != None:
+         times.append(project.updated)
+      if len(project.publication_set.all()) > 0:
+         times.append(project.publication_set.order_by('-date')[0].date)
+      if len(project.talk_set.all()) > 0:
+         times.append(project.talk_set.order_by('-date')[0].date)
+      if len(project.video_set.all()) > 0:
+         times.append(project.video_set.order_by('-date')[0].date)
+      times.sort()
+      updated.append({'proj': project, 'updated': times[0]})
+   sorted_list = sorted(updated, key=lambda k: k['updated'], reverse=True)
+   return [item['proj'] for item in sorted_list]
+
+#Get the page views per page including their first and second level paths
+def get_ind_pageviews(service, profile_id):
+  return service.data().ga().get(
+    ids='ga:' + profile_id,
+    start_date='30daysAgo',
+    end_date='today',
+    metrics='ga:pageviews',
+    dimensions='ga:PagePathLevel1,ga:PagePathLevel2'
+  ).execute().get('rows')
+
+def get_project(page):
+   proj = None
+   for project in Project.objects.all():
+      if project.short_name in page.lower():
+         proj = project
+   return proj
+
+def sort_popular_projects(projects):
+   page_views = {}
+   for path, subpage, count in projects:
+      if 'project' in path:
+         proj=get_project(subpage)
+         if proj != None:
+            if proj in page_views.keys():
+               page_views[proj]+=int(count)
+            else:
+               page_views[proj]=int(count)
+   project_popularity=sorted([{'proj': key, 'views': page_views[key]} for key in page_views.keys()], key=lambda k: k['views'], reverse=True)
+   return [item['proj'] for item in project_popularity]
+
+def weighted_choice(choices):
+   total = sum(w for c, w in choices)
+   r = random.uniform(0, total)
+   upto = 0
+   for c, w in choices:
+      if upto + w >= r:
+         return c
+      upto += w
+   # assert False, "Shouldn't get here"
+   return choices[0][0]
+
+def choose_banners_helper(banners, count):
+    banner_weights = []
+    total_weight = 0
+    for banner in banners:
+        elapsed = (datetime.datetime.now().date() - banner.date_added).days / 31.0
+        if elapsed <= 0:
+            elapsed = 1.0 / 31.0
+        weight = 1.0 + 1.0 / elapsed
+        banner_weights.append((banner, weight))
+        total_weight += weight
+    for i in range(0, len(banner_weights)):
+        banner_weights[i] = (banner_weights[i][0], banner_weights[i][1] / total_weight)
+        print(banner_weights[i][1])
+
+    selected_banners = []
+    for i in range(0, count):
+        if len(selected_banners) == len(banners):
+            break
+        banner = weighted_choice(banner_weights)
+        selected_banners.append(banner)
+        index = [y[0] for y in banner_weights].index(banner)
+        total_weight -= banner_weights[index][1]
+        del banner_weights[index]
+        if len(banner_weights) == 0:
+            break
+        for i in range(0, len(banner_weights)):
+            banner_weights[i] = (banner_weights[i][0], banner_weights[i][1] / total_weight)
+
+    return selected_banners
+
+def choose_banners(banners):
+  favorite_banners = []
+  other_banners = []
+  for banner in banners:
+    if banner.favorite == True:
+      favorite_banners.append(banner)
+    else:
+      other_banners.append(banner)
+
+  selected_banners = choose_banners_helper(favorite_banners, max_banners)
+  if len(selected_banners) < max_banners:
+    temp = choose_banners_helper(other_banners, max_banners - len(selected_banners))
+    for banner in temp:
+      selected_banners.append(banner)
+
+  return selected_banners
