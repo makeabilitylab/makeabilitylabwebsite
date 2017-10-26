@@ -90,13 +90,19 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
     # see: https://docs.djangoproject.com/en/1.11/ref/contrib/admin/#inlinemodeladmin-objects
     inlines = [PositionInline, ProjectRoleInline]
 
-    #info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
+    # The list display lets us control what is shown in the default persons table at Home > Website > People
+    # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
     list_display = ('get_full_name', 'get_current_title', 'get_current_role', 'is_active', 'get_start_date', 'get_end_date', 'get_time_in_current_position', 'get_total_time_as_member')
 
     #TODO setup filter here that has diff categories (like active members, past, etc.):
     #https://www.elements.nl/2015/03/16/getting-the-most-out-of-django-admin-filters/
     #related to: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/238
     list_filter = (CurrentMemberListFilter, PositionListFilter)
+
+class VideoAdmin(admin.ModelAdmin):
+    # The list display lets us control what is shown in the default persons table at Home > Website > Videos
+    # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
+    list_display = ('title', 'caption', 'project')
 
 class TalkAdmin(admin.ModelAdmin):
     # Filters speakers only to current members and collaborators and sorts by first name
@@ -196,7 +202,7 @@ admin.site.register(Poster)
 admin.site.register(Keyword)
 admin.site.register(News, NewsAdmin)
 admin.site.register(Banner, BannerAdmin)
-admin.site.register(Video)
+admin.site.register(Video, VideoAdmin)
 admin.site.register(Photo, PhotoAdmin)
 admin.site.register(Project_umbrella)
 admin.site.register(Sponsor)

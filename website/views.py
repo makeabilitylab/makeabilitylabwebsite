@@ -6,7 +6,7 @@ from django.conf import settings
 from operator import itemgetter, attrgetter, methodcaller
 from datetime import date
 
-#from . import googleanalytics
+from . import googleanalytics
 
 max_banners = 7 # TODO: figure out best way to specify these settings... like, is it good to have them up here?
 filter_all_pubs_prior_to_date = datetime.date(2012, 1, 1) # Date Makeability Lab was formed
@@ -254,9 +254,17 @@ def talks(request):
                 'debug': settings.DEBUG }
     return render(request, 'website/talks.html', context)
 
+def videos(request):
+    all_banners = Banner.objects.filter(page=Banner.TALKS)
+    displayed_banners = choose_banners(all_banners)
+    filter = request.GET.get('filter', None)
+    groupby = request.GET.get('groupby', "No-Group")
+    context = { 'videos': Video.objects.filter(date__range=["2012-01-01", date.today()]), 'banners': displayed_banners, 'filter': filter, 'groupby': groupby, 'debug': settings.DEBUG }
+    return render(request, 'website/videos.html', context)
+
 def website_analytics(request):
    return render(request, 'admin/analytics.html')
-      
+
 def projects(request):
    all_banners = Banner.objects.filter(page=Banner.PROJECTS)
    displayed_banners = choose_banners(all_banners)

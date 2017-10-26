@@ -10,25 +10,22 @@
 {% load cropping %}
 
 {% block stylesheets %}
-
-<link rel="stylesheet" href="{% static 'website/css/talks.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/fixed_side_bar.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/jquery-ui.min.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/jquery-ui.theme.min.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/talks.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/fixed_side_bar.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/jquery-ui.min.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/jquery-ui.theme.min.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}">
 {% endblock %}
 
 {% block external_scripts %}
-<script src="{% static 'website/js/isotope.pkgd.min.js' %}"></script>
-<script src="{% static 'website/js/fixedSideBar.js' %}"></script>
-<script src="{% static 'website/js/filterBar.js' %}"></script>
-<script src="{% static 'website/js/talks.js' %}"></script>
-<script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
-
+    <script src="{% static 'website/js/isotope.pkgd.min.js' %}"></script>
+    <script src="{% static 'website/js/fixedSideBar.js' %}"></script>
+    <script src="{% static 'website/js/filterBar.js' %}"></script>
+    <script src="{% static 'website/js/talks.js' %}"></script>
+    <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
 {% endblock %}
 
 {% block scripts %}
-
 	var talks = [
 		{% for talk in talks %}
 		{
@@ -131,10 +128,10 @@
 
 {% block content %}
     <div id="content" class="container">
-	<div class="visible-xs">
-	    <br/>
-	    <input class="shortTextbox" id="filter-textbox-backup" placeholder="FILTER" type="text" value="">
-	</div>
+        <div class="visible-xs">
+            <br/>
+            <input class="shortTextbox" id="filter-textbox-backup" placeholder="FILTER" type="text" value="">
+        </div>
         <div id="fixed-side-bar" class="hidden-xs">
             <div id="filter-bar">
             </div>

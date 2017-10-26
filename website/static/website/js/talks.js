@@ -358,7 +358,6 @@ var $grid = $('.talk-list').isotope({
 });
 
 
-
 // use value of search field to filter
 var $quicksearch = $('#filter-textbox').keyup( debounce( function() {
   qsRegex = new RegExp( $quicksearch.val(), 'gi' );

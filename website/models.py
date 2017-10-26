@@ -505,8 +505,6 @@ class Photo(models.Model):
         return self.caption
 
 class Video(models.Model):
-    #title = models.CharField(max_length=255)
-    #Do we want a title? The youtube embedded thing includes the title already so it might not be necessary
     video_url = models.URLField(blank=True, null=True)
     video_preview_url = models.URLField(blank=True, null=True)
     title = models.CharField(max_length=255)
@@ -515,9 +513,16 @@ class Video(models.Model):
     project = models.ForeignKey(Project, blank=True, null=True)
 
     def get_embed(self):
+        #TODO this assumes that all videos are YouTube. This is not the case.
         base_url = "https://youtube.com/embed"
         unique_url = self.video_url[self.video_url.find("/", 9):]
         return base_url+unique_url
+
+    # Returns a cap case title
+    def get_title(self):
+        # Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
+        cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
+        return cap_title
 
     def __str__(self):
         return self.title

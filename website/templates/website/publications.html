@@ -30,68 +30,66 @@
 {% endblock %}
 
 {% block scripts %}
-{% for pub in publications %}
-{% endfor %}
-	var publications = [
-		{% for pub in publications %}
-{
-			"id": "A.###",
-			"title": "{{pub.get_title}}",
-			"authors": [
-				{% for author in pub.authors.all %}
-				{
-					"name": "{{author.get_full_name}}",
-					"first_name": "{{author.first_name}}",
-					"middle_name": "{{author.middle_name}}",
-					"last_name": "{{author.last_name}}",
-					"link": "{% url 'website:member' author.id %}"
-				},
-				{% endfor %}
-			],
-			"date": new Date("{{pub.date}}"),
-"pdf": "../../media/{{ pub.pdf_file }}",
-"video_url": "{{pub.video.video_url}}",
-			"thumbnail": "{% thumbnail pub.thumbnail 300x0 detail %}",
-			"venue": "{{pub.book_title_short}}",
-"pub_type": "{{pub.pub_venue_type}}",
-"geo_location": "{{pub.geo_location}}",
-"series": "{{pub.series}}",
-"page_num_start": "{{pub.page_num_start}}",
-"page_num_end": "{{pub.page_num_end}}",
-"book_title": "{{pub.book_title}}",
-"url": "{{pub.official_url}}",
-"doi": "{{pub.doi}}",
-"publisher": "{{pub.publisher}}",
-"publisher_address": "{{pub.publisher_address}}",
-"isbn": "{{pub.isbn}}",
-"best_paper": "{% static 'website/img/bestpaper.png' %}",
-"honorable_mention": "{% static 'website/img/honorablemention.png' %}",
-"award_banner": "{% static 'website/img/awardoverlay.png' %}",
-{% if pub.award %}"award": "{{ pub.award }}",{% endif %}
-			{% if pub.total_papers_accepted and pub.total_papers_submitted %}
-			"total_papers_accepted": {{pub.total_papers_accepted}},
-			"total_papers_submitted": {{pub.total_papers_submitted}},
-			{% endif %}
-			{% if pub.page_num_start %} "start_page": {{pub.page_num_start}},{% endif %}
-			{% if pub.page_num_end %} "end_page": {{pub.page_num_end}},{% endif %}
-			{% if pub.num_pages %} "num_pages": {{pub.num_pages}},{% endif %}
-			"to_appear": {% if pub.to_appear %}true{% else %}false{% endif %},
-			"keywords": [
-				{% for keyword in pub.keywords.all %}
-					"{{keyword.keyword}}",
-				{% endfor %}
-			],
-			"projects": [
-				{% for project in pub.projects.all %}
-					"{{project.short_name}}",
-				{% endfor %}
-			]
-		},
-		{% endfor %}
-	];
+    var publications = [
+        {% for pub in publications %}
+        {
+            "id": "A.###",
+            "title": "{{ pub.get_title }}",
+            "authors": [
+            {% for author in pub.authors.all %}
+                {
+                "name": "{{ author.get_full_name }}",
+                "first_name": "{{ author.first_name }}",
+                "middle_name": "{{ author.middle_name }}",
+                "last_name": "{{ author.last_name }}",
+                "link": "{% url 'website:member' author.id %}"
+                },
+            {% endfor %}
+            ],
+            "date": new Date("{{ pub.date }}"),
+            "pdf": "../../media/{{ pub.pdf_file }}",
+            "video_url": "{{ pub.video.video_url }}",
+            "thumbnail": "{% thumbnail pub.thumbnail 300x0 detail %}",
+            "venue": "{{ pub.book_title_short }}",
+            "pub_type": "{{ pub.pub_venue_type }}",
+            "geo_location": "{{ pub.geo_location }}",
+            "series": "{{ pub.series }}",
+            "page_num_start": "{{ pub.page_num_start }}",
+            "page_num_end": "{{ pub.page_num_end }}",
+            "book_title": "{{ pub.book_title }}",
+            "url": "{{ pub.official_url }}",
+            "doi": "{{ pub.doi }}",
+            "publisher": "{{ pub.publisher }}",
+            "publisher_address": "{{ pub.publisher_address }}",
+            "isbn": "{{ pub.isbn }}",
+            "best_paper": "{% static 'website/img/bestpaper.png' %}",
+            "honorable_mention": "{% static 'website/img/honorablemention.png' %}",
+            "award_banner": "{% static 'website/img/awardoverlay.png' %}",
+            {% if pub.award %}"award": "{{ pub.award }}",{% endif %}
+            {% if pub.total_papers_accepted and pub.total_papers_submitted %}
+                "total_papers_accepted": {{ pub.total_papers_accepted }},
+                "total_papers_submitted": {{ pub.total_papers_submitted }},
+            {% endif %}
+            {% if pub.page_num_start %} "start_page": {{ pub.page_num_start }},{% endif %}
+            {% if pub.page_num_end %} "end_page": {{ pub.page_num_end }},{% endif %}
+            {% if pub.num_pages %} "num_pages": {{ pub.num_pages }},{% endif %}
+            "to_appear": {% if pub.to_appear %}true{% else %}false{% endif %},
+            "keywords": [
+                {% for keyword in pub.keywords.all %}
+                    "{{ keyword.keyword }}",
+                {% endfor %}
+            ],
+            "projects": [
+                {% for project in pub.projects.all %}
+                    "{{ project.short_name }}",
+                {% endfor %}
+            ]
+        },
+        {% endfor %}
+    ];
 
-	initialFilter = "{{ filter }}";
-	initialGroupBy = "{{ groupby }}";
+    initialFilter = "{{ filter }}";
+    initialGroupBy = "{{ groupby }}";
 
 {% endblock %}
 
