@@ -81,6 +81,14 @@
     clear: left;
 }
 
+.line-camp-one-line {
+    text-overflow: ellipsis;
+
+    /* Required for text-overflow to do anything */
+    white-space: nowrap;
+    overflow: hidden;
+}
+
 /**
  * https://css-tricks.com/line-clampin/ relevant to text wrapping
  * Firefox support comes from here http://jsfiddle.net/danield770/DpQ7e/30/ and
