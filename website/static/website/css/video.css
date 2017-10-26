@@ -1,3 +1,16 @@
+@media (max-width: 768px) {
+    .video-list {
+        margin-top: 25px;
+    }
+}
+
+@media (min-width: 769px) {
+    .video-list {
+        padding-left: 145px; /* should be greater than the filter-bar width */
+        margin-top: 25px;
+    }
+}
+
 .video-container {
     position: relative;
     width: 100%;
@@ -5,8 +18,17 @@
     padding-bottom: 56.25%;
 }
 
-.video-list{
+.video-list {
     margin-top: 20px;
+}
+
+.video-list h1 {
+	color: #7F7F7F;
+	font-size: 24px;
+	font-family: adelle-light;
+	border-bottom: 1px solid #A6A6A6;
+	margin: 5px 0px 3px 0px;
+	padding-bottom: 1px;
 }
 
 .video {
@@ -52,6 +74,11 @@
     /*right:0px;*/
     /*margin-left:5px;*/
     /*margin-top: 5px;*/
+}
+
+.group-template {
+    width: 100%;
+    clear: left;
 }
 
 /**

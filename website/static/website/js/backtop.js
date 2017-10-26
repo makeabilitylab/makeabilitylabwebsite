@@ -5,14 +5,14 @@ $(document).ready(function(){
     var offset = 300; // The amount of scrolling before the button appears
     var duration = 100; // The time of the fade in
     $(window).scroll(function() {
-    	console.log("$(this).scrollTop():" + $(this).scrollTop() + " offset: " + offset)
+    	// console.log("$(this).scrollTop():" + $(this).scrollTop() + " offset: " + offset)
 
 		if ($(this).scrollTop() > offset) {
-    		console.log("Showing scroll top button!!!")
+    		// console.log("Showing scroll top button!!!")
 			$('#back-top').fadeIn(duration);
 		}
 		else {
-    		console.log("Hiding scroll top button")
+    		// console.log("Hiding scroll top button")
 			$('#back-top').fadeOut(duration);
 		}
     });
