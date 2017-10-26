@@ -278,6 +278,8 @@ class Position(models.Model):
     def get_department_abbreviated(self):
         if self.department.lower() == "computer science":
             return 'CS'
+        elif "computer science" in self.department.lower() and "engineering" in self.department.lower():
+            return 'CSE'
         elif "information" in self.department.lower():
             return 'iSchool'
         elif "ischool" in self.department.lower():
@@ -653,8 +655,9 @@ class Publication(models.Model):
     )
     award = models.CharField(max_length=50, choices=AWARD_CHOICES, blank=True, null=True)
 
+    # Returns the title of the publication in capital case
     def get_title(self):
-        #Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
+        # Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
         cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
         return cap_title
 

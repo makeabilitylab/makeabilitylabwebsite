@@ -202,7 +202,12 @@
 			    {% endfor %}
 			</p>
 			<p class="publication-stats">
-			    <span class="publication-venue">{{pub.book_title_short}}</span>
+                <span class="publication-venue">
+                    {{pub.book_title_short}}
+                    {% if pub.to_appear %}
+                        <span class="publication-to-appear-text">To Appear</span>
+                    {% endif %}
+                </span>
 			    {% if pub.total_papers_accepted %}
                     <span class="publication-acceptance-rate">|
                         <span class="publication-acceptance-rate-text">

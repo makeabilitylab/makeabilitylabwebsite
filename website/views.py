@@ -8,6 +8,7 @@ from datetime import date
 #from . import googleanalytics
 
 max_banners = 7
+filter_all_pubs_prior_to_date = datetime.date(2012, 1, 1) # Date Makeability Lab was formed
 
 def get_most_recent(projects):
    updated = []
@@ -133,11 +134,20 @@ def index(request):
     publications = Publication.objects.order_by('-date')[:papers_num]
     talks = Talk.objects.order_by('-date')[:talks_num]
     videos = Video.objects.order_by('-date')[:videos_num]
+
     if settings.DEBUG:
       projects = Project.objects.all()[:projects_num];
     else:
       projects = sort_popular_projects(googleanalytics.run(get_ind_pageviews))[:projects_num]
-    context = { 'people': Person.objects.all(), 'banners': displayed_banners, 'news': news_items, 'publications': publications, 'talks': talks, 'videos':videos, 'projects': projects, 'debug': settings.DEBUG }
+
+    context = { 'people': Person.objects.all(),
+                'banners': displayed_banners,
+                'news': news_items,
+                'publications': publications,
+                'talks': talks,
+                'videos':videos,
+                'projects': projects,
+                'debug': settings.DEBUG }
     return render(request, 'website/index.html', context)
 
 def people(request):
@@ -294,8 +304,7 @@ def people(request):
         'past_collaborators' : past_collaborators,
         'positions' : positions,
         'banners' : displayed_banners,
-       'debug': settings.DEBUG
-
+        'debug': settings.DEBUG
     }
     return render(request, 'website/people.html', context)
 
@@ -313,14 +322,29 @@ def member(request, member_id):
    news = person.news_set.order_by('-date')[:news_items_num]
    publications = person.publication_set.order_by('-date')
    talks = person.talk_set.order_by('-date')
-   return render(request, 'website/member.html', {'person': person, 'news': news, 'talks': talks, 'publications': publications, 'banners': displayed_banners, 'debug': settings.DEBUG})
+   context = { 'person': person,
+               'news': news,
+               'talks': talks,
+               'publications': publications,
+               'banners': displayed_banners,
+               'debug': settings.DEBUG }
+   return render(request, 'website/member.html', context)
 
 def publications(request):
     all_banners = Banner.objects.filter(page=Banner.PUBLICATIONS)
     displayed_banners = choose_banners(all_banners)
     filter = request.GET.get('filter', None)
     groupby = request.GET.get('groupby', "No-Group")
-    context = { 'publications': Publication.objects.filter(date__range=["2012-01-01", date.today()]), 'banners': displayed_banners, 'filter': filter, 'groupby': groupby, 'debug': settings.DEBUG }
+
+    # We want all pubs after I joined as a professor. This was a group decision.
+    # See https://stackoverflow.com/a/4668703
+    # sampledate__gte=datetime.date(2011, 1, 1),
+    # Old: Publication.objects.filter(date__range=["2012-01-01", date.today()]),
+    context = { 'publications': Publication.objects.filter(date__gte=filter_all_pubs_prior_to_date),
+                'banners': displayed_banners,
+                'filter': filter,
+                'groupby': groupby,
+                'debug': settings.DEBUG }
     return render(request, 'website/publications.html', context)
 
 def talks(request):
@@ -328,7 +352,11 @@ def talks(request):
     displayed_banners = choose_banners(all_banners)
     filter = request.GET.get('filter', None)
     groupby = request.GET.get('groupby', "No-Group")
-    context = { 'talks': Talk.objects.filter(date__range=["2012-01-01", date.today()]), 'banners': displayed_banners, 'filter': filter, 'groupby': groupby, 'debug': settings.DEBUG }
+    context = { 'talks': Talk.objects.filter(date__gte=filter_all_pubs_prior_to_date),
+                'banners': displayed_banners,
+                'filter': filter,
+                'groupby': groupby,
+                'debug': settings.DEBUG }
     return render(request, 'website/talks.html', context)
 
 def website_analytics(request):
@@ -346,10 +374,17 @@ def projects(request):
    umbrellas = Project_umbrella.objects.all()
    popular_projects = sort_popular_projects(googleanalytics.run(get_ind_pageviews))[:4]
    recent_projects = get_most_recent(Project.objects.order_by('-updated'))[:2]
-   context = {'projects': projects, 'all_proj_len': all_proj_len, 'banners': displayed_banners, 'recent': recent_projects, 'popular': popular_projects, 'umbrellas': umbrellas, 'filter': filter, 'debug': settings.DEBUG}
+   context = { 'projects': projects,
+               'all_proj_len': all_proj_len,
+               'banners': displayed_banners,
+               'recent': recent_projects,
+               'popular': popular_projects,
+               'umbrellas': umbrellas,
+               'filter': filter,
+               'debug': settings.DEBUG}
    return render(request, 'website/projects.html', context)
 
-#This is the view for individual projects, rather than the overall projects page
+# This is the view for individual projects, rather than the overall projects page
 def project_ind(request, project_name):
    project = get_object_or_404(Project, short_name__iexact=project_name)
    all_banners = project.banner_set.all()
@@ -429,7 +464,35 @@ def project_ind(request, project_name):
                alumni_other.append(member)
          else:
             alumni_other.append(member)
-   context = {'banners': displayed_banners, 'project': project, 'active': active, 'active_pis': active_pis, 'active_copis': active_copis, 'active_prof': active_prof, 'active_postdoc': active_postdoc, 'active_phd': active_phd, 'active_ms': active_ms, 'active_undergrad': active_undergrad, 'active_highschool': active_highschool, 'active_other': active_other, 'alumni': alumni, 'alumni_pis': alumni_pis, 'alumni_copis': alumni_copis, 'alumni_prof': alumni_prof, 'alumni_postdoc': alumni_postdoc, 'alumni_phd': alumni_phd, 'alumni_ms': alumni_ms, 'alumni_undergrad': alumni_undergrad, 'alumni_highschool': alumni_highschool, 'alumni_other':alumni_other, 'publications': publications, 'talks': talks, 'videos': videos, 'news': news, 'photos': photos, 'debug':settings.DEBUG}
+
+   context = { 'banners': displayed_banners,
+               'project': project,
+               'active': active,
+               'active_pis': active_pis,
+               'active_copis': active_copis,
+               'active_prof': active_prof,
+               'active_postdoc': active_postdoc,
+               'active_phd': active_phd,
+               'active_ms': active_ms,
+               'active_undergrad': active_undergrad,
+               'active_highschool': active_highschool,
+               'active_other': active_other,
+               'alumni': alumni,
+               'alumni_pis': alumni_pis,
+               'alumni_copis': alumni_copis,
+               'alumni_prof': alumni_prof,
+               'alumni_postdoc': alumni_postdoc,
+               'alumni_phd': alumni_phd,
+               'alumni_ms': alumni_ms,
+               'alumni_undergrad': alumni_undergrad,
+               'alumni_highschool': alumni_highschool,
+               'alumni_other':alumni_other,
+               'publications': publications,
+               'talks': talks,
+               'videos': videos,
+               'news': news,
+               'photos': photos,
+               'debug': settings.DEBUG}
    return render(request, 'website/indproject.html', context)
 
 
@@ -452,5 +515,10 @@ def news(request, news_id):
             if item != news:
                ind_proj_news.append(item)
          project_news[project] = ind_proj_news[:max_extra_items]
-   context = {'banners': displayed_banners, 'news': news, 'author_news': author_news[:max_extra_items], 'project_news': project_news, 'debug': settings.DEBUG}
+
+   context = { 'banners': displayed_banners,
+               'news': news,
+               'author_news': author_news[:max_extra_items],
+               'project_news': project_news,
+               'debug': settings.DEBUG }
    return render(request, 'website/news.html', context)
