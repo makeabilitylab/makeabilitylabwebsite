@@ -3,14 +3,14 @@
 //		 the Django template file.
 
 // variables to hold the templates, since they will be removed from the DOM after initialization
-var groupTemplate, talkTemplate;
+var groupTemplate, videoTemplate;
 
 // initialization code that's called when the window has finished loading
 $(window).load(function () {
 
 	// preserve the template designs so that they're not lost when updating the display
 	groupTemplate = $(".group-template").clone();
-	talkTemplate = $(".video-template").clone();
+	videoTemplate = $(".video-template").clone();
 
 
 	// initialize the filter bar module with the talk data
@@ -118,11 +118,59 @@ function formatGroup(group) {
 	return groupData[0].outerHTML;
 }
 
-function formatVideo(group){
-	return "";
+function formatVideo(video, filter){
+	if(filter) filter = filter.toLowerCase();
+
+	var videoData = videoTemplate.clone();
+	videoData.find(".video-title").html(addHighlight(video.title, filter));
+	videoData.find(".video-caption").html(addHighlight(video.caption, filter));
+
+	return videoData[0].outerHTML;
 }
 
 // called after initialization or whenever the filter is reapplied
 function afterDisplay() {
 	// Empty for now
 }
+
+//Code to use isotope for filtering from http://codepen.io/desandro/pen/wfaGu
+// TODO: All of this directly copy/pasted from talks.js. Lots of redundancy here. Could be refactored
+// TODO: is this code even necessary? I don't think so...
+
+// init Isotope
+var $grid = $('.video-list').isotope({
+  itemSelector: '.video-template',
+  layoutMode: 'fitRows',
+  filter: function() {
+    return qsRegex ? $(this).text().match( qsRegex ) : true;
+  }
+});
+
+
+// use value of search field to filter
+var $quicksearch = $('#filter-textbox').keyup( debounce( function() {
+  qsRegex = new RegExp( $quicksearch.val(), 'gi' );
+  $grid.isotope();
+}, 200 ) );
+
+// debounce so filtering doesn't happen every millisecond
+function debounce( fn, threshold ) {
+  var timeout;
+  return function debounced() {
+    if ( timeout ) {
+      clearTimeout( timeout );
+    }
+    function delayed() {
+      fn();
+      timeout = null;
+    }
+    timeout = setTimeout( delayed, threshold || 100 );
+  }
+}
+
+$(window).resize(debounce(function() {
+	// hack to force the ellipsis to redraw, so that it's in the correct position
+	$.each($('.line-clamp'), function(index, item) {
+		$(item).hide().show(0);
+	});
+}));
