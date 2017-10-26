@@ -47,6 +47,7 @@
             // These are the defaults.
             items: [],
             categories: ["None"],
+            defaultCategory:  null,
             groupsForCategory: {"None": []},
             passesFilter: function (item, filter) {
                 return true;
@@ -59,10 +60,17 @@
             },
             afterDisplay: function () {
                 return;
-            }
+            },
+
         }, options);
 
-        currCategory = settings.categories[0];
+       if (settings.defaultCategory && $.inArray(settings.defaultCategory, settings.categories) >= 0){
+            currCategory = settings.defaultCategory
+        }else {
+            currCategory = settings.categories[0];
+        }
+
+
         // append filter bar content
         filterBar.append("<h1 style=\"margin-top:7px\">FILTER</h1><input class=\"shortTextbox\" id=\"filter-textbox\" type=\"text\" value=\"\" /><h1>GROUP BY</h1>");
         $("#filter-textbox").autocomplete({

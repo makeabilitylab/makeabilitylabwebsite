@@ -5,6 +5,8 @@
 // variables to hold the templates, since they will be removed from the DOM after initialization
 var groupTemplate, videoTemplate;
 
+var group_category_none_name = "Chronological List"
+
 // initialization code that's called when the window has finished loading
 $(window).load(function () {
 
@@ -13,7 +15,7 @@ $(window).load(function () {
 	videoTemplate = $(".video-template").clone();
 
 
-	// initialize the filter bar module with the talk data
+	// initialize the filter bar module with the video data
 	$('#fixed-side-bar').fixedSideBar();
 	$('#filter-bar').filterBar({
 		items: videos,
@@ -21,14 +23,16 @@ $(window).load(function () {
 		groupsForCategory: {
 			"Year": groupVideosByYear(),
 			"Project": groupVideosByProject(),
-			"None": [{"name": "Chronological List", items: videos}]
+			"None": [{"name": group_category_none_name, items: videos}]
 		},
+		defaultCategory: "None",
 		passesFilter: passesFilter,
-		displayGroupHeader: formatGroup,
+		displayGroupHeader: formatGroupHeader,
 		displayItem: formatVideo,
 	    afterDisplay: afterDisplay,
 	    keywords: [] // empty list currently because videos don't currently have keyword associations
 	});
+
 	if(initialFilter && initialFilter.length > 0 && initialFilter != "None")
 		$('#filter-textbox').val(initialFilter);
 	$('#filter-bar').applyFilter();
@@ -111,10 +115,19 @@ function addHighlight(text, filter) {
 
 // helper function to populate the template with the group data
 // TODO: this is same function as in talks.js (and possibly publications.js). Consolidate?
-function formatGroup(group) {
+function formatGroupHeader(group) {
 	var groupData = groupTemplate.clone();
-	groupData.attr("name", group.toLowerCase().replace(new RegExp(" ", "g"), "-"));
-	groupData.html(group);
+
+	if (group == group_category_none_name){
+		// hide the heading and bottom border for when none is selected as a grouping category
+		groupData.css("border-bottom", "none");
+		groupData.css("margin-bottom", "11px");
+	}
+	else {
+        groupData.attr("name", group.toLowerCase().replace(new RegExp(" ", "g"), "-"));
+        groupData.html(group);
+    }
+
 	return groupData[0].outerHTML;
 }
 
@@ -124,6 +137,24 @@ function formatVideo(video, filter){
 	var videoData = videoTemplate.clone();
 	videoData.find(".video-title").html(addHighlight(video.title, filter));
 	videoData.find(".video-caption").html(addHighlight(video.caption, filter));
+	videoData.find(".video").attr("src", video.url_embeddable);
+	videoData.find(".video-link").attr("href", video.url);
+
+	if(video.url){
+		videoData.find(".video-link").attr("href", video.url);
+	}
+	else{
+		videoData.find(".video-link").remove();
+		videoData.find(".decor_video").remove();
+	}
+
+	if(video.pub_url){
+		videoData.find(".video-paper-link").attr("href", video.pub_url);
+	}
+	else{
+		videoData.find(".video-paper-link").remove();
+		videoData.find(".decor_pdf").remove();
+	}
 
 	return videoData[0].outerHTML;
 }

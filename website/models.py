@@ -448,8 +448,6 @@ class Photo(models.Model):
         return self.caption
 
 class Video(models.Model):
-    #title = models.CharField(max_length=255)
-    #Do we want a title? The youtube embedded thing includes the title already so it might not be necessary
     video_url = models.URLField(blank=True, null=True)
     video_preview_url = models.URLField(blank=True, null=True)
     title = models.CharField(max_length=255)

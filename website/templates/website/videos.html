@@ -32,8 +32,11 @@
 			"title": "{{video.get_title}}",
             "caption": "{{video.caption}}",
             "date": new Date("{{video.date}}"),
-            "url": "{{video.url}}",
+            "url": "{{video.video_url}}",
+            "url_embeddable": "{{video.get_embed}}",
             "project_short_name": "{{video.project.short_name}}",
+            "pub_title": "{{video.publication}}",
+            "pub_url": "../../media/{{video.publication.pdf_file}}"
         },
 		{% endfor %}
 	];
@@ -123,8 +126,8 @@
                 <p class="video-title line-clamp">Video Title</p>
                 <p class="video-caption">Video Caption</p>
                 <p class="video-links">
-                    <span class="decor_video"></span><a href="link" class="video-link">Video</a>
-                    <span class="decor_pdf"> | </span><a href="link" class="video-paper-link">Paper</a>
+                    <span class="decor_video"></span><a href="" class="video-link">Video</a>
+                    <span class="decor_pdf"> | </span><a href="" class="video-paper-link">Paper</a>
                 </p>
             </div>
         </div>
