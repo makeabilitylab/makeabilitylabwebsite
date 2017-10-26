@@ -102,7 +102,10 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
 class VideoAdmin(admin.ModelAdmin):
     # The list display lets us control what is shown in the default persons table at Home > Website > Videos
     # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
-    list_display = ('title', 'caption', 'project')
+    list_display = ('title', 'date', 'caption', 'project')
+
+    # default lay out in descending order by date
+    ordering = ('-date',)
 
 class TalkAdmin(admin.ModelAdmin):
     # Filters speakers only to current members and collaborators and sorts by first name
