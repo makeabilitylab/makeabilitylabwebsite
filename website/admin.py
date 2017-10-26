@@ -32,7 +32,7 @@ class PositionInline(admin.StackedInline):
     model = Position
 
     # This specifies that the Inline is linked to the main owner of the position rather than any of the advisor roles.
-    fk_name="person"
+    fk_name = "person"
 
     # This specifies that the field appears only once (by default)
     extra = 0
@@ -92,7 +92,7 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
     # The list display lets us control what is shown in the default persons table at Home > Website > People
     # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
-    list_display = ('get_full_name', 'get_quick_position', 'get_start_date', 'get_end_date')
+    list_display = ('get_full_name', 'get_current_title', 'get_current_role', 'is_active', 'get_start_date', 'get_end_date', 'get_time_in_current_position', 'get_total_time_as_member')
 
     #TODO setup filter here that has diff categories (like active members, past, etc.):
     #https://www.elements.nl/2015/03/16/getting-the-most-out-of-django-admin-filters/

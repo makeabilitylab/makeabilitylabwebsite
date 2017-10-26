@@ -4,6 +4,7 @@ from sortedm2m.fields import SortedManyToManyField
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete
 from datetime import date
+from datetime import timedelta
 from website.utils.fileutils import UniquePathAndRename
 import os
 from random import choice
@@ -57,13 +58,32 @@ class Person(models.Model):
     cropping = ImageRatioField('image', '245x245', size_warning=True)
     easter_egg_crop = ImageRatioField('easter_egg', '245x245', size_warning=True)
 
-    # TODO figure out where this is called and why. Rename function accordingly
-    def get_quick_position(self):
-        role_info = ''
-        for role in self.position_set.all():
-            role_info = role.title + " " + role.role + " " + "Current" if role.is_current_member() or role.is_current_collaborator() else "Inactive"
-        return role_info
-    get_quick_position.short_description = "Roles"
+    # Return current title
+    def get_current_title(self):
+        latest_position = self.get_latest_position()
+        if latest_position is not None:
+            return latest_position.title
+        else:
+            return None
+    get_current_title.short_description = "Title"
+
+    # Returns current role
+    def get_current_role(self):
+        latest_position = self.get_latest_position()
+        if latest_position is not None:
+            return latest_position.role
+        else:
+            return None
+    get_current_role.short_description = "Role"
+
+    # Returns time in current position
+    def get_time_in_current_position(self):
+        latest_position = self.get_latest_position()
+        if latest_position is not None:
+            return latest_position.get_time_in_this_position()
+        else:
+            return None
+    get_time_in_current_position.short_description = "Time in Current Position"
 
     # Returns true if a professor
     def is_professor(self):
@@ -80,6 +100,25 @@ class Person(models.Model):
             return latest_position.is_grad_student()
         else:
             return False
+
+    # Returns True is person is current member of lab or current collaborator
+    def is_active(self):
+        return self.is_current_member() or self.is_current_collaborator()
+    is_active.short_description = "Is Active?"
+
+    # Returns the total time as in the specified role across all positions
+    def get_total_time_in_role(self, role):
+        totalTimeInRole = timedelta(0)
+        for position in self.position_set.all():
+            if position.role == role:
+                totalTimeInRole += position.get_time_in_this_position()
+        return totalTimeInRole
+    get_total_time_in_role.short_description = "Total Time In Role"
+
+    # Returns the total time as a member across all positions
+    def get_total_time_as_member(self):
+        return self.get_total_time_in_role(Position.MEMBER)
+    get_total_time_as_member.short_description = "Total Time As Member"
 
     # Returns True if person is current member of the lab. False otherwise
     def is_current_member(self):
@@ -132,22 +171,25 @@ class Person(models.Model):
 
             return self.position_set.latest('start_date')
 
-    # TODO: Figure out what uses this method and why
+    # Returns the start date of current position. Used in Admin Interface. See PersonAdmin in admin.py
     def get_start_date(self):
-        start_date = ""
-        for pos in self.position_set.all():
-            start_date = str(pos.start_date)
-        return start_date
+        latest_position = self.get_latest_position()
+        if latest_position is not None:
+            return latest_position.start_date
+        else:
+            return None
     get_start_date.short_description = "Start Date"
 
-    # TODO: Figure out what uses this method and why
+    # Returns the end date of current position. Used in Admin Interface. See PersonAdmin in admin.py
     def get_end_date(self):
-        end_date = ""
-        for pos in self.position_set.all():
-            end_date = str(pos.end_date) if pos.end_date != None else "Present"
-        return end_date
+        latest_position = self.get_latest_position()
+        if latest_position is not None:
+            return latest_position.end_date
+        else:
+            return None
     get_end_date.short_description = "End Date"
-    
+
+    # Returns the full name
     def get_full_name(self, includeMiddle=True):
         if self.middle_name and includeMiddle:
             return u"{0} {1} {2}".format(self.first_name, self.middle_name, self.last_name)
@@ -236,6 +278,8 @@ class Position(models.Model):
     def get_department_abbreviated(self):
         if self.department.lower() == "computer science":
             return 'CS'
+        elif "computer science" in self.department.lower() and "engineering" in self.department.lower():
+            return 'CSE'
         elif "information" in self.department.lower():
             return 'iSchool'
         elif "ischool" in self.department.lower():
@@ -250,6 +294,15 @@ class Position(models.Model):
             return 'BIOE'
         else:
             return "".join(e[0] for e in self.department.split(" "))
+
+    # Returns a timedelta object of total time in this position
+    def get_time_in_this_position(self):
+        if self.end_date is not None and self.start_date is not None:
+            return self.end_date - self.start_date
+        elif self.end_date is None and self.start_date is not None:
+            return date.today() - self.start_date
+        else:
+            return None
 
     # Returns the start and end dates as strings
     def get_date_range_as_str(self):
@@ -607,17 +660,20 @@ class Publication(models.Model):
     )
     award = models.CharField(max_length=50, choices=AWARD_CHOICES, blank=True, null=True)
 
+    # Returns the title of the publication in capital case
     def get_title(self):
-        #Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
+        # Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
         cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
         return cap_title
-    
+
+    # Returns the acceptance rate as a percentage
     def get_acceptance_rate(self):
         if self.total_papers_accepted and self.total_papers_submitted:
-            return self.total_papers_accepted / self.total_papers_submitted
+            return 100 * (self.total_papers_accepted / self.total_papers_submitted)
         else:
             return -1
 
+    # Returns true if the publication date happens in the future (e.g., tomorrow or later)
     def to_appear(self):
         return self.date and self.date > date.today()
 

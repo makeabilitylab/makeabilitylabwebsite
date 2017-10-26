@@ -171,11 +171,16 @@
 			    <p class="publication-title">{{pub.title}}</p>
 			    <p class="publication-authors">
 				{% for author in pub.authors.all %}
-				<span class="publication-author"><a href="{% url 'website:member' author.id %}">{{author.get_full_name}}</a>&nbsp;</span>
+				    <span class="publication-author"><a href="{% url 'website:member' author.id %}">{{author.get_full_name}}</a>&nbsp;</span>
 				{% endfor %}
 			    </p>
 			    <p class="publication-stats">
-				<span class="publication-venue">{{pub.book_title_short}}</span>
+				    <span class="publication-venue">
+                        {{pub.book_title_short}}
+                        {% if pub.to_appear %}
+                            <span class="publication-to-appear-text">To Appear</span>
+                        {% endif %}
+                    </span>
 			    </p>
 			</div>
 		    </div>

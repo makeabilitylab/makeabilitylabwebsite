@@ -202,9 +202,20 @@
 			    {% endfor %}
 			</p>
 			<p class="publication-stats">
-			    <span class="publication-venue">{{pub.book_title_short}}</span>
+                <span class="publication-venue">
+                    {{pub.book_title_short}}
+                    {% if pub.to_appear %}
+                        <span class="publication-to-appear-text">To Appear</span>
+                    {% endif %}
+                </span>
 			    {% if pub.total_papers_accepted %}
-			    <span class="publication-acceptance-rate">| <span class="publication-acceptance-rate-text">Acceptance Rate: {{pub.get_acceptance_rate}}% ({{pub.total_papers_accepted}} / {{pub.total_papers_submitted}})</span></span>
+                    <span class="publication-acceptance-rate">|
+                        <span class="publication-acceptance-rate-text">
+                            <!-- formatting strings with Django templates: https://docs.djangoproject.com/en/1.11/ref/templates/builtins/#stringformat -->
+                            Acceptance Rate: {{pub.get_acceptance_rate|stringformat:".1f"}}%
+                            ({{pub.total_papers_accepted}} / {{pub.total_papers_submitted}})
+                        </span>
+                    </span>
 			    {% endif %}
     			</p>
         		<p class="publication-keywords hidden-xs">
@@ -219,7 +230,13 @@
 				{% endfor %}
 			    </span></span>
 	        	</p>
-        		<div class="publication-download">Download: <a href="../../media/{{pub.pdf_file}}" class="publication-download-link">[pdf]</a> <span class="publication-video-link-label">| {% if pub.video %}Video: <a href="{{pub.video.video_url}}" class="publication-video-link">[youtube]</a></span> | {% endif %}Export <a data-toggle="popover" data-html="true" data-trigger="manual" tabindex="0" title="Citation" data-content="Empty Citation" class="publication-citation-link">[Citation]</a></div>
+        		<div class="publication-download">
+                    Download: <a href="../../media/{{pub.pdf_file}}" class="publication-download-link">[pdf]</a>
+                    <span class="publication-video-link-label">|
+                        {% if pub.video %}
+                            Video: <a href="{{pub.video.video_url}}" class="publication-video-link">[youtube]</a></span> |
+                        {% endif %}
+                    Export <a data-toggle="popover" data-html="true" data-trigger="manual" tabindex="0" title="Citation" data-content="Empty Citation" class="publication-citation-link">[Citation]</a></div>
 		    </div>
 		</div>
 		{% endfor %}
@@ -255,32 +272,32 @@
 	    {% endif %}
 	    <div class="col-xs-12 no-margin">
 		<div class="row no-margin">
-		<!-- Create a div for each talk passed in -->
+		    <!-- Create a div for each talk passed in -->
 		    {% for talk in talks %}
 		    <div class="col-ts-12 col-xs-6 col-sm-6 col-md-4 col-lg-3 talk-template-landing landing-talk-fix">
-			<div class="talk-info">
-			    <div class="talk-thumbnail">
-				<a href="../../media/{{talk.pdf_file}}" class="talk-thumbnail-link">
-				    <img src="{% thumbnail talk.thumbnail 420x0 detail %}" class="talk-thumbnail-image img-responsive talk-image-fix"/>
-				</a>
-			    </div>
-			    <p class="talk-title line-clamp">
-				{{talk.title}}
-			    </p>
-			    <p class="talk-speakers">
-				{% for speaker in talk.speakers.all %}
-				{% if forloop.last %}
-				<span class="talk-speaker"><a href="{% url 'website:member' speaker.id %}">{{speaker.get_full_name}}</a></span>
-				{% else %}
-				<span class="talk-speaker"><a href="{% url 'website:member' speaker.id %}">{{speaker.get_full_name}}</a>,&nbsp;</span>
-				{% endif %}
-				{% endfor %}
-			    </p>
-			    <p class="talk-stats">
-				<span class="talk-date">{{talk.date}}</span>
-				<span class="talk-location">{{talk.location}}</span>
-			    </p>
-			</div>
+                <div class="talk-info">
+                    <div class="talk-thumbnail">
+                    <a href="../../media/{{talk.pdf_file}}" class="talk-thumbnail-link">
+                        <img src="{% thumbnail talk.thumbnail 420x0 detail %}" class="talk-thumbnail-image img-responsive talk-image-fix"/>
+                    </a>
+                    </div>
+                    <p class="talk-title line-clamp">
+                    {{talk.title}}
+                    </p>
+                    <p class="talk-speakers">
+                    {% for speaker in talk.speakers.all %}
+                    {% if forloop.last %}
+                    <span class="talk-speaker"><a href="{% url 'website:member' speaker.id %}">{{speaker.get_full_name}}</a></span>
+                    {% else %}
+                    <span class="talk-speaker"><a href="{% url 'website:member' speaker.id %}">{{speaker.get_full_name}}</a>,&nbsp;</span>
+                    {% endif %}
+                    {% endfor %}
+                    </p>
+                    <p class="talk-stats">
+                    <span class="talk-date">{{talk.date}}</span>
+                    <span class="talk-location">{{talk.location}}</span>
+                    </p>
+                </div>
 		    </div>
 		    {% endfor %}
 		</div>
@@ -299,6 +316,7 @@
 	    </div>
 	    {% endfor %}
 	</div>
+
 	<div class="row row-eq-height row-adjust-margins people-row">
 	    {% ifequal active|length 0 %}
 	    {% else %}
@@ -306,32 +324,31 @@
 	    {% endifequal %}
 	    {% for member in active_pis %}
             <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-		<a href="{% url 'website:member' member.person.id %}">
-		    <div class="easter-egg-col">
-			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			<div class="overlay-easter-egg">
-			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
-			</div>
-		    </div>
-		</a>
-		<div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}">
-			<h5>{{ member.person.get_full_name }}</h5>
-                    </a>
-		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-		    {% if member.pi_member %}
-		    {{member.pi_member}} | 
-		    {% endif %}
+		        <a href="{% url 'website:member' member.person.id %}">
+                    <div class="easter-egg-col">
+                        <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
+                            <div class="overlay-easter-egg">
+                                <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
+                            </div>
+                    </div>
+		        </a>
+		        <div class="item-info">
+                    <a href="{% url 'website:member' member.person.id %}"><h5>{{ member.person.get_full_name }}</h5></a>
+		            {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
+                    {% if member.pi_member %}
+                        {{member.pi_member}} |
+                    {% endif %}
 
-		    {% with member.person.position_set.all|first as position %}
-                    {{ position.title }}
-		    {% if position.is_high_school %}{% else %}
-		    <br/>		    {{ position.department }}
-		    {% endif %}
-                    <br/>
-                    {{ position.school }}
-		    {% endwith %}
-		</div>
+                    {% with member.person.position_set.all|first as position %}
+                            {{ position.title }}
+                        {% if position.is_high_school %}
+
+                        {% else %}
+                            <br/>{{ position.department }}
+                        {% endif %}
+                        <br/>{{ position.school }}
+		            {% endwith %}
+		        </div>
             </div>
 	    {% endfor %}
 	    {% for member in active_copis %}
