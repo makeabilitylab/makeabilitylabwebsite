@@ -349,6 +349,24 @@ h5 {
     }
 }
 
+.makelab-footer{
+	background-color: #3797db;
+	color: white;
+}
+
+.makelab-footer-row{
+	/*margin-top: 20px;*/
+	/*margin-bottom: 20px;*/
+}
+
+.makelab-footer-col{
+	margin-top: 20px;
+	margin-bottom: 20px;
+	margin-right: 20px;
+	margin-left: 20px;
+}
+
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
