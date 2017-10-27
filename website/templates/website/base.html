@@ -65,7 +65,8 @@
 
     // allow for smooth scrolling to anchor links
     $(document).click(function (event) {
-        if (event.originalEvent.srcElement.className === "scroll") {
+	var clickedElement = event.originalEvent.srcElement;
+        if (clickedElement.className === "scroll" || clickedElement.parentElement.className === "scroll") {
             //prevent the default action for the click event
             event.preventDefault();
 
