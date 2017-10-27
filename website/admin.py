@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import Person, Publication, Position, Talk, Project, Poster, Keyword, News, Banner, Video, Project_header, Photo, Project_umbrella, Project_Role, Sponsor
-from website.admin_list_filters import CurrentMemberListFilter, PositionListFilter
+from website.admin_list_filters import CurrentMemberListFilter, PositionListFilter, PubVenueTypeListFilter, PubVenueListFilter
 
 from django.http import HttpResponse
 from datetime import datetime
@@ -104,7 +104,7 @@ class VideoAdmin(admin.ModelAdmin):
     # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
     list_display = ('title', 'date', 'caption', 'project')
 
-    # default lay out in descending order by date
+    # default the sort order in table to descending order by date
     ordering = ('-date',)
 
 class TalkAdmin(admin.ModelAdmin):
@@ -132,7 +132,12 @@ class PublicationAdmin(admin.ModelAdmin):
         ('Project Info',            {'fields': ['projects', 'project_umbrellas']}),
         ('Keyword Info',            {'fields': ['keywords']}),
     ]
-    list_display = ('title', 'book_title_short')
+    list_display = ('title', 'book_title_short', 'date')
+
+    # default the sort order in table to descending order by date
+    ordering = ('-date',)
+
+    list_filter = (PubVenueTypeListFilter, PubVenueListFilter)
 
     # Uncomment this function to enable auto-entry from bibtex
     # The following code is based in part on a hint by this Stackoverflow post: http://stackoverflow.com/a/4952370
