@@ -15,6 +15,14 @@
     min-height: 44px;
 }
 
+.navbar-custom .lab-text{
+    display: inline;
+}
+
+.navbar-custom .navbar-brand>img {
+    display: inline;
+}
+
 .navbar-custom .navbar-brand {
     font-weight: 700;
     padding-top: 10px;
