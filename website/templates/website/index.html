@@ -1,6 +1,6 @@
 {% extends "website/base.html" %}
 
-{% block pagetitle %}Makeability Lab at Maryland's HCIL{% endblock %}
+{% block pagetitle %}Makeability Lab{% endblock %}
 
 {% load staticfiles %}
 {% load thumbnail %}
@@ -58,9 +58,9 @@
 	</div>
     </div>
     <div id="statement" class="row no-margin">
-	<p>
+	<!--<p>
 	    The Makeability Lab is a research lablet within the <a href="http://hcil.umd.edu/">Human-Computer Interaction Lab (HCIL)</a>—one of the oldest and most well-known HCI labs in the world—at the <a href="http://www.umd.edu/">University of Maryland</a>. Founded in 2012 by <a href="http://www.cs.umd.edu/~jonf/">Dr. Jon Froehlich</a> and students, the Makeability Lab focuses on designing and studying novel interactive experiences that cross between bits and atoms—the virtual and the physical—and back again to confront some of the world's greatest challenges in environmental sustainability, health and wellness, education, and universal accessibility.
-	</p>
+	</p>-->
     </div>
     <div class="row">
 	<!-- This column will contain the new feeds  -->
@@ -144,8 +144,8 @@
                     <div class="video-container">
                         <iframe class="video" src="{{video.get_embed}}" frameborder="0" allowfullscreen></iframe>
                     </div>
-                    <p class="video-title">{{video.title}}</p>
-                    <p class="video-location">{{video.caption}} </p>
+                    <p class="video-title line-clamp">{{video.title}}</p>
+                    <p class="video-caption line-clamp-one-line">{{video.caption}} </p>
                     <p class="video-links">
                     <a href="{{video.video_url}}">YouTube</a>
                     {% if video.publication %}
