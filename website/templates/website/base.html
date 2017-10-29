@@ -181,66 +181,107 @@
     {% endblock %}
 
     {% block footer %}
-        <hr>
-        <div class="container footer">
-            <div class="row">
-              <div class="col-xs-3">
-                <a href="http://hcil.umd.edu/">
-                  <img src="{% static 'website/img/logos/hcil_logo.png' %}" class="img-responsive footer-img" />
-                </a>
-              </div>
-              <div class="col-xs-6">
-                <a href="http://cs.umd.edu/">
-                  <img src="{% static 'website/img/logos/cs_logo.png' %}" class="img-responsive footer-img" />
-                </a>
-              </div>
-              <div class="col-xs-3">
-                <a href="http://www.umd.edu/">
-                  <img src="{% static 'website/img/logos/umd_logo.png' %}" class="img-responsive footer-img" />
-                </a>
-              </div>
-            </div>
-        </div>
 
-        <hr>
-        <!-- TODO: think about whhere to put the DUB logo, Allen School logo -->
         <div class="container-fluid makelab-footer">
-            <div class="row-fluid makelab-footer-row">
-                <div class="col-xs-2">
+            <div class="row makelab-footer-row">
+                <div class="col-xs-1">
 
 
                 </div>
-                <div class="col-xs-2 makelab-footer-col">
+                <div class="col-xs-3 makelab-footer-col">
                     <a href="{% url 'website:index' %}">
-                        <img src="{% static 'website/img/logos/makelab_logo_white_with_text_400x342.png' %}" class="img-responsive"/>
+                        <img src="{% static 'website/img/logos/makelab_logo_white_with_text_400x342.png' %}"
+                             class="img-responsive" style="max-height: 180px"/>
                     </a>
                     <p style="margin-top:20px">
-                        Our mission is to design, build, and evaluate interactive tools and techniques to address pressing societal challenges in accessibility, sustainability, education, and beyond.
+                        We design, build, and evaluate interactive tools and techniques to address pressing societal
+                        challenges in accessibility, sustainability, education, and beyond.
                     </p>
                     <p>
                         <!-- TODO: change these to icons and link them -->
-{#                        Twitter | Email#}
+                        {#                        Twitter | Email#}
                     </p>
                 </div>
                 <div class="col-xs-2 makelab-footer-col">
-                    <strong>LINKS</strong><br/><br/>
-                    > About Us<br/><br/>
-                    > People<br/><br/>
-                    > Projects<br/><br/>
-                    > Publications<br/><br/>
-                    > Talks<br/><br/>
-                    > Videos<br/><br/>
+                    <!-- TODO change this to use CSS properly and <ul> and <li> elements, which should be appropriately styled. Also hook up hyperlinks -->
+                    <strong>LINKS</strong>
+                    <ul>
+
+                        <li>About Us</li>
+                        <li>People</li>
+                        <li>Projects</li>
+                        <li>Publications</li>
+                        <li>Talks</li>
+                        <li>Videos</li>
+                    </ul>
+{#                    <strong>LINKS</strong><br/><br/>#}
+{#                    > About Us<br/><br/>#}
+{#                    > People<br/><br/>#}
+{#                    > Projects<br/><br/>#}
+{#                    > Publications<br/><br/>#}
+{#                    > Talks<br/><br/>#}
+{#                    > Videos<br/><br/>#}
                 </div>
                 <div class="col-xs-2 makelab-footer-col">
                     RECENT NEWS
                 </div>
                 <div class="col-xs-2 makelab-footer-col">
+                    <!-- TODO change this to use CSS properly and <ul> and <li> elements, which should be appropriately styled. Also hook up hyperlinks -->
+                    <!-- TODO: add in icons -->
                     <strong>CONNECT</strong><br/>
-                    icon Twitter<br/>
-                    icon Email<br/>
-                    icon github<br/>
+                    <li>icon Twitter</li>
+                    <li>icon Email</li>
+                    <li>icon github</li>
+{#                    <strong>CONNECT</strong><br/>#}
+{#                    icon Twitter<br/>#}
+{#                    icon Email<br/>#}
+{#                    icon github<br/>#}
                 </div>
                 <div class="col-xs-2 makelab-footer-col">
+
+                </div>
+            </div>
+
+            <!-- TODO: The centering looks weird on this. Also responsive design wraps columns, which I don't like.
+                 Ideally, I think, on small devices, should just switch to single row;
+                 TODO: Fix UMD CS logo so that the text is bigger -->
+            <div class="row makelab-affiliations-footer-row">
+                <div class="col-xs-1">
+
+                </div>
+                <div class="col-xs-1 makelab-footer-affiliation-col">
+                    <a href="http://dub.uw.edu">
+                        <img src="{% static 'website/img/logos/uw_dub_bottom_white_185x100.png' %}"
+                             class="img-responsive makelab-footer-affiliation-logo"/>
+                    </a>
+                </div>
+                <div class="col-xs-2 makelab-footer-affiliation-col">
+                    <a href="https://www.cs.washington.edu/">
+                        <img src="{% static 'website/img/logos/uw_allen_school_logo_white_941x100.png' %}"
+                             class="img-responsive makelab-footer-affiliation-logo" style="margin-top: 2px;"/>
+                    </a>
+                </div>
+                <div class="col-xs-3 makelab-footer-affiliation-col">
+                    <a href="https://www.washington.edu/">
+{#                        <img src="{% static 'website/img/logos/UW_white_vertical_203x100.png' %}"#}
+{#                             class="img-responsive makelab-footer-affiliation-logo"/>#}
+                        <img src="{% static 'website/img/logos/uw_white_horizontal_1196x94.png' %}"
+                             class="img-responsive makelab-footer-affiliation-logo" style="max-height: 21.86px; margin-top: 2px;"/>
+                    </a>
+                </div>
+                <div class="col-xs-2 makelab-footer-affiliation-col">
+                    <a href="https://www.cs.umd.edu">
+                        <img src="{% static 'website/img/logos/umd_cs_logo_white_850x100.png' %}"
+                             class="img-responsive makelab-footer-affiliation-logo"/>
+                    </a>
+                </div>
+                <div class="col-xs-2 makelab-footer-affiliation-col">
+                    <a href="https://www.umd.edu/">
+                        <img src="{% static 'website/img/logos/umd_logo_white_586x100.png' %}"
+                             class="img-responsive makelab-footer-affiliation-logo"/>
+                    </a>
+                </div>
+                <div class="col-xs-1">
 
                 </div>
             </div>
