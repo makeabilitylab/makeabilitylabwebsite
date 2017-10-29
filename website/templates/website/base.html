@@ -70,8 +70,10 @@
             //prevent the default action for the click event
             event.preventDefault();
 
+            var element = clickedElement.className === "scroll" ? clickedElement : clickedElement.parentElement;
+
             //get the top offset of the target anchor
-            var hashName = event.originalEvent.srcElement.hash.substring(1);
+            var hashName = element.hash.substring(1);
             var target_offset = $('[name=' + hashName + ']').offset();
             var target_top = target_offset.top - 60;
 
