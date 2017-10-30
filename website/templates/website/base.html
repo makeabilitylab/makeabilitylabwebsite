@@ -117,7 +117,7 @@
                         {% with request.resolver_match.url_name as url_name %}
                             <li class="{% if url_name == 'index' %}active{% endif %}"><a href="{% url 'website:index' %}">Home</a></li>
                             <li class="{% if url_name == 'people' %}active{% endif %}"><a href="{% url 'website:people' %}">People</a></li>
-			    <!--<li class="{% if url_name == 'projects' %}active{% endif %}"><a href="{% url 'website:projects' %}">Projects</a></li>-->
+{#			                <li class="{% if url_name == 'projects' %}active{% endif %}"><a href="{% url 'website:projects' %}">Projects</a></li>#}
                             <li class="{% if url_name == 'publications' %}active{% endif %}"><a href="{% url 'website:publications' %}">Publications</a></li>
                             <li class="{% if url_name == 'talks' %}active{% endif %}"><a href="{% url 'website:talks' %}">Talks</a></li>
                             <li class="{% if url_name == 'videos' %}active{% endif %}"><a href="{% url 'website:videos' %}">Videos</a></li>
@@ -203,24 +203,19 @@
                     </p>
                 </div>
                 <div class="col-xs-2 makelab-footer-col">
-                    <!-- TODO change this to use CSS properly and <ul> and <li> elements, which should be appropriately styled. Also hook up hyperlinks -->
                     <strong>LINKS</strong>
                     <ul>
-
-                        <li>About Us</li>
-                        <li>People</li>
-                        <li>Projects</li>
-                        <li>Publications</li>
-                        <li>Talks</li>
-                        <li>Videos</li>
+                        {% with request.resolver_match.url_name as url_name %}
+{#                            <li>url_name: {{ url_name  }}</li>#}
+                            <li class="{% if url_name == 'index' %}active{% endif %}"><a href="{% url 'website:index' %}">Home</a></li>
+    {#                        <li>About Us</li>#}
+                            <li class="{% if url_name == 'people' %}active{% endif %}"><a href="{% url 'website:people' %}">People</a></li>
+    {#			            <li class="{% if url_name == 'projects' %}active{% endif %}"><a href="{% url 'website:projects' %}">Projects</a></li>#}
+                            <li class="{% if url_name == 'publications' %}active{% endif %}"><a href="{% url 'website:publications' %}">Publications</a></li>
+                            <li class="{% if url_name == 'talks' %}active{% endif %}"><a href="{% url 'website:talks' %}">Talks</a></li>
+                            <li class="{% if url_name == 'videos' %}active{% endif %}"><a href="{% url 'website:videos' %}">Videos</a></li>
+                        {% endwith %}
                     </ul>
-{#                    <strong>LINKS</strong><br/><br/>#}
-{#                    > About Us<br/><br/>#}
-{#                    > People<br/><br/>#}
-{#                    > Projects<br/><br/>#}
-{#                    > Publications<br/><br/>#}
-{#                    > Talks<br/><br/>#}
-{#                    > Videos<br/><br/>#}
                 </div>
                 <div class="col-xs-2 makelab-footer-col">
                     RECENT NEWS
