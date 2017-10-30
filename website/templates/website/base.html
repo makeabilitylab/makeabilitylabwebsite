@@ -218,7 +218,18 @@
                     </ul>
                 </div>
                 <div class="col-xs-2 makelab-footer-col">
-                    RECENT NEWS
+                    <!-- TODO: add in css style for these col sub-headings. I seem to remember an li class for heading too? -->
+                    <!-- TODO: add in date of news item and clean up formatting -->
+                    <strong>RECENT NEWS</strong>
+                    {# To add news dynamically, we need to use a context processor. #}
+                    {# See: https://stackoverflow.com/questions/36093221/how-to-put-variable-from-database-into-base-html-template #}
+                    {# We added said processor in context_processors.py #}
+                    <ul>
+                    {% for news_item in recent_news %}
+                        <li><a href="{% url 'website:news' news_item.id %}">{{ news_item.title }}</a></li>
+                    {% endfor %}
+                    </ul>
+
                 </div>
                 <div class="col-xs-2 makelab-footer-col">
                     <!-- TODO change this to use CSS properly and <ul> and <li> elements, which should be appropriately styled. Also hook up hyperlinks -->
