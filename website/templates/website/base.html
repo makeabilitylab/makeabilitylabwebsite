@@ -202,8 +202,8 @@
                         {#                        Twitter | Email#}
                     </p>
                 </div>
-                <div class="col-xs-2 makelab-footer-col">
-                    <strong>LINKS</strong>
+                <div class="col-xs-1 makelab-footer-col">
+                    <h1>Links</h1>
                     <ul>
                         {% with request.resolver_match.url_name as url_name %}
 {#                            <li>url_name: {{ url_name  }}</li>#}
@@ -217,31 +217,41 @@
                         {% endwith %}
                     </ul>
                 </div>
-                <div class="col-xs-2 makelab-footer-col">
-                    <!-- TODO: add in css style for these col sub-headings. I seem to remember an li class for heading too? -->
-                    <!-- TODO: add in date of news item and clean up formatting -->
-                    <strong>RECENT NEWS</strong>
-                    {# To add news dynamically, we need to use a context processor. #}
+                <div class="col-xs-3 makelab-footer-col">
+                    <h1>Recent News</h1>
+                    {# To add news dynamically, we need to use a context processor. See our custom process in context_processors.py #}
                     {# See: https://stackoverflow.com/questions/36093221/how-to-put-variable-from-database-into-base-html-template #}
-                    {# We added said processor in context_processors.py #}
                     <ul>
                     {% for news_item in recent_news %}
-                        <li><a href="{% url 'website:news' news_item.id %}">{{ news_item.title }}</a></li>
+                        {#  Date formats here: https://docs.djangoproject.com/en/1.11/ref/templates/builtins/#std:templatefilter-date #}
+                        <li><a href="{% url 'website:news' news_item.id %}">{{ news_item.date|date:"N d, Y" }} - {{ news_item.title }}</a></li>
                     {% endfor %}
                     </ul>
 
                 </div>
+
                 <div class="col-xs-2 makelab-footer-col">
-                    <!-- TODO change this to use CSS properly and <ul> and <li> elements, which should be appropriately styled. Also hook up hyperlinks -->
-                    <!-- TODO: add in icons -->
-                    <strong>CONNECT</strong><br/>
-                    <li>icon Twitter</li>
-                    <li>icon Email</li>
-                    <li>icon github</li>
-{#                    <strong>CONNECT</strong><br/>#}
-{#                    icon Twitter<br/>#}
-{#                    icon Email<br/>#}
-{#                    icon github<br/>#}
+
+                    <!-- TODO: Vertically center text with icon. Currently text does not appear perfectly vertically centered with icon -->
+                    <h1>Connect</h1>
+                    <ul>
+                        <li>
+                            <a href="https://twitter.com/makeabilitylab">
+                                <img src="{% static 'website/img/logos/twitter_logo_white.png' %}" class="makelab-footer-connect-logo"/>
+                                <span style="padding-top:0px">Twitter</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="jonf@cs.uw.edu">
+                                <img src="{% static 'website/img/logos/email_logo_white.png' %}" class="makelab-footer-connect-logo"/> Email
+                            </a>
+                        </li>
+                        <li>
+                            <a href="jonf@cs.uw.edu">
+                                <img src="{% static 'website/img/logos/github_logo_white.png' %}" class="makelab-footer-connect-logo"/> Github
+                            </a>
+                        </li>
+                    </ul>
                 </div>
                 <div class="col-xs-2 makelab-footer-col">
 

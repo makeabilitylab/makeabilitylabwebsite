@@ -389,6 +389,14 @@ h5 {
 	margin-left: 20px;
 }
 
+.makelab-footer-col h1{
+	text-transform: uppercase;
+	font-weight: bold;
+	font-size: 14px;
+	margin: 0px;
+	padding: 0px;
+}
+
 .makelab-footer-col ul {
 	list-style: none;
 	padding-left: 0;
@@ -406,6 +414,10 @@ h5 {
 
 .makelab-footer-col a:link, a:visited {
 	color: white;
+}
+
+.makelab-footer-connect-logo{
+	max-height: 18px;
 }
 
 
