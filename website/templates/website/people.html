@@ -80,7 +80,9 @@
         {#  To get the length of a list in a template, use | length. #}
         {#      See: http://stackoverflow.com/questions/13138859/django-length-of-a-list #}
         <h1 name="profgrad" style="margin-top:0">Professor and Graduate Students</h1>
-        <h4>{{ active_prof|length }} Prof
+        <h4>
+            {# TODO: the comma handling here should be applied to all other parts of the page that count people #}
+            {{ active_prof|length }} Prof
             {% if active_postdoc or active_phd or active_ms%}, {% endif %}
             {% if active_postdoc %} {{ active_postdoc|length }} Postdoc{% endif %}
             {% if active_phd or active_ms%}, {% endif %}
