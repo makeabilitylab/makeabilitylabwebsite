@@ -1,15 +1,35 @@
-.icon_row img {
+research-area-icon-label{
+    text-align: center;
+}
+
+.research-area-icon-row img {
     width: 100%;
 }
 
-.icon_row{
+.research-area-icon-row{
     padding-top: 20px;
     padding-bottom: 20px
 }
 
-.icon-label {
+.research-area-icon-label {
     width: 100%;
     text-align: center;
+}
+
+.research-area-icon-col{
+    text-align: center;
+}
+
+.section-header{
+    margin-top: 20px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 20px;
+}
+
+.makelab-content-container{
+    margin-left: 40px;
+    margin-right: 40px;
 }
 
 .no-margin {
@@ -23,10 +43,14 @@ h1{
     font-variant: normal;
 }
 
-@media (max-width:480px) {
-    #short-statement {
-        font-size: 28px;
-    }
+#makelab-intro h1{
+    text-align: center;
+}
+
+#makelab-intro{
+    margin: 0px;
+    padding: 0px;
+    background-color: #eac446;
 }
 
 .page-link{

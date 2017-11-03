@@ -67,20 +67,6 @@
 			{% endif %}
 			{% endif %}
 			<div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})" aria-label="{{ banner.alt_text }}" title="{{ banner.alt_text}}"></div>
-			<!-- <div class="overlay">
-			     <div class="container carousel-container">
-                             <div class="carousel-caption carousel-caption-right">
-                             {% autoescape off %} {# enable HTML tags #}
-                             <div class="carousel-caption-title">
-                             {{ banner.title }}
-                             </div>
-                             <div class="carousel-caption-text">
-                             {{ banner.caption }}
-                             </div>
-                             {% endautoescape %}
-                             </div>
-			     </div>
-			     </div> -->
 			{% if banner.link %}</a>{% endif %}
 		    {% if banner.project %}
 		</a>
@@ -149,7 +135,7 @@
 {#                        <iframe class="video" src="{{video.get_embed}}" frameborder="0" allowfullscreen></iframe>#}
 {#                    </div>#}
 {#                    <p class="video-title line-clamp">{{video.title}}</p>#}
-{#                    <p class="video-location">{{video.caption}} </p>#}
+{#                    <p class="video-location line-clamp-one-line">{{video.caption}} </p>#}
 {#                    <p class="video-links">#}
 {#                        <a href="{{video.video_url}}">YouTube</a>#}
 {#                        {% if video.publication %}#}

@@ -8,122 +8,190 @@
 
 {% block stylesheets %}
 
-<link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/talks.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/news.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/landing.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/video.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/projects.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/talks.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/news.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/video.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/projects.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}">
 {% endblock %}
 
 {% block content %}
-<div id="content" class="container content-container" data-spy="scroll" data-target="#navbar-scroll" data-offset="50">
-    <div id="header" class="container">
-	<center><h1 id="short-statement">We are the <font color="00B0F0">Makeability Lab</font>, dedicated to building and studying interaction technology for a social purpose</h1></center>
+    <div class="container-fluid">
+        <div id="makelab-intro">
+            <h1>We are the Makeability Lab, dedicated to building
+                and studying interaction technology for a social purpose</h1>
+        </div>
+
+        <div id="research-area-icons" class="row research-area-icon-row">
+            <!-- TODO Cleanup the icon files once they are accepted -->
+            <!-- TODO add links for each icon to the appropriate publications/projects page -->
+            <!-- TODO Icons have white backgrounds and are *not* centered. Needs to be fixed -->
+            <div class="col-xs-4 col-md-2 col-xs-offset-2 col-md-offset-1 research-area-icon-col">
+                <a href="{% url 'website:publications' %}?filter=sustainability">
+                    <img class="research-area-icon" src="{% static 'website/img/icons/sustainabilitycircle.png' %}">
+                </a>
+                <span class="research-area-icon-label">Sustainability</span>
+            </div>
+            <div class="col-xs-4 col-md-2 research-area-icon-col">
+                <a href="{% url 'website:publications' %}?filter=accessibility">
+                    <img class="research-area-icon" src="{% static 'website/img/icons/accessibilitycircle.png' %}">
+                </a>
+                <span class="research-area-icon-label">Accessibility</span>
+            </div>
+            <div class="col-xs-4 col-md-2 research-area-icon-col">
+                <a href="{% url 'website:publications' %}?filter=health">
+                    <img class="research-area-icon" src="{% static 'website/img/icons/healthcircle.png' %}">
+                </a>
+                <span class="research-area-icon-label">Health</span>
+            </div>
+            <div class="col-xs-4 col-md-2 research-area-icon-col">
+                <a href="{% url 'website:publications' %}?filter=learning">
+                    <img class="research-area-icon" src="{% static 'website/img/icons/learningcircle.png' %}">
+                </a>
+                <span class="research-area-icon-label">Learning Tools</span>
+            </div>
+            <div class="col-xs-4 col-md-2 research-area-icon-col">
+                <a href="{% url 'website:publications' %}?filter=making">
+                    <img class="research-area-icon" src="{% static 'website/img/icons/makertoolscircle.png' %}">
+                </a>
+                <span class="research-area-icon-label">Maker Tools</span>
+            </div>
+        </div>
     </div>
 
-    <div id="circles" class="row icon_row">
-	<!-- TODO Cleanup the icon files once they are accepted -->
-	<!-- TODO add links for each icon to the appropriate publications/projects page -->
-	<div class="col-xs-4 col-md-2 col-xs-offset-2 col-md-offset-1 icon-col">
-	    <a href="{% url 'website:publications' %}?filter=sustainability">
-		<img src="{% static 'website/img/icons/sustainabilitycircle.png' %}">
-	    </a>
-	    <center><span class="icon_label">Sustainability</span></center>
-	</div>
-	<div class="col-xs-4 col-md-2 icon-col">
-	    <a href="{% url 'website:publications' %}?filter=accessibility">
-		<img src="{% static 'website/img/icons/accessibilitycircle.png' %}">
-	    </a>
-	    <center><span class="icon_label">Accessibility</span></center>
-	</div>
-	<div class="col-xs-4 col-md-2 icon-col">
-	    <a href="{% url 'website:publications' %}?filter=health">
-		<img src="{% static 'website/img/icons/healthcircle.png' %}">
-	    </a>
-	    <center><span class="icon_label">Health</span></center>
-	</div>
-	<div class="col-xs-4 col-md-2 icon-col">
-	    <a href="{% url 'website:publications' %}?filter=learning">
-		<img src="{% static 'website/img/icons/learningcircle.png' %}">
-	    </a>
-	    <center><span class="icon_label">Learning Tools</span></center>
-	</div>
-	<div class="col-xs-4 col-md-2 icon-col">
-	    <a href="{% url 'website:publications' %}?filter=making">
-		<img src="{% static 'website/img/icons/makertoolscircle.png' %}">
-	    </a>
-	    <center><span class="icon_label">Maker Tools</span></center>
-	</div>
-    </div>
-    <div id="statement" class="row no-margin">
-	<!--<p>
-	    The Makeability Lab is a research lablet within the <a href="http://hcil.umd.edu/">Human-Computer Interaction Lab (HCIL)</a>—one of the oldest and most well-known HCI labs in the world—at the <a href="http://www.umd.edu/">University of Maryland</a>. Founded in 2012 by <a href="http://www.cs.umd.edu/~jonf/">Dr. Jon Froehlich</a> and students, the Makeability Lab focuses on designing and studying novel interactive experiences that cross between bits and atoms—the virtual and the physical—and back again to confront some of the world's greatest challenges in environmental sustainability, health and wellness, education, and universal accessibility.
-	</p>-->
-    </div>
-    <div class="row">
-	<!-- This column will contain the new feeds  -->
-	<div class="col-xs-12 col-md-2 col-md-push-10 newstwitter-bar">
-	    {% if news %}
-	    <!-- Create a row for the well which will contain news from our feeds -->
-	    <div class="row no-margin">
-		<h3 class="news-type-label">Recent News</h3>
-		<div class="well news-well">
-		    {% for item in news %}
-		    <!-- Create a row for each news item which has been passed in -->
-		    <div class="row news_header">
-			<!-- TODO link to the full news item -->
-			<a href="">
-			<!-- Use the items image if it exists, otherwise use the default icon -->
-			{% if item.image %}
-			    <img src="{% thumbnail item.image 250x250 box=item.cropping crop detail %}" class="news_image" height="50" width="50" alt="{{item.alt_text}}">
-			{% else %}
-			<img src="{% static 'website/img/news_icon.png' %}" class="news_image" height="50" width="50">			
-			{% endif %}
-			</a>
-			<div class="news_info">
-			    <!-- https://css-tricks.com/line-clampin/ This seems to be a good way to do multi line wrapping, also referenced in relevant news.css file -->
-			    <div class="news_title line-clamp">
-				<a href="{% url 'website:news' item.id %}">
-				    <p>{{item.title}}</p>
-				</a>
-			    </div>
-			    <p class="news_date">{{item.short_date}} | <a href="{% url 'website:member' item.author.id %}">{{item.author.first_name}}</a></p><!--</p><p class="news_date">{{item.author}}</p>-->
-			</div>
-		    </div>
-		    <div class="row news_body">
-			<!-- Truncation now uses a set number of lines which can be modified in news.css content-clamp class by changing -webkit-line-clamp -->
-			<div class="news_content content-clamp">
-			    {% autoescape off %}
-			    <p>{{item.content}}</p>
-			    {% endautoescape %}
-			</div>
-		    </div>
-		    {% endfor %}
-		</div>
-	    </div>
-	    {% endif %}
-	    <div class="row hidden-xs twitter-row no-margin">
-		<h3 class="news-type-label">Recent Tweets</h3>
-		<!-- See https://dev.twitter.com/docs/embedded-timelines#customization -->
-		<a class="twitter-timeline" href="https://twitter.com/makeabilitylab" width="600"
-	data-chrome="noheader nofooter noborders transparent"
-	data-tweet-limit="5">Tweets by makeabilitylab</a> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
-		<!--<a class="twitter-timeline" 
-	href="https://twitter.com/makeabilitylab/makeability-lab" 
-	data-widget-id="412952552452280320" 
-	width="600"
-	data-chrome="noheader nofooter noborders transparent"
-	data-tweet-limit="5">Tweets from https://twitter.com/makeabilitylab/makeability-lab</a>
+    <hr/>
 
-		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>-->
-	    </div>
-	</div>
-	<!-- This is the main content column--and contains things like recent pubs, videos, talks, papers, etc.  -->
-	<div class="col-xs-12 col-md-10 col-md-pull-2 landing-content">
-	    <div class="row no-margin">
-		{% comment %}
+    <div id="makelab-recent-projects" class="container-fluid makelab-content-container">
+        <h1 class="section-header">Recent Projects</h1>
+
+    </div>
+
+    <div id="makelab-recent-news" class="container-fluid makelab-content-container">
+        <h1 class="section-header">Recent News</h1>
+        <div class="">
+            <!-- TODO: update formatting of news items. Decide on 4 or 5 columns -->
+            {% for news_item in news %}
+                <div class="col-xs-12 col-md-3">
+                    <a href="{% url 'website:news' news_item.id %}">{{ news_item.title }}</a>
+                </div>
+
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="makelab-recent-videos" class="container-fluid makelab-content-container">
+        <h1 class="section-header">Recent Videos</h1>
+        <div class="">
+            <!-- TODO: Consider adding age of video into display somehow -->
+            <!-- TODO: Update so not using video.css as landing page has different visual requirements -->
+            {#  Slice limits to a number of elements in list; see https://stackoverflow.com/a/3907661 #}
+            {% for video in videos|slice:"4" %}
+                <div class="col-xs-12 col-md-3 video-column">
+                    <div class="video-container">
+                        <iframe class="video" src="{{video.get_embed}}" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <p class="video-title line-clamp">{{video.title}}</p>
+{#                    <p class="video-location line-clamp-one-line">{{video.caption}} </p>#}
+                    <p class="video-links">
+                        <a href="{{video.video_url}}">YouTube</a>
+                        {% if video.publication %}
+                        | <a href="../../media/{{video.publication.pdf_file}}">Paper</a>
+                        {% endif %}
+                    </p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="makelab-recent-papers" class="container-fluid makelab-content-container">
+        <h1 class="section-header">Recent Papers</h1>
+        <div class="">
+            <!-- TODO: iterate through recent papers and display them-->
+
+        </div>
+    </div>
+
+    <div id="makelab-recent-talks" class="container-fluid makelab-content-container">
+        <h1 class="section-header">Recent Talks</h1>
+        <div class="">
+            <!-- TODO: iterate through recent talks and display them-->
+
+        </div>
+    </div>
+
+
+
+    <div id="content" class="container content-container" data-spy="scroll" data-target="#navbar-scroll" data-offset="50">
+
+        <div class="row">
+            <!-- This column will contain the new feeds  -->
+            <div class="col-xs-12 col-md-2 col-md-push-10 newstwitter-bar">
+            {% if news %}
+                <!-- Create a row for the well which will contain news from our feeds -->
+                <div class="row no-margin">
+                    <h3 class="news-type-label">Recent News</h3>
+                    <div class="well news-well">
+                        {% for item in news %}
+                            <!-- Create a row for each news item which has been passed in -->
+                            <div class="row news_header">
+                                <!-- TODO link to the full news item -->
+                                <a href="">
+                                    <!-- Use the items image if it exists, otherwise use the default icon -->
+                                    {% if item.image %}
+                                        <img src="{% thumbnail item.image 250x250 box=item.cropping crop detail %}"
+                                             class="news_image" height="50" width="50" alt="{{ item.alt_text }}">
+                                    {% else %}
+                                        <img src="{% static 'website/img/news_icon.png' %}" class="news_image"
+                                             height="50" width="50">
+                                    {% endif %}
+                                </a>
+                                <div class="news_info">
+                                    <!-- https://css-tricks.com/line-clampin/ This seems to be a good way to do multi line wrapping, also referenced in relevant news.css file -->
+                                    <div class="news_title line-clamp">
+                                        <a href="{% url 'website:news' item.id %}">
+                                            <p>{{ item.title }}</p>
+                                        </a>
+                                    </div>
+                                    <p class="news_date">{{ item.short_date }} | <a
+                                            href="{% url 'website:member' item.author.id %}">{{ item.author.first_name }}</a>
+                                    </p><!--</p><p class="news_date">{{item.author}}</p>-->
+                                </div>
+                            </div>
+                            <div class="row news_body">
+                                <!-- Truncation now uses a set number of lines which can be modified in news.css content-clamp class by changing -webkit-line-clamp -->
+                                <div class="news_content content-clamp">
+                                    {% autoescape off %}
+                                        <p>{{ item.content }}</p>
+                                    {% endautoescape %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            <div class="row hidden-xs twitter-row no-margin">
+                <h3 class="news-type-label">Recent Tweets</h3>
+                <!-- See https://dev.twitter.com/docs/embedded-timelines#customization -->
+                <a class="twitter-timeline" href="https://twitter.com/makeabilitylab" width="600"
+                   data-chrome="noheader nofooter noborders transparent"
+                   data-tweet-limit="5">Tweets by makeabilitylab</a>
+                <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <!--<a class="twitter-timeline"
+            href="https://twitter.com/makeabilitylab/makeability-lab"
+            data-widget-id="412952552452280320"
+            width="600"
+            data-chrome="noheader nofooter noborders transparent"
+            data-tweet-limit="5">Tweets from https://twitter.com/makeabilitylab/makeability-lab</a>
+
+                <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>-->
+            </div>
+        </div>
+            <!-- This is the main content column--and contains things like recent pubs, videos, talks, papers, etc.  -->
+            <div class="col-xs-12 col-md-10 col-md-pull-2 landing-content">
+            <div class="row no-margin">
+                {% comment %}
 		<h3 class="news-type-label"><b>Popular Projects</b></h3>
 		{% for project in projects %}
 		<div class="col-xs-12 col-sm-6 col-md-4 project-display">
@@ -137,95 +205,102 @@
 		{% endfor %}
 	    </div>
 	    {% endcomment %}
-	    <div class="row no-margin">
-            <h3 class="news-type-label"><b>Recent Videos</b></h3>
-            {% for video in videos %}
-                <div class="col-xs-12 col-md-6 video-column">
-                    <div class="video-container">
-                        <iframe class="video" src="{{video.get_embed}}" frameborder="0" allowfullscreen></iframe>
-                    </div>
-                    <p class="video-title line-clamp">{{video.title}}</p>
-                    <p class="video-caption line-clamp-one-line">{{video.caption}} </p>
-                    <p class="video-links">
-                    <a href="{{video.video_url}}">YouTube</a>
-                    {% if video.publication %}
-                    | <a href="../../media/{{video.publication.pdf_file}}">Paper</a>
-                    {% endif %}
-                    </p>
+                <div class="row no-margin">
+                    <h3 class="news-type-label"><b>Recent Videos</b></h3>
+                    {% for video in videos %}
+                        <div class="col-xs-12 col-md-6 video-column">
+                            <div class="video-container">
+                                <iframe class="video" src="{{ video.get_embed }}" frameborder="0"
+                                        allowfullscreen></iframe>
+                            </div>
+                            <p class="video-title line-clamp">{{ video.title }}</p>
+                            <p class="video-caption line-clamp-one-line">{{ video.caption }} </p>
+                            <p class="video-links">
+                                <a href="{{ video.video_url }}">YouTube</a>
+                                {% if video.publication %}
+                                    | <a href="../../media/{{ video.publication.pdf_file }}">Paper</a>
+                                {% endif %}
+                            </p>
+                        </div>
+                    {% endfor %}
                 </div>
-            {% endfor %}
-	    </div>
-	    <div class="row no-margin">
-		<h3 class="news-type-label"><b>Recent Publications</b></h3>
-		
-		<div class="col-xs-12 col-md-10 landing-publications">
-		    <!-- Create a publication div for each publication passed in -->
-		    {% for pub in publications %}
-		    <div class="row publication-template">
-			<div class="publication-thumbnail">
-			    <a href="../../media/{{pub.pdf_file}}" class="publication-thumbnail-link">
-				<img src="{% thumbnail pub.thumbnail 300x0 detail %}" class="publication-thumbnail-image img-responsive">
-			    </a>
-			</div>
-			<div class="publication-info">
-			    <p class="publication-title">{{pub.title}}</p>
-			    <p class="publication-authors">
-				{% for author in pub.authors.all %}
-				    <span class="publication-author"><a href="{% url 'website:member' author.id %}">{{author.get_full_name}}</a>&nbsp;</span>
-				{% endfor %}
-			    </p>
-			    <p class="publication-stats">
+                <div class="row no-margin">
+                    <h3 class="news-type-label"><b>Recent Publications</b></h3>
+
+                    <div class="col-xs-12 col-md-10 landing-publications">
+                        <!-- Create a publication div for each publication passed in -->
+                        {% for pub in publications %}
+                            <div class="row publication-template">
+                                <div class="publication-thumbnail">
+                                    <a href="../../media/{{ pub.pdf_file }}" class="publication-thumbnail-link">
+                                        <img src="{% thumbnail pub.thumbnail 300x0 detail %}"
+                                             class="publication-thumbnail-image img-responsive">
+                                    </a>
+                                </div>
+                                <div class="publication-info">
+                                    <p class="publication-title">{{ pub.title }}</p>
+                                    <p class="publication-authors">
+                                        {% for author in pub.authors.all %}
+                                            <span class="publication-author"><a
+                                                    href="{% url 'website:member' author.id %}">{{ author.get_full_name }}</a>&nbsp;</span>
+                                        {% endfor %}
+                                    </p>
+                                    <p class="publication-stats">
 				    <span class="publication-venue">
-                        {{pub.book_title_short}}
+                        {{ pub.book_title_short }}
                         {% if pub.to_appear %}
                             <span class="publication-to-appear-text">To Appear</span>
                         {% endif %}
                     </span>
-			    </p>
-			</div>
-		    </div>
-		    {% endfor %}
-		    <div class="row">
-			<a href="{% url 'website:publications' %}" class="page-link">More...</a>
-		    </div>
-		</div>
-	    </div>
-	    <div class="row no-margin">
-		<h3 class="news-type-label"><b>Recent Talks</b></h3>
-		
-		<div class="row no-margin">
-		    <!-- Create a div for each talk passed in -->
-		    {% for talk in talks %}
-		    <div class="col-ts-12 col-xs-6 col-sm-6 col-md-4 col-lg-3 talk-template-landing landing-talk-fix">
-			<div class="talk-info">
-			    <div class="talk-thumbnail">
-				<a href="../../media/{{talk.pdf_file}}" class="talk-thumbnail-link">
-				    <img src="{% thumbnail talk.thumbnail 420x0 detail %}" class="talk-thumbnail-image img-responsive talk-image-fix"/>
-				</a>
-			    </div>
-			    <p class="talk-title line-clamp">
-				{{talk.title}}
-			    </p>
-			    <p class="talk-speakers">
-				{% for speaker in talk.speakers.all %}
-				{% if forloop.last %}
-				<span class="talk-speaker"><a href="{% url 'website:member' speaker.id %}">{{speaker.get_full_name}}</a></span>
-				{% else %}
-				<span class="talk-speaker"><a href="{% url 'website:member' speaker.id %}">{{speaker.get_full_name}}</a>,&nbsp;</span>
-				{% endif %}
-				{% endfor %}
-			    </p>
-			    <p class="talk-stats">
-				<span class="talk-date">{{talk.date}}</span>
-				<span class="talk-location">{{talk.location}}</span>
-			    </p>
-			</div>
-		    </div>
-		    {% endfor %}
-		</div>
-		<a href="{% url 'website:talks' %}" class="page-link">More...</a>
-	    </div>
-	</div>
+                                    </p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div class="row">
+                            <a href="{% url 'website:publications' %}" class="page-link">More...</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row no-margin">
+                    <h3 class="news-type-label"><b>Recent Talks</b></h3>
+
+                    <div class="row no-margin">
+                        <!-- Create a div for each talk passed in -->
+                        {% for talk in talks %}
+                            <div class="col-ts-12 col-xs-6 col-sm-6 col-md-4 col-lg-3 talk-template-landing landing-talk-fix">
+                                <div class="talk-info">
+                                    <div class="talk-thumbnail">
+                                        <a href="../../media/{{ talk.pdf_file }}" class="talk-thumbnail-link">
+                                            <img src="{% thumbnail talk.thumbnail 420x0 detail %}"
+                                                 class="talk-thumbnail-image img-responsive talk-image-fix"/>
+                                        </a>
+                                    </div>
+                                    <p class="talk-title line-clamp">
+                                        {{ talk.title }}
+                                    </p>
+                                    <p class="talk-speakers">
+                                        {% for speaker in talk.speakers.all %}
+                                            {% if forloop.last %}
+                                                <span class="talk-speaker"><a
+                                                        href="{% url 'website:member' speaker.id %}">{{ speaker.get_full_name }}</a></span>
+                                            {% else %}
+                                                <span class="talk-speaker"><a
+                                                        href="{% url 'website:member' speaker.id %}">{{ speaker.get_full_name }}</a>,&nbsp;</span>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </p>
+                                    <p class="talk-stats">
+                                        <span class="talk-date">{{ talk.date }}</span>
+                                        <span class="talk-location">{{ talk.location }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <a href="{% url 'website:talks' %}" class="page-link">More...</a>
+                </div>
+            </div>
+        </div>
+        </div>
     </div>
-</div>
 {% endblock %}
