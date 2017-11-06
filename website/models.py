@@ -516,7 +516,9 @@ class Video(models.Model):
         #TODO this assumes that all videos are YouTube. This is not the case.
         base_url = "https://youtube.com/embed"
         unique_url = self.video_url[self.video_url.find("/", 9):]
-        return base_url+unique_url
+
+        # See https://developers.google.com/youtube/youtube_player_demo for details on parameterizing YouTube video
+        return base_url + unique_url + "?showinfo=0&iv_load_policy=3"
 
     # Returns a cap case title
     def get_title(self):
