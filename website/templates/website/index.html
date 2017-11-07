@@ -12,79 +12,38 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container-fluid">
-        <div id="makelab-intro">
-            <h1>We are the Makeability Lab, dedicated to building
-                and studying interaction technology for a social purpose</h1>
-        </div>
-
-        <div id="research-area-icons" class="row research-area-icon-row">
-            <!-- TODO Cleanup the icon files once they are accepted -->
-            <!-- TODO add links for each icon to the appropriate publications/projects page -->
-            <!-- TODO Icons have white backgrounds and are *not* centered. Needs to be fixed -->
-            <div class="col-xs-4 col-md-2 col-xs-offset-2 col-md-offset-1 research-area-icon-col">
-                <a href="{% url 'website:publications' %}?filter=sustainability">
-                    <img class="research-area-icon" src="{% static 'website/img/icons/sustainabilitycircle.png' %}">
-                </a>
-                <span class="research-area-icon-label">Sustainability</span>
-            </div>
-            <div class="col-xs-4 col-md-2 research-area-icon-col">
-                <a href="{% url 'website:publications' %}?filter=accessibility">
-                    <img class="research-area-icon" src="{% static 'website/img/icons/accessibilitycircle.png' %}">
-                </a>
-                <span class="research-area-icon-label">Accessibility</span>
-            </div>
-            <div class="col-xs-4 col-md-2 research-area-icon-col">
-                <a href="{% url 'website:publications' %}?filter=health">
-                    <img class="research-area-icon" src="{% static 'website/img/icons/healthcircle.png' %}">
-                </a>
-                <span class="research-area-icon-label">Health</span>
-            </div>
-            <div class="col-xs-4 col-md-2 research-area-icon-col">
-                <a href="{% url 'website:publications' %}?filter=learning">
-                    <img class="research-area-icon" src="{% static 'website/img/icons/learningcircle.png' %}">
-                </a>
-                <span class="research-area-icon-label">Learning Tools</span>
-            </div>
-            <div class="col-xs-4 col-md-2 research-area-icon-col">
-                <a href="{% url 'website:publications' %}?filter=making">
-                    <img class="research-area-icon" src="{% static 'website/img/icons/makertoolscircle.png' %}">
-                </a>
-                <span class="research-area-icon-label">Maker Tools</span>
-            </div>
-        </div>
-    </div>
-
-    <hr/>
 
     <div id="makelab-recent-projects" class="container-fluid makelab-content-container">
-        <h1 class="section-header">Recent Projects</h1>
+        <h1 class="section-header" style="margin-top:25px">Recent Projects</h1>
         <div class="">
             {% for project in projects|slice:"8" %}
                 <div class="col-xs-12 col-md-3">
-                    {{ project.name }}
+
+                    <img src="{% thumbnail project.gallery_image 300x180 box=project.cropping crop detail %}">
+                    <p>{{ project.name }}</p>
                 </div>
             {% endfor %}
         </div>
     </div>
 
-    <div id="makelab-recent-news" class="container-fluid makelab-content-container">
-        <h1 class="section-header">Recent News</h1>
-        <div class="">
-            <!-- TODO: update formatting of news items. Decide on 4 or 5 columns -->
-            {% for news_item in news %}
-                <div class="col-xs-12 col-md-3">
-                    {% if news_item.image %}
-                        <img src="{% thumbnail item.image 250x250 box=item.cropping crop detail %}" class="news_thumbnail_image" alt="{{ item.alt_text }}">
-                    {% else %}
-                        <img src="{% static 'website/img/news_icon.png' %}" class="news_thumbnail_image" alt="{{ item.alt_text }}">
-                    {% endif %}
-                    <a href="{% url 'website:news' news_item.id %}">{{ news_item.title }}</a>
-                </div>
-
-            {% endfor %}
-        </div>
-    </div>
+    <!-- TODO: explore moving news to right side column above banner -->
+{#    <div id="makelab-recent-news" class="container-fluid makelab-content-container">#}
+{#        <h1 class="section-header">Recent News</h1>#}
+{#        <div class="">#}
+{#            <!-- TODO: update formatting of news items. Decide on 4 or 5 columns -->#}
+{#            {% for news_item in news %}#}
+{#                <div class="col-xs-12 col-md-3">#}
+{#                    {% if news_item.image %}#}
+{#                        <img src="{% thumbnail item.image 250x250 box=item.cropping crop detail %}" class="news_thumbnail_image" alt="{{ item.alt_text }}">#}
+{#                    {% else %}#}
+{#                        <img src="{% static 'website/img/news_icon.png' %}" class="news_thumbnail_image" alt="{{ item.alt_text }}">#}
+{#                    {% endif %}#}
+{#                    <a href="{% url 'website:news' news_item.id %}">{{ news_item.title }}</a>#}
+{#                </div>#}
+{##}
+{#            {% endfor %}#}
+{#        </div>#}
+{#    </div>#}
 
     <!-- TODO: the ../../media directory should be a variable and not a constant -->
     <div id="makelab-recent-videos" class="container-fluid makelab-content-container">

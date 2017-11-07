@@ -399,6 +399,7 @@ class Project(models.Model):
     keywords = models.ManyToManyField(Keyword, blank=True, null=True)
 
     #pis = models.ManyToOneField(Person, blank=True, null=True)
+    #TODO: consider switching gallery_image var name to thumbnail
     gallery_image = models.ImageField(upload_to='projects/images', blank=True, null=True, max_length=255)
     gallery_image.help_text = "This is the image which will show up on the project gallery page. It is not displayed anywhere else. You must select 'Save and continue editing' at the bottom of the page after uploading a new image for cropping. Please note that since we are using a responsive design with fixed height banners, your selected image may appear differently on various screens."
 
