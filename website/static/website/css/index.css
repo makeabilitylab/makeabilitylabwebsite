@@ -37,6 +37,10 @@ research-area-icon-label{
     margin-right: 0;
 }
 
+.project-column{
+    /*margin-top: 15px;*/
+}
+
 .news_thumbnail_image{
     width: 50px;
 }
