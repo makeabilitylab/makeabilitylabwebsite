@@ -128,7 +128,7 @@
                         {% with request.resolver_match.url_name as url_name %}
                             <li class="{% if url_name == 'index' %}active{% endif %}"><a href="{% url 'website:index' %}">Home</a></li>
                             <li class="{% if url_name == 'people' %}active{% endif %}"><a href="{% url 'website:people' %}">People</a></li>
-			    <!--<li class="{% if url_name == 'projects' %}active{% endif %}"><a href="{% url 'website:projects' %}">Projects</a></li>-->
+			                <li class="{% if url_name == 'projects' %}active{% endif %}"><a href="{% url 'website:projects' %}">Projects</a></li>
                             <li class="{% if url_name == 'publications' %}active{% endif %}"><a href="{% url 'website:publications' %}">Publications</a></li>
                             <li class="{% if url_name == 'talks' %}active{% endif %}"><a href="{% url 'website:talks' %}">Talks</a></li>
                             <li class="{% if url_name == 'videos' %}active{% endif %}"><a href="{% url 'website:videos' %}">Videos</a></li>
