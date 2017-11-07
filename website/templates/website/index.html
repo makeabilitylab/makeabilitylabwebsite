@@ -59,7 +59,13 @@
 
     <div id="makelab-recent-projects" class="container-fluid makelab-content-container">
         <h1 class="section-header">Recent Projects</h1>
-
+        <div class="">
+            {% for project in projects|slice:"8" %}
+                <div class="col-xs-12 col-md-3">
+                    {{ project.name }}
+                </div>
+            {% endfor %}
+        </div>
     </div>
 
     <div id="makelab-recent-news" class="container-fluid makelab-content-container">
