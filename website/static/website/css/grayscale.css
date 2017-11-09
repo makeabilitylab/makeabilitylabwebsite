@@ -17,6 +17,7 @@
 
 .navbar-custom .lab-text{
     display: inline;
+    vertical-align: text-top;
 }
 
 .navbar-custom .navbar-brand>img {

@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}">
 {% endblock %}
 
+<!-- TODO: In general, I need to test on and support mobile devices. I just tested it and it looks weird -->
 {% block maincarousel %}
     {# Call the parent block #}
     {{ block.super }}
@@ -153,14 +154,14 @@
                     <div class="talk-text">
                         <!-- TODO: href the talk title as well -->
                         <span class="talk-title line-clamp">{{ talk.title }}</span>
-                        <p class="talk-date">{{ talk.date }}
-                            <!-- TODO: we don't want talk location, we want talk venue. Change this -->
-                            <span class="talk-location">{{ talk.location }}</span>
+                        <p class="talk-subtitle">
+{#                            {{ talk.date }}#}
+                            <span class="talk-forum">{{ talk.forum_name }}</span>
                         </p>
                         <p class="talk-speakers">
                             <!-- Remove space between speakers -->
                             {% for speaker in talk.speakers.all %}
-                                {% if not forloop.first %},&nbsp;{% endif %}
+                                {% if not forloop.first %}, {% endif %}
                                 <a href="{% url 'website:member' speaker.id %}">{{ speaker.get_full_name }}</a></span>
                             {% endfor %}
                         </p>
