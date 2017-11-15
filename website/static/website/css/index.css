@@ -24,7 +24,8 @@ research-area-icon-label{
     margin-top: 40px;
     margin-bottom: 15px;
     text-align: center;
-    font-size: 24px;
+    font-size: 22px;
+    text-transform: uppercase;
 }
 
 .makelab-content-container{
@@ -47,6 +48,7 @@ research-area-icon-label{
 
 .pub-column{
     /*no-op currently*/
+    height: 129px; /* Had to fix height because of weird wrapping, see: https://stackoverflow.com/a/25682250 */
 }
 
 .video{
@@ -59,10 +61,28 @@ research-area-icon-label{
     /*height: auto;*/
 }
 
+.section a{
+    color: black;
+}
+
+.video-links {
+    color: #696969; /* RGB(105, 105, 105) */
+    font-size: small;
+}
+
+.video-links a{
+    color: #696969; /* RGB(105, 105, 105) */
+    font-size: small;
+}
+
 .pub-thumbnail-image {
 	border: 1px solid #dddddd;
 	width:90%;
 	margin:auto;
+}
+
+.pub-thumbnail-image2 {
+	border: 1px solid #dddddd;
 }
 
 .pub-text{
@@ -70,11 +90,14 @@ research-area-icon-label{
     vertical-align: top;
     /*width:80%;*/
     /*text-align: center;*/
+}
 
+.pub-to-appear-text{
+    font-style: italic;
 }
 
 .pub-title{
-    font-size: 13px;
+    font-size: 15px;
 }
 
 .pub-venue{

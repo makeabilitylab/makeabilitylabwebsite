@@ -432,6 +432,21 @@ body {
     padding-left: 0px;
 }
 
+/* See if we can have just a title, sub-title, etc. general class rather than prefixed by artifact type */
+.title{
+	margin-top: 2px;
+	line-height: 1.2;
+	font-size: 15px;
+	margin-bottom: 0px;
+}
+
+.video-title{
+	margin-top: 1px;
+	line-height: 1.2;
+	font-size: 15px;
+	margin-bottom: 0px;
+}
+
 .talk-title{
 	margin-top: 5px;
 	font-weight: 700;
@@ -446,8 +461,8 @@ body {
 }
 
 .talk-speakers{
-	line-height: 1.2;
-	margin: 4px 0px 0px 0px;
+	/*line-height: 1.2;*/
+	/*margin: 2px 0px 0px 0px;*/
 	padding: 0px;
 	font-size: x-small;
 	color: darkgray;
