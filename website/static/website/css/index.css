@@ -25,7 +25,7 @@ research-area-icon-label{
     margin-bottom: 15px;
     text-align: center;
     font-size: 22px;
-    text-transform: uppercase;
+    /*text-transform: uppercase;*/
 }
 
 .makelab-content-container{
@@ -98,11 +98,22 @@ research-area-icon-label{
 
 .pub-title{
     font-size: 15px;
+    font-weight: 500;
 }
 
 .pub-venue{
+    /*color: #7F7F7F;*/
+    font-size: 14px;
+    margin: 2px 0px 2px 0px;
+}
+
+.pub-authors{
     color: #7F7F7F;
-    font-size: 12px;
+    font-size: 11px;
+}
+
+.pub-authors a{
+    color: #7F7F7F;
 }
 
 .pub-thumbnail-image-float-left {

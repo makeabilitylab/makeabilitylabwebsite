@@ -98,25 +98,7 @@
             {% endfor %}
         </div>
     </div>
-
-
-{#    <div id="makelab-recent-papers" class="container-fluid makelab-content-container">#}
-{#        <h1 class="section-header">Recent Papers</h1>#}
-{#        <div class="">#}
-{#            <!-- TODO: iterate through recent papers and display them-->#}
-{#            #}
-{#            {% for pub in publications|slice:"4" %}#}
-{#                <div class="col-xs-12 col-md-3">#}
-{#                    <a href="../../media/{{ pub.pdf_file }}">#}
-{#                        <img src="{% thumbnail pub.thumbnail 300x0 detail %}" class="pub-thumbnail-image-float-left">#}
-{#                    </a>#}
-{#                    <span class="pub-text-float-left">#}
-{#                        {{ pub.title }}#}
-{#                    </span>#}
-{#                </div>#}
-{#            {% endfor %}#}
-{#        </div>#}
-{#    </div>#}
+    
 
     <div id="makelab-recent-papers" class="container-fluid makelab-content-container">
         <h1 class="section-header">Recent Papers</h1>
@@ -133,23 +115,17 @@
                     <a href="../../media/{{ pub.pdf_file }}">
                         <span class="pub-title line-clamp">{{ pub.title }}</span>
                     </a>
-                    <span class="pub-venue">
+                    <p class="pub-venue">
                         {{ pub.book_title_short }}
                         {% if pub.to_appear %}
                             <span class="pub-to-appear-text">To Appear</span>
                         {% endif %}
-                    </span>
-
-
-{#                    <div class="pub-text">#}
-{#                        <span class="pub-title line-clamp">{{ pub.title }}</span>#}
-{#                        <span class="pub-venue">#}
-{#                            {{ pub.book_title_short }}#}
-{#                            {% if pub.to_appear %}#}
-{#                                <span class="pub-to-appear-text">To Appear</span>#}
-{#                            {% endif %}#}
-{#                        </span>#}
-{#                    </div>#}
+                    </p>
+                    <p class="pub-authors">
+                        {% for author in pub.authors.all %}
+                            <a href="{% url 'website:member' author.id %}">{{author.get_full_name}}</a>{% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    </p>
 
 
                 </div>
