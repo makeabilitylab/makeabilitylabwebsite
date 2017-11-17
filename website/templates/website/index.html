@@ -44,7 +44,7 @@
                 <div class="col-xs-12 col-md-3 project-column">
                     <a href="{% url 'website:project_ind' project.short_name %}">{# {% url 'website:project_ind' project.short_name %}"> #}
                         <img src="{% thumbnail project.gallery_image 300x180 box=project.cropping crop detail %}">
-                        <p class="title">{{ project.name }}</p>
+                        <p class="artifact-title">{{ project.name }}</p>
                     </a>
                     {# We only add in this extra spacer for the first row #}
                     {% if forloop.counter0 < 4 %}
@@ -86,9 +86,9 @@
                         <!-- TODO: fix this on mobile; has weird aspect ratio because of fixed height -->
                         <iframe class="youtube-player" src="{{video.get_embed}}" frameborder="0" allowfullscreen></iframe>
                     </div>
-                    <p class="video-title line-clamp">{{video.title}}</p>
+                    <p class="artifact-title line-clamp" style="margin-top: 0px;">{{video.title}}</p>
 {#                    <p class="video-location line-clamp-one-line">{{video.caption}} </p>#}
-                    <p class="video-links">
+                    <p class="artifact-links">
                         <a href="{{video.video_url}}">YouTube</a>
                         {% if video.publication %}
                         | <a href="../../media/{{video.publication.pdf_file}}">Paper</a>
@@ -98,7 +98,7 @@
             {% endfor %}
         </div>
     </div>
-    
+
 
     <div id="makelab-recent-papers" class="container-fluid makelab-content-container">
         <h1 class="section-header">Recent Papers</h1>
@@ -113,15 +113,15 @@
                     </div>
 
                     <a href="../../media/{{ pub.pdf_file }}">
-                        <span class="pub-title line-clamp">{{ pub.title }}</span>
+                        <span class="artifact-title line-clamp" style="margin-top: 0px;">{{ pub.title }}</span>
                     </a>
-                    <p class="pub-venue">
+                    <p class="artifact-venue">
                         {{ pub.book_title_short }}
                         {% if pub.to_appear %}
                             <span class="pub-to-appear-text">To Appear</span>
                         {% endif %}
                     </p>
-                    <p class="pub-authors">
+                    <p class="artifact-authors">
                         {% for author in pub.authors.all %}
                             <a href="{% url 'website:member' author.id %}">{{author.get_full_name}}</a>{% if not forloop.last %},{% endif %}
                         {% endfor %}
@@ -146,9 +146,9 @@
                     </div>
                     <div class="pub-text">
                         <a href="../../media/{{ pub.pdf_file }}">
-                            <span class="pub-title line-clamp">{{ pub.title }}</span>
+                            <span class="artifact-title line-clamp">{{ pub.title }}</span>
                         </a>
-                        <span class="pub-venue">
+                        <span class="artifact-venue">
                             {{ pub.book_title_short }}
                             {% if pub.to_appear %}
                                 <span class="pub-to-appear-text">To Appear</span>
@@ -176,17 +176,13 @@
                     </div>
                     <div class="talk-text">
                         <!-- TODO: href the talk title as well -->
-                        <span class="pub-title line-clamp">{{ talk.title }}</span>
-                        <p class="pub-venue">
-{#                            {{ talk.date }}#}
-                            <span class="talk-forum">{{ talk.forum_name }}</span>
-                        </p>
-                        <p class="talk-speakers">
+                        <span class="artifact-title line-clamp">{{ talk.title }}</span>
+                        <p class="artifact-venue">{{ talk.forum_name }}</p>
+                        <p class="artifact-authors">
                             <!-- TODO: figure out how to remove vertical space between speakers and subtitle -->
-                            <!-- TODO: Figure out how to remove space between speakers -->
+
                             {% for speaker in talk.speakers.all %}
-                                {% if not forloop.first %}, {% endif %}
-                                <a href="{% url 'website:member' speaker.id %}">{{ speaker.get_full_name }}</a></span>
+                                <a href="{% url 'website:member' speaker.id %}">{{ speaker.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
                             {% endfor %}
                         </p>
                         <!-- TODO: add in YouTube of talk? -->
