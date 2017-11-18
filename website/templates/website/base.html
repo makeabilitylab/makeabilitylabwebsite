@@ -20,24 +20,16 @@
     <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,500,600,700" rel="stylesheet">
 
     <link rel="stylesheet" type="text/css" href="{% static 'website/css/bootstrap.min.css' %}"/>
-
-    <!-- A modified version of the grayscale css -->
     <link rel="stylesheet" type="text/css" href="{% static 'website/css/grayscale.css' %}"/>
-
-    <!-- Our custom style sheets -->
     <link rel="stylesheet" href="{% static 'website/css/carousel_fade.css' %}"/>
-    <link rel="stylesheet" href="{% static 'website/css/styles.css' %}"/>
+    <link rel="stylesheet" href="{% static 'website/css/base.css' %}"/>
     <link rel="stylesheet" href="{% static 'website/css/autocomplete.css' %}"/>
+    <link rel="stylesheet" href="{% static 'website/css/backtop.css' %}"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
     
     {% block stylesheets %}
     
     {% endblock %}
-
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
-
-    <!-- Back Top -->
-    <link rel="stylesheet" href="{% static 'website/css/backtop.css' %}"/>
 
 	<!-- jQuery: v1.9.1 necessary for Bootstrap's JavaScript plugins -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -197,206 +189,132 @@
 
     {% block content %}
 
-        <div class="well">
-            <div class="container">
-                <h1>We're the Makeability Lab!</h1>
-                <p>Some text describing us goes here</p>
-            </div>
-        </div>
-
-        <!--
-        Note: Bootstrap uses a 12 column system, so for each item you specify the number of columns
-        filled. Also, you can define different numbers of items for different screen sizes.
-        So, col-xs-6 col-sm-4 col-md-3 col-lg-2 means that there will be:
-            2 items per row for extra small screens (< 768px)
-            3 items per row for small screens (768px-992px)
-            4 items per row for medium screens (992px-1200px)
-            6 items per row for large screens (> 1200px)
-        See https://scotch.io/tutorials/understanding-the-bootstrap-3-grid-system for more info.
-        -->
-        <div class="container">
-            <h3>
-                Recent publications:
-            </h3><br/>
-            <div class="row">
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
-                  <img src="img/item4.png">
-                  <div class="caption">
-                    <h4>Some text</h4>
-                  </div>
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
-                  <img src="img/item5.png">
-                  <div class="caption">
-                    <h4>Some text</h4>
-                  </div>
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
-                  <img src="img/item6.png">
-                  <div class="caption">
-                    <h4>Some text</h4>
-                  </div>
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
-                  <img src="img/item7.png">
-                  <div class="caption">
-                    <h4>Some text</h4>
-                  </div>
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
-                  <img src="img/item4.png">
-                  <div class="caption">
-                    <h4>Some text</h4>
-                  </div>
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
-                  <img src="img/item5.png">
-                  <div class="caption">
-                    <h4>Some text</h4>
-                  </div>
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
-                  <img src="img/item6.png">
-                  <div class="caption">
-                    <h4>Some text</h4>
-                  </div>
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
-                  <img src="img/item7.png">
-                  <div class="caption">
-                    <h4>Some text</h4>
-                  </div>
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
-                  <img src="img/item4.png">
-                  <div class="caption">
-                    <h4>Some text</h4>
-                  </div>
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
-                  <img src="img/item5.png">
-                  <div class="caption">
-                    <h4>Some text</h4>
-                  </div>
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
-                  <img src="img/item6.png">
-                  <div class="caption">
-                    <h4>Some text</h4>
-                  </div>
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
-                  <img src="img/item7.png">
-                  <div class="caption">
-                    <h4>Some text</h4>
-                  </div>
-                </div>
-            </div>
-
-            <h3>
-                Recent talks:
-            </h3><br/>
-            <div class="row">
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
-                  <img src="img/item1.png">
-                  <div class="caption">
-                    <h4>Some text</h4>
-                  </div>
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
-                  <img src="img/item2.png">
-                  <div class="caption">
-                    <h4>Some text</h4>
-                  </div>
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
-                  <img src="img/item3.png">
-                  <div class="caption">
-                    <h4>Some text</h4>
-                  </div>
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
-                  <img src="img/item1.png">
-                  <div class="caption">
-                    <h4>Some text</h4>
-                  </div>
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
-                  <img src="img/item2.png">
-                  <div class="caption">
-                    <h4>Some text</h4>
-                  </div>
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
-                  <img src="img/item3.png">
-                  <div class="caption">
-                    <h4>Some text</h4>
-                  </div>
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
-                  <img src="img/item2.png">
-                  <div class="caption">
-                    <h4>Some text</h4>
-                  </div>
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
-                  <img src="img/item3.png">
-                  <div class="caption">
-                    <h4>Some text</h4>
-                  </div>
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
-                  <img src="img/item1.png">
-                  <div class="caption">
-                    <h4>Some text</h4>
-                  </div>
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
-                  <img src="img/item3.png">
-                  <div class="caption">
-                    <h4>Some text</h4>
-                  </div>
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
-                  <img src="img/item1.png">
-                  <div class="caption">
-                    <h4>Some text</h4>
-                  </div>
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 thumbnail">
-                  <img src="img/item2.png">
-                  <div class="caption">
-                    <h4>Some text</h4>
-                  </div>
-                </div>
-            </div>
-        </div>
 
     {% endblock %}
 
     {% block footer %}
-    <hr>
-    <div class="container footer">
-        <div class="row">
-          <div class="col-xs-3">
-            <a href="http://hcil.umd.edu/">
-              <img src="{% static 'website/img/logos/hcil_logo.png' %}" class="img-responsive footer-img" />
-            </a>
-          </div>
-          <div class="col-xs-6">
-            <a href="http://cs.umd.edu/">
-              <img src="{% static 'website/img/logos/cs_logo.png' %}" class="img-responsive footer-img" />
-            </a>
-          </div>
-          <div class="col-xs-3">
-            <a href="http://www.umd.edu/">
-              <img src="{% static 'website/img/logos/umd_logo.png' %}" class="img-responsive footer-img" />
-            </a>
-          </div>
+
+        <div class="container-fluid makelab-footer">
+            <div class="row makelab-footer-row">
+                <div class="col-xs-1">
+
+
+                </div>
+                <div class="col-xs-3 makelab-footer-col">
+                    <a href="{% url 'website:index' %}">
+                        <img src="{% static 'website/img/logos/makelab_logo_white_with_text_400x342.png' %}"
+                             class="img-responsive" style="max-height: 180px"/>
+                    </a>
+                    <p style="margin-top:20px">
+                        We design, build, and evaluate interactive tools and techniques to address pressing societal
+                        challenges in accessibility, sustainability, education, and beyond.
+                    </p>
+                    <p>
+                        <!-- TODO: change these to icons and link them -->
+                        {#                        Twitter | Email#}
+                    </p>
+                </div>
+                <div class="col-xs-1 makelab-footer-col">
+                    <h1>Links</h1>
+                    <ul>
+                        {% with request.resolver_match.url_name as url_name %}
+{#                            <li>url_name: {{ url_name  }}</li>#}
+                            <li class="{% if url_name == 'index' %}active{% endif %}"><a href="{% url 'website:index' %}">Home</a></li>
+    {#                        <li>About Us</li>#}
+                            <li class="{% if url_name == 'people' %}active{% endif %}"><a href="{% url 'website:people' %}">People</a></li>
+    {#			            <li class="{% if url_name == 'projects' %}active{% endif %}"><a href="{% url 'website:projects' %}">Projects</a></li>#}
+                            <li class="{% if url_name == 'publications' %}active{% endif %}"><a href="{% url 'website:publications' %}">Publications</a></li>
+                            <li class="{% if url_name == 'talks' %}active{% endif %}"><a href="{% url 'website:talks' %}">Talks</a></li>
+                            <li class="{% if url_name == 'videos' %}active{% endif %}"><a href="{% url 'website:videos' %}">Videos</a></li>
+                        {% endwith %}
+                    </ul>
+                </div>
+                <div class="col-xs-3 makelab-footer-col">
+                    <h1>Recent News</h1>
+                    {# To add news dynamically, we need to use a context processor. See our custom process in context_processors.py #}
+                    {# See: https://stackoverflow.com/questions/36093221/how-to-put-variable-from-database-into-base-html-template #}
+                    <ul>
+                    {% for news_item in recent_news %}
+                        {#  Date formats here: https://docs.djangoproject.com/en/1.11/ref/templates/builtins/#std:templatefilter-date #}
+                        <li><a href="{% url 'website:news' news_item.id %}">{{ news_item.date|date:"N d, Y" }} - {{ news_item.title }}</a></li>
+                    {% endfor %}
+                    </ul>
+
+                </div>
+
+                <div class="col-xs-2 makelab-footer-col">
+
+                    <!-- TODO: Vertically center text with icon. Currently text does not appear perfectly vertically centered with icon -->
+                    <h1>Connect</h1>
+                    <ul>
+                        <li>
+                            <a href="https://twitter.com/makeabilitylab">
+                                <img src="{% static 'website/img/logos/twitter_logo_white.png' %}" class="makelab-footer-connect-logo"/>
+                                <span style="padding-top:0px">Twitter</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="jonf@cs.uw.edu">
+                                <img src="{% static 'website/img/logos/email_logo_white.png' %}" class="makelab-footer-connect-logo"/> Email
+                            </a>
+                        </li>
+                        <li>
+                            <a href="jonf@cs.uw.edu">
+                                <img src="{% static 'website/img/logos/github_logo_white.png' %}" class="makelab-footer-connect-logo"/> Github
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-xs-2 makelab-footer-col">
+
+                </div>
+            </div>
+
+            <!-- TODO: The centering looks weird on this. Also responsive design wraps columns, which I don't like.
+                 Ideally, I think, on small devices, should just switch to single row;
+                 TODO: Fix UMD CS logo so that the text is bigger -->
+            <div class="row makelab-affiliations-footer-row">
+                <div class="col-xs-1">
+
+                </div>
+                <div class="col-xs-1 makelab-footer-affiliation-col">
+                    <a href="http://dub.uw.edu">
+                        <img src="{% static 'website/img/logos/uw_dub_bottom_white_185x100.png' %}"
+                             class="img-responsive makelab-footer-affiliation-logo"/>
+                    </a>
+                </div>
+                <div class="col-xs-2 makelab-footer-affiliation-col">
+                    <a href="https://www.cs.washington.edu/">
+                        <img src="{% static 'website/img/logos/uw_allen_school_logo_white_941x100.png' %}"
+                             class="img-responsive makelab-footer-affiliation-logo" style="margin-top: 2px;"/>
+                    </a>
+                </div>
+                <div class="col-xs-3 makelab-footer-affiliation-col">
+                    <a href="https://www.washington.edu/">
+{#                        <img src="{% static 'website/img/logos/UW_white_vertical_203x100.png' %}"#}
+{#                             class="img-responsive makelab-footer-affiliation-logo"/>#}
+                        <img src="{% static 'website/img/logos/uw_white_horizontal_1196x94.png' %}"
+                             class="img-responsive makelab-footer-affiliation-logo" style="max-height: 21.86px; margin-top: 2px;"/>
+                    </a>
+                </div>
+                <div class="col-xs-2 makelab-footer-affiliation-col">
+                    <a href="https://www.cs.umd.edu">
+                        <img src="{% static 'website/img/logos/umd_cs_logo_white_850x100.png' %}"
+                             class="img-responsive makelab-footer-affiliation-logo"/>
+                    </a>
+                </div>
+                <div class="col-xs-2 makelab-footer-affiliation-col">
+                    <a href="https://www.umd.edu/">
+                        <img src="{% static 'website/img/logos/umd_logo_white_586x100.png' %}"
+                             class="img-responsive makelab-footer-affiliation-logo"/>
+                    </a>
+                </div>
+                <div class="col-xs-1">
+
+                </div>
+            </div>
         </div>
-    </div>
     {% endblock %}
-</div>
 
 {# TODO: Change the back-to-top button to something far more subtle. Maybe only show on mobile? #}
 {#<p id="back-top" style="display: none">#}
