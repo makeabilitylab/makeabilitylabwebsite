@@ -152,6 +152,7 @@ class Person(models.Model):
 
     # Returns the latest position for the person
     # TODO: consider renaming this to get_current_position
+    # TODO: This assume that postion_set.all() is already ordered by start_date. I don't think this is necessarily true.
     def get_latest_position(self):
         # print(self.position_set.exists())
         if self.position_set.exists() is False:
@@ -365,7 +366,8 @@ class Sponsor(models.Model):
 
     def __str__(self):
         return self.name
-    
+
+#TODO: Argh, need to change all multi-world class names to CapWords convention, see official docs: https://www.python.org/dev/peps/pep-0008/#id41
 class Project_umbrella(models.Model):
     name = models.CharField(max_length=255)
     #Short name is used for urls, and should be name.lower().replace(" ", "")
@@ -397,6 +399,7 @@ class Project(models.Model):
     keywords = models.ManyToManyField(Keyword, blank=True, null=True)
 
     #pis = models.ManyToOneField(Person, blank=True, null=True)
+    #TODO: consider switching gallery_image var name to thumbnail
     gallery_image = models.ImageField(upload_to='projects/images', blank=True, null=True, max_length=255)
     gallery_image.help_text = "This is the image which will show up on the project gallery page. It is not displayed anywhere else. You must select 'Save and continue editing' at the bottom of the page after uploading a new image for cropping. Please note that since we are using a responsive design with fixed height banners, your selected image may appear differently on various screens."
 
@@ -410,6 +413,7 @@ class Project(models.Model):
     about = models.TextField(null=True, blank=True)
 
     updated = models.DateField(auto_now=True)
+
     def get_pi(self):
         return self.project_role_set.get(pi_member="PI").person
 
@@ -419,6 +423,31 @@ class Project(models.Model):
         for copi in copi_arr:
             ret.append(copi.person)
         return ret
+
+    def get_most_recent_publication(self):
+        if self.publication_set.exists():
+            return self.publication_set.order_by('-date')[0].date
+        else:
+            return None
+
+    def get_most_recent_artifact(self):
+        mostRecentArtifacts = []
+
+        if self.publication_set.exists():
+            mostRecentPub = self.publication_set.order_by('-date')[0]
+            mostRecentArtifacts.append((mostRecentPub.date, mostRecentPub))
+        if self.talk_set.exists():
+            mostRecentTalk = self.talk_set.order_by('-date')[0]
+            mostRecentArtifacts.append((mostRecentTalk.date, mostRecentTalk))
+        if self.video_set.exists():
+            mostRecentVideo = self.video_set.order_by('-date')[0]
+            mostRecentArtifacts.append((mostRecentVideo.date, mostRecentVideo))
+
+        if len(mostRecentArtifacts) > 0:
+            mostRecentArtifacts = sorted(mostRecentArtifacts, key=lambda artifact: artifact[0])
+            return mostRecentArtifacts[0][1]
+        else:
+            return None
             
     def __str__(self):
         return self.name
@@ -516,7 +545,9 @@ class Video(models.Model):
         #TODO this assumes that all videos are YouTube. This is not the case.
         base_url = "https://youtube.com/embed"
         unique_url = self.video_url[self.video_url.find("/", 9):]
-        return base_url+unique_url
+
+        # See https://developers.google.com/youtube/youtube_player_demo for details on parameterizing YouTube video
+        return base_url + unique_url + "?showinfo=0&iv_load_policy=3"
 
     # Returns a cap case title
     def get_title(self):
