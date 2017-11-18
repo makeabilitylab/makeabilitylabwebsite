@@ -467,3 +467,74 @@ body {
 	font-size: x-small;
 	color: darkgray;
 }
+
+.makelab-footer{
+	background-color: #3797db;
+	color: white;
+}
+
+.makelab-footer-row{
+	/*margin-top: 20px;*/
+	/*margin-bottom: 20px;*/
+}
+
+.makelab-affiliations-footer-row{
+	background-color: black; /* should be same color as navbar header */
+	padding-right: 5px;
+	padding-left: 5px;
+}
+
+.makelab-footer-affiliation-logo{
+	/*height: 75px;*/
+	max-height: 30px;
+
+	/* Center content. See center-block in bootstrap.css */
+	display: block;
+  	margin-right: auto;
+  	margin-left: auto;
+}
+
+.makelab-footer-affiliation-col{
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-right: 5px;
+	margin-left: 5px;
+}
+
+.makelab-footer-col{
+	margin-top: 20px;
+	margin-bottom: 20px;
+	margin-right: 20px;
+	margin-left: 20px;
+}
+
+.makelab-footer-col h1{
+	text-transform: uppercase;
+	font-weight: bold;
+	font-size: 14px;
+	margin: 0px;
+	padding: 0px;
+}
+
+.makelab-footer-col ul {
+	list-style: none;
+	padding-left: 0;
+	/*margin-top: 5px;*/
+}
+
+.makelab-footer-col li {
+	margin-top: 5px;
+	color: white;
+}
+
+.makelab-footer-col li.active {
+	font-weight: bold;
+}
+
+.makelab-footer-col a:link, a:visited {
+	color: white;
+}
+
+.makelab-footer-connect-logo{
+	max-height: 18px;
+}
