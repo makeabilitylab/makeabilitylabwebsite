@@ -17,6 +17,7 @@
 
 .navbar-custom .lab-text{
     display: inline;
+    vertical-align: text-top;
 }
 
 .navbar-custom .navbar-brand>img {
@@ -125,6 +126,8 @@
  * Firefox support comes from here http://jsfiddle.net/danield770/DpQ7e/30/ and
  * http://stackoverflow.com/questions/20594995/why-webkit-line-clamping-does-not-work-in-firefox
  */
+
+/* TODO: consider changing the name to line-clamp2 to indicate that the line clamp amount is 2 lines */
 @supports (-webkit-line-clamp: 2) {
     .line-clamp {
         overflow: hidden;
@@ -134,6 +137,19 @@
     }
 
     .line-clamp:after {
+        display: none;
+    }
+}
+
+@supports (-webkit-line-clamp: 3) {
+    .line-clamp3 {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+    }
+
+    .line-clamp3:after {
         display: none;
     }
 }

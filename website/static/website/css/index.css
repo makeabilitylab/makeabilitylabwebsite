@@ -1,0 +1,202 @@
+research-area-icon-label{
+    text-align: center;
+}
+
+.research-area-icon-row img {
+    width: 100%;
+}
+
+.research-area-icon-row{
+    padding-top: 20px;
+    padding-bottom: 20px
+}
+
+.research-area-icon-label {
+    width: 100%;
+    text-align: center;
+}
+
+.research-area-icon-col{
+    text-align: center;
+}
+
+.section-header{
+    margin-top: 40px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 22px;
+    /*text-transform: uppercase;*/
+}
+
+.makelab-content-container{
+    margin-left: 40px;
+    margin-right: 40px;
+}
+
+.no-margin {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.project-column{
+    /*margin-top: 15px;*/
+}
+
+.news_thumbnail_image{
+    width: 50px;
+}
+
+.pub-column{
+    /*no-op currently*/
+    height: 129px; /* Had to fix height because of weird wrapping, see: https://stackoverflow.com/a/25682250 */
+}
+
+.video{
+    /*width: 100%;*/
+}
+
+.youtube-player{
+    width: 100%;
+    height: 229px;
+    /*height: auto;*/
+}
+
+.section a{
+    color: black;
+}
+
+.pub-thumbnail-image {
+	border: 1px solid #dddddd;
+	width:90%;
+	margin:auto;
+}
+
+.pub-thumbnail-image2 {
+	border: 1px solid #dddddd;
+}
+
+.pub-text{
+    margin: 4px 9px 0px 9px;
+    vertical-align: top;
+    /*width:80%;*/
+    /*text-align: center;*/
+}
+
+.to-appear-text{
+    font-style: italic;
+}
+
+.artifact-title{
+    font-size: 15px;
+    font-weight: 500;
+    margin: 3px 0px 0px 0px;
+    line-height: 1.3;
+}
+
+.artifact-venue{
+    /*color: #7F7F7F;*/
+    font-size: 13px;
+    margin: 2px 0px 2px 0px;
+}
+
+.artifact-authors{
+    color: #7F7F7F;
+    font-size: 11px;
+}
+
+.artifact-authors a{
+    color: #7F7F7F;
+}
+
+.artifact-links {
+    color: #696969; /* RGB(105, 105, 105) */
+    font-size: small;
+}
+
+.artifact-links a{
+    color: #696969; /* RGB(105, 105, 105) */
+    font-size: small;
+}
+
+.pub-thumbnail-image-float-left {
+	border: 1px solid #dddddd;
+	width:25%;
+    float:left;
+    margin-right:5px;
+    /*position: absolute;*/
+    /*clip: rect(0px,100px,50px,0px);*/
+}
+
+.pub-text-float-left{
+    vertical-align: top;
+}
+
+.pub-thumbnail-clipped {
+	border: 1px solid #dddddd;
+	width: 200px;
+    position: absolute;
+    clip: rect(0px,200px,100px,0px);
+    display: block;
+    min-height:100px;
+}
+
+.talk2-thumbnail{
+    /*width:250px;*/
+}
+
+.talk2-thumbnail-image{
+    object-fit: cover;
+    width: 295.42px;
+    height: 166px;
+}
+
+h1{
+    text-transform: none;
+    font-variant: normal;
+}
+
+#makelab-intro h1{
+    text-align: center;
+}
+
+#makelab-intro{
+    margin: 0px;
+    padding: 0px;
+    background-color: #eac446;
+}
+
+.page-link{
+    margin: 0;
+    text-align: left;
+}
+
+
+.landing-talk-fix {
+    /*min-width: 240px;*/
+    padding-left:0;
+}
+
+.landing-publications {
+    /*padding-left: 0;
+    padding-right: 0;*/
+}
+
+.landing-content {
+    /*padding-left: 0;*/
+}
+
+@media (min-width: 769px){
+    .landing-content {
+	padding-right: 80px;
+    }
+}
+
+.content-container {
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+.row {
+    /*margin-left: 0;
+    margin-right: 0;*/
+}
