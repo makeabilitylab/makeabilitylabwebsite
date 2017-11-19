@@ -471,6 +471,8 @@ body {
 .makelab-footer{
 	background-color: #3797db;
 	color: white;
+	margin-top: 50px;
+	padding-top: 40px;
 }
 
 .makelab-footer-row{
@@ -482,6 +484,8 @@ body {
 	background-color: black; /* should be same color as navbar header */
 	padding-right: 5px;
 	padding-left: 5px;
+	padding-top: 30px;
+	padding-bottom: 30px;
 }
 
 .makelab-footer-affiliation-logo{
