@@ -143,14 +143,18 @@
 
 {% block content %}
 <div id="content" class="container">
+
+    <!-- TODO: the sidebar goes *over* the new footer; it should go under -->
     <div class="visible-xs">
-	<br/>
-	<input class="shortTextbox" id="filter-textbox-backup" placeholder="FILTER" type="text" value="">
+	    <br/>
+	    <input class="shortTextbox" id="filter-textbox-backup" placeholder="FILTER" type="text" value="">
     </div>
-	<div id="fixed-side-bar" class="hidden-xs">
+
+    <div id="fixed-side-bar" class="hidden-xs">
 	    <div id="filter-bar">
 	    </div>
 	</div>
+
 	<div class="publication-list" id="main-content">
 	    Loading content... (Please make sure JavaScript is enabled)
 	    <h1 class="group-template row" name="Group Name"></h1>

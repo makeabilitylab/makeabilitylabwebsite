@@ -1,5 +1,4 @@
 {#	TODO: limit keywords/projects by page size to avoid overflow #}
-{#  TODO: Set default to None. In the case of None, remove H1 header #}
 
 {% extends "website/base.html" %}
 
@@ -9,12 +8,11 @@
 {% load cropping %}
 
 {% block stylesheets %}
-
-<link rel="stylesheet" href="{% static 'website/css/video.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/fixed_side_bar.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/jquery-ui.min.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/jquery-ui.theme.min.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/video.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/fixed_side_bar.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/jquery-ui.min.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/jquery-ui.theme.min.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}">
 {% endblock %}
 
 {% block external_scripts %}
@@ -26,6 +24,7 @@
 {% endblock %}
 
 {% block scripts %}
+
 	var videos = [
 		{% for video in videos %}
 		{
@@ -48,6 +47,7 @@
 
 
 {% block maincarousel %}
+    <!-- TODO: would be great if the video carousel background images were videos that auto-played. Obviously, hardest part about that is video aspect ratio -->
     <div id="mainCarousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="10000" data-pause="false">
         <div class="page-title shadow-left">
             <div class="container carousel-container">

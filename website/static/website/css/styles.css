@@ -1,3 +1,5 @@
+/* TODO: Consolidate base.css and styles.css into one. Same with grayscale.css */
+
 /* General styles */
 @font-face {
 	font-family: adelle-semibold;
@@ -473,6 +475,7 @@ body {
 	color: white;
 	margin-top: 50px;
 	padding-top: 40px;
+	/*padding-bottom: 20px;*/
 }
 
 .makelab-footer-row{
@@ -541,4 +544,40 @@ body {
 
 .makelab-footer-connect-logo{
 	max-height: 18px;
+}
+
+.to-appear-text{
+    font-style: italic;
+}
+
+.artifact-title{
+    font-size: 15px;
+    font-weight: 500;
+    margin: 3px 0px 0px 0px;
+    line-height: 1.3;
+}
+
+.artifact-venue{
+    /*color: #7F7F7F;*/
+    font-size: 13px;
+    margin: 2px 0px 2px 0px;
+}
+
+.artifact-authors{
+    color: #7F7F7F;
+    font-size: 11px;
+}
+
+.artifact-authors a{
+    color: #7F7F7F;
+}
+
+.artifact-links {
+    color: #696969; /* RGB(105, 105, 105) */
+    font-size: small;
+}
+
+.artifact-links a{
+    color: #696969; /* RGB(105, 105, 105) */
+    font-size: small;
 }

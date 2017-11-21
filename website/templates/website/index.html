@@ -42,7 +42,7 @@
         <div class="section">
             {% for project in projects|slice:"8" %}
                 <div class="col-xs-12 col-md-3 project-column">
-                    <a href="{% url 'website:project_ind' project.short_name %}">{# {% url 'website:project_ind' project.short_name %}"> #}
+                    <a href="{% url 'website:project_ind' project.short_name %}">
                         <img src="{% thumbnail project.gallery_image 300x180 box=project.cropping crop detail %}">
                         <p class="artifact-title">{{ project.name }}</p>
                     </a>
