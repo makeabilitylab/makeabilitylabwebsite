@@ -42,6 +42,15 @@ research-area-icon-label{
     /*margin-top: 15px;*/
 }
 
+/*
+Just playing around wit hover effects
+.project-column:hover{*/
+    /*opacity: 0.5;*/
+    /*-webkit-transform: scale(1.05);*/
+    /*transform: scale(1.05);*/
+    /*overflow: hidden;*/
+/*}*/
+
 .news_thumbnail_image{
     width: 50px;
 }
