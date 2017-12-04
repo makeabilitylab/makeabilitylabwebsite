@@ -566,6 +566,7 @@ body {
 .artifact-authors{
     color: #7F7F7F;
     font-size: 11px;
+	margin: 0;
 }
 
 .artifact-authors a{
