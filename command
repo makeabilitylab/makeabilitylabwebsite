@@ -1,4 +1,4 @@
-imple example docker run command.
+#Simple example docker run command.
 # Note: <port from support> should be replaced with value from support
 # Note: "example-container" should match the "container_name" value in the
 # config.php file
