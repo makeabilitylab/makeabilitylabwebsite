@@ -1,5 +1,7 @@
-ld the image
-docker build --no-cache=true -t $1 .
+#!/bin/bash
+
+#first build the image
+docker build -t $1 .
 
 #if there is an existing container, stop it
 ISRUNNING=$(docker ps | grep $1)
