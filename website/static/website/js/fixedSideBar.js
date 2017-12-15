@@ -44,7 +44,7 @@
 		// when the window is resized, need to adjust the filter bar position and 
 		// publication list height to avoid formatting issues
 		$(window).resize(function(event) {
-			var minHeight = sideBar.height() + 10; // should probably use something from the css rather than a magic number here
+			var minHeight = sideBar.height() + 10; // TODO: should probably use something from the css rather than a magic number here
 			var content = $('#main-content');
 			content.css('min-height', minHeight + "px");
 
@@ -59,7 +59,7 @@
 	};
 
 	$.fn.resizeSideBar = function() {
-		var minHeight = this.height() + 10; // should probably use something from the css rather than a magic number here
+		var minHeight = this.height() + 10; // TODO: should probably use something from the css rather than a magic number here
 		var content = $('#main-content');
 		content.css('min-height', minHeight + "px");
 

@@ -48,6 +48,19 @@
     padding-bottom: 10px;
 }
 
+.project-column{
+    /*margin-top: 15px;*/
+    /*margin: 0px 2px 0px 0px;*/
+    /*padding: 0px;*/
+    margin-top: 3px;
+    padding: 0px 4px 0px 4px;
+}
+
+.filter-list{
+    padding: 0;
+    list-style-type: none;
+}
+
 .popular-project{
     margin: 0;
     padding: 0;
@@ -55,5 +68,18 @@
 
 .popular-project img {
     width: 100%;
+}
+
+@media (max-width: 768px){
+    .project-list {
+	margin-top: 25px;
+    }
+}
+
+@media (min-width: 769px){
+    .project-list {
+	padding-left: 145px; /* should be greater than the filter-bar width */
+	margin-top: 25px;
+    }
 }
 

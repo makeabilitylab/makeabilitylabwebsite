@@ -3,7 +3,6 @@
 }
 
 .filter-selected {
-	font-family: adelle-semibold;
 	font-weight: bold;
 }
 
@@ -13,9 +12,10 @@
 	width: 125px;
 	left:0;
 	top:-60px;
-	font-family: adelle-light;
+	/*font-family: adelle-light;*/
 	text-align: right;
 	position:absolute;
+	font-size: small;
 }
 
 #fixed-side-bar h1 {

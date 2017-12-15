@@ -7,8 +7,29 @@
 {% load thumbnail %}
 
 {% block stylesheets %}
-<link rel="stylesheet" href="{% static 'website/css/projects.css'  %}">
+    <!-- TODO: go through every css file and make sure it's necessary to include -->
+    <link rel="stylesheet" href="{% static 'website/css/projects.css'  %}">
+    <link rel="stylesheet" href="{% static 'website/css/fixed_side_bar.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/jquery-ui.min.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/jquery-ui.theme.min.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}">
 {% endblock %}
+
+{% block external_scripts %}
+    <script src="{% static 'website/js/isotope.pkgd.min.js' %}"></script>
+    <script src="{% static 'website/js/fixedSideBar.js' %}"></script>
+    <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
+{% endblock %}
+
+{% block scripts %}
+
+    // Init the fixed side bar
+    $(document).ready(function () {
+	    $('#fixed-side-bar').fixedSideBar()
+    });
+
+{% endblock %}
+
 
 {% block maincarousel %}
 <div id="mainCarousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="10000" data-pause="false">    
@@ -17,6 +38,7 @@
             <div class="overlay-title">Projects</div>
         </div>
     </div>
+
     <!-- Wrapper for slides -->
     <div class="carousel-inner" role="listbox">
         {% for banner in banners %}
@@ -29,20 +51,6 @@
 		    {% endif %}
 		    {% endif %}
 		    <div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})" aria-label="{{ banner.alt_text }}" title="{{ banner.alt_text }}"></div>
-		    <!-- <div class="overlay">
-			 <div class="container carousel-container">
-			 <div class="carousel-caption carousel-caption-right">
-			 {% autoescape off %} {# enable HTML tags #}
-			 <div class="carousel-caption-title">
-			 {{ banner.title }}
-			 </div>
-			 <div class="carousel-caption-text">
-			 {{ banner.caption }}
-			 </div>
-			 {% endautoescape %}
-			 </div>
-			 </div>
-			 </div> -->
 		    {% if banner.link %}</a>{% endif %}
 		{% if banner.project %}
 	    </a>
@@ -59,58 +67,114 @@
 {% endblock %}
 
 {% block content %}
-<div id="content" class="container content-container" data-spy="scroll">
-    <div class="row header">
+     <div id="content" class="container">
+
+        <!-- TODO: add in support for mobile filtering & sorting -->
+        <div class="visible-xs">
+            <br/>
+            <input class="shortTextbox" id="filter-textbox-backup" placeholder="FILTER" type="text" value="">
+        </div>
+
+        <div id="fixed-side-bar" class="hidden-xs">
+            <div id="filter-bar">
+
+            </div>
+            <!-- TODO: possibly add in number of each thing in parantheses -->
+            <!-- TODO: support mouseover filtering so that when you mouseover a selection in left-menu, it auto-filters during hover -->
+            <!-- TODO: support parallax hovering--or zoom-in hovering--over project thumbnail like vanschneider.com. Could also have mouseover details like grantburke.com/design-portfolio -->
+            <!-- TODO: hhook tihs up to isotope https://isotope.metafizzy.co/layout-modes.html for sorting, filtering -->
+            <h1 style="margin-top:0px">AREA</h1>
+            <ul class="filter-list">
+                <li>Accessibility</li>
+                <li>Education</li>
+                <li>Fabrication</li>
+                <li>Health/Wellness</li>
+                <li>Smart Cities</li>
+                <li>Sustainability</li>
+            </ul>
+
+            <h1 style="margin-top:0px">TECHNOLOGY</h1>
+            <ul class="filter-list">
+                <li>Augmented Reality</li>
+                <li>Computer Vision</li>
+                <li>Custom Hardware</li>
+                <li>E-Textiles</li>
+                <li>Machine Learning</li>
+                <li>Wearables</li>
+            </ul>
+
+            <!-- Tech filter: augmented reality, machine learning, custom hardware, computer vision -->
+        </div>
+
+
+
+        <div id="main-content" class="project-list">
+            <!-- TODO: consider listing dates active or keywords underneath each project thumbnail in addition to name -->
+            {% for project in projects %}
+                <div class="col-xs-12 col-md-3 project-column">
+                    <a href="{% url 'website:project_ind' project.short_name %}" style="color:black;">
+                        <img src="{% thumbnail project.gallery_image 300x180 box=project.cropping crop detail %}" class="img-responsive">
+                        <p class="artifact-title">{{ project.name }}</p>
+                    </a>
+                    <div style="min-height:15px"></div>
+                </div>
+            {% endfor %}
+        </div>
     </div>
-    <div class="row">
-	<div class="col-md-2 hidden-xs hidden-sm sidebar">
-	    <div class="sidebar-container row">
-		<h4 class="header-label">Project Umbrellas</h4>
-		<span class="project-umbrella-link"><a href="{% url 'website:projects' %}">All ({{all_proj_len}})</a></span><br/>
-		{% for umbrella in umbrellas %}
-		<span class="project-umbrella-link"><a href="{% url 'website:projects'%}?filter={{umbrella.short_name}}">{{umbrella.name}} ({{umbrella.project_set.all|length}})</a></span><br/>
-		{% endfor %}
-	    </div>
-	    <div class="sidebar-container row">
-		<h4 class="header-label">Recent Projects</h4>
-		{% for project in recent %}
-		<div class="sidebar-container row">
-		    <a href="{% url 'website:project_ind' project.short_name %}">
-			<img src="{% thumbnail project.gallery_image 250x200 box=project.cropping crop detail %}" class="img-responsive recent-image"/>
-		    </a>
-		    <a href="{% url 'website:project_ind' project.short_name %}">
-			<span class="recent-project-name">{{project.name}}</span>
-		    </a>
-		</div>
-		{% endfor %}
-	    </div>
-	    <div class="sidebar-container row">
-		<h4 class="header-label">Popular Projects</h4>
-		{% for project in popular %}
-		<div class="col-xs-6 popular-project">
-		    <a href="{% url 'website:project_ind' project.short_name %}">
-			<img src="{% thumbnail project.gallery_image 250x200 box=project.cropping crop detail %}" class="img-responsive"/>
-		    </a>
-		</div>
-		{% endfor %}
-	    </div>
-	</div>
-	<div class="col-md-10 col-xs-12 project-block">
-	    <div class="row">
-		{% for project in projects %}
-		<div class="col-xs-12 col-sm-6 col-md-4 project-display">
-		    <a href="{% url 'website:project_ind' project.short_name %}">
-			<img src="{% thumbnail project.gallery_image 500x400 box=project.cropping crop detail %}" class="img-responsive"/>
-		    </a>
-		    <a href="{% url 'website:project_ind' project.short_name %}">
-			<span class="project-name">{{project.name}}</span>
-		    </a>
-		</div>
-		{% endfor %}
-	    </div>
-	</div>
-    </div>
-</div>
+
+{# This is the old project gallery #}
+{#<div id="content" class="container content-container" data-spy="scroll">#}
+{#    <div class="row header">#}
+{#    </div>#}
+{#    <div class="row">#}
+{#	<div class="col-md-2 hidden-xs hidden-sm sidebar">#}
+{#	    <div class="sidebar-container row">#}
+{#		<h4 class="header-label">Project Umbrellas</h4>#}
+{#		<span class="project-umbrella-link"><a href="{% url 'website:projects' %}">All ({{all_proj_len}})</a></span><br/>#}
+{#		{% for umbrella in umbrellas %}#}
+{#		<span class="project-umbrella-link"><a href="{% url 'website:projects'%}?filter={{umbrella.short_name}}">{{umbrella.name}} ({{umbrella.project_set.all|length}})</a></span><br/>#}
+{#		{% endfor %}#}
+{#	    </div>#}
+{#	    <div class="sidebar-container row">#}
+{#		<h4 class="header-label">Recent Projects</h4>#}
+{#		{% for project in recent %}#}
+{#		<div class="sidebar-container row">#}
+{#		    <a href="{% url 'website:project_ind' project.short_name %}">#}
+{#			<img src="{% thumbnail project.gallery_image 250x200 box=project.cropping crop detail %}" class="img-responsive recent-image"/>#}
+{#		    </a>#}
+{#		    <a href="{% url 'website:project_ind' project.short_name %}">#}
+{#			<span class="recent-project-name">{{project.name}}</span>#}
+{#		    </a>#}
+{#		</div>#}
+{#		{% endfor %}#}
+{#	    </div>#}
+{#	    <div class="sidebar-container row">#}
+{#		<h4 class="header-label">Popular Projects</h4>#}
+{#		{% for project in popular %}#}
+{#		<div class="col-xs-6 popular-project">#}
+{#		    <a href="{% url 'website:project_ind' project.short_name %}">#}
+{#			<img src="{% thumbnail project.gallery_image 250x200 box=project.cropping crop detail %}" class="img-responsive"/>#}
+{#		    </a>#}
+{#		</div>#}
+{#		{% endfor %}#}
+{#	    </div>#}
+{#	</div>#}
+{#	<div class="col-md-10 col-xs-12 project-block">#}
+{#	    <div class="row">#}
+{#		{% for project in projects %}#}
+{#		<div class="col-xs-12 col-sm-6 col-md-4 project-display">#}
+{#		    <a href="{% url 'website:project_ind' project.short_name %}">#}
+{#			<img src="{% thumbnail project.gallery_image 500x400 box=project.cropping crop detail %}" class="img-responsive"/>#}
+{#		    </a>#}
+{#		    <a href="{% url 'website:project_ind' project.short_name %}">#}
+{#			<span class="project-name">{{project.name}}</span>#}
+{#		    </a>#}
+{#		</div>#}
+{#		{% endfor %}#}
+{#	    </div>#}
+{#	</div>#}
+{#    </div>#}
+{#</div>#}
 {% endblock %}
 
 

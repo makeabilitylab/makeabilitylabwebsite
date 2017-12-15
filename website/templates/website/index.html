@@ -17,32 +17,39 @@
     {# Call the parent block #}
     {{ block.super }}
 
-{#    #}
-    {# This is a news overlay #}
-{#    <div class="container-fluid" style="z-index: 15; position: absolute; top: 100px; right: 150px; background: rgba(0, 0, 0, 0.65); padding: 6px 10px 1px 10px; border-radius: 5px">#}
-{#        <div style="width: 200px">#}
-{#            {% for news_item in news|slice:"5" %}#}
-{#                <p class="line-clamp" style="margin-bottom:15px; color:white; font-family:Roboto;">#}
-{#                    <a href="{% url 'website:news' news_item.id %}">#}
-{#                        <span style="color:rgb(245,245,245);"><span style="font-family: roboto-bold; font-weight: 700;">{{ news_item.date }}.</span> {{ news_item.title }}</span>#}
-{#                    </a>#}
-{#                </p>#}
-{#            {% endfor %}#}
-{#        </div>#}
-{#    </div>#}
+
+    <!-- This is a news overlay on the banner -->
+    <div class="container-fluid" style="z-index: 15; position: absolute; top: 100px; right: 150px; background: rgba(0, 0, 0, 0.65); padding: 6px 10px 1px 10px; border-radius: 5px">
+        <div style="width: 200px">
+            {% for news_item in news|slice:"5" %}
+                <p class="line-clamp" style="margin-bottom:15px; color:white; font-family:Roboto;">
+                    <a href="{% url 'website:news' news_item.id %}">
+                        <span style="color:rgb(245,245,245);"><span style="font-family: roboto-bold; font-weight: 700;">{{ news_item.date }}.</span> {{ news_item.title }}</span>
+                    </a>
+                </p>
+            {% endfor %}
+        </div>
+    </div>
 
 {% endblock %}
 
 {% block content %}
 
-    <!-- TODO: make it so that first banner is the Intro to Makeability Lab banner -->
-
+    <!-- TODO: make it so that first banner is the Intro to Makeability Lab banner, which provides a nice introduction to who we are -->
+    <!-- TODO: add in mouseover effect to projects, talks, other things?
+         See:
+              https://designshack.net/articles/css/joshuajohnson-2/
+              https://www.awwwards.com/websites/portfolio/ & vanschneider.com for demos
+              https://codepen.io/Remedy/pen/ZYJrpp
+              https://stackoverflow.com/questions/15757036/creating-a-zoom-effect-on-an-image-on-hover-using-css
+    -->
+    <!-- TODO: add in a "more..." somewhere--maybe underneat the section header, maybe after last row centered -->
     <div id="makelab-recent-projects" class="container-fluid makelab-content-container">
         <h1 class="section-header" style="margin-top:25px">Recent Projects</h1>
         <div class="section">
             {% for project in projects|slice:"8" %}
                 <div class="col-xs-12 col-md-3 project-column">
-                    <a href="{% url 'website:project_ind' project.short_name %}">{# {% url 'website:project_ind' project.short_name %}"> #}
+                    <a href="{% url 'website:project_ind' project.short_name %}">
                         <img src="{% thumbnail project.gallery_image 300x180 box=project.cropping crop detail %}">
                         <p class="artifact-title">{{ project.name }}</p>
                     </a>
@@ -52,10 +59,16 @@
                     {% endif %}
                 </div>
             {% endfor %}
+            <div class="row justify-content-end">
+                <!-- TODO fix the right alignment -->
+                <div class="col-xs-12 see-all-artifacts">
+                    <a href="{% url 'website:projects' %}">See All Projects ></a>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- TODO: explore moving news to right side column above banner -->
+    <!-- TODO: make the news feed look good. Uncomment the following to start playing with this -->
 {#    <div id="makelab-recent-news" class="container-fluid makelab-content-container">#}
 {#        <h1 class="section-header">Recent News</h1>#}
 {#        <div class="">#}
@@ -96,6 +109,9 @@
                     </p>
                 </div>
             {% endfor %}
+            <div class="col-xs-12 see-all-artifacts">
+                <a href="{% url 'website:videos' %}">See All Videos ></a>
+            </div>
         </div>
     </div>
 
@@ -127,9 +143,17 @@
                         {% endfor %}
                     </p>
 
-
+                    <!-- TODO: fix this so only shows up on mouse over of the pub-column div and that the border only shows on top of this info-->
+                    <!-- TODO: actually hook up these links -->
+                    <!-- TODO: fix so border-top only covers text area and not overlaps with pub -->
+                    <p style="font-size: 7pt; color: gray; margin: 0; padding-left:107px; bottom: 0; position: absolute; border-top: 1px solid #dddddd;">
+                        PDF | Official Link | Citation | Talk
+                    </p>
                 </div>
             {% endfor %}
+            <div class="col-xs-12 see-all-artifacts">
+                <a href="{% url 'website:publications' %}">See All Papers ></a>
+            </div>
         </div>
     </div>
 
@@ -155,18 +179,20 @@
                             {% endif %}
                         </span>
                     </div>
-
-
                 </div>
             {% endfor %}
+            <div class="col-xs-12 see-all-artifacts">
+                <a href="{% url 'website:publications' %}">See All Papers ></a>
+            </div>
         </div>
     </div>
 
     <div id="makelab-recent-talks" class="container-fluid makelab-content-container">
         <h1 class="section-header">Recent Talks</h1>
         <div class="section">
-            <!-- TODO: iterate through recent talks and display them-->
-            {% for talk in talks|slice:"4" %} <!-- TODO: should we do 8 talks (2x4) rather than a single row of 4? -->
+
+            <!-- TODO: add in date of talk somewhere--or better yet, age? e.g., 4d, 4months ago -->
+            {% for talk in talks|slice:"8" %} <!-- Switch slice to '4' to just display 4 talks -->
                 <div class="col-xs-12 col-md-3">
                     <div class="talk2-thumbnail">
                         <!-- TODO: I don't get this thumbnail stuff; need to talk to Lee about it -->
@@ -189,6 +215,9 @@
                     </div>
                 </div>
             {% endfor %}
+            <div class="col-xs-12 see-all-artifacts">
+                <a href="{% url 'website:talks' %}">See All Talks ></a>
+            </div>
         </div>
     </div>
 

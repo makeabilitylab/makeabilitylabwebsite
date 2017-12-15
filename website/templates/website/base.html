@@ -18,6 +18,7 @@
 {#    <link href="https://fonts.googleapis.com/css?family=Raleway:400,700" rel="stylesheet">#}
     <!-- Raleway 300 is light, 400 is regular, 500 is medium, 600 is semi-bold, 700 is bold -->
     <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,500,600,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 
     <link rel="stylesheet" type="text/css" href="{% static 'website/css/bootstrap.min.css' %}"/>
 
@@ -26,7 +27,7 @@
 
     <!-- Our custom style sheets -->
     <link rel="stylesheet" href="{% static 'website/css/carousel_fade.css' %}"/>
-    <link rel="stylesheet" href="{% static 'website/css/styles.css' %}"/>
+    <link rel="stylesheet" href="{% static 'website/css/base.css' %}"/>
     <link rel="stylesheet" href="{% static 'website/css/autocomplete.css' %}"/>
     
     {% block stylesheets %}
@@ -125,7 +126,7 @@
                         {# TODO: the text following the logo does not look vertically centered. Should be fixed. #}
                         <img src="{% static 'website/img/logos/makelab_logo_white_no_text_100x67.png' %}" height="20" />
 
-                        <div class="lab-text"><span style="font-family: roboto-bold">Make</span>ability</span> Lab</div>
+                        <div class="lab-text"><span style="font-family: roboto-bold; margin-left: 2px;">Make</span>ability</span> Lab</div>
                     </a>
                 </div>
 
@@ -452,8 +453,8 @@
                 </div>
             </div>
 
-            <!-- TODO: The centering looks weird on this. Also responsive design wraps columns, which I don't like.
-                 Ideally, I think, on small devices, should just switch to single row;
+            <!-- TODO: Consider adding a sponsorship row? -->
+            <!-- TODO: The centering looks weird on this. Also responsive design wraps columns, which I don't like. Ideally, I think, on small devices, should just switch to single row;
                  TODO: Fix UMD CS logo so that the text is bigger -->
             <div class="row makelab-affiliations-footer-row">
                 <div class="col-xs-1">
@@ -495,6 +496,7 @@
 
                 </div>
             </div>
+
         </div>
     {% endblock %}
 </div>

@@ -1,34 +1,3 @@
-/* General styles */
-@font-face {
-	font-family: adelle-semibold;
-	src: url(../fonts/Adelle/adelle_semibold-webfont.ttf);
-}
-
-@font-face {
-	font-family: adelle-regular;
-	src: url(../fonts/Adelle/adelle_reg-webfont.ttf);
-}
-
-@font-face {
-	font-family: adelle-light;
-	src: url(../fonts/Adelle/adelle_light-webfont.ttf);
-}
-
-@font-face {
-	font-family: adelle-heavy;
-	src: url(../fonts/Adelle/adelle_heavy-webfont.ttf);
-}
-
-@font-face {
-	font-family: helvetica-neue-lt;
-	src: url(../fonts/Helvetica/HelveticaNeueLT/HelveticaNeueLTCom-UltLtEx.ttf);
-}
-
-@font-face {
-	font-family: helvetica-neue-lt-bold;
-	src: url(../fonts/Helvetica/HelveticaNeueLT/HelveticaNeueLTCom-LtEx.ttf);
-}
-
 @font-face {
 	font-family: roboto;
 	src: url(../fonts/roboto/Roboto-Thin.ttf);
@@ -39,6 +8,7 @@
 	src: url(../fonts/roboto/Roboto-Light.ttf);
 }
 
+/* General styles */
 body {
 	font-family: 'Raleway', sans-serif;
 }
@@ -50,7 +20,6 @@ hr {
 h1 {
 	font-family: 'Raleway', sans-serif;
 	font-weight: 700;
-	font-variant: small-caps;
 	font-size: 36px;
 	margin-bottom:0;
 	padding-bottom:0;
@@ -58,7 +27,6 @@ h1 {
 }
 
 h4 {
-	font-family: adelle-regular;
 	font-size: 18px;
 	color: #464D59;
 	margin-top:0;
@@ -66,7 +34,6 @@ h4 {
 }
 
 h5 {
-	font-family: adelle-regular;
 	font-size: large;
 	font-weight: bold;
 	margin:0;
@@ -206,10 +173,8 @@ h5 {
 	line-height: 120px;
 	width: 300px;
 	text-align: left;*/
-	font-family: adelle-semibold;
 	font-weight: bold;
 	font-size: 36px;
-	font-variant: small-caps;
 	margin-left: -3px;
 	bottom: 0;
 	color: #fff;
@@ -224,10 +189,8 @@ h5 {
 	line-height: 120px;
 	width: 300px;
 	text-align: left;*/
-	font-family: adelle-semibold;
 	font-weight: bold;
 	font-size: 72px;
-	font-variant: small-caps;
 	margin-left: -3px;
 	bottom: 0;
 	color: #fff;
@@ -270,12 +233,13 @@ h5 {
 }
 
 .carousel-caption-title {
-	font-family: adelle-semibold;
+	/*font-family: adelle-semibold;*/
 	font-size: 32px;
+	font-weight: 700;
 }
 
 .carousel-caption-text {
-	font-family: adelle-light;
+	/*font-family: adelle-light;*/
 	font-size: 16px;
 }
 
@@ -350,78 +314,6 @@ From: https://stackoverflow.com/a/22799354
         float: left;
     }
 }
-
-.makelab-footer{
-	background-color: #3797db;
-	color: white;
-}
-
-.makelab-footer-row{
-	/*margin-top: 20px;*/
-	/*margin-bottom: 20px;*/
-}
-
-.makelab-affiliations-footer-row{
-	background-color: black; /* should be same color as navbar header */
-	padding-right: 5px;
-	padding-left: 5px;
-}
-
-.makelab-footer-affiliation-logo{
-	/*height: 75px;*/
-	max-height: 30px;
-
-	/* Center content. See center-block in bootstrap.css */
-	display: block;
-  	margin-right: auto;
-  	margin-left: auto;
-}
-
-.makelab-footer-affiliation-col{
-	margin-top: 10px;
-	margin-bottom: 10px;
-	margin-right: 5px;
-	margin-left: 5px;
-}
-
-.makelab-footer-col{
-	margin-top: 20px;
-	margin-bottom: 20px;
-	margin-right: 20px;
-	margin-left: 20px;
-}
-
-.makelab-footer-col h1{
-	text-transform: uppercase;
-	font-weight: bold;
-	font-size: 14px;
-	margin: 0px;
-	padding: 0px;
-}
-
-.makelab-footer-col ul {
-	list-style: none;
-	padding-left: 0;
-	/*margin-top: 5px;*/
-}
-
-.makelab-footer-col li {
-	margin-top: 5px;
-	color: white;
-}
-
-.makelab-footer-col li.active {
-	font-weight: bold;
-}
-
-.makelab-footer-col a:link, a:visited {
-	color: white;
-}
-
-.makelab-footer-connect-logo{
-	max-height: 18px;
-}
-
 
 /* Sticky footer styles
 -------------------------------------------------- */
@@ -538,4 +430,160 @@ body {
 	padding: 0px;
 	font-size: x-small;
 	color: darkgray;
+}
+
+.makelab-footer{
+	background-color: #3797db;
+	color: white;
+	margin-top: 50px;
+	padding-top: 40px;
+	/*padding-bottom: 20px;*/
+}
+
+.makelab-footer-row{
+	/*margin-top: 20px;*/
+	/*margin-bottom: 20px;*/
+}
+
+.makelab-affiliations-footer-row{
+	background-color: black; /* should be same color as navbar header */
+	padding-right: 5px;
+	padding-left: 5px;
+	padding-top: 30px;
+	padding-bottom: 30px;
+}
+
+.makelab-footer-affiliation-logo{
+	/*height: 75px;*/
+	max-height: 30px;
+
+	/* Center content. See center-block in bootstrap.css */
+	display: block;
+  	margin-right: auto;
+  	margin-left: auto;
+}
+
+.makelab-footer-affiliation-col{
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-right: 5px;
+	margin-left: 5px;
+}
+
+.makelab-footer-col{
+	margin-top: 20px;
+	margin-bottom: 20px;
+	margin-right: 20px;
+	margin-left: 20px;
+}
+
+.makelab-footer-col h1{
+	text-transform: uppercase;
+	font-weight: bold;
+	font-size: 14px;
+	margin: 0px;
+	padding: 0px;
+}
+
+.makelab-footer-col ul {
+	list-style: none;
+	padding-left: 0;
+	/*margin-top: 5px;*/
+}
+
+.makelab-footer-col li {
+	margin-top: 5px;
+	color: white;
+}
+
+.makelab-footer-col li.active {
+	font-weight: bold;
+}
+
+.makelab-footer-col a:link, a:visited {
+	color: white;
+}
+
+.makelab-footer-connect-logo{
+	max-height: 18px;
+}
+
+.to-appear-text{
+    font-style: italic;
+}
+
+.artifact-title{
+    font-size: 15px;
+    font-weight: 500;
+    margin: 3px 0px 0px 0px;
+    line-height: 1.3;
+}
+
+.artifact-venue{
+    /*color: #7F7F7F;*/
+    font-size: 13px;
+    margin: 2px 0px 2px 0px;
+}
+
+.artifact-authors{
+    color: #7F7F7F;
+    font-size: 11px;
+	margin: 0;
+}
+
+.artifact-authors a{
+    color: #7F7F7F;
+}
+
+.artifact-links {
+    color: #696969; /* RGB(105, 105, 105) */
+    font-size: small;
+}
+
+.artifact-links a{
+    color: #696969; /* RGB(105, 105, 105) */
+    font-size: small;
+}
+
+/************ Line Clamping ***********/
+
+.line-clamp-one-line {
+    text-overflow: ellipsis;
+
+    /* Required for text-overflow to do anything */
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/**
+ * https://css-tricks.com/line-clampin/ relevant to text wrapping
+ * Firefox support comes from here http://jsfiddle.net/danield770/DpQ7e/30/ and
+ * http://stackoverflow.com/questions/20594995/why-webkit-line-clamping-does-not-work-in-firefox
+ */
+
+/* TODO: consider changing the name to line-clamp2 to indicate that the line clamp amount is 2 lines */
+@supports (-webkit-line-clamp: 2) {
+    .line-clamp {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .line-clamp:after {
+        display: none;
+    }
+}
+
+@supports (-webkit-line-clamp: 3) {
+    .line-clamp3 {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+    }
+
+    .line-clamp3:after {
+        display: none;
+    }
 }
