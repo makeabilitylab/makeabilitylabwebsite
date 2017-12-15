@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #first build the image
+cd ..
 docker build -t $1 .
 
 #if there is an existing container, stop it
@@ -16,5 +17,6 @@ if [ -n "$ISDEAD" ]; then
 fi
 
 #finally, instantiate the new container
+cd $1
 /bin/bash < command
 
