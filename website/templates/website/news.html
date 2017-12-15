@@ -26,7 +26,7 @@
 	    <a href="{{banner.link}}">
 		{% else %}
 		{% if banner.project %}
-		<a href="{% url 'website:project_ind' banner.project.short_name %}">
+		<a href="{% url 'website:project' banner.project.short_name %}">
 		    {% endif %}
 		    {% endif %}
 		    <div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})" aria-label="{{ banner.alt_text }}" title="{{ banner.alt_text }}"></div>
@@ -79,7 +79,7 @@
 		    <span class="big-news-published">Published {{news.short_date}}</span>
 		    <br/>
 		    {% for project in news.project.all %}
-		    <span class="big-news-project"><a href="{% url 'website:project_ind' project.short_name %}">{{project.name}}</a></span>
+		    <span class="big-news-project"><a href="{% url 'website:project' project.short_name %}">{{project.name}}</a></span>
 		    <br/>
 		    {% endfor %}
 		</div>
@@ -135,7 +135,7 @@
 	    {% for project, proj_news in project_news.items %}
 	    <div class="row">
 		{% if proj_news %}
-		<h3 class="news-type-label">Recent News from <a href="{% url 'website:project_ind' project.short_name %}">{{project.name}}</a></h3>
+		<h3 class="news-type-label">Recent News from <a href="{% url 'website:project' project.short_name %}">{{project.name}}</a></h3>
 		{% endif %}
 		<div class="well news-well">
 		    {% for item in proj_news %}

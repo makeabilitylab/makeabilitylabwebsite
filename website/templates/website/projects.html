@@ -47,7 +47,7 @@
 	    <a href="{{banner.link}}">
 		{% else %}
 		{% if banner.project %}
-		<a href="{% url 'website:project_ind' banner.project.short_name %}">
+		<a href="{% url 'website:project' banner.project.short_name %}">
 		    {% endif %}
 		    {% endif %}
 		    <div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})" aria-label="{{ banner.alt_text }}" title="{{ banner.alt_text }}"></div>
@@ -112,7 +112,7 @@
             <!-- TODO: consider listing dates active or keywords underneath each project thumbnail in addition to name -->
             {% for project in projects %}
                 <div class="col-xs-12 col-md-3 project-column">
-                    <a href="{% url 'website:project_ind' project.short_name %}" style="color:black;">
+                    <a href="{% url 'website:project' project.short_name %}" style="color:black;">
                         <img src="{% thumbnail project.gallery_image 300x180 box=project.cropping crop detail %}" class="img-responsive">
                         <p class="artifact-title">{{ project.name }}</p>
                     </a>
@@ -139,10 +139,10 @@
 {#		<h4 class="header-label">Recent Projects</h4>#}
 {#		{% for project in recent %}#}
 {#		<div class="sidebar-container row">#}
-{#		    <a href="{% url 'website:project_ind' project.short_name %}">#}
+{#		    <a href="{% url 'website:project' project.short_name %}">#}
 {#			<img src="{% thumbnail project.gallery_image 250x200 box=project.cropping crop detail %}" class="img-responsive recent-image"/>#}
 {#		    </a>#}
-{#		    <a href="{% url 'website:project_ind' project.short_name %}">#}
+{#		    <a href="{% url 'website:project' project.short_name %}">#}
 {#			<span class="recent-project-name">{{project.name}}</span>#}
 {#		    </a>#}
 {#		</div>#}
@@ -152,7 +152,7 @@
 {#		<h4 class="header-label">Popular Projects</h4>#}
 {#		{% for project in popular %}#}
 {#		<div class="col-xs-6 popular-project">#}
-{#		    <a href="{% url 'website:project_ind' project.short_name %}">#}
+{#		    <a href="{% url 'website:project' project.short_name %}">#}
 {#			<img src="{% thumbnail project.gallery_image 250x200 box=project.cropping crop detail %}" class="img-responsive"/>#}
 {#		    </a>#}
 {#		</div>#}
@@ -163,10 +163,10 @@
 {#	    <div class="row">#}
 {#		{% for project in projects %}#}
 {#		<div class="col-xs-12 col-sm-6 col-md-4 project-display">#}
-{#		    <a href="{% url 'website:project_ind' project.short_name %}">#}
+{#		    <a href="{% url 'website:project' project.short_name %}">#}
 {#			<img src="{% thumbnail project.gallery_image 500x400 box=project.cropping crop detail %}" class="img-responsive"/>#}
 {#		    </a>#}
-{#		    <a href="{% url 'website:project_ind' project.short_name %}">#}
+{#		    <a href="{% url 'website:project' project.short_name %}">#}
 {#			<span class="project-name">{{project.name}}</span>#}
 {#		    </a>#}
 {#		</div>#}
