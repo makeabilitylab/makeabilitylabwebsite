@@ -1,46 +1,6 @@
 /* TODO: Consolidate base.css and styles.css into one. Same with grayscale.css */
 
 /* General styles */
-@font-face {
-	font-family: adelle-semibold;
-	src: url(../fonts/Adelle/adelle_semibold-webfont.ttf);
-}
-
-@font-face {
-	font-family: adelle-regular;
-	src: url(../fonts/Adelle/adelle_reg-webfont.ttf);
-}
-
-@font-face {
-	font-family: adelle-light;
-	src: url(../fonts/Adelle/adelle_light-webfont.ttf);
-}
-
-@font-face {
-	font-family: adelle-heavy;
-	src: url(../fonts/Adelle/adelle_heavy-webfont.ttf);
-}
-
-@font-face {
-	font-family: helvetica-neue-lt;
-	src: url(../fonts/Helvetica/HelveticaNeueLT/HelveticaNeueLTCom-UltLtEx.ttf);
-}
-
-@font-face {
-	font-family: helvetica-neue-lt-bold;
-	src: url(../fonts/Helvetica/HelveticaNeueLT/HelveticaNeueLTCom-LtEx.ttf);
-}
-
-@font-face {
-	font-family: roboto;
-	src: url(../fonts/roboto/Roboto-Thin.ttf);
-}
-
-@font-face {
-	font-family: roboto-bold;
-	src: url(../fonts/roboto/Roboto-Light.ttf);
-}
-
 body {
 	font-family: 'Raleway', sans-serif;
 }
@@ -52,7 +12,6 @@ hr {
 h1 {
 	font-family: 'Raleway', sans-serif;
 	font-weight: 700;
-	font-variant: small-caps;
 	font-size: 36px;
 	margin-bottom:0;
 	padding-bottom:0;
@@ -60,7 +19,6 @@ h1 {
 }
 
 h4 {
-	font-family: adelle-regular;
 	font-size: 18px;
 	color: #464D59;
 	margin-top:0;
@@ -68,7 +26,6 @@ h4 {
 }
 
 h5 {
-	font-family: adelle-regular;
 	font-size: large;
 	font-weight: bold;
 	margin:0;
@@ -208,10 +165,8 @@ h5 {
 	line-height: 120px;
 	width: 300px;
 	text-align: left;*/
-	font-family: adelle-semibold;
 	font-weight: bold;
 	font-size: 36px;
-	font-variant: small-caps;
 	margin-left: -3px;
 	bottom: 0;
 	color: #fff;
@@ -226,10 +181,8 @@ h5 {
 	line-height: 120px;
 	width: 300px;
 	text-align: left;*/
-	font-family: adelle-semibold;
 	font-weight: bold;
 	font-size: 72px;
-	font-variant: small-caps;
 	margin-left: -3px;
 	bottom: 0;
 	color: #fff;
@@ -272,12 +225,13 @@ h5 {
 }
 
 .carousel-caption-title {
-	font-family: adelle-semibold;
+	/*font-family: adelle-semibold;*/
 	font-size: 32px;
+	font-weight: 700;
 }
 
 .carousel-caption-text {
-	font-family: adelle-light;
+	/*font-family: adelle-light;*/
 	font-size: 16px;
 }
 

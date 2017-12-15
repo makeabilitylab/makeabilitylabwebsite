@@ -6,7 +6,7 @@ from django.conf import settings
 from operator import itemgetter, attrgetter, methodcaller
 from datetime import date
 
-from . import googleanalytics
+# from . import googleanalytics
 
 max_banners = 7 # TODO: figure out best way to specify these settings... like, is it good to have them up here?
 filter_all_pubs_prior_to_date = datetime.date(2012, 1, 1) # Date Makeability Lab was formed
@@ -16,7 +16,7 @@ filter_all_pubs_prior_to_date = datetime.date(2012, 1, 1) # Date Makeability Lab
  
 def index(request):
     news_items_num = 7 # Defines the number of news items that will be selected
-    papers_num = 5 # Defines the number of papers which will be selected
+    papers_num = 10 # Defines the number of papers which will be selected
     talks_num = 8 # Defines the number of talks which will be selected
     videos_num = 4 # Defines the number of videos which will be selected
     projects_num = 3 # Defines the number of projects which will be selected
@@ -30,10 +30,17 @@ def index(request):
     talks = Talk.objects.order_by('-date')[:talks_num]
     videos = Video.objects.order_by('-date')[:videos_num]
 
-    if settings.DEBUG:
-      projects = Project.objects.all()[:projects_num];
-    else:
-      projects = sort_popular_projects(googleanalytics.run(get_ind_pageviews))[:projects_num]
+    # if settings.DEBUG:
+    #   projects = Project.objects.all()[:projects_num];
+    # else:
+    #   # Return projects based on Google Analytics popularity
+    #   projects = sort_popular_projects(googleanalytics.run(get_ind_pageviews))[:projects_num]
+
+    # Sort projects by recency of publication
+    # projects = Project.objects.all()
+    # sorted(projects, key=lambda project: student[2])
+    projects = Project.objects.all()
+    projects = get_most_recent(projects);
 
     context = { 'people': Person.objects.all(),
                 'banners': displayed_banners,
@@ -43,6 +50,7 @@ def index(request):
                 'videos':videos,
                 'projects': projects,
                 'debug': settings.DEBUG }
+
     return render(request, 'website/index.html', context)
 
 def people(request):
@@ -275,8 +283,9 @@ def projects(request):
       filter_umbrella = Project_umbrella.objects.get(short_name=filter)
       projects = filter_umbrella.project_set.all()
    umbrellas = Project_umbrella.objects.all()
-   popular_projects = sort_popular_projects(googleanalytics.run(get_ind_pageviews))[:4]
+   popular_projects = [] # sort_popular_projects(googleanalytics.run(get_ind_pageviews))[:4]
    recent_projects = get_most_recent(Project.objects.order_by('-updated'))[:2]
+
    context = { 'projects': projects,
                'all_proj_len': all_proj_len,
                'banners': displayed_banners,
@@ -375,7 +384,15 @@ def get_most_recent(projects):
          times.append(project.video_set.order_by('-date')[0].date)
       times.sort()
       updated.append({'proj': project, 'updated': times[0]})
+
    sorted_list = sorted(updated, key=lambda k: k['updated'], reverse=True)
+
+   # DEBUG
+   for item in sorted_list:
+       mostRecentArtifact = item['proj'].get_most_recent_artifact();
+       print("project '{}' has the most recent artifact of {} updated {} and the check {}".format(item['proj'].name, mostRecentArtifact, mostRecentArtifact.date, item['updated']))
+   # END DEBUG
+
    return [item['proj'] for item in sorted_list]
 
 #Get the page views per page including their first and second level paths

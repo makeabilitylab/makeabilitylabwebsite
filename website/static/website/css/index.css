@@ -24,8 +24,15 @@ research-area-icon-label{
     margin-top: 40px;
     margin-bottom: 15px;
     text-align: center;
-    font-size: 22px;
+    font-size: 24px;
     /*text-transform: uppercase;*/
+}
+
+.see-all-artifacts {
+    margin-top: 15px;
+    text-transform: uppercase;
+    text-align: right;
+    font-weight: 700;
 }
 
 .makelab-content-container{
@@ -73,6 +80,14 @@ Just playing around wit hover effects
 .section a{
     color: black;
 }
+
+.talk-text{
+    margin-bottom: 20px;
+    vertical-align: top;
+    /*width:80%;*/
+    /*text-align: center;*/
+}
+
 
 .pub-thumbnail-image {
 	border: 1px solid #dddddd;
@@ -124,7 +139,7 @@ Just playing around wit hover effects
 }
 
 h1{
-    text-transform: none;
+    text-transform: uppercase;
     font-variant: normal;
 }
 
