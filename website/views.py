@@ -297,7 +297,7 @@ def projects(request):
    return render(request, 'website/projects.html', context)
 
 # This is the view for individual projects, rather than the overall projects page
-def project_ind(request, project_name):
+def project(request, project_name):
    project = get_object_or_404(Project, short_name__iexact=project_name)
    all_banners = project.banner_set.all()
    displayed_banners = choose_banners(all_banners)
@@ -336,7 +336,7 @@ def project_ind(request, project_name):
                'photos': photos,
                'debug': settings.DEBUG}
 
-   return render(request, 'website/indproject.html', context)
+   return render(request, 'website/project.html', context)
 
 
 def news(request, news_id):

@@ -10,7 +10,7 @@ urlpatterns = [
     url(r'^talks/$', views.talks, name='talks'),
     url(r'^videos/$', views.videos, name='videos'),
     url(r'^projects/$', views.projects, name='projects'),
-    url(r'^projects/(?P<project_name>[a-zA-Z ]+)/$', views.project_ind, name='project_ind'),
-    url(r'^project/(?P<project_name>[a-zA-Z ]+)/$', views.project_ind, name='project_ind_extra'),
+    url(r'^projects/(?P<project_name>[a-zA-Z ]+)/$', views.project, name='project'),
+    url(r'^project/(?P<project_name>[a-zA-Z ]+)/$', views.project, name='project'),
     url(r'^news/(?P<news_id>[0-9]+)/$', views.news, name='news')
 ]

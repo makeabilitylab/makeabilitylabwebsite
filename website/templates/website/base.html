@@ -162,7 +162,7 @@
 		    <a href="{{banner.link}}">
 		    {% else %}
 		    {% if banner.project %}
-		    <a href="{% url 'website:project_ind' banner.project.short_name %}">
+		    <a href="{% url 'website:project' banner.project.short_name %}">
 			{% endif %}
 			{% endif %}
 			<div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})" aria-label="{{ banner.alt_text }}"  title="{{ banner.alt_text }}"></div>
