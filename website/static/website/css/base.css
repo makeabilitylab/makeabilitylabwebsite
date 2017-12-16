@@ -399,7 +399,11 @@ h5 {
 	font-weight: bold;
 }
 
-.makelab-footer-col a:link, a:visited {
+.makelab-footer-col a:link {
+	color: white;
+}
+
+.makelab-footer-col a:visited {
 	color: white;
 }
 
