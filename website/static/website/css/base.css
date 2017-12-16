@@ -64,6 +64,7 @@ h5 {
 }
 
 /* Custom navbar for filters */
+/* TODO: what is this doing here? Why is navbar stuff in here and not grayscale.css? Discuss with Lee */
 .breadcrumb {
 	background-color: transparent;
 	margin-bottom:0;
@@ -104,7 +105,46 @@ h5 {
     
 }
 
-/* Carousel styles */
+.well {
+	border-radius: 0 !important;
+}
+
+.easter-egg-col:hover .overlay-easter-egg {
+    opacity: 1;
+}
+
+.easter-egg-col:hover .main-image {
+    opacity: 0;
+}
+
+.easter-egg-col {
+    position: relative;
+}
+
+.overlay-easter-egg {
+    bottom: 0;left: 0; top: 0; right: 0;
+    position: absolute;
+    opacity: 0;
+}
+
+.project-gallery-col:hover .overlay-image{
+    opacity: 1;
+}
+
+.project-gallery-col:hover .project-gallery{
+    opacity: 0.7;
+}
+
+.project-people-col {
+    padding-left: 0px;
+}
+
+.alumni-navbar {
+    padding-left: 0px;
+}
+
+/**********************************************************/
+/************** Carousel (Banner) styles ******************/
 .carousel,
 .carousel-inner,
 .carousel-inner .item {
@@ -165,7 +205,6 @@ h5 {
 	padding-top:0;
 }
 
-
 @media (max-width: 768px){
     .overlay-title {
 	position: absolute;
@@ -197,7 +236,6 @@ h5 {
 	text-shadow: 0 1px 2px rgba(0,0,0,.6);
     }    
 }
-
 
 .shortCarousel .fill {
 	width:100%;
@@ -249,188 +287,49 @@ h5 {
 }
 }
 
-/* Custom 5-column styles
-From: https://stackoverflow.com/a/22799354
--------------------------------------------------- */
-.col-xs-5ths,
-.col-sm-5ths,
-.col-md-5ths,
-.col-lg-5ths {
-    position: relative;
-    min-height: 1px;
-    padding-right: 10px;
-    padding-left: 10px;
+/************************************************************/
+/************************ ARTIFACT STYLES *******************/
+/**** FOR THINGS LIKE PROJECTS, VIDEOS, TALKS, PAPERS *******/
+
+.to-appear-text{
+    font-style: italic;
 }
 
-.col-xs-4-5ths,
-.col-sm-4-5ths,
-.col-md-4-5ths,
-.col-lg-4-5ths {
-    position: relative;
-    min-height: 1px;
-    padding-right: 10px;
-    padding-left: 10px;
+.artifact-title{
+    font-size: 15px;
+    font-weight: 500;
+    margin: 3px 0px 0px 0px;
+    line-height: 1.3;
 }
 
-.col-xs-5ths {
-    width: 20%;
-    float: left;
+.artifact-venue, .artifact-subtitle{
+    /*color: #7F7F7F;*/
+    font-size: 13px;
+    margin: 2px 0px 2px 0px;
 }
 
-.col-xs-4-5ths {
-    width: 80%;
-    float: left;
+.artifact-authors, .artifact-subtitle2{
+    color: #7F7F7F;
+    font-size: 11px;
+	margin: 0;
 }
 
-@media (min-width: 768px) {
-    .col-sm-5ths {
-        width: 20%;
-        float: left;
-    }
-    .col-sm-4-5ths {
-        width: 80%;
-        float: left;
-    }
+.artifact-authors a{
+    color: #7F7F7F;
 }
 
-@media (min-width: 992px) {
-    .col-md-5ths {
-        width: 20%;
-        float: left;
-    }
-    .col-md-4-5ths {
-        width: 80%;
-        float: left;
-    }
+.artifact-links {
+    color: #696969; /* RGB(105, 105, 105) */
+    font-size: small;
 }
 
-@media (min-width: 1200px) {
-    .col-lg-5ths {
-        width: 20%;
-        float: left;
-    }
-    .col-lg-4-5ths {
-        width: 80%;
-        float: left;
-    }
+.artifact-links a{
+    color: #696969; /* RGB(105, 105, 105) */
+    font-size: small;
 }
 
-/* Sticky footer styles
--------------------------------------------------- */
-html {
-  /*position: relative;
-  min-height: 100%;*/
-}
-body {
-  /* Margin bottom by footer height */
-  /*margin-bottom: 60px;*/
-}
-/*.footer {
-  height: 60px;
-  background-color: #f5f5f5;
-  margin-bottom: 0px;
-}*/
-
-.footer {
-	height: 75px;
-	line-height: 75px;
-}
-
-.footer div {
-	position: relative;
-	height: 100%;
-	padding-left: 5px;
-	padding-right: 5px;
-}
-
-.footer-img {
-	max-height: 90%;  
-    max-width: 90%; 
-    width: auto;
-    height: auto;
-    position: absolute;  
-    top: 0;  
-    bottom: 0;  
-    left: 0;  
-    right: 0;  
-    margin: auto;
-}
-
-/* general styles */
-
-.well {
-	border-radius: 0 !important;
-}
-
-.easter-egg-col:hover .overlay-easter-egg {
-    opacity: 1;
-}
-
-.easter-egg-col:hover .main-image {
-    opacity: 0;
-}
-
-.easter-egg-col {
-    position: relative;
-}
-
-.overlay-easter-egg {
-    bottom: 0;left: 0; top: 0; right: 0;
-    position: absolute;
-    opacity: 0;
-}
-
-.project-gallery-col:hover .overlay-image{
-    opacity: 1;
-}
-
-.project-gallery-col:hover .project-gallery{
-    opacity: 0.7;
-}
-
-.project-people-col {
-    padding-left: 0px;
-}
-
-.alumni-navbar {
-    padding-left: 0px;
-}
-
-/* See if we can have just a title, sub-title, etc. general class rather than prefixed by artifact type */
-.title{
-	margin-top: 2px;
-	line-height: 1.2;
-	font-size: 15px;
-	margin-bottom: 0px;
-}
-
-.video-title{
-	margin-top: 1px;
-	line-height: 1.2;
-	font-size: 15px;
-	margin-bottom: 0px;
-}
-
-.talk-title{
-	margin-top: 5px;
-	font-weight: 700;
-	line-height: 1.2;
-}
-
-.talk-subtitle{
-	color: darkgray;
-	font-size: small;
-	margin: 3px 0px 0px 0px;
-	line-height: 1.2;
-}
-
-.talk-speakers{
-	/*line-height: 1.2;*/
-	/*margin: 2px 0px 0px 0px;*/
-	padding: 0px;
-	font-size: x-small;
-	color: darkgray;
-}
+/***************************************************/
+/************* Makeability Lab footer **************/
 
 .makelab-footer{
 	background-color: #3797db;
@@ -445,7 +344,7 @@ body {
 	/*margin-bottom: 20px;*/
 }
 
-.makelab-affiliations-footer-row{
+.makelab-footer-affiliations-row{
 	background-color: black; /* should be same color as navbar header */
 	padding-right: 5px;
 	padding-left: 5px;
@@ -508,44 +407,9 @@ body {
 	max-height: 18px;
 }
 
-.to-appear-text{
-    font-style: italic;
-}
 
-.artifact-title{
-    font-size: 15px;
-    font-weight: 500;
-    margin: 3px 0px 0px 0px;
-    line-height: 1.3;
-}
-
-.artifact-venue{
-    /*color: #7F7F7F;*/
-    font-size: 13px;
-    margin: 2px 0px 2px 0px;
-}
-
-.artifact-authors{
-    color: #7F7F7F;
-    font-size: 11px;
-	margin: 0;
-}
-
-.artifact-authors a{
-    color: #7F7F7F;
-}
-
-.artifact-links {
-    color: #696969; /* RGB(105, 105, 105) */
-    font-size: small;
-}
-
-.artifact-links a{
-    color: #696969; /* RGB(105, 105, 105) */
-    font-size: small;
-}
-
-/************ Line Clamping ***********/
+/**************************************/
+/************ LINE CLAMPING ***********/
 
 .line-clamp-one-line {
     text-overflow: ellipsis;
@@ -585,5 +449,73 @@ body {
 
     .line-clamp3:after {
         display: none;
+    }
+}
+
+/*!
+ * Custom 5-column styles
+ * From: https://stackoverflow.com/a/22799354
+ */
+
+.col-xs-5ths,
+.col-sm-5ths,
+.col-md-5ths,
+.col-lg-5ths {
+    position: relative;
+    min-height: 1px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.col-xs-4-5ths,
+.col-sm-4-5ths,
+.col-md-4-5ths,
+.col-lg-4-5ths {
+    position: relative;
+    min-height: 1px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.col-xs-5ths {
+    width: 20%;
+    float: left;
+}
+
+.col-xs-4-5ths {
+    width: 80%;
+    float: left;
+}
+
+@media (min-width: 768px) {
+    .col-sm-5ths {
+        width: 20%;
+        float: left;
+    }
+    .col-sm-4-5ths {
+        width: 80%;
+        float: left;
+    }
+}
+
+@media (min-width: 992px) {
+    .col-md-5ths {
+        width: 20%;
+        float: left;
+    }
+    .col-md-4-5ths {
+        width: 80%;
+        float: left;
+    }
+}
+
+@media (min-width: 1200px) {
+    .col-lg-5ths {
+        width: 20%;
+        float: left;
+    }
+    .col-lg-4-5ths {
+        width: 80%;
+        float: left;
     }
 }

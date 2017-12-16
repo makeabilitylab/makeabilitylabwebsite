@@ -135,8 +135,8 @@ function formatVideo(video, filter){
 	if(filter) filter = filter.toLowerCase();
 
 	var videoData = videoTemplate.clone();
-	videoData.find(".video-title").html(addHighlight(video.title, filter));
-	videoData.find(".video-caption").html(addHighlight(video.caption, filter));
+	videoData.find(".artifact-title").html(addHighlight(video.title, filter));
+	videoData.find(".artifact-venue").html(addHighlight(video.caption, filter));
 	videoData.find(".video").attr("src", video.url_embeddable);
 	videoData.find(".video-link").attr("href", video.url);
 

@@ -1,3 +1,4 @@
+/* TODO: Cleanup the CSS in this file and start using artifact-title, artifact-venue, etc. from base.css */
 
 @media (max-width: 768px){
     .talk-list {
@@ -75,7 +76,6 @@
 
 .talk-template img {
 	border: 1px solid #dddddd;
-	
 	/*max-width: 240px;*/
 	margin:auto;
 }

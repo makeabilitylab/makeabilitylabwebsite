@@ -1,3 +1,7 @@
+/* This is the project gallery css file. For individual project pages, see project.css */
+
+/* TODO: Cleanup the CSS in this file and start using artifact-title, artifact-venue, etc. from base.css */
+
 .content-container {
     margin-top: 25px;
 }
