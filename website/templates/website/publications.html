@@ -92,65 +92,69 @@
     initialGroupBy = "{{ groupby }}";
 
 {% endblock %}
-
+<!-- 12/18/2017, DJ: Removed Carousel, github issue: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/306 -->
 {% block maincarousel %}
-<div id="mainCarousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="10000" data-pause="false">
-    <div class="page-title shadow-left">
-        <div class="container carousel-container">
-            <div class="overlay-title">Publications</div>
+    <br/><br/><br/>
+    {% comment %}
+    <div id="mainCarousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="10000" data-pause="false">
+        <div class="page-title shadow-left">
+            <div class="container carousel-container">
+                <div class="overlay-title">Publications</div>
+            </div>
         </div>
-    </div>
-    <!-- Wrapper for slides -->
-    <div class="carousel-inner" role="listbox">
-        {% for banner in banners %}
-        <div class="item {% if forloop.first %}active{% endif %}">
-	    {% if banner.link %}
-	    <a href="{{banner.link}}">
-		{% else %}
-		{% if banner.project %}
-		<a href="{% url 'website:project' banner.project.short_name %}">
-		    {% endif %}
-		    {% endif %}
-		    <div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})" aria-label="{{ banner.alt_text }}" title="{{ banner.alt_text}}"></div>
-		    <!-- <div class="overlay">
-			 <div class="container carousel-container">
-			 <div class="carousel-caption carousel-caption-right">
-			 {% autoescape off %} {# enable HTML tags #}
-			 <div class="carousel-caption-title">
-			 {{ banner.title }}
-			 </div>
-			 <div class="carousel-caption-text">
-			 {{ banner.caption }}
-			 </div>
-			 {% endautoescape %}
-			 </div>
-			 </div>
-			 </div> -->
-		    {% if banner.link %}</a>{% endif %}
-		{% if banner.project %}
-	    </a>
-	    {% endif %}
+
+        <div class="carousel-inner" role="listbox">
+            {% for banner in banners %}
+            <div class="item {% if forloop.first %}active{% endif %}">
+            {% if banner.link %}
+            <a href="{{banner.link}}">
+            {% else %}
+            {% if banner.project %}
+            <a href="{% url 'website:project' banner.project.short_name %}">
+                {% endif %}
+                {% endif %}
+                <div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})" aria-label="{{ banner.alt_text }}" title="{{ banner.alt_text}}"></div>
+                <div class="overlay">
+                 <div class="container carousel-container">
+                 <div class="carousel-caption carousel-caption-right">
+                 {% autoescape off %} {# enable HTML tags #}
+                 <div class="carousel-caption-title">
+                 {{ banner.title }}
+                 </div>
+                 <div class="carousel-caption-text">
+                 {{ banner.caption }}
+                 </div>
+                 {% endautoescape %}
+                 </div>
+                 </div>
+                 </div>
+                {% if banner.link %}</a>{% endif %}
+            {% if banner.project %}
+            </a>
+            {% endif %}
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
+        <ol class="carousel-indicators"  {% if banners|length < 2 %} style="display: none" {% endif %}>
+            {% for banner in banners %}
+            <li data-target="#mainCarousel" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
+            {% endfor %}
+        </ol>
     </div>
-    <ol class="carousel-indicators"  {% if banners|length < 2 %} style="display: none" {% endif %}>
-        {% for banner in banners %}
-        <li data-target="#mainCarousel" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
-        {% endfor %}
-    </ol>
-</div>
+    {% endcomment %}
 {% endblock %}
 
 {% block content %}
+<!-- 12/18/2017, DJ: added heading "publications", github issue: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/306 -->
+<!-- 12/18/2017, DJ: TODO: Changes are made locally in this file for prototyping. Should be made global sometime. -->
 <div id="content" class="container">
-
+    <h1>Publications</h1>
     <!-- TODO: the sidebar goes *over* the new footer; it should go under -->
     <div class="visible-xs">
 	    <br/>
 	    <input class="shortTextbox" id="filter-textbox-backup" placeholder="FILTER" type="text" value="">
     </div>
-
-    <div id="fixed-side-bar" class="hidden-xs">
+    <div id="fixed-side-bar" class="hidden-xs" style="margin-top:145px">
 	    <div id="filter-bar">
 	    </div>
 	</div>
