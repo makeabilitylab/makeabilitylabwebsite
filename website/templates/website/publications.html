@@ -95,7 +95,7 @@
 
 (% 12/18/2017, DJ: Removed Carousel, github issue: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/306 %)
 {% block maincarousel %}
-    <br/><br/><br/><
+    <br/><br/><br/>
     {% comment %}
     <div id="mainCarousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="10000" data-pause="false">
         <div class="page-title shadow-left">
@@ -146,15 +146,15 @@
 {% endblock %}
 
 {% block content %}
-<div id="content" class="container">
 
+<div id="content" class="container">
+    <h1>Publications</h1>
     <!-- TODO: the sidebar goes *over* the new footer; it should go under -->
     <div class="visible-xs">
 	    <br/>
 	    <input class="shortTextbox" id="filter-textbox-backup" placeholder="FILTER" type="text" value="">
     </div>
-
-    <div id="fixed-side-bar" class="hidden-xs">
+    <div id="fixed-side-bar" class="hidden-xs" style="margin-top:145px">
 	    <div id="filter-bar">
 	    </div>
 	</div>
