@@ -144,11 +144,19 @@
                     </p>
 
                     <!-- TODO: fix this so only shows up on mouse over of the pub-column div and that the border only shows on top of this info-->
-                    <!-- TODO: actually hook up these links -->
                     <!-- TODO: fix so border-top only covers text area and not overlaps with pub -->
-                    <p style="font-size: 7pt; color: gray; margin: 0; padding-left:107px; bottom: 0; position: absolute; border-top: 1px solid #dddddd;">
-                        PDF | Official Link | Citation | Talk
-                    </p>
+                    <!-- TODO: add to appear if paper is not out yet. -->
+                    <!-- We only show the download bar if there is a paper to download. And, thankfully, this if condition checks that
+                         pub.pdf_file exists, is not empty, and is not a false boolean value. See https://docs.djangoproject.com/en/1.9/ref/templates/builtins/#if-->
+                    {% if pub.pdf_file %}
+                        <!-- TODO: don't use an inline style--actually make a style for this -->
+                        <p style="font-size: 7pt; color: gray; margin: 0; padding-left:107px; bottom: 0; position: absolute; border-top: 1px solid #dddddd;">
+                            <a href="../../media/{{ pub.pdf_file }}">PDF</a>
+                            {% if pub.official_url %}<a href="{{ pub.official_url }}">| Official Link</a> |{% endif %}
+                            | Citation <!-- TODO: hook up this citation link and have a pop-over like publications.html page -->
+                            {% if pub.talk.pdf_file %}<a href="../../media/{{ pub.talk.pdf_file }}">| Talk</a>{% endif %}
+                        </p>
+                    {% endif %}
                 </div>
             {% endfor %}
             <div class="col-xs-12 see-all-artifacts">
@@ -157,35 +165,6 @@
         </div>
     </div>
 
-    <div id="makelab-recent-papers" class="container-fluid makelab-content-container">
-        <h1 class="section-header">Recent Papers</h1>
-        <div class="section">
-            {% for pub in publications|slice:"5" %}
-                <div class="col-xs-12 col-md-5ths">
-                    <!-- TODO: add in best paper icon, etc. -->
-                    <div class="pub-thumbnail">
-                        <a href="../../media/{{ pub.pdf_file }}" class="publication-thumbnail-link">
-                            <img src="{% thumbnail pub.thumbnail 300x0 detail %}" class="pub-thumbnail-image img-responsive">
-                        </a>
-                    </div>
-                    <div class="pub-text">
-                        <a href="../../media/{{ pub.pdf_file }}">
-                            <span class="artifact-title line-clamp">{{ pub.title }}</span>
-                        </a>
-                        <span class="artifact-venue">
-                            {{ pub.book_title_short }}
-                            {% if pub.to_appear %}
-                                <span class="pub-to-appear-text">To Appear</span>
-                            {% endif %}
-                        </span>
-                    </div>
-                </div>
-            {% endfor %}
-            <div class="col-xs-12 see-all-artifacts">
-                <a href="{% url 'website:publications' %}">See All Papers ></a>
-            </div>
-        </div>
-    </div>
 
     <div id="makelab-recent-talks" class="container-fluid makelab-content-container">
         <h1 class="section-header">Recent Talks</h1>
