@@ -332,18 +332,16 @@ function formatPublication(pub, filter) {
         publicationData.find(".publication-video-link-label").css("display", "none");
     }
     publicationData.find(".publication-citation-link").attr("data-content", createCitationText(pub));
-    
+
     //ISSUE 312: Toggle the visibility of the download bar. It becomes visible on mouseover.
 	//Unfortunately, we cannot use Jquery eventhandler here because it does not export as HTML in the end. So we embed the eventhandler in HTML DOM.
-
 	publicationData.attr("onmouseenter",'toggleDownloadbar(this,"visible")');
     publicationData.attr("onmouseleave",'toggleDownloadbar(this,"hidden")');
     publicationData.find(".publication-download").css("visibility","hidden");
-	return publicationData[0].outerHTML;s
+	return publicationData[0].outerHTML;
 }
 function toggleDownloadbar(target,visible){
 	target.getElementsByClassName("publication-download")[0].style.visibility=visible;
-
 }
 // called after initialization or whenever the filter is reapplied
 function afterDisplay() {
