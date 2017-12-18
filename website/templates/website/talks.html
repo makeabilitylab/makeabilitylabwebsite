@@ -78,7 +78,10 @@
 
 {% endblock %}
 
+<!-- 12/18/2017, DJ: Removed Carousel, github issue: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/306 % -->
 {% block maincarousel %}
+    <br/><br/><br/>
+    {% comment %}
     <div id="mainCarousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="10000" data-pause="false">
         <div class="page-title shadow-left">
             <div class="container carousel-container">
@@ -110,15 +113,19 @@
           {% endfor %}
        </ol>
     </div>
+    {% endcomment %}
 {% endblock %}
 
 {% block content %}
+<!-- 12/18/2017, DJ: added heading "talks", github issue: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/306 -->
+<!-- 12/18/2017, DJ: TODO: Changes are made locally in this file for prototyping. Should be made global sometime. -->
     <div id="content" class="container">
+        <h1>Talks</h1>
         <div class="visible-xs">
             <br/>
             <input class="shortTextbox" id="filter-textbox-backup" placeholder="FILTER" type="text" value="">
         </div>
-        <div id="fixed-side-bar" class="hidden-xs">
+        <div id="fixed-side-bar" class="hidden-xs" style="margin-top:145px">
             <div id="filter-bar">
             </div>
         </div>
