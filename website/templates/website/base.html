@@ -383,72 +383,86 @@
 
 
                 </div>
-                <div class="col-xs-3 makelab-footer-col">
+                <div class="col-xs-2 makelab-footer-col" style="margin-bottom: 5em;">
+                  
                     <a href="{% url 'website:index' %}">
                         <img src="{% static 'website/img/logos/makelab_logo_white_with_text_400x342.png' %}"
-                             class="img-responsive" style="max-height: 180px"/>
+                             class="img-responsive"/>
                     </a>
-                    <p style="margin-top:20px">
-                        We design, build, and evaluate interactive tools and techniques to address pressing societal
-                        challenges in accessibility, sustainability, education, and beyond.
-                    </p>
-                    <p>
+                  </div>
+                    
+                    <div class="col-xs-2 makelab-footer-col" style="margin-bottom: 3em;">
+                        <p style="margin-top:0px">
+                            We design, build, and evaluate interactive tools and techniques to address pressing societal
+                            challenges in accessibility, sustainability, education, and beyond.
+                        </p>
+                      
                         <!-- TODO: change these to icons and link them -->
-                        {#                        Twitter | Email#}
-                    </p>
+                        <!--{#                        Twitter | Email#}-->
+
+                        <div class="makelab-footer-connect-links">
+
+                        <!-- TODO: Vertically center text with icon. Currently text does not appear perfectly vertically centered with icon -->
+                        <!--<h1>Connect</h1>-->
+
+                            <ul>
+                                <li>
+                                    <a href="https://twitter.com/makeabilitylab">
+                                        <!--<img src="{% static 'website/img/logos/twitter_logo_white.png' %}" class="makelab-footer-connect-logo"/>-->
+                                        <i class="fa fa-2x fa-twitter w3-hover-opacity"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="jonf@cs.uw.edu">
+                                        <!--<img src="{% static 'website/img/logos/email_logo_white.png' %}" class="makelab-footer-connect-logo"/> Email-->
+                                        <i class="fa fa-2x fa-envelope w3-hover-opacity"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="jonf@cs.uw.edu">
+                                        <!--<img src="{% static 'website/img/logos/github_logo_white.png' %}" class="makelab-footer-connect-logo"/> Github -->
+
+                                        <i class="fa fa-2x fa-github-square w3-hover-black"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                 </div>
-                <div class="col-xs-1 makelab-footer-col">
-                    <h1>Links</h1>
-                    <ul>
-                        {% with request.resolver_match.url_name as url_name %}
-{#                            <li>url_name: {{ url_name  }}</li>#}
-                            <li class="{% if url_name == 'index' %}active{% endif %}"><a href="{% url 'website:index' %}">Home</a></li>
-    {#                        <li>About Us</li>#}
-                            <li class="{% if url_name == 'people' %}active{% endif %}"><a href="{% url 'website:people' %}">People</a></li>
-    {#			            <li class="{% if url_name == 'projects' %}active{% endif %}"><a href="{% url 'website:projects' %}">Projects</a></li>#}
-                            <li class="{% if url_name == 'publications' %}active{% endif %}"><a href="{% url 'website:publications' %}">Publications</a></li>
-                            <li class="{% if url_name == 'talks' %}active{% endif %}"><a href="{% url 'website:talks' %}">Talks</a></li>
-                            <li class="{% if url_name == 'videos' %}active{% endif %}"><a href="{% url 'website:videos' %}">Videos</a></li>
-                        {% endwith %}
-                    </ul>
-                </div>
-                <div class="col-xs-3 makelab-footer-col">
+                
+                <div class="col-xs-3 makelab-footer-col" style="margin-left: 0em; padding-right: 0em;">
                     <h1>Recent News</h1>
                     {# To add news dynamically, we need to use a context processor. See our custom process in context_processors.py #}
                     {# See: https://stackoverflow.com/questions/36093221/how-to-put-variable-from-database-into-base-html-template #}
+
                     <ul>
                     {% for news_item in recent_news %}
                         {#  Date formats here: https://docs.djangoproject.com/en/1.11/ref/templates/builtins/#std:templatefilter-date #}
-                        <li><a href="{% url 'website:news' news_item.id %}">{{ news_item.date|date:"N d, Y" }} - {{ news_item.title }}</a></li>
+                        <li><a href="{% url 'website:news' news_item.id %}">{{ news_item.date|date:"N d, Y" }} &nbsp;&nbsp;&nbsp; {{ news_item.title }}</a></li>
                     {% endfor %}
                     </ul>
 
                 </div>
 
-                <div class="col-xs-2 makelab-footer-col">
-
-                    <!-- TODO: Vertically center text with icon. Currently text does not appear perfectly vertically centered with icon -->
-                    <h1>Connect</h1>
+                <div class="col-xs-2 makelab-footer-col makelab-footer-links">
+                    <h1>Links</h1>
                     <ul>
-                        <li>
-                            <a href="https://twitter.com/makeabilitylab">
-                                <img src="{% static 'website/img/logos/twitter_logo_white.png' %}" class="makelab-footer-connect-logo"/>
-                                <span style="padding-top:0px">Twitter</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jonf@cs.uw.edu">
-                                <img src="{% static 'website/img/logos/email_logo_white.png' %}" class="makelab-footer-connect-logo"/> Email
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jonf@cs.uw.edu">
-                                <img src="{% static 'website/img/logos/github_logo_white.png' %}" class="makelab-footer-connect-logo"/> Github
-                            </a>
-                        </li>
+                        {% with request.resolver_match.url_name as url_name %}
+{#                            <li>url_name: {{ url_name  }}</li>#}
+                            <li class="{% if url_name == 'index' %}active{% endif %}"><a href="{% url 'website:index' %}"> &nbsp;> &nbsp; Home</a></li>
+    {#                        <li>About Us</li>#}
+                            <li class="{% if url_name == 'people' %}active{% endif %}"><a href="{% url 'website:people' %}">&nbsp;> &nbsp; People</a></li>
+    {#                  <li class="{% if url_name == 'projects' %}active{% endif %}"><a href="{% url 'website:projects' %}">&nbsp;> &nbsp; Projects</a></li>#}
+                            <li class="{% if url_name == 'publications' %}active{% endif %}"><a href="{% url 'website:publications' %}">&nbsp;> &nbsp; Publications</a></li>
+                            <li class="{% if url_name == 'talks' %}active{% endif %}"><a href="{% url 'website:talks' %}">&nbsp;> &nbsp; Talks</a></li>
+                            <li class="{% if url_name == 'videos' %}active{% endif %}"><a href="{% url 'website:videos' %}">&nbsp;> &nbsp; Videos</a></li>
+                        {% endwith %}
                     </ul>
                 </div>
-                <div class="col-xs-2 makelab-footer-col">
+                
+                
+
+                
+                <div class="col-xs-3 makelab-footer-col">
 
                 </div>
             </div>
@@ -483,7 +497,7 @@
                 <div class="col-xs-2 makelab-footer-affiliation-col">
                     <a href="https://www.cs.umd.edu">
                         <img src="{% static 'website/img/logos/umd_cs_logo_white_850x100.png' %}"
-                             class="img-responsive makelab-footer-affiliation-logo"/>
+                             class="img-responsive makelab-footer-affiliation-logo" />
                     </a>
                 </div>
                 <div class="col-xs-2 makelab-footer-affiliation-col">
