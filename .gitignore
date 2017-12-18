@@ -19,6 +19,7 @@ output
 ssl_access_log
 .idea/inspectionProfiles/Project_Default.xml\
 .idea/makeabilitylab.iml
+.idea/preferred-vcs.xml
 
 .idea/misc.xml
 
@@ -33,7 +34,7 @@ ssl_access_log
 .idea/modules.xml
 
 makeabilitylab_django.log
-
+website/static/website/img/Thumbs.db
 
 #############################################################################################################
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and Webstorm #
