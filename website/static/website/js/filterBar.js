@@ -209,6 +209,8 @@
     }
 
     //This will check each entry and highlight text as appropriate.
+    //TODO: now that I am updating the css to be more general and switching things like publication-title or video-title to artifact-title,
+    //      we should be able to simplify this code and make it more generalizable and less .css file specific
     $.fn.applyTextFilter = function () {
         var filter = $("#filter-textbox").val().toLowerCase() || $("#filter-textbox-backup").val().toLowerCase();
         var groups = settings.groupsForCategory[currCategory];
@@ -220,7 +222,7 @@
             //TODO: Ack, imo, this filter stuff should be content agnostic, so should not be referring to
             //specific tags in publication, talks, videos, unless those tags are universal across each
             $('.publication-template').each(function () {
-                var title = $(this).find('.publication-title').text();
+                var title = $(this).find('.artifact-title').text();
                 title = title.replace(/(<([^>]+)>)/ig, "");
                 var passes = checkFilter(groups, title, filter, groupPasses);
                 if (!passes) {
@@ -235,7 +237,7 @@
                     $(this).find('.publication-authors').children().each(function () {
                         $(this).find('a').html(addHighlight($(this).find('a').text(), filter));
                     });
-                    $(this).find('.publication-title').each(function () {
+                    $(this).find('.artifact-title').each(function () {
                         $(this).html(addHighlight($(this).text(), filter));
                     });
                     $(this).find('.publication-venue').each(function () {
@@ -245,7 +247,7 @@
             });
 
             $('.talk-template').each(function () {
-                var title = $(this).find('.talk-title').text();
+                var title = $(this).find('.artifact-title').text();
                 var passes = checkFilter(groups, title, filter, groupPasses);
                 if (!passes) {
                     $(this).fadeOut();
@@ -255,14 +257,14 @@
                     $(this).find('.talk-speakers').children().each(function () {
                         $(this).find('a').html(addHighlight($(this).find('a').text(), filter));
                     });
-                    $(this).find('.talk-title').each(function () {
+                    $(this).find('.artifact-title').each(function () {
                         $(this).html(addHighlight($(this).text(), filter));
                     });
                 }
             });
 
             $('.video-template').each(function () {
-                var title = $(this).find('.video-title').text();
+                var title = $(this).find('.artifact-title').text();
                 var passes = checkFilter(groups, title, filter, groupPasses);
                 if (!passes) {
                     $(this).fadeOut();
@@ -270,7 +272,7 @@
                 else {
                     $(this).fadeIn();
 
-                    $(this).find('.video-title').each(function () {
+                    $(this).find('.artifact-title').each(function () {
                         $(this).html(addHighlight($(this).text(), filter));
                     });
 

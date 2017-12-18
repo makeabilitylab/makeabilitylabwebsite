@@ -264,7 +264,7 @@ function formatPublication(pub, filter) {
 	publicationData.find(".publication-id").html(pub.id);
 	publicationData.find(".publication-thumbnail-link").attr("href", pub.pdf);
 	publicationData.find(".publication-thumbnail-image").attr("src", pub.thumbnail);
-	publicationData.find(".publication-title").html(addHighlight(pub.title));
+	publicationData.find(".artifact-title").html(addHighlight(pub.title));
 
 	var authors = publicationData.find(".publication-authors");
 	var authorTemplate = authors.find(".publication-author");
@@ -279,19 +279,21 @@ function formatPublication(pub, filter) {
 
 	publicationData.find(".publication-venue").html(addHighlight(pub.venue, filter));
 
-    if(pub.award) {
-	console.log(pub.title);
-	var award_icon;
-	console.log(pub.award);
-	if(pub.award=="Best Paper Award")
-	    award_icon=pub.best_paper;
-	else
-	    award_icon=pub.honorable_mention;
-	publicationData.find(".publication-id").append("<img src=\""+award_icon+"\" align=\"center\" class=\"award-icon\"/>");
-	publicationData.find(".publication-thumbnail-link").append("<img src=\""+pub.award_banner+"\" class=\"publication-award-banner\"/>");
-	publicationData.find(".publication-award-text").html(addHighlight(pub.award, filter));
+    if (pub.award) {
+        console.log(pub.title);
+        var award_icon;
+        console.log(pub.award);
+        if (pub.award == "Best Paper Award") {
+            award_icon = pub.best_paper;
+        } else {
+            award_icon = pub.honorable_mention;
+        }
+
+        publicationData.find(".publication-id").append("<img src=\"" + award_icon + "\" align=\"center\" class=\"award-icon\"/>");
+        publicationData.find(".publication-thumbnail-link").append("<img src=\"" + pub.award_banner + "\" class=\"publication-award-banner\"/>");
+        publicationData.find(".publication-award-text").html(addHighlight(pub.award, filter));
     } else {
-	publicationData.find(".publication-award").css("display", "none");
+        publicationData.find(".publication-award").css("display", "none");
     }
     
     if(pub.total_papers_accepted && pub.total_papers_submitted) {
@@ -322,11 +324,11 @@ function formatPublication(pub, filter) {
 	}
 
     publicationData.find(".publication-download-link").attr("href", pub.pdf);
-    if(pub.video_url){
-	publicationData.find(".publication-video-link").attr("href", pub.video_url);	
+    if (pub.video_url) {
+        publicationData.find(".publication-video-link").attr("href", pub.video_url);
     }
-    else{
-	publicationData.find(".publication-video-link-label").css("display", "none");
+    else {
+        publicationData.find(".publication-video-link-label").css("display", "none");
     }
     publicationData.find(".publication-citation-link").attr("data-content", createCitationText(pub));
 

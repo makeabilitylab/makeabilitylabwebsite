@@ -300,6 +300,7 @@ h5 {
     font-weight: 500;
     margin: 3px 0px 0px 0px;
     line-height: 1.3;
+	color: black;
 }
 
 .artifact-venue, .artifact-subtitle{
@@ -415,6 +416,7 @@ h5 {
 /**************************************/
 /************ LINE CLAMPING ***********/
 
+/* TODO: change this to line-clamp1 for one line clamping */
 .line-clamp-one-line {
     text-overflow: ellipsis;
 
@@ -443,6 +445,7 @@ h5 {
     }
 }
 
+/* Clamps three lines */
 @supports (-webkit-line-clamp: 3) {
     .line-clamp3 {
         overflow: hidden;

@@ -1,4 +1,5 @@
 /* TODO: Cleanup the CSS in this file and start using artifact-title, artifact-venue, etc. from base.css */
+/* TODO: update--cleanup in progress. Note that any change here may impact publications.js and filterBar.js */
 
 @media (max-width: 768px){
     .publication-list {
@@ -13,9 +14,13 @@
     }
 }
 
-
+/* TODO: do we need this .navbar? Need to investigate */
 .navbar {
     width: 100%;
+}
+
+.popover {
+    max-width: 100%;
 }
 
 .citation-links {
@@ -26,7 +31,6 @@
 .publication-list h1 {
 	color: #7F7F7F;
 	font-size: 24px;
-	font-family: adelle-light;
 	border-bottom: 1px solid #A6A6A6;
 	margin: 5px 0px 3px 0px;
 	padding-bottom: 1px;
@@ -35,7 +39,6 @@
 .publication-template {
 	padding-top:10px;
 	padding-bottom:10px;
-	font-family: adelle-light;
 	font-size: 14px;
 	position:relative;
 	min-height: 170px;
@@ -53,10 +56,6 @@
 	margin:auto;
 }
 
-.popover {
-    max-width: 100%;
-}
-
 .publication-info {
 	padding-bottom:20px; /* height of the downloads bar */
 	display:table-cell;
@@ -68,78 +67,68 @@
 
 @media (max-width: 374px){
     .publication-thumbnail {
-	display: none;
+		display: none;
     }
 
     .publication-award-banner {
-	display: none;
+		display: none;
     }
 }
 
 @media (min-width: 375px){
     .publication-thumbnail {
-	width:120px;
-	min-width:120px;
-	display:table-cell;
-	vertical-align: top;
-	padding-right:10px;
-	position: relative;
-	top: 0px;
-	left: 0px;
-	z-index: 10;
+		width:120px;
+		min-width:120px;
+		display:table-cell;
+		vertical-align: top;
+		padding-right:10px;
+		position: relative;
+		top: 0px;
+		left: 0px;
+		z-index: 10;
     }
 
     .publication-award-banner {
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	height: 40px;
-	width: 40px;
-	z-index: 20;
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		height: 40px;
+		width: 40px;
+		z-index: 20;
     }
 }
 
 
-
-
-
 @media (max-width: 768px){
    .publication-id {
-	font-size: 10px;
-	color: #7F7F7F;
-	min-width: 40px;
-	display: table-cell;
-	vertical-align: top;
-	text-align: left;
-	padding-right: 10px;
+		font-size: 10px;
+		color: #7F7F7F;
+		min-width: 40px;
+		display: table-cell;
+		vertical-align: top;
+		text-align: left;
+		padding-right: 10px;
    } 
 }
 
 @media (min-width: 769px){
     .publication-id {
-	font-size: 10px;
-	color: #7F7F7F;
-	min-width: 40px;
-	display: table-cell;
-	vertical-align: top;
-	text-align: right;
-	padding-right: 10px;
+		font-size: 10px;
+		color: #7F7F7F;
+		min-width: 40px;
+		display: table-cell;
+		vertical-align: top;
+		text-align: right;
+		padding-right: 10px;
     }
 }
 
-
-
-.publication-title {
-	font-family: adelle-regular;
-	font-weight: bold;
+.artifact-title {
 	color: #464D59;
-	font-size: 15px;
+	/*font-size: 16px;*/
+	font-weight: 500;
 	word-wrap: break-word;
 	text-overflow: ellipsis;
-}
-
-.publication-authors {
-	
 }
 
 .publication-stats {

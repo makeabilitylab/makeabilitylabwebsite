@@ -16,7 +16,6 @@
 .talk-list h1 {
 	color: #7F7F7F;
 	font-size: 24px;
-	font-family: adelle-light;
 	border-bottom: 1px solid #A6A6A6;
 	margin: 5px 0px 3px 0px;
 	padding-bottom: 1px;
@@ -25,42 +24,31 @@
 .talk-template {
 	padding-top:10px;
 	padding-bottom:10px;
-	/*margin-right:8px;*/
-	font-family: adelle-light;
 	font-size: 12px;
 	position:relative;
 	min-height: 300px;
-	/*width: 240px;*/
 	float: left;
 }
 
 @media (max-width: 768px){
     .talk-template-landing {
-	padding-top:10px;
-	padding-bottom:10px;
-	/*margin-right:4px;*/
-	padding-right: 10px;
-	font-family: adelle-light;
-	font-size: 12px;
-	position:relative;
-	/*height: 300px;
-	width: 240px;*/
-	margin: 0 auto;
+		padding-top:10px;
+		padding-bottom:10px;
+		padding-right: 10px;
+		font-size: 12px;
+		position:relative;
+		margin: 0 auto;
     }
 }
 
 @media (min-width: 769px){
     .talk-template-landing {
-	padding-top:10px;
-	padding-bottom:10px;
-	/*margin-right:4px;*/
-	padding-right: 10px;
-	font-family: adelle-light;
-	font-size: 12px;
-	position:relative;
-	/*height: 300px;
-	width: 240px;*/
-	float: left;
+		padding-top:10px;
+		padding-bottom:10px;
+		padding-right: 10px;
+		font-size: 12px;
+		position:relative;
+		float: left;
     }
 }
 
@@ -119,7 +107,6 @@
 }
 
 .talk-title {
-	font-family: adelle-regular;
 	font-weight: bold;
 	color: #464D59;
 	font-size: 14px;
