@@ -260,6 +260,7 @@ function formatGroup(group) {
 function formatPublication(pub, filter) {
 	if(filter) filter = filter.toLowerCase();
     console.log("Formatting pub "+pub.title);
+
 	var publicationData = publicationTemplate.clone();
 	publicationData.find(".publication-id").html(pub.id);
 	publicationData.find(".publication-thumbnail-link").attr("href", pub.pdf);
@@ -295,7 +296,7 @@ function formatPublication(pub, filter) {
     } else {
         publicationData.find(".publication-award").css("display", "none");
     }
-    
+
     if(pub.total_papers_accepted && pub.total_papers_submitted) {
     	publicationData.find(".publication-acceptance-rate-text").html("Acceptance Rate: " + (pub.total_papers_accepted / pub.total_papers_submitted * 100).toFixed(0) + "% (" + pub.total_papers_accepted + " / " + pub.total_papers_submitted + ")");
 	} else {
@@ -332,9 +333,16 @@ function formatPublication(pub, filter) {
     }
     publicationData.find(".publication-citation-link").attr("data-content", createCitationText(pub));
 
+    //ISSUE 312: Toggle the visibility of the download bar. It becomes visible on mouseover.
+	//Unfortunately, we cannot use Jquery eventhandler here because it does not export as HTML in the end. So we embed the eventhandler in HTML DOM.
+	publicationData.attr("onmouseenter",'toggleDownloadbar(this,"visible")');
+    publicationData.attr("onmouseleave",'toggleDownloadbar(this,"hidden")');
+    publicationData.find(".publication-download").css("visibility","hidden");
 	return publicationData[0].outerHTML;
 }
-
+function toggleDownloadbar(target,visible){
+	target.getElementsByClassName("publication-download")[0].style.visibility=visible;
+}
 // called after initialization or whenever the filter is reapplied
 function afterDisplay() {
 	$('[data-toggle="popover"]').popover()
