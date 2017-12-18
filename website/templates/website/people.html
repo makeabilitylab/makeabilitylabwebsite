@@ -16,8 +16,11 @@
 <script src="{% static 'website/js/peopleHeightFix.js' %}"></script>
 {% endblock %}
 
+<!-- 12/18/2017, DJ: Removed Carousel, github issue: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/306 % -->
 {% block maincarousel %}
-    <div id="mainCarousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="10000" data-pause="false">    
+    <br/><br/><br/>
+    {% comment %}
+    <div id="mainCarousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="10000" data-pause="false">
         <div class="page-title shadow-left">
             <div class="container carousel-container">
                 <div class="overlay-title">People</div>
@@ -62,10 +65,14 @@
           {% endfor %}
        </ol>
     </div>
+    {% endcomment %}
 {% endblock %}
+<!-- 12/18/2017, DJ: added heading, github issue: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/306 -->
+<!-- 12/18/2017, DJ: TODO: Changes are made locally in this file for prototyping. Should be made global sometime. -->
 
 {% block content %}
 <div id="content" class="container" data-spy="scroll" data-target="#navbar-scroll" data-offset="50">
+    <h1>People</h1>
     <div class="navbar navbar-filter" role="navigation">
         <ol class="navbar-right breadcrumb">
             {% if active_prof_grad %}<li><a href="#profgrad" class="scroll">Professor and Graduate Students</a></li> {% endif %}
