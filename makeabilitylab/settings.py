@@ -74,7 +74,8 @@ else:
 # }
 
 ##DEBUG LOGGING FOR CSE SUPPORT SETUP
-
+# TODO: commenting this out as it's only useful for debugging with Docker on test and production but breaks localhost dev (without docker)
+# We can re-add this to debug in future and/or come up with a solution that doesn't break localhost dev.
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
