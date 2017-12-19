@@ -12,4 +12,4 @@ xmltodict==0.10.2
 google-api-python-client==1.5.3
 pyOpenSSL
 requests
-psycopq2
+psycopg2
