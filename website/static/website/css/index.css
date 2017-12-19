@@ -88,6 +88,9 @@ Just playing around wit hover effects
     /*text-align: center;*/
 }
 
+.pub-thumbnail {
+    position: relative;
+}
 
 .pub-thumbnail-image {
 	border: 1px solid #dddddd;
@@ -126,6 +129,17 @@ Just playing around wit hover effects
     clip: rect(0px,200px,100px,0px);
     display: block;
     min-height:100px;
+}
+
+.pub-download-links {
+    font-size: 7pt;
+    color: gray;
+    margin: 0;
+    margin-left: 107px;
+    margin-right: 20px;
+    bottom: 0;
+    position: absolute;
+    border-top: 1px solid #dddddd;
 }
 
 .talk2-thumbnail{
