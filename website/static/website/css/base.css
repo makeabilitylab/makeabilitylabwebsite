@@ -411,6 +411,7 @@ h5 {
 	color: white;
 	margin-top: 50px;
 	padding-top: 40px;
+	position: relative;
 	/*padding-bottom: 20px;*/
 }
 
@@ -454,7 +455,7 @@ h5 {
 .makelab-footer-col h1{
 	text-transform: uppercase;
 	font-weight: bold;
-	font-size: 14px;
+	font-size: 16px;
 	margin: 0px;
 	padding: 0px;
 }
@@ -472,6 +473,13 @@ h5 {
 
 .makelab-footer-col li.active {
 	font-weight: bold;
+	
+}
+
+.makelab-footer-col a{
+	text-decoration: none;
+}
+.makelab-footer-col a:hover{
 }
 
 .makelab-footer-col a:link {
@@ -486,6 +494,20 @@ h5 {
 	max-height: 18px;
 }
 
+.makelab-footer-connect-links ul{
+	list-style-type: none;
+    margin: 0;
+    padding: 10px 0;
+}
+
+.makelab-footer-connect-links li {
+    display: inline;
+    margin-right: 10px;
+}
+
+.makelab-footer-connect-links a{
+	text-decoration: none;
+}
 
 /**************************************/
 /************ LINE CLAMPING ***********/
@@ -577,6 +599,7 @@ h5 {
         width: 80%;
         float: left;
     }
+
 }
 
 @media (min-width: 992px) {

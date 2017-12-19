@@ -390,7 +390,10 @@ def get_most_recent(projects):
    # DEBUG
    for item in sorted_list:
        mostRecentArtifact = item['proj'].get_most_recent_artifact();
-       print("project '{}' has the most recent artifact of {} updated {} and the check {}".format(item['proj'].name, mostRecentArtifact, mostRecentArtifact.date, item['updated']))
+       if mostRecentArtifact is not None:
+           print("project '{}' has the most recent artifact of {} updated {} and the check {}".format(item['proj'].name, mostRecentArtifact, mostRecentArtifact.date, item['updated']))
+       else:
+           print("mostRecentArtifact is none")
    # END DEBUG
 
    return [item['proj'] for item in sorted_list]
