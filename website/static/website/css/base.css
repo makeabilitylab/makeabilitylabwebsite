@@ -44,6 +44,12 @@ h5 {
 	margin-bottom:0;
 }
 
+.popover {
+	width: 50vw;
+    min-width: 300px;
+    max-width: 100vw;
+}
+
 .item-info {
 	margin:0;
 	padding-top:10px;
