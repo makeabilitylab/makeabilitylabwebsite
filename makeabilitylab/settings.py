@@ -74,16 +74,26 @@ else:
 # }
 
 ##DEBUG LOGGING FOR CSE SUPPORT SETUP
-# TODO: commenting this out as it's only useful for debugging with Docker on test and production but breaks localhost dev (without docker)
+# TODO: investigate commenting this out as it's only useful for debugging with Docker on test and production but breaks localhost dev (without docker)
 # We can re-add this to debug in future and/or come up with a solution that doesn't break localhost dev.
+# See: https://docs.djangoproject.com/en/2.0/topics/logging/
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
     'handlers': {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': '/code/media/debug.log',
+            'formatter': 'verbose', # can switch between verbose and simple
         },
     },
     'loggers': {
