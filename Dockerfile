@@ -15,6 +15,10 @@
 # See: https://hub.docker.com/_/django/
 FROM python:3
 
+# Setup some other prereqs needed:
+RUN apt-get update
+RUN apt-get --assume-yes install imagemagick 
+
 # The ENV instruction sets the environment variable <key> to the <value> in ENV <key> <value>. 
 # See: https://docs.docker.com/engine/reference/builder/#environment-replacement
 # In this case, we are setting the stdout/stderr streams in Python to be unbuffered
