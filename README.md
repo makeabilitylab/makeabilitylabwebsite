@@ -13,8 +13,19 @@ git push --tags
 ```
 This will cause that tag to deploy to production. 
 
-# Access to Production Database Server
-The Makeability Lab website uses PostgresSQL on production, which is running on grabthar.cs.washington.edu. In the (extremely) rare instance that you need to access Postgres directly, you must do so via recycle.cs.washington.edu.
+## Configuring the Production Server
+The production server was configured largely by UW CSE's Jason Howe. Note that settings.py reads in a config.ini file to configure a connection to the PostgreSQL database. This config.ini file is *not* in git (for obvious reasons as it contains secret keys and passwords). Thus, Jason has setup a "volume mount" for this file so that the production Docker session can read that file.
+
+# Makeability Lab Data
+There are two types of Makeability Lab data: (i) uploaded files like PDFs, PowerPoint files, images, etc. and (ii) data that goes into the database (SQLite in local dev, PostgreSQL on production).
+
+## Uploaded Files
+All data/files uploaded to the Makeability Lab website via the admin interface (e.g., talks, publications) goes into the /media folder. Although typically you will not ever need to manually access this folder, you can do so by ssh'ing into recycle.cs.washington.edu and cd to /cse/web/research/makelab/www. This files area is being mapped into the /media folder.
+
+## Access to Production Database Server
+The Makeability Lab website uses PostgreSQL on production, which is running on grabthar.cs.washington.edu. In the (extremely) rare instance that you need to access Postgres directly, you must do so via recycle.cs.washington.edu.
+
+
 
 # Manual Installation
 We strongly advise running the Docker-based installation since that's what the department mandates and you get an instantly configured dev environment for free. However, if you want the *pain* :) of manually installing all of the required libs, then this is how you should do it. The full step-by-step instructions for installation are [here](https://docs.google.com/document/d/149S_SHOzkJOhNHU4ENMU0YCbk-Vy92y5ZSTeCXG9Bhc/edit) (invite only for now).
