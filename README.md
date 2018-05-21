@@ -4,6 +4,10 @@ The Makeability Lab is a an HCI/Ubicomp research lab at the University of Washin
 # Docker Installation
 TODO Aileen: Write installation instructions for Docker-based dev install.
 
+# Deploying to Production
+
+# Access to Production Database Server
+The Makeability Lab website uses PostgresSQL on production, which is running on grabthar.cs.washington.edu. In the (extremely) rare instance that you need to access Postgres directly, you must do so via recycle.cs.washington.edu.
 
 # Manual Installation
 We strongly advise running the Docker-based installation since that's what the department mandates and you get an instantly configured dev environment for free. However, if you want the *pain* :) of manually installing all of the required libs, then this is how you should do it. The full step-by-step instructions for installation are [here](https://docs.google.com/document/d/149S_SHOzkJOhNHU4ENMU0YCbk-Vy92y5ZSTeCXG9Bhc/edit) (invite only for now).
@@ -38,9 +42,4 @@ Optional dependencies
 5. Add a file googleaccount.py in the website directory. This file should contain only the line ANALYTICS_ACCOUNT = 'your_google_analytics_email'. Replace your_google_analytics_email with whatever google account has been set up to track the domain in google analytics.
 6. Follow the instructions [here](https://developers.google.com/analytics/devguides/reporting/core/v3/quickstart/service-py) to install google analytics api using pip, and to download the p12 private key from google analytics for authentication. This file should also go in the website directory along with the googleaccount.py file.
 7. Run server using `make run` or `python manage.py runserver` if make is not installed.
-
-## Production
-Your production settings will vary. The makeability lab uses gunicorn and nginx to serve our site in production.
-
-
 
