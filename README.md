@@ -5,6 +5,7 @@ The Makeability Lab is a an HCI/Ubicomp research lab at the University of Washin
 TODO Aileen: Write installation instructions for Docker-based dev install.
 
 # Deploying to Production
+The Makeability Lab website auto-deploys from GitHub to the department's Docker infrastructure. 
 
 # Access to Production Database Server
 The Makeability Lab website uses PostgresSQL on production, which is running on grabthar.cs.washington.edu. In the (extremely) rare instance that you need to access Postgres directly, you must do so via recycle.cs.washington.edu.
