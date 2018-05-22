@@ -6,7 +6,7 @@ TODO Aileen: Write installation instructions for Docker-based dev install.
 
 # Deploying to Production
 The Makeability Lab website auto-deploys from GitHub to the department's Docker infrastructure using webhooks:
-![webhooks_screenshot](https://github.com/jonfroehlich/makeabilitylabwebsite/blob/master/media/readme/webhooks_screenshot.png "Webhooks Screenshot"). When we push new code to github, the new code will auto-deploy to makeabilitylab-test. When we are ready to push changes to production, we need to do the following:
+![webhooks_screenshot](https://github.com/jonfroehlich/makeabilitylabwebsite/blob/master/media/readme/webhooks_screenshot.png "Webhooks Screenshot") When we push code to github, the new code will auto-deploy to makeabilitylab-test. When we are ready to push changes to production, we need to do the following:
 ```
 git tag <my version number>
 git push --tags
