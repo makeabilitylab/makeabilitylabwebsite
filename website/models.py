@@ -229,9 +229,9 @@ class Position(models.Model):
     start_date = models.DateField()
     end_date = models.DateField(blank=True, null=True)
     advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Advisor')
-    co_advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Co_Advisor')
+    co_advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Co_Advisor', verbose_name='Co-advisor')
     grad_mentor = models.ForeignKey('Person', blank=True, null=True, related_name='Grad_Mentor')
-   
+
     # According to Django docs, best to have field choices within the primary
     # class that uses them. See https://docs.djangoproject.com/en/1.9/ref/models/fields/#choices
     MEMBER = "Member"
