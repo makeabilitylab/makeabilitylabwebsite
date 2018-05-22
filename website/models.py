@@ -103,6 +103,7 @@ class Person(models.Model):
 
     # Returns True is person is current member of lab or current collaborator
     def is_active(self):
+        # print(self.get_full_name() + " is active? " + str(self.is_current_member()) + " " + str(self.is_current_collaborator()))
         return self.is_current_member() or self.is_current_collaborator()
     is_active.short_description = "Is Active?"
 
@@ -132,6 +133,7 @@ class Person(models.Model):
     def is_current_collaborator(self):
         latest_position = self.get_latest_position()
         if latest_position is not None:
+            # print('Checkpoint 1: ' + str(latest_position.is_current_collaborator()))
             return latest_position.is_current_collaborator()
         else:
             return False
@@ -165,11 +167,10 @@ class Person(models.Model):
             # See: https://docs.djangoproject.com/en/1.11/topics/db/queries/#related-objects
             print("Printing all positions for " + self.get_full_name())
             for position in self.position_set.all():
-               print(position.start_date)
+                print(position.start_date)
 
             print("The latest position for " + self.get_full_name())
             print(self.position_set.latest('start_date'))
-
             return self.position_set.latest('start_date')
 
     # Returns the start date of current position. Used in Admin Interface. See PersonAdmin in admin.py
@@ -338,13 +339,15 @@ class Position(models.Model):
     def is_current_member(self):
         return self.is_member() and \
                self.start_date is not None and self.start_date <= date.today() and \
-               self.end_date is None or (self.end_date is not None and self.end_date >= date.today())
+               (self.end_date is None or (self.end_date is not None and self.end_date >= date.today()))
 
     # Returns true if member is current based on end date
     def is_current_collaborator(self):
+        # print('Checkpoint 2: ' + self.person.get_full_name() + ' is collaborator? ' + str(self.is_collaborator()))
+
         return self.is_collaborator() and \
-               self.start_date is not None and self.start_date <= date.today() and \
-               self.end_date is None or (self.end_date is not None and self.end_date >= date.today())
+               (self.start_date is not None and self.start_date <= date.today() and \
+               self.end_date is None or (self.end_date is not None and self.end_date >= date.today()))
 
     # Returns true if member is an alumni member
     def is_alumni_member(self):
