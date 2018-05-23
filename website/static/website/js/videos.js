@@ -69,9 +69,12 @@ function groupVideosByYear()
 // to be more like talks.js
 function groupVideosByProject()
 {
+	// tempGroups holds all videos that are contained under the same project
 	var tempGroups = {};
+
 	videos.forEach(function(video, index, array) {
 		group = video.project_short_name;
+		// console.log("Video: " + video.title + ", Date: " + video.date.toString());
 		if(!(group in tempGroups)) {
 			tempGroups[group] = [];
 		}
@@ -80,11 +83,13 @@ function groupVideosByProject()
 
 	var groups = []
 	for(group in tempGroups) {
+		tempGroups[group].sort(function(a, b) { return b.date - a.date});
+		// project name, all videos associated with the project
 		groups.push({"name": group, "items": tempGroups[group]});
 	}
 
-	// years are sorted chronologically, all of the other groupings are sorted by frequency
-	groups.sort(function(a,b) { return b.items.length - a.items.length });
+	// groupings are done by the date of the most recent video from each project
+	groups.sort(function(a,b) { return b.items[0].date - a.items[0].date });
 
 	return groups;
 }
