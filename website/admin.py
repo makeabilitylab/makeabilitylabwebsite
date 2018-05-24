@@ -86,7 +86,11 @@ class PhotoAdmin(ImageCroppingMixin, admin.ModelAdmin):
 class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
     inlines = [ProjectHeaderInline]
 
-    def formfield_for_manytomany(selfself, db_field, request, **kwargs):
+    # Makes Keywords and Project Umbrellas vanish right now
+    # def formfield_for_manytomany(self, db_field, request, **kwargs):
+        # if db_field.name == "keywords":
+            # print("Testing")
+            # kwargs["widget"] = widgets.FilteredSelectMultiple("keywords", is_stacked=False)
 
 class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
@@ -143,6 +147,11 @@ class PublicationAdmin(admin.ModelAdmin):
     ordering = ('-date',)
 
     list_filter = (PubVenueTypeListFilter, PubVenueListFilter)
+
+    # TODO: Uncomment this to change the interface display for adding Keywords (hasn't been tested)
+    # def formfield_for_manytomany(self, db_field, request, **kwargs):
+        # if db_field.name == "keywords":
+            # kwargs["widget"] = widgets.FilteredSelectMultiple("keywords", is_stacked=False)
 
     # Uncomment this function to enable auto-entry from bibtex
     # The following code is based in part on a hint by this Stackoverflow post: http://stackoverflow.com/a/4952370
