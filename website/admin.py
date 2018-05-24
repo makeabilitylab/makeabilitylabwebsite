@@ -1,5 +1,5 @@
 from django.contrib import admin
-
+from django.db import models
 from .models import Person, Publication, Position, Talk, Project, Poster, Keyword, News, Banner, Video, Project_header, Photo, Project_umbrella, Project_Role, Sponsor
 from website.admin_list_filters import CurrentMemberListFilter, PositionListFilter, PubVenueTypeListFilter, PubVenueListFilter
 
@@ -11,6 +11,8 @@ from django.template import RequestContext
 from django.shortcuts import redirect
 
 from django import forms
+from django.contrib.admin import widgets
+from django.contrib.admin.widgets import FilteredSelectMultiple
 
 import urllib
 
@@ -55,7 +57,7 @@ class PositionInline(admin.StackedInline):
             kwargs["queryset"] = filtered_persons
 
         return super(PositionInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
-    
+
 class ProjectRoleInline(admin.StackedInline):
     model = Project_Role
     extra = 0
@@ -84,6 +86,8 @@ class PhotoAdmin(ImageCroppingMixin, admin.ModelAdmin):
 class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
     inlines = [ProjectHeaderInline]
 
+    def formfield_for_manytomany(selfself, db_field, request, **kwargs):
+
 class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
     # inlines allow us to edit models on the same page as a parent model
@@ -95,7 +99,7 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
     list_display = ('get_full_name', 'get_current_title', 'get_current_role', 'is_active', 'get_start_date', 'get_end_date', 'get_time_in_current_position', 'get_total_time_as_member')
 
     #TODO setup filter here that has diff categories (like active members, past, etc.):
-    #https://www.elements.nl/2015/03/16/getting-the-most-out-of-django-admin-filters/
+    #https://www.elements.nl/2015/03/16/getting-the-most-out-of-django-aders/
     #related to: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/238
     list_filter = (CurrentMemberListFilter, PositionListFilter)
 
@@ -117,8 +121,9 @@ class TalkAdmin(admin.ModelAdmin):
             filtered_persons = Person.objects.filter(id__in=current_member_and_collab_ids).order_by('first_name')
             print(filtered_persons)
             kwargs["queryset"] = filtered_persons
+        if db_field.name == "keywords":
+            kwargs["widget"] = widgets.FilteredSelectMultiple("keywords", is_stacked=False)
         return super(TalkAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
-
 
 class PublicationAdmin(admin.ModelAdmin):
     fieldsets = [
