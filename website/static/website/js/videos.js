@@ -53,6 +53,7 @@ function groupVideosByYear()
 
 	var groups = []
 	for(group in tempGroups) {
+		tempGroups[group].sort(function(a, b) {return b.date - a.date});
 		groups.push({"name": group, "items": tempGroups[group]});
 	}
 
