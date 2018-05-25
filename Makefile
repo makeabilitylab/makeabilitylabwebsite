@@ -7,9 +7,23 @@
 .PHONY: makemigrations
 .PHONY: build-dev
 .PHONY: build-prod
+IMAGE_NAME=version
 
-run:
-	python manage.py runserver
+build:
+	docker build . -t $(IMAGE_NAME)
+
+run: build
+	docker run -p 8000:8000 -ti -v database:/code/db -v $$(pwd)/media:/code/media $(IMAGE_NAME)
+
+shell:
+	docker run -ti -v database:/code/db -v $$(pwd)/media:/code/media --entrypoint=bash $(IMAGE_NAME)
+
+dbshell:
+	docker run -ti -v database:/code/db -v $$(pwd)/media:/code/media --entrypoint=python $(IMAGE_NAME) manage.py dbshell
+	
+
+# run:
+#	python manage.py runserver
 
 gitpull:
 	git pull origin master
@@ -26,8 +40,9 @@ makemigrations:
 migrate: makemigrations
 	python manage.py migrate
 
-shell:
-	python manage.py shell
+# NO SHELL FOR YUO!!!
+#shell:
+#	python manage.py shell
 
 build-dev: migrate
 	echo "Your project has been built in a dev environment"
