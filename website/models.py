@@ -7,6 +7,7 @@ from datetime import date
 from datetime import timedelta
 from website.utils.fileutils import UniquePathAndRename
 import os
+import re
 from random import choice
 from django.core.files import File
 
@@ -30,6 +31,12 @@ class Person(models.Model):
     first_name = models.CharField(max_length=40)
     middle_name = models.CharField(max_length=50, blank=True, null=True)
     last_name = models.CharField(max_length=50)
+
+    # TODO: Need to figure out how to make this not add the em-dash when autocompleted
+    # URL Name for this person generated from the first and last names
+    # Default: Jon E Froehlich --> jon-froehlich
+    url_name = models.CharField(max_length=50, blank=True, null=True)
+    url_name.help_text = "This field will give you the location of your profile. Your profile will be located at member/url_name"
     email = models.EmailField(blank=True, null=True)
     personal_website = models.URLField(blank=True, null=True)
     github = models.URLField(blank=True, null=True)
