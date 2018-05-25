@@ -213,25 +213,28 @@ def people(request):
 
 
 def member(request, member_id):
-   # try:
-   #     person = Person.objects.get(pk=member_id)
-   # except Person.DoesNotExist:
-   #     raise Http404("Person does not exist")
-   # return render(request, 'website/member.html', {'person': person})
-   news_items_num = 5 # Defines the number of news items that will be selected
-   all_banners = Banner.objects.filter(page=Banner.PEOPLE)
-   displayed_banners = choose_banners(all_banners)
-   person = get_object_or_404(Person, pk=member_id)
-   news = person.news_set.order_by('-date')[:news_items_num]
-   publications = person.publication_set.order_by('-date')
-   talks = person.talk_set.order_by('-date')
-   context = { 'person': person,
-               'news': news,
-               'talks': talks,
-               'publications': publications,
-               'banners': displayed_banners,
-               'debug': settings.DEBUG }
-   return render(request, 'website/member.html', context)
+    # try:
+    #     person = Person.objects.get(pk=member_id)
+    # except Person.DoesNotExist:
+    #     raise Http404("Person does not exist")
+    # return render(request, 'website/member.html', {'person': person})
+    news_items_num = 5 # Defines the number of news items that will be selected
+    all_banners = Banner.objects.filter(page=Banner.PEOPLE)
+    displayed_banners = choose_banners(all_banners)
+    if (member_id.isdigit()):
+        person = get_object_or_404(Person, pk=member_id)
+    else:
+        person = get_object_or_404(Person, url_name__iexact=member_id)
+    news = person.news_set.order_by('-date')[:news_items_num]
+    publications = person.publication_set.order_by('-date')
+    talks = person.talk_set.order_by('-date')
+    context = { 'person': person,
+                'news': news,
+                'talks': talks,
+                'publications': publications,
+                'banners': displayed_banners,
+                'debug': settings.DEBUG }
+    return render(request, 'website/member.html', context)
 
 def publications(request):
     all_banners = Banner.objects.filter(page=Banner.PUBLICATIONS)
