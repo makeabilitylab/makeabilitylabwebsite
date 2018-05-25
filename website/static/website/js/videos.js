@@ -23,7 +23,7 @@ $(window).load(function () {
 		groupsForCategory: {
 			"Year": groupVideosByYear(),
 			"Project": groupVideosByProject(),
-			"None": [{"name": group_category_none_name, items: videos}]
+			"None": groupVideosByNone(),
 		},
 		defaultCategory: "None",
 		passesFilter: passesFilter,
@@ -37,6 +37,21 @@ $(window).load(function () {
 		$('#filter-textbox').val(initialFilter);
 	$('#filter-bar').applyFilter();
 });
+
+// returns a list of videos in reverse chronological order (most recent video first)
+function groupVideosByNone() {
+	var tempGroup = {};
+	tempGroup[group_category_none_name] = [];
+	videos.forEach(function(video, index, array) {
+		tempGroup[group_category_none_name].push(video);
+	});
+	tempGroup[group_category_none_name].sort(function(a, b) { return b.date - a.date });
+
+	var groups = []
+	groups.push({"name": group_category_none_name, "items": tempGroup[group_category_none_name]});
+
+	return groups;
+}
 
 // returns a list of videos grouped by year, sorted with the most recent year first
 // TODO: this is same function as in talks.js (and possibly publications.js). Consolidate?
