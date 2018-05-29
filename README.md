@@ -85,3 +85,21 @@ Optional dependencies
 6. Follow the instructions [here](https://developers.google.com/analytics/devguides/reporting/core/v3/quickstart/service-py) to install google analytics api using pip, and to download the p12 private key from google analytics for authentication. This file should also go in the website directory along with the googleaccount.py file.
 7. Run server using `make run` or `python manage.py runserver` if make is not installed.
 
+# Troubleshooting
+## Operational Error: Table/Column does not exist
+WARNING: This method resets the database. 
+1. Run `make dbshell` to enter an interactive terminal to view the current tables. In the interactive terminal, type `.tables` to display all tables that are listed in the database. (If the problem is that a column doesn't exist, type `.schema [table name]` to display the information about a specific table). If the table/column doesn't exist, continue.
+2. Create a second docker container that mounts the database using `docker run -ti -v database:/database ubuntu`
+3. Move the database. Type: `cd /database` then `mv db.sqlite3 db.sqlite3.backup`. Exit the interactive terminal.
+4. Run `make dbshell`. Find the information for the table that is missing (either entirely or just a column) using `.schema [table name]`. Copy this information.
+
+(You should copy something that might look something like this):
+```
+CREATE TABLE "website_talk_keywords" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "talk_id" integer NOT NULL REFERENCES "website_talk" ("id"), "keyword_id" integer NOT NULL REFERENCES "website_keyword" ("id"));
+CREATE UNIQUE INDEX "website_talk_keywords_talk_id_fbb52519_uniq" ON "website_talk_keywords" ("talk_id", "keyword_id");
+CREATE INDEX "website_talk_keywords_393ebc1b" ON "website_talk_keywords" ("talk_id");
+CREATE INDEX "website_talk_keywords_5c003bba" ON "website_talk_keywords" ("keyword_id");
+```
+5. Move the copied database back into place using: `mv db.sqlite3.backup db.sqlite3`.
+6. Recreate the database. Run `make shell`. In the interactive terminal, type `python manage.py`.
+7. Rerun the website with `make run`.
