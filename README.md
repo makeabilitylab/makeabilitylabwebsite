@@ -2,12 +2,12 @@
 The Makeability Lab is a an HCI/Ubicomp research lab at the University of Washington directed by Professor Jon Froehlich. Founded in 2012 by Froehlich and students, the Makeability Lab focuses on designing and studying novel interactive experiences that cross between bits and atoms—the virtual and the physical—and back again to confront some of the world's greatest challenges in environmental sustainability, health and wellness, education, and universal accessibility. This repository contains the Makeability Lab's Django 1.9 (python 3.5) based site.
 
 # Docker Installation
-1. If you don't have Docker yet, you can install it here: https://docs.docker.com/install/. 
+1. If you don't have Docker yet, you can install it here: https://docs.docker.com/install/. Open up the application. Run `docker version` to make sure that it is running.
 2. Clone this repository using `git clone` and navigate to the project home directory.
 3. Build the docker images. You can do this by running `docker build .`. Alternatively, you can run `docker build . -t [tag]` to give your build a name. (If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built [tag]` to get your tag.)
 4. Open the interactive bash terminal using `docker run -ti --entrypoint=bash [tag]`
-5. Create the local database. Run the following commands: `python3 manage.py makemigrations website` and `python3 manage.py migrate`
-6. Create the superuser. Run `python3 manage.py createsuperuser`. Type `exit` to leave the interactive terminal.
+5. Create the local database. Run the following commands: `python3 manage.py makemigrations website` and `python3 manage.py migrate`. Type `exit` to leave the interactive terminal.
+6. Create the superuser. Run `docker run -ti -v database:/code/db -v $(pwd)/media:/code/media --entrypoint=python [tag] manage.py createsuperuser`.
 7. Rebuild the docker images. Use `docker build . [-t] [tag]`
 8. Run the server using Docker. `docker run -p 8000:8000 -ti -v database:/code/db -v $(pwd)/media:/code/media [tag]` 
 9. Open the development server in the web browser. 
@@ -19,8 +19,8 @@ docker build . -t version1
 docker run -ti --entrypoint=bash version1
 python3 manage.py makemigrations website
 python3 manage.py migrate
-python3 manage.py createsuperuser
 exit
+docker run -ti -v database:/code/db -v $(pwd)/media:/code/media --entrypoint=python version1 manage.py createsuperuser`
 docker build . -t version1
 docker run -p 8000:8000 -ti -v database:/code/db -v $(pwd)/media:/code/media version1
 ```
@@ -86,11 +86,6 @@ Optional dependencies
 7. Run server using `make run` or `python manage.py runserver` if make is not installed.
 
 # Troubleshooting
-## Super User account isn't persisting
-1. Run: `docker run -ti -v database:/code/db -v $(pwd)/media:/code/media --entrypoint=python [tag] manage.py createsuperuser`
-2. Enter in the information for creating the super user (according to docs)
-3. Run the server. `docker run -ti -v database:/code/db -v $(pwd)/media:/code/media -p 8000:8000 [tag]`
-
 ## Operational Error: Table/Column does not exist
 WARNING: This method resets the database. 
 1. Run `make dbshell` to enter an interactive terminal to view the current tables. In the interactive terminal, type `.tables` to display all tables that are listed in the database. (If the problem is that a column doesn't exist, type `.schema [table name]` to display the information about a specific table). If the table/column doesn't exist, continue.
