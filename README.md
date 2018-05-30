@@ -20,10 +20,22 @@ docker run -ti --entrypoint=bash version1
 python3 manage.py makemigrations website
 python3 manage.py migrate
 exit
-docker run -ti -v database:/code/db -v $(pwd)/media:/code/media --entrypoint=python version1 manage.py createsuperuser`
+docker run -ti -v database:/code/db -v $(pwd)/media:/code/media --entrypoint=python version1 manage.py createsuperuser
 docker build . -t version1
 docker run -p 8000:8000 -ti -v database:/code/db -v $(pwd)/media:/code/media version1
 ```
+
+## Setting up Docker in PyCharm
+We recommend using PyCharm as an IDE. You can configure Docker in PyCharm using the following steps:
+
+1. Go to Run > Run 'makeabilitylabwebsite/Dockerfile'. The initial setup for this will take a minute or so. 
+2. Click on the dropdown menu for images. Press create container and select `pycharm:latest`. Set the Container name to be `pycharm-container`. 
+3. *(Optional: Configures the container so that it will start the server)* Click on the `...` button by Bind Ports. Click the `+` button, and select the Host Port to be `8000` and the Container Port to be `8000`.
+4. Right click on `pycharm-container`. Click 'Start container' to run and 'Stop container'. (Attached consoles aren't interactive, so ctrl+c doesn't work here)
+5. Go to Preferences > Project > Project Interpreter. 
+6. Click on the Gear button to the right of the Project Interpreter. Select the `Add...` button.
+7. Open the Docker option. The Image Name should be `pycharm:latest`. 
+
 
 # Deploying to Production
 The Makeability Lab website auto-deploys from GitHub to the department's Docker infrastructure using webhooks:
