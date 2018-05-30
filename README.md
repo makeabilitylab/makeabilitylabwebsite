@@ -86,6 +86,11 @@ Optional dependencies
 7. Run server using `make run` or `python manage.py runserver` if make is not installed.
 
 # Troubleshooting
+## Super User account isn't persisting
+1. Run: `docker run -ti -v database:/code/db -v $(pwd)/media:/code/media --entrypoint=python [tag] manage.py createsuperuser`
+2. Enter in the information for creating the super user (according to docs)
+3. Run the server. `docker run -ti -v database:/code/db -v $(pwd)/media:/code/media -p 8000:8000 [tag]`
+
 ## Operational Error: Table/Column does not exist
 WARNING: This method resets the database. 
 1. Run `make dbshell` to enter an interactive terminal to view the current tables. In the interactive terminal, type `.tables` to display all tables that are listed in the database. (If the problem is that a column doesn't exist, type `.schema [table name]` to display the information about a specific table). If the table/column doesn't exist, continue.
