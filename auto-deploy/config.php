@@ -24,7 +24,7 @@ $USE_DOCKER = TRUE; // Set to FALSE for just doing code pulls without a docker c
 
 $MAIL_CONTAINER_BUILD_RESULTS = TRUE; //Controls sending of docker build output to a configured email address;
 
-$SEND_MAIL_TO = 'jhowe@cs.washington.edu';  //The configured email address(es), comma separated, referenced above
+$SEND_MAIL_TO = 'jhowe@cs.washington.edu', 'azeng4@u.rochester.edu';  //The configured email address(es), comma separated, referenced above
 
 $CONTAINER_NAME = array('makeabilitylabwebsite'); //A unique name for your container, comma separated, quotes list for multiple containers
 
