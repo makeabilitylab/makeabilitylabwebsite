@@ -98,7 +98,7 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
     #https://www.elements.nl/2015/03/16/getting-the-most-out-of-django-admin-filters/
     #related to: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/238
     list_filter = (CurrentMemberListFilter, PositionListFilter)
-    prepopulated_fields = {'url_name':('first_name', 'last_name',)}
+    # prepopulated_fields = {'url_name':('first_name', 'last_name',)}
 
 class VideoAdmin(admin.ModelAdmin):
     # The list display lets us control what is shown in the default persons table at Home > Website > Videos
