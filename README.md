@@ -3,8 +3,8 @@ The Makeability Lab is a an HCI/Ubicomp research lab at the University of Washin
 
 # Docker Installation
 1. If you don't have Docker yet, you can install it here: https://docs.docker.com/install/. Open up the application. Run `docker version` to make sure that it is running.
-2. Clone this repository using `git clone` and navigate to the project home directory.
-3. Build the docker images. You can do this by running `docker build .`. Alternatively, you can run `docker build . -t [tag]` to give your build a name. (If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built [tag]` to get your tag.)
+2. Clone this repository using `git clone` and navigate to the project home directory using the `cd` command.
+3. Build the docker images. You can do this by running `docker build .`. Alternatively, you can run `docker build . -t [tag]` to give your build a name. This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built [tag]` to get your tag.
 4. Open the interactive bash terminal using `docker run -ti --entrypoint=bash [tag]`
 5. Create the local database. Run the following commands: `python3 manage.py makemigrations website` and `python3 manage.py migrate`. Type `exit` to leave the interactive terminal.
 6. Create the superuser. Run `docker run -ti -v database:/code/db -v $(pwd)/media:/code/media --entrypoint=python [tag] manage.py createsuperuser`.
@@ -15,6 +15,7 @@ The Makeability Lab is a an HCI/Ubicomp research lab at the University of Washin
 ### Sample setup:
 ```
 git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git
+cd makeabilitylabwebsite/
 docker build . -t version1
 docker run -ti --entrypoint=bash version1
 python3 manage.py makemigrations website
@@ -98,6 +99,14 @@ Optional dependencies
 7. Run server using `make run` or `python manage.py runserver` if make is not installed.
 
 # Troubleshooting
+## Bind for 0.0.0.0:8000 failed: port is already allocated
+This means that there is already some process running at `0.0.0.0:8000`. First, make to close out of any windows that might be running a local server on your computer. If this error is still occuring, there might be a Docker container that is still running. 
+
+To delete the container, do the following steps:
+1. Run `docker ps -a`.
+2. A table should be displayed. Look for the row that has `0.0.0.0:8000->8000/tcp` under the ports column. Copy the container name (under the `NAMES` column). 
+3. Run `docker kill [NAME]`. (EX: `docker kill confident_tereshkova`). 
+
 ## Operational Error: Table/Column does not exist
 WARNING: This method resets the database. 
 1. Run `make dbshell` to enter an interactive terminal to view the current tables. In the interactive terminal, type `.tables` to display all tables that are listed in the database. (If the problem is that a column doesn't exist, type `.schema [table name]` to display the information about a specific table). If the table/column doesn't exist, continue.
