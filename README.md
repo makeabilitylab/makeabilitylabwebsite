@@ -27,15 +27,30 @@ docker run -p 8000:8000 -ti -v database:/code/db -v $(pwd)/media:/code/media ver
 ```
 
 ## Setting up Docker in PyCharm
-We recommend using PyCharm as an IDE. You can configure Docker in PyCharm using the following steps:
+We recommend using PyCharm as an IDE. Note that in order to configure PyCharm with Docker, you must have the professional version. Students can get this for free at: https://www.jetbrains.com/student/
 
-1. Go to Run > Run 'makeabilitylabwebsite/Dockerfile'. The initial setup for this will take a minute or so. 
-2. Click on the dropdown menu for images. Press create container and select `pycharm:latest`. Set the Container name to be `pycharm-container`. 
-3. *(Optional: Configures the container so that it will start the server)* Click on the `...` button by Bind Ports. Click the `+` button, and select the Host Port to be `8000` and the Container Port to be `8000`.
-4. Right click on `pycharm-container`. Click 'Start container' to run and 'Stop container'. (Attached consoles aren't interactive, so ctrl+c doesn't work here)
-5. Go to Preferences > Project > Project Interpreter. 
-6. Click on the Gear button to the right of the Project Interpreter. Select the `Add...` button.
-7. Open the Docker option. The Image Name should be `pycharm:latest`. 
+### IDE Configuration
+1. Select 'Open New Project'. Select the root directory of this project for the file.
+2. Go to Run > Edit Configurations. In the side window, go to Defaults > Docker > Dockerfile.
+3. Click on the `...` by Server. Select the `Docker for [your OS here]` option. Click `OK` to finish.
+4. Click on the `+` button in the upper-left corner to add a new configuration.
+5. Set the name to be `makeabilitylabwebsite`, the Dockerfile to be `Dockerfile` with the drop-down menu, and the image tag to `pycharm`. Click `OK` to finish.
+6. Select Run > Run 'makeabilitylabwebsite'.
+7. Go to Pycharm > Preferences > Project Interpreter
+8. Click on the Gear button to the right of the Project Interpreter. Select the `Add...` button.
+9. Open the Docker option. The Image Name should be `pycharm:latest`. Click `OK` to finish.
+
+### Configuring PyCharm to run the website server (optional)
+You may choose to use either the Terminal or PyCharm to run the website server.
+
+NOTE: If you haven't created a superuser yet, you will need to do so through terminal. Refer to Step 6 in the Docker Installation for more information.
+
+1. Go to Run > Run 'makeabilitylabwebsite'. The initial setup for this might take a minute or so.
+2. Go to the Docker toolbar. (This should pop up automatically on the bottom of your screen). Click on the dropdown menu for images. Press create container and select `pycharm:latest`. Set the Container name to be `pycharm-web-container`. 
+3. Click on the `...` button by Bind Ports. Click the `+` button, and select the Host Port to be `8000` and the Container Port to be `8000`. Click OK to finish.
+4. Click on the `...` button by Bind Ports. Click the `+` button, and select the Host path to be `database` and the Container path to be `/code/db`. (Windows users may need to switch the Container path to `\code\db`).
+5. Click the `+` button again. Under Host path, click the `...` button. Select the media directory. Select the Container path to be `/code/media`. (Windows users may need to switch the Container path to `\code\media`).
+6. Right click on `pycharm-web-container`. Click 'Start container' to run and 'Stop container' to stop the local server. (The attached consoles isn't interactive, so ctrl+c doesn't work here)
 
 
 # Deploying to Production
