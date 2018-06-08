@@ -62,6 +62,18 @@ git push --tags
 ```
 This will cause that tag to deploy to production. 
 
+## Versioning
+We will using semantic versioning when adding tags to push to production. The table below gives instructions for how semantic labeling works. More information is available [here](https://docs.npmjs.com/getting-started/semantic-versioning).
+
+The current version is `0.1.0`, since we are still in development.
+
+| Code Status    | Stage        | Rule             | Example # |
+| -------------- | ------------ | ---------------- | --------- |
+| First Release  | New Product  | Start with 1.0.0 | 1.0.0     |
+| Bug fixes, other </br> minor changes  | Patch release | Increment the third digit | 1.0.1 |
+| New Features that don't </br> break existing features  | Minor release | Increment the middle digit | 1.1.0 |
+| Changes that break </br> backwards compatibility | Major release | Increment the first digit | 2.0.0 |
+
 ## Configuring the Production Server
 The production server was configured largely by UW CSE's Jason Howe. Note that settings.py reads in a config.ini file to configure a connection to the PostgreSQL database. This config.ini file is *not* in git (for obvious reasons as it contains secret keys and passwords). Thus, Jason has setup a "volume mount" for this file so that the production Docker session can read that file.
 
