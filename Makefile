@@ -7,9 +7,13 @@
 .PHONY: makemigrations
 .PHONY: build-dev
 .PHONY: build-prod
+IMAGE_NAME=makeability
 
-run:
-	python manage.py runserver
+build:
+	docker build . -t $(IMAGE_NAME)
+
+run: build
+	docker run -p 8000:8000 -ti -v database:/code/db -v $$(pwd)/media:/code/media $(IMAGE_NAME)
 
 gitpull:
 	git pull origin master
@@ -26,8 +30,14 @@ makemigrations:
 migrate: makemigrations
 	python manage.py migrate
 
+superuser:
+	docker run -ti -v database:/code/db -v $$(pwd)/media:/code/media --entrypoint=python $(IMAGE_NAME) manage.py createsuperuser
+
 shell:
-	python manage.py shell
+	docker run -ti -v database:/code/db -v $$(pwd)/media:/code/media --entrypoint=bash $(IMAGE_NAME)
+
+dbshell:
+	docker run -ti -v database:/code/db -v $$(pwd)/media:/code/media --entrypoint=python $(IMAGE_NAME) manage.py dbshell
 
 build-dev: migrate
 	echo "Your project has been built in a dev environment"

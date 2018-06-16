@@ -4,13 +4,13 @@ The Makeability Lab is a an HCI/Ubicomp research lab at the University of Washin
 # Docker Installation
 1. If you don't have Docker yet, you can install it here: https://docs.docker.com/install/. Open up the application. Run `docker version` to make sure that it is running.
 2. Clone this repository using `git clone` and navigate to the project home directory using the `cd` command.
-3. Build the docker images. You can do this by running `docker build .`. Alternatively, you can run `docker build . -t [tag]` to give your build a name. This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built [tag]` to get your tag.
-4. Open the interactive bash terminal using `docker run -ti --entrypoint=bash [tag]`
+3. Build the docker images. This can be done by running `make build`, if make is installed. Alternatively, you can run `docker build . [-t] <tag>` to give your build a name. This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
+4. Open the interactive bash terminal using `docker run -ti --entrypoint=bash <tag>`
 5. Create the local database. Run the following commands: `python3 manage.py makemigrations website` and `python3 manage.py migrate`. Type `exit` to leave the interactive terminal.
-6. Create the superuser. Run `docker run -ti -v database:/code/db -v $(pwd)/media:/code/media --entrypoint=python [tag] manage.py createsuperuser`.
+6. Create the superuser. Run `make superuser` if make is installed, or `docker run -ti -v database:/code/db -v $(pwd)/media:/code/media --entrypoint=python [tag] manage.py createsuperuser`.
 7. Rebuild the docker images. Use `docker build . [-t] [tag]`
-8. Run the server using Docker. `docker run -p 8000:8000 -ti -v database:/code/db -v $(pwd)/media:/code/media [tag]` 
-9. Open the development server in the web browser. 
+8. Run the local server using Docker. Use `make run` or `docker run -p 8000:8000 -ti -v database:/code/db -v $(pwd)/media:/code/media [tag]` 
+9. Open the development server in the web browser. This will be at `localhost:8000`.
 
 ### Sample setup:
 ```
@@ -24,6 +24,19 @@ exit
 docker run -ti -v database:/code/db -v $(pwd)/media:/code/media --entrypoint=python version1 manage.py createsuperuser
 docker build . -t version1
 docker run -p 8000:8000 -ti -v database:/code/db -v $(pwd)/media:/code/media version1
+```
+
+### Sample setup (using make):
+```
+git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git
+cd makeabilitylabwebsite/
+make build
+make shell
+python3 manage.py makemigrations website
+python3 manage.py migrate
+exit
+make superuser
+make run
 ```
 
 ## Setting up Docker in PyCharm
@@ -65,7 +78,7 @@ This will cause that tag to deploy to production.
 ## Versioning
 We will using semantic versioning when adding tags to push to production. The table below gives instructions for how semantic labeling works. More information is available [here](https://docs.npmjs.com/getting-started/semantic-versioning).
 
-The current version is `0.1.0`, since we are still in development.
+The current version is `0.1.0`, since we are still in development. A history of all pushes to production can be accessed through the 'releases' tag on Github.
 
 | Code Status    | Stage        | Rule             | Example # |
 | -------------- | ------------ | ---------------- | --------- |
@@ -123,7 +136,7 @@ Optional dependencies
 4. The scripts `python manage.py importpubs` and `python manage.py importtalks` will import from bibtex and xml files located under the import directory respectively. These files are designed for use by the Makeability lab and will import from Jon Froehlich's website cs.umd.edu/~jonf
 5. Add a file googleaccount.py in the website directory. This file should contain only the line ANALYTICS_ACCOUNT = 'your_google_analytics_email'. Replace your_google_analytics_email with whatever google account has been set up to track the domain in google analytics.
 6. Follow the instructions [here](https://developers.google.com/analytics/devguides/reporting/core/v3/quickstart/service-py) to install google analytics api using pip, and to download the p12 private key from google analytics for authentication. This file should also go in the website directory along with the googleaccount.py file.
-7. Run server using `make run` or `python manage.py runserver` if make is not installed.
+7. Run server using `python manage.py runserver`.
 
 # Troubleshooting
 ## Bind for 0.0.0.0:8000 failed: port is already allocated
