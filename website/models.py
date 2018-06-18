@@ -31,11 +31,7 @@ class Person(models.Model):
     first_name = models.CharField(max_length=40)
     middle_name = models.CharField(max_length=50, blank=True, null=True)
     last_name = models.CharField(max_length=50)
-
-    # TODO: Need to figure out how to make this not add the em-dash when autocompleted
-    # URL Name for this person generated from the first and last names
-    # Default: Jon E Froehlich --> jon-froehlich
-
+    url_name = models.CharField(editable=False, max_length=50)
     email = models.EmailField(blank=True, null=True)
     personal_website = models.URLField(blank=True, null=True)
     github = models.URLField(blank=True, null=True)
@@ -212,6 +208,9 @@ class Person(models.Model):
         dir_path = os.path.dirname(os.path.dirname(__file__))
         star_wars_dir = dir_path+"/import/images/StarWarsFiguresFullSquare/Rebels/"
         image_choice = File(open(star_wars_dir+get_random_starwars(star_wars_dir), 'rb'))
+
+        # automatically set url_name field
+        self.url_name = (self.first_name + self.last_name).lower()
         if not self.image:
             self.image = image_choice
         if self.pk is None:
@@ -223,8 +222,6 @@ class Person(models.Model):
         ordering = ['last_name', 'first_name']
         verbose_name_plural = 'People'
 
-
-        
 @receiver(pre_delete, sender=Person)
 def person_delete(sender, instance, **kwargs):
     if instance.image:
