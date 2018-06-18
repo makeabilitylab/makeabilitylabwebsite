@@ -201,6 +201,11 @@ class Person(models.Model):
             return u"{0} {1}".format(self.first_name, self.last_name)
     get_full_name.short_description = "Full Name"
 
+    # Returns the URL name for this person
+    # Format: firstlast
+    def get_url_name(self):
+        return self.url_name
+
     def __str__(self):
         return self.get_full_name()
 
