@@ -5,7 +5,7 @@ The Makeability Lab is a an HCI/Ubicomp research lab at the University of Washin
 While the instructions below walk you through a step-by-step process to configure your machine for developing the Makeability Lab website, here's a summary of the tools we use:
 - Docker
 - PyCharm
-- Django? (or is this now packaged into the Docker container?)
+- Git
 
 # Docker Installation
 1. If you don't have Docker yet, you can download it [here](https://store.docker.com/search?type=edition&offering=community). We use the Community Edition. Open up the application. Run `docker version` to make sure that it is running.
