@@ -17,8 +17,10 @@ While the instructions below walk you through a step-by-step process to configur
 5. Create the local database. Run the following commands: `python3 manage.py makemigrations website` and `python3 manage.py migrate`. Type `exit` to leave the interactive terminal.
 6. Create the superuser. Run `docker run -ti -v database:/code/db -v $(pwd)/media:/code/media --entrypoint=python [tag] manage.py createsuperuser`.
 7. Rebuild the docker images. Use `docker build . [-t] [tag]`
-8. Run the server using Docker. `docker run -p 8000:8000 -ti -v database:/code/db -v $(pwd)/media:/code/media [tag]` 
+8. Run the server using Docker. `docker run -p 8000:8000 -ti -v database:/code/db -v $(pwd)/media:/code/media -v $(pwd)/website:/code/website [tag]` 
 9. Open the development server in the web browser. 
+
+After running the `docker run` command, you will not need to rebuild or rerun the Docker container after making changes. However, you will still need to refresh the webpage in order to see new updates.
 
 ### Sample setup:
 ```
@@ -31,7 +33,7 @@ python3 manage.py migrate
 exit
 docker run -ti -v database:/code/db -v $(pwd)/media:/code/media --entrypoint=python version1 manage.py createsuperuser
 docker build . -t version1
-docker run -p 8000:8000 -ti -v database:/code/db -v $(pwd)/media:/code/media version1
+docker run -p 8000:8000 -ti -v database:/code/db -v $(pwd)/media:/code/media -v $(pwd)/website:/code/website version1
 ```
 
 ## Setting up Docker in PyCharm
