@@ -2,7 +2,7 @@
 The Makeability Lab is a an HCI/Ubicomp research lab at the University of Washington directed by Professor Jon Froehlich. Founded in 2012 by Froehlich and students, the Makeability Lab focuses on designing and studying novel interactive experiences that cross between bits and atoms—the virtual and the physical—and back again to confront some of the world's greatest challenges in environmental sustainability, health and wellness, education, and universal accessibility. This repository contains the Makeability Lab's Django 1.9 (python 3.5) based site.
 
 # Docker Installation
-1. If you don't have Docker yet, you can install it [here](https://store.docker.com/search?type=edition&offering=community). We use the Community Edition. Open up the application. Run `docker version` to make sure that it is running.
+1. If you don't have Docker yet, you can download it [here](https://store.docker.com/search?type=edition&offering=community). We use the Community Edition. Open up the application. Run `docker version` to make sure that it is running.
 2. Clone this repository using `git clone` and navigate to the project home directory using the `cd` command.
 3. Build the docker images. You can do this by running `docker build .`. Alternatively, you can run `docker build . -t [tag]` to give your build a name. This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built [tag]` to get your tag.
 4. Open the interactive bash terminal using `docker run -ti --entrypoint=bash [tag]`
