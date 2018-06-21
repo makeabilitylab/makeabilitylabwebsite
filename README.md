@@ -1,16 +1,26 @@
 # Makeability Lab Website
-The Makeability Lab is a an HCI/Ubicomp research lab at the University of Washington directed by Professor Jon Froehlich. Founded in 2012 by Froehlich and students, the Makeability Lab focuses on designing and studying novel interactive experiences that cross between bits and atoms—the virtual and the physical—and back again to confront some of the world's greatest challenges in environmental sustainability, health and wellness, education, and universal accessibility. This repository contains the Makeability Lab's Django 1.9 (python 3.5) based site.
+The Makeability Lab is a an HCI/Ubicomp research lab at the University of Washington directed by Professor Jon Froehlich. Founded in 2012 by Froehlich and students, the Makeability Lab focuses on designing and studying novel interactive experiences that cross between bits and atoms—the virtual and the physical—and back again to confront some of the world's greatest challenges in environmental sustainability, health and wellness, education, and universal accessibility. 
+
+This repository contains the Makeability Lab's website, which is written in Django (backend) and Bootstrap/Javascript (frontend).
+
+# Dev Prereqs
+While the instructions below walk you through a step-by-step process to configure your machine for developing the Makeability Lab website, here's a summary of the tools we use:
+- Docker
+- PyCharm
+- Git
 
 # Docker Installation
-1. If you don't have Docker yet, you can install it here: https://docs.docker.com/install/. Open up the application. Run `docker version` to make sure that it is running.
+1. If you don't have Docker yet, you can download it [here](https://store.docker.com/search?type=edition&offering=community). We use the Community Edition. Open up the application. Run `docker version` to make sure that it is running.
 2. Clone this repository using `git clone` and navigate to the project home directory using the `cd` command.
 3. Build the docker images. This can be done by running `make build`, if make is installed. Alternatively, you can run `docker build . [-t] <tag>` to give your build a name. This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
 4. Open the interactive bash terminal using `docker run -ti --entrypoint=bash <tag>`
 5. Create the local database. Run the following commands: `python3 manage.py makemigrations website` and `python3 manage.py migrate`. Type `exit` to leave the interactive terminal.
 6. Create the superuser. Run `make superuser` if make is installed, or `docker run -ti -v database:/code/db -v $(pwd)/media:/code/media --entrypoint=python [tag] manage.py createsuperuser`.
 7. Rebuild the docker images. Use `docker build . [-t] [tag]`
-8. Run the local server using Docker. Use `make run` or `docker run -p 8000:8000 -ti -v database:/code/db -v $(pwd)/media:/code/media [tag]` 
+8. Run the local server using Docker. Use `make run` or `docker run -p 8000:8000 -ti -v database:/code/db -v $(pwd)/media:/code/media $(pwd)/website:/code/website [tag]` 
 9. Open the development server in the web browser. This will be at `localhost:8000`.
+
+After running the `docker run` command, you will not need to rebuild or rerun the Docker container after making changes. However, you will still need to refresh the webpage in order to see new updates.
 
 ### Sample setup:
 ```
@@ -23,7 +33,7 @@ python3 manage.py migrate
 exit
 docker run -ti -v database:/code/db -v $(pwd)/media:/code/media --entrypoint=python version1 manage.py createsuperuser
 docker build . -t version1
-docker run -p 8000:8000 -ti -v database:/code/db -v $(pwd)/media:/code/media version1
+docker run -p 8000:8000 -ti -v database:/code/db -v $(pwd)/media:/code/media -v $(pwd)/website:/code/website version1
 ```
 
 ### Sample setup (using make):
