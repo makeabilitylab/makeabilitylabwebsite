@@ -10,7 +10,7 @@ While the instructions below walk you through a step-by-step process to configur
 - Git
 
 # Docker Installation
-1. If you don't have Docker yet, you can download it [here](https://store.docker.com/search?type=edition&offering=community). We use the Community Edition. Open up the application. Run `docker version` to make sure that it is running.
+1. If you don't have Docker yet, you can download it [here](https://store.docker.com/search?type=edition&offering=community). For Windows machines, when prompted to check whether to use Windows containers instead of Linux containers, do not check the box. We use the Community Edition. Open up the application. Run `docker version` to make sure that it is running.
 2. Clone this repository using `git clone` and navigate to the project home directory using the `cd` command.
 3. Build the docker images. This can be done by running `make build`, if make is installed. Alternatively, you can run `docker build . [-t] <tag>` to give your build a name. This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
 4. Open the interactive bash terminal using `docker run -ti --entrypoint=bash <tag>`
