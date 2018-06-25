@@ -10,7 +10,9 @@ While the instructions below walk you through a step-by-step process to configur
 - Git
 
 # Docker Installation
-1. If you don't have Docker yet, you can download it [here](https://store.docker.com/search?type=edition&offering=community). For Windows machines, when prompted to check whether to use Windows containers instead of Linux containers, do not check the box. We use the Community Edition. Open up the application. Run `docker version` to make sure that it is running.
+1. If you don't have Docker yet, you can download it [here](https://store.docker.com/search?type=edition&offering=community). For Windows machines, when prompted to check whether to use Windows containers instead of Linux containers, do not check the box. We use the Community Edition. Open up the application. Run `docker version` to make sure that it is running. 
+  When first starting up Docker, navigate to the Docker icon in hidden icons and right-click to bring up settings. In settings, navigate to the "Shared Drives" tab and select the drive that you have cloned the git repository to. 
+[![https://gyazo.com/16d374eeadcd0cc550b8ab17f4bcbe5f](https://i.gyazo.com/16d374eeadcd0cc550b8ab17f4bcbe5f.gif)](https://gyazo.com/16d374eeadcd0cc550b8ab17f4bcbe5f)
 2. Clone this repository using `git clone` and navigate to the project home directory using the `cd` command.
 3. Build the docker images. This can be done by running `make build`, if make is installed. Alternatively, you can run `docker build . [-t] <tag>` to give your build a name. This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
 4. Open the interactive bash terminal using `docker run -ti --entrypoint=bash <tag>`
@@ -22,18 +24,21 @@ While the instructions below walk you through a step-by-step process to configur
 
 After running the `docker run` command, you will not need to rebuild or rerun the Docker container after making changes. However, you will still need to refresh the webpage in order to see new updates.
 
+###### For Windows
+Use PowerShell to execute the commands listed. Important things to note: wherever you are prompted to write `$(pwd)` replace it instead with `${pwd}` due to syntax issues between Windows PowerShell and the Linux commands.
+
 ### Sample setup:
 ```
 git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git
 cd makeabilitylabwebsite/
-docker build . -t version1
-docker run -ti --entrypoint=bash version1
+docker build . -t makelab_image
+docker run -ti -v database:/code/db -v $(pwd)/media:/code/media --entrypoint=bash makelab_image
 python3 manage.py makemigrations website
 python3 manage.py migrate
 exit
-docker run -ti -v database:/code/db -v $(pwd)/media:/code/media --entrypoint=python version1 manage.py createsuperuser
-docker build . -t version1
-docker run -p 8000:8000 -ti -v database:/code/db -v $(pwd)/media:/code/media -v $(pwd)/website:/code/website version1
+docker run -ti -v database:/code/db -v $(pwd)/media:/code/media --entrypoint=python makelab_image manage.py createsuperuser
+docker build . -t makelab_image
+docker run -p 8000:8000 -ti -v database:/code/db -v $(pwd)/media:/code/media -v $(pwd)/website:/code/website makelab_image
 ```
 
 ### Sample setup (using make):
