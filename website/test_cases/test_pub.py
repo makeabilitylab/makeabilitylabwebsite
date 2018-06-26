@@ -8,4 +8,3 @@ class PublicationsTest(TestCase):
         for pub in Publication.objects.all():
             self.assertNotEqual(pub.pdf_file, None, 'pdf for publication ' + pub.title + ' is missing!')
 
-    
