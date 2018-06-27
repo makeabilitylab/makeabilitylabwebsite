@@ -3,6 +3,16 @@ The Makeability Lab is a an HCI/Ubicomp research lab at the University of Washin
 
 This repository contains the Makeability Lab's website, which is written in Django (backend) and Bootstrap/Javascript (frontend).
 
+# Table of Contents
+* [Dev Prereqs](#dev-prereqs)
+* [Docker Installation](#docker-installation)
+* [Deploying to Production](#deploying-to-production)
+* [Makeability Lab Data](#makeability-lab-data)
+* [Manual Installation](#manual-installation)
+* [Contributing](#contributing)
+* [Troubleshooting](#troubleshooting)
+
+
 # Dev Prereqs
 While the instructions below walk you through a step-by-step process to configure your machine for developing the Makeability Lab website, here's a summary of the tools we use:
 - Docker
@@ -148,6 +158,15 @@ Optional dependencies
 5. Add a file googleaccount.py in the website directory. This file should contain only the line ANALYTICS_ACCOUNT = 'your_google_analytics_email'. Replace your_google_analytics_email with whatever google account has been set up to track the domain in google analytics.
 6. Follow the instructions [here](https://developers.google.com/analytics/devguides/reporting/core/v3/quickstart/service-py) to install google analytics api using pip, and to download the p12 private key from google analytics for authentication. This file should also go in the website directory along with the googleaccount.py file.
 7. Run server using `python manage.py runserver`.
+
+# Contributing
+We use the following process for contributing code:
+1. We use issues to organize tasks. You may choose to either select an existing issue to work on, or add your own. When adding issues, be sure to add tags as necessary. 
+2. Assign yourself to an issue and create a branch off `master`. The name of your branch should be descriptive and based off the issue that you are working on. (EX: if you were fixing [this](https://github.com/jonfroehlich/makeabilitylabwebsite/issues/335) issue, an appropriate branch name would be `adding-hover-to-landing-page`). Each branch should address one issue.
+3. When you are done working on an issue, submit a pull request. We will do local testing and code reviews before merging it with master.
+
+## Things to keep in mind
+Tasks that include changes to the user/admin interface should always include mockups. This is so we can collectively agree on how we want the site to look. A good example is [here](https://github.com/jonfroehlich/makeabilitylabwebsite/issues/287). Pull requests should also include before/after images, when applicable.
 
 # Troubleshooting
 ## Bind for 0.0.0.0:8000 failed: port is already allocated
