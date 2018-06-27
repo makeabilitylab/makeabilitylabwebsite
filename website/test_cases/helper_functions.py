@@ -13,7 +13,7 @@ def check_site_exist(url):
         return False
 
 def get_files_in_dir_in_testData(filetype, dir):
-    dir_file = './website/test_cases/testData/' + dir + '/*' + filetype
+    dir_file = './media/' + dir + '/*' + filetype
     try:
         return glob.glob(dir_file)
     except FileNotFoundError:
