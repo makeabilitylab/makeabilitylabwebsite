@@ -10,7 +10,7 @@ import website.test_cases.helper_functions as hf
 class ImageModelTest(TestCase):
     def setUp(self):
         '''
-        a = hf.get_files_in_dir_in_testData('.png', 'testImages')
+        a = hf.get_files_in_dir_in_testData('.png', 'testJPEGs')
         print(a)
         for img_path in a:
             print(img_path)
@@ -18,7 +18,7 @@ class ImageModelTest(TestCase):
             new_photo = Photo.objects.create(picture=image, caption="hello", alt_text="hello")
             new_photo.save()
         '''
-        image = File(open("./media/testImages/test1.jpeg", 'rb'))
+        image = File(open("./media/testJPEGs/test1.jpeg", 'rb'))
         new_photo = Photo(picture=image, caption="test", alt_text="TEST")
         new_photo.save()
 
