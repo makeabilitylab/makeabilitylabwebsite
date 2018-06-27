@@ -521,8 +521,9 @@ class Project_header(models.Model):
     class Meta:
         verbose_name = "Project About Visual"
 
+
 class Photo(models.Model):
-    picture = models.ImageField(upload_to='projects/images/', max_length=255)
+    picture = models.ImageField(upload_to='project/images/', max_length=255)
     caption = models.CharField(max_length=255, blank=True, null=True)
     alt_text = models.CharField(max_length=255, blank=True, null=True)
     project = models.ForeignKey(Project, blank=True, null=True)
