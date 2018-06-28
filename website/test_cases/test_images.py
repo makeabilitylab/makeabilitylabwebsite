@@ -3,14 +3,14 @@ from website.models import Photo
 from django.core.files import File
 
 
-import website.test_cases.helper_functions as hf
+from website.test_cases.helper_functions import *
 
 
 class ImageModelTest(TestCase):
     def setUp(self):
-        operationGetThoseURLS = hf.get_files_in_dir_in_testData('.jpeg', 'testData/testJPGs')
-        for urls in operationGetThoseURLS:
-            image = File(open(urls, 'rb'))
+        operationGetThosePATHS = get_files_in_dir_in_testData('.jpeg', 'testData/testJPGs')
+        for path in operationGetThosePATHS:
+            image = File(open(path, 'rb'))
             new_photo = Photo.objects.create(picture=image, caption="test", alt_text="TEST")
             new_photo.save()
             image.close()
