@@ -1,9 +1,17 @@
 from website.models import Video
 from django.test import TestCase
 from website.test_cases.helper_functions import *
+from django.core.files import File
 
 
 class VideoTest (TestCase):
+    def setUp(self):
+        vid_test_file = File(open("./media/testData/testVideos/vid_urls.txt", 'rb'))
+        url_test = vid_test_file.readline()
+        mock_vid = Video.objects.create(video_url=url_test, video_preview_url=None,
+                                            title='test video', caption='', date=None, project=None)
+        mock_vid.save()
+
     def test_videos_exist(self):
         self.assertNotEqual(Video.objects.all().count(), 0, 'no videos')
 
