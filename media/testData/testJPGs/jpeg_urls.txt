@@ -1,5 +1,0 @@
-./media/testData/testJPGs/test1.jpg
-./media/testData/testJPGs/test2.jpg
-./media/testData/testJPGs/test3.jpg
-./media/testData/testJPGs/test4.jpg
-./media/testData/testJPGs/test5.jpg
