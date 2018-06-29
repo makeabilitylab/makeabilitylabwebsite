@@ -6,16 +6,17 @@ from django.utils import timezone
 
 
 class PublicationsTest(TestCase):
-    def setUp(self):
+
+    @classmethod
+    def setUpTestData(cls):
         # get the pdf from the testData folder under media,
         paths = get_files_in_dir_in_media('.pdf', 'testData/testPDFs')
 
-        mock_proj = Project.objects.create(name="test_project",short_name="test_project")
         mock_vid = None
 
         for path in paths:
             pdf_test = File(open(path, 'rb'))
-            mock_pub = Publication.objects.create(title='TestPublication', geo_location=None, book_title=None,
+            cls.mock_pub = Publication.objects.create(title='TestPublication', geo_location=None, book_title=None,
                                                   book_title_short=None, num_pages=None,
                                                   pub_venue_type=None, peer_reviewed=None,
                                                   total_papers_accepted=None,
@@ -23,7 +24,7 @@ class PublicationsTest(TestCase):
                                                   date=None, video=mock_vid, series=None, isbn=None, doi=None,
                                                   publisher=None, publisher_address=None, acmid=None,
                                                   page_num_start=None, page_num_end=None, official_url=get_working_url())
-            mock_pub.save()
+            cls.mock_pub.save()
             pdf_test.close()
 
     def test_pubs_exist(self):

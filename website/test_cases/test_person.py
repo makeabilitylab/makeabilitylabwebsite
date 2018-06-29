@@ -6,11 +6,13 @@ import datetime
 
 
 class PersonStarWarsTest(TestCase):
-    def setUp(self):
-        johns = Person.objects.create(first_name="Johnson", last_name="Kuang")
-        shiv = Person.objects.create(first_name="Shiven", last_name="Bhatt", )
-        johns.save()
-        shiv.save()
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.johns = Person.objects.create(first_name="Johnson", last_name="Kuang")
+        cls.shiv = Person.objects.create(first_name="Shiven", last_name="Bhatt", )
+        cls.johns.save()
+        cls.shiv.save()
 
     def test_StarWars_picture_exists(self):
         johns = Person.objects.all().get(first_name="Johnson")
@@ -24,13 +26,15 @@ class PersonStarWarsTest(TestCase):
 
 
 class PersonPositionTests(TestCase):
-    def setUp(self):
-        johns = Person.objects.create(first_name="Johnson", last_name="Kuang")
-        johns.save()
-        pos = Position.objects.create(person=johns, start_date=timezone.now() + datetime.timedelta(days=30),
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.johns = Person.objects.create(first_name="Johnson", last_name="Kuang")
+        cls.johns.save()
+        cls.pos = Position.objects.create(person=cls.johns, start_date=timezone.now() + datetime.timedelta(days=30),
                                       end_date=timezone.now(), role="High School Student", title="Prof",
                                       department="computer science information")
-        pos.save()
+        cls.pos.save()
 
     def test_position_exists(self):
         johns = Person.objects.all().get(first_name="Johnson")

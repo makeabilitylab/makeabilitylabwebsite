@@ -5,28 +5,29 @@ from website.test_cases.helper_functions import *
 
 class VideoTest (TestCase):
 
-    def setUp(self):
+    @classmethod
+    def setUpTestData(cls):
         with open("./media/testData/testVideos/vid_urls.txt", 'r') as fin:
             raw_lines = list(fin)
         lines = list(map(lambda s:s.strip(), raw_lines))
 
         counter = 0
         for line in lines:
-            mock_vid = Video.objects.create(video_url=line, video_preview_url=None,
+            cls.mock_vid = Video.objects.create(video_url=line, video_preview_url=None,
                                                 title='test video ' + str(counter), caption='', date=None, project=None)
-            mock_vid.save()
+            cls.mock_vid.save()
             counter = counter + 1
 
         working_url = get_working_url()
-        title_test_1 = Video.objects.create(video_url=working_url, video_preview_url=None,
+        cls.title_test_1 = Video.objects.create(video_url=working_url, video_preview_url=None,
                                             title='test title 1', caption='', date=None, project=None)
-        title_test_1.save()
-        title_test_2 = Video.objects.create(video_url=working_url, video_preview_url=None,
+        cls.title_test_1.save()
+        cls.title_test_2 = Video.objects.create(video_url=working_url, video_preview_url=None,
                                             title='_break_title_', caption='', date=None, project=None)
-        title_test_2.save()
-        title_test_3 = Video.objects.create(video_url=working_url, video_preview_url=None,
+        cls.title_test_2.save()
+        cls.title_test_3 = Video.objects.create(video_url=working_url, video_preview_url=None,
                                             title='BROKEN TITLE', caption='', date=None, project=None)
-        title_test_3.save()
+        cls.title_test_3.save()
 
     def test_videos_exist(self):
         self.assertNotEqual(Video.objects.all().count(), 0, 'no videos')
