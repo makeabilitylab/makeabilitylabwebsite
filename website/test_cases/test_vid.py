@@ -1,7 +1,6 @@
 from website.models import Video
 from django.test import TestCase
 from website.test_cases.helper_functions import *
-from django.core.files import File
 
 
 class VideoTest (TestCase):
@@ -23,10 +22,10 @@ class VideoTest (TestCase):
                                             title='test title 1', caption='', date=None, project=None)
         title_test_1.save()
         title_test_2 = Video.objects.create(video_url=working_url, video_preview_url=None,
-                                            title='10 break_title_method 2', caption='', date=None, project=None)
+                                            title='_break_title_', caption='', date=None, project=None)
         title_test_2.save()
         title_test_3 = Video.objects.create(video_url=working_url, video_preview_url=None,
-                                            title='AMA49ZING TI989TLE', caption='', date=None, project=None)
+                                            title='BROKEN TITLE', caption='', date=None, project=None)
         title_test_3.save()
 
     def test_videos_exist(self):
@@ -44,13 +43,15 @@ class VideoTest (TestCase):
     def test_video_title_format(self):
         for vid in Video.objects.all():
             title = vid.get_title()
-            has_all_caps = True
+
             title_split = title.split(' ')
             for word in title_split:
                 if word[0].isalpha() and word[0].islower():
-                    has_all_caps = False
-                    break
-            self.assertEqual(has_all_caps, True, 'video title "' + title + '" has incorrect format')
+                    self.assertEqual(False, True, "first letter of word is not uppercase")
+                for char in word[1:]:
+                    if char.isalpha() and char.isupper():
+                        self.assertEqual(False, True, "following letters of word after first letter are not lowercase")
+
 
 
 
