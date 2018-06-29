@@ -210,3 +210,35 @@ CREATE INDEX "website_talk_keywords_5c003bba" ON "website_talk_keywords" ("keywo
 5. Move the copied database back into place using: `mv db.sqlite3.backup db.sqlite3`.
 6. Recreate the database. Run `make shell`. In the interactive terminal, type `python manage.py`.
 7. Rerun the website with `make run`.
+
+#Unit Testing
+There is already a basic framework included in the website for server based unit tests. To ensure continuity, it would be best to work off of these unit tests
+To create a new unit test file, create a new python file under test_cases. Then set it up like so:
+```
+from django.test import TestCase
+from django.conf import settings
+
+
+class SomeTest (TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        if settings.RUN_TEST_DATA:
+            ... this function runs once for all test functions, load all of your data from other folders in here...
+
+    def setUp(self):
+        ... this function runs every time django runs a test function in this class...
+
+    def test_sampletest1(self)
+        ... code, asserts...
+
+    def test_sampletest1(self)
+        ... code, asserts...
+
+```
+Django should call all of your functions as long as they start with 'test_' you do not need to call then in setUp or in setUpTestData.
+
+If you ever need to use any test data, create a directory under media/testData/ and call it whatever you like. Keep your data in that directory and reference it in the setUpTestData function.
+The reason why there is a "settings.RUN_TEST_DATA" check is to make sure that, in production, RUN_TEST_DATA is usually set to false through config.ini to avoid populating the database and the project with test data.
+You don't need to worry about this; RUN_TEST_DATA should always be set to true, since the config.ini file is not stored on github. However, if you have issues with running test code, RUN_TEST_DATA is set in settings.py.
+If the config.ini doesn't exist, then RUN_TEST_DATA should be set to true.
