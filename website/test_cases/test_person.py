@@ -1,6 +1,7 @@
 from django.test import TestCase
 from website.models import Person, Position
 from django.utils import timezone
+from django.conf import settings
 
 import datetime
 
@@ -9,10 +10,11 @@ class PersonStarWarsTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.johns = Person.objects.create(first_name="Johnson", last_name="Kuang")
-        cls.shiv = Person.objects.create(first_name="Shiven", last_name="Bhatt", )
-        cls.johns.save()
-        cls.shiv.save()
+        if settings.DEBUG:
+            cls.johns = Person.objects.create(first_name="Johnson", last_name="Kuang")
+            cls.shiv = Person.objects.create(first_name="Shiven", last_name="Bhatt", )
+            cls.johns.save()
+            cls.shiv.save()
 
     def test_StarWars_picture_exists(self):
         johns = Person.objects.all().get(first_name="Johnson")
@@ -32,7 +34,7 @@ class PersonPositionTests(TestCase):
         cls.johns = Person.objects.create(first_name="Johnson", last_name="Kuang")
         cls.johns.save()
         cls.pos = Position.objects.create(person=cls.johns, start_date=timezone.now() + datetime.timedelta(days=30),
-                                      end_date=timezone.now(), role="High School Student", title="Prof",
+                                      end_date=timezone.now(), role="High School Student", title="that one code monkey",
                                       department="computer science information")
         cls.pos.save()
 

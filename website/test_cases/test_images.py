@@ -1,6 +1,7 @@
 from django.test import TestCase
 from website.models import Photo
 from django.core.files import File
+from django.conf import settings
 
 
 from website.test_cases.helper_functions import *
@@ -10,12 +11,15 @@ class ImageModelTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        operationGetThosePATHS = get_files_in_dir_in_media('.jpeg', 'testData/testJPGs')
-        for path in operationGetThosePATHS:
-            image = File(open(path, 'rb'))
-            cls.new_photo = Photo.objects.create(picture=image, caption="test", alt_text="TEST")
-            cls.new_photo.save()
-            image.close()
+        print(settings.DEBUG)
+
+        if settings.DEBUG:
+            operationGetThosePATHS = get_files_in_dir_in_media('.jpeg', 'testData/testJPGs')
+            for path in operationGetThosePATHS:
+                image = File(open(path, 'rb'))
+                cls.new_photo = Photo.objects.create(picture=image, caption="test", alt_text="TEST")
+                cls.new_photo.save()
+                image.close()
 
     def test_images_not_empty(self):
         self.assertNotEqual(Photo.objects.all().count(), 0, 'no photos!')
