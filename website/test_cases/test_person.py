@@ -10,7 +10,7 @@ class PersonStarWarsTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        if settings.DEBUG:
+        if settings.RUN_TEST_DATA:
             cls.johns = Person.objects.create(first_name="Johnson", last_name="Kuang")
             cls.shiv = Person.objects.create(first_name="Shiven", last_name="Bhatt", )
             cls.johns.save()
@@ -31,12 +31,13 @@ class PersonPositionTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.johns = Person.objects.create(first_name="Johnson", last_name="Kuang")
-        cls.johns.save()
-        cls.pos = Position.objects.create(person=cls.johns, start_date=timezone.now() + datetime.timedelta(days=30),
-                                      end_date=timezone.now(), role="High School Student", title="that one code monkey",
-                                      department="computer science information")
-        cls.pos.save()
+        if settings.RUN_TEST_DATA:
+            cls.johns = Person.objects.create(first_name="Johnson", last_name="Kuang")
+            cls.johns.save()
+            cls.pos = Position.objects.create(person=cls.johns, start_date=timezone.now() + datetime.timedelta(days=30),
+                                          end_date=timezone.now(), role="High School Student", title="that one code monkey",
+                                          department="computer science information")
+            cls.pos.save()
 
     def test_position_exists(self):
         johns = Person.objects.all().get(first_name="Johnson")

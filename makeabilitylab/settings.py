@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 import os
 from configparser import ConfigParser
 
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -37,6 +39,11 @@ if config.has_option('Django', 'DEBUG'):
     DEBUG = config.getboolean('Django', 'DEBUG')
 else:
     DEBUG = True
+
+if config.has_option('Django', 'RUN_TEST_DATA'):
+    RUN_TEST_DATA = config.getboolean('Django', 'RUN_TEST_DATA')
+else:
+    RUN_TEST_DATA = True
 
 # TODO: Take this out when done debugging production
 # DEBUG = True

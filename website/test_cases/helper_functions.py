@@ -23,7 +23,7 @@ def get_files_in_dir_in_media(filetype, dir):
     return None
 
 def get_working_youtube_video_url():
-    return "https: // www.youtube.com / watch?v = beb8zCGMsbI"
+    return "https://www.youtube.com/watch?v = beb8zCGMsbI"
 
 def get_working_url():
     return "https://www.google.com"

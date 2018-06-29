@@ -11,9 +11,7 @@ class ImageModelTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        print(settings.DEBUG)
-
-        if settings.DEBUG:
+        if settings.RUN_TEST_DATA:
             operationGetThosePATHS = get_files_in_dir_in_media('.jpeg', 'testData/testJPGs')
             for path in operationGetThosePATHS:
                 image = File(open(path, 'rb'))
