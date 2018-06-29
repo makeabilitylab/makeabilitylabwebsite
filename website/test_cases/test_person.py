@@ -46,7 +46,7 @@ class PersonPositionTests(TestCase):
     def test_method_test(self):
         johns = Person.objects.all().get(first_name="Johnson")
         johns_pos = Position.objects.all().get(person=johns)
-        self.assertEqual(johns_pos.get_department_abbreviated(), "CS")
+        self.assertEqual(johns_pos.get_department_abbreviated(), "CS,iSchool")
 
     # def test_position_status(self):
 
