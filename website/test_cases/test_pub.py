@@ -1,7 +1,8 @@
-from website.models import Publication, Video
+from website.models import Publication, Video, Project
 from django.test import TestCase
 from website.test_cases.helper_functions import *
 from django.core.files import File
+from django.utils import timezone
 
 
 class PublicationsTest(TestCase):
@@ -9,6 +10,7 @@ class PublicationsTest(TestCase):
         # get the pdf from the testData folder under media,
         paths = get_files_in_dir_in_media('.pdf', 'testData/testPDFs')
 
+        mock_proj = Project.objects.create(name="test_project",short_name="test_project")
         mock_vid = None
 
         for path in paths:
@@ -20,7 +22,7 @@ class PublicationsTest(TestCase):
                                                   total_papers_submitted=None, award=None, pdf_file=pdf_test,
                                                   date=None, video=mock_vid, series=None, isbn=None, doi=None,
                                                   publisher=None, publisher_address=None, acmid=None,
-                                                  page_num_start=None, page_num_end=None, official_url='')
+                                                  page_num_start=None, page_num_end=None, official_url=get_working_url())
             mock_pub.save()
             pdf_test.close()
 
@@ -34,7 +36,8 @@ class PublicationsTest(TestCase):
     def test_pubs_video_exist(self):
         for pub in Publication.objects.all():
             self.assertIsNotNone(pub.video, 'video for publication ' + pub.title + ' is null!')
-            self.assertEqual(check_site_exist(pub.video.video_url), True, 'video url for publication ' + pub.title + ' returns error')
+            self.assertEqual(check_site_exist(pub.video.video_url), True, 'video url for publication ' + pub.title + ' returns error')  
+
 
     def test_pubs_thumbnail_exist(self):
         for pub in Publication.objects.all():
