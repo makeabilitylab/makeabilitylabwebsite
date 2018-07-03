@@ -130,6 +130,26 @@
 
             </div>
         {% endfor %}
+
         </div>
+    {% if news.has_other_pages %}
+              <ul class="pagination">
+                    {% if news.has_previous %}
+                        <li><a href="?page={{ news.previous_page_number }}">Newer</a></li>
+                    {% else %}
+                    {% endif %}
+                    {% for i in news.paginator.page_range %}
+                        {% if news.number == i %}
+                            <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                        {% else %}
+                            <li><a href="?page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                        {% if news.has_next %}
+                            <li><a href="?page={{ news.next_page_number }}">Older</a></li>
+                        {% else %}
+                    {% endif %}
+              </ul>
+        {% endif %}
     </div>
 {% endblock %}
