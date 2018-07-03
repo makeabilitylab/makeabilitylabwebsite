@@ -5,6 +5,8 @@ from .models import Person, Publication, Talk, Position, Banner, News, Keyword, 
 from django.conf import settings
 from operator import itemgetter, attrgetter, methodcaller
 from datetime import date
+import datetime
+from django.utils.timezone import utc
 
 # from . import googleanalytics
 
@@ -341,6 +343,20 @@ def project(request, project_name):
 
    return render(request, 'website/project.html', context)
 
+def news_listing(request):
+    all_banners = Banner.objects.filter(page=Banner.FRONTPAGE)
+    displayed_banners = choose_banners(all_banners)
+    filter = request.GET.get('filter', None)
+    groupby = request.GET.get('groupby', "No-Group")
+    now = datetime.datetime.utcnow().replace(tzinfo=utc)
+
+    context = {'news': News.objects.all(),
+               'banners': displayed_banners,
+               'filter': filter,
+               'groupby': groupby,
+               'time_now': now,
+               'debug': settings.DEBUG}
+    return render(request, 'website/news-listing.html', context)
 
 def news(request, news_id):
    all_banners = Banner.objects.filter(page=Banner.FRONTPAGE)
