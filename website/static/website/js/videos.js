@@ -19,11 +19,12 @@ $(window).load(function () {
 	$('#fixed-side-bar').fixedSideBar();
 	$('#filter-bar').filterBar({
 		items: videos,
-		categories: ["Year", "Project", "Talks", "None"],
+		categories: ["Year", "Project", "Talks", "Speakers", "None"],
 		groupsForCategory: {
 			"Year": groupVideosByYear(),
 			"Project": groupVideosByProject(),
 			"Talks": groupVideosByTalk(),
+			"Speakers": groupVideosBySpeaker(),
 			"None": groupVideosByNone(),
 		},
 		defaultCategory: "None",
@@ -56,8 +57,7 @@ function groupVideosByNone() {
 
 // returns a list of videos grouped by year, sorted with the most recent year first
 // TODO: this is same function as in talks.js (and possibly publications.js). Consolidate?
-function groupVideosByYear()
-{
+function groupVideosByYear() {
 	var tempGroups = {};
 	videos.forEach(function(video, index, array) {
 		var group = video.date.getFullYear().toString();
@@ -75,8 +75,7 @@ function groupVideosByYear()
 // TODO: this is same function as in talks.js (and possibly publications.js). Consolidate? Actually, not the same because
 // videos can only belong to one and only one group currently. If this switches to many-to-one, then we have to update this
 // to be more like talks.js
-function groupVideosByProject()
-{
+function groupVideosByProject(){
 	// tempGroups holds all videos that are contained under the same project
 	var tempGroups = {};
 	videos.forEach(function(video, index, array) {
@@ -92,12 +91,28 @@ function groupVideosByProject()
 	return sortGroupsByDate(tempGroups);
 }
 
-function groupVideosByTalk()
+function groupVideosByTalk() {
+	var tempGroups = {};
+	videos.forEach(function(video, index, array) {
+		video.speakers.forEach(function(speaker, ind, arr) {
+            if (speaker !== "") {
+            	group = speaker.name;
+                if (!(group in tempGroups)) {
+                    tempGroups[group] = [];
+                }
+                tempGroups[group].push(video);
+            }
+        });
+	});
+	return sortGroupsByDate(tempGroups);
+}
+
+function groupVideosBySpeaker()
 {
 	var tempGroups = {};
 	videos.forEach(function(video, index, array) {
-		group = video.talk;
-		if(video.talk !== "") {
+
+		if(video.speakers.length) {
             if (!(group in tempGroups)) {
                 tempGroups[group] = [];
             }
@@ -106,6 +121,7 @@ function groupVideosByTalk()
 	});
 	return sortGroupsByDate(tempGroups);
 }
+
 
 //sorts groups by the date of the first item, sorts items inside each group by date in reverse chronological order (earliest first)
 function sortGroupsByDate(unsortedGroups)
