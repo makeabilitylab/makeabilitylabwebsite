@@ -28,6 +28,7 @@
 	position:relative;
 	min-height: 300px;
 	float: left;
+	line-height: 1;
 }
 
 @media (max-width: 768px){
