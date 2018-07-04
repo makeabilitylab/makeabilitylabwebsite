@@ -457,6 +457,13 @@ class Project(models.Model):
             return mostRecentArtifacts[0][1]
         else:
             return None
+
+    def get_div_class_name(self):
+        all_keywords = ""
+        for keyword in self.keywords.all():
+            all_keywords += keyword.keyword.replace(" ", "-").replace("/", "-") + " "
+
+        return all_keywords[:all_keywords.__len__() - 1];
             
     def __str__(self):
         return self.name
