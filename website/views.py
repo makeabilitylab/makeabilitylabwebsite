@@ -357,7 +357,7 @@ def news_listing(request):
     page = request.GET.get('page', 1)
 
     # change the int parameter below to control the amount of objects displayed on a page
-    paginator = Paginator(news_list, 2)
+    paginator = Paginator(news_list, 10)
     try:
         news = paginator.page(page)
     except PageNotAnInteger:
