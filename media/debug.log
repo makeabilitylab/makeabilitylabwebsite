@@ -1,0 +1,536 @@
+DEBUG 2018-07-05 17:52:54,205 utils 45 140263244547840 (0.005) 
+            SELECT name, type FROM sqlite_master
+            WHERE type in ('table', 'view') AND NOT name='sqlite_sequence'
+            ORDER BY name; args=None
+DEBUG 2018-07-05 17:52:54,207 utils 45 140263244547840 (0.000) SELECT "django_migrations"."app", "django_migrations"."name" FROM "django_migrations"; args=()
+DEBUG 2018-07-05 17:52:54,209 utils 45 140263244547840 (0.000) 
+            SELECT name, type FROM sqlite_master
+            WHERE type in ('table', 'view') AND NOT name='sqlite_sequence'
+            ORDER BY name; args=None
+DEBUG 2018-07-05 17:52:54,210 utils 45 140263244547840 (0.000) SELECT "django_migrations"."app", "django_migrations"."name" FROM "django_migrations"; args=()
+DEBUG 2018-07-05 17:52:54,344 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'person'); args=('website', 'person')
+DEBUG 2018-07-05 17:52:54,345 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'position'); args=('website', 'position')
+DEBUG 2018-07-05 17:52:54,346 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'keyword'); args=('website', 'keyword')
+DEBUG 2018-07-05 17:52:54,347 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'sponsor'); args=('website', 'sponsor')
+DEBUG 2018-07-05 17:52:54,348 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'project_umbrella'); args=('website', 'project_umbrella')
+DEBUG 2018-07-05 17:52:54,349 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'project'); args=('website', 'project')
+DEBUG 2018-07-05 17:52:54,350 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'project_role'); args=('website', 'project_role')
+DEBUG 2018-07-05 17:52:54,350 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'project_header'); args=('website', 'project_header')
+DEBUG 2018-07-05 17:52:54,351 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'photo'); args=('website', 'photo')
+DEBUG 2018-07-05 17:52:54,352 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'video'); args=('website', 'video')
+DEBUG 2018-07-05 17:52:54,353 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'talk'); args=('website', 'talk')
+DEBUG 2018-07-05 17:52:54,354 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'publication'); args=('website', 'publication')
+DEBUG 2018-07-05 17:52:54,354 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'poster'); args=('website', 'poster')
+DEBUG 2018-07-05 17:52:54,355 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'news'); args=('website', 'news')
+DEBUG 2018-07-05 17:52:54,356 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'banner'); args=('website', 'banner')
+DEBUG 2018-07-05 17:52:54,358 utils 45 140263244547840 (0.001) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+DEBUG 2018-07-05 17:52:54,360 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'website'; args=('website',)
+DEBUG 2018-07-05 17:52:54,361 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'admin' AND "django_content_type"."model" = 'logentry'); args=('admin', 'logentry')
+DEBUG 2018-07-05 17:52:54,363 utils 45 140263244547840 (0.000) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (16) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(16,)
+DEBUG 2018-07-05 17:52:54,364 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'admin'; args=('admin',)
+DEBUG 2018-07-05 17:52:54,364 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'auth' AND "django_content_type"."model" = 'permission'); args=('auth', 'permission')
+DEBUG 2018-07-05 17:52:54,365 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'auth' AND "django_content_type"."model" = 'group'); args=('auth', 'group')
+DEBUG 2018-07-05 17:52:54,366 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'auth' AND "django_content_type"."model" = 'user'); args=('auth', 'user')
+DEBUG 2018-07-05 17:52:54,367 utils 45 140263244547840 (0.000) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (17, 18, 19) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(17, 18, 19)
+DEBUG 2018-07-05 17:52:54,368 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'auth'; args=('auth',)
+DEBUG 2018-07-05 17:52:54,369 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'contenttypes' AND "django_content_type"."model" = 'contenttype'); args=('contenttypes', 'contenttype')
+DEBUG 2018-07-05 17:52:54,371 utils 45 140263244547840 (0.000) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (20) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(20,)
+DEBUG 2018-07-05 17:52:54,371 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'contenttypes'; args=('contenttypes',)
+DEBUG 2018-07-05 17:52:54,373 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'sessions' AND "django_content_type"."model" = 'session'); args=('sessions', 'session')
+DEBUG 2018-07-05 17:52:54,376 utils 45 140263244547840 (0.000) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (21) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(21,)
+DEBUG 2018-07-05 17:52:54,377 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'sessions'; args=('sessions',)
+DEBUG 2018-07-05 17:52:54,380 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'easy_thumbnails' AND "django_content_type"."model" = 'source'); args=('easy_thumbnails', 'source')
+DEBUG 2018-07-05 17:52:54,382 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'easy_thumbnails' AND "django_content_type"."model" = 'thumbnail'); args=('easy_thumbnails', 'thumbnail')
+DEBUG 2018-07-05 17:52:54,383 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'easy_thumbnails' AND "django_content_type"."model" = 'thumbnaildimensions'); args=('easy_thumbnails', 'thumbnaildimensions')
+DEBUG 2018-07-05 17:52:54,386 utils 45 140263244547840 (0.000) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (24, 22, 23) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(24, 22, 23)
+DEBUG 2018-07-05 17:52:54,387 utils 45 140263244547840 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'easy_thumbnails'; args=('easy_thumbnails',)
+DEBUG 2018-07-05 17:52:55,898 utils 85 140453517879040 (0.005) 
+            SELECT name, type FROM sqlite_master
+            WHERE type in ('table', 'view') AND NOT name='sqlite_sequence'
+            ORDER BY name; args=None
+DEBUG 2018-07-05 17:52:55,901 utils 85 140453517879040 (0.000) SELECT "django_migrations"."app", "django_migrations"."name" FROM "django_migrations"; args=()
+DEBUG 2018-07-05 17:52:55,903 utils 85 140453517879040 (0.000) 
+            SELECT name, type FROM sqlite_master
+            WHERE type in ('table', 'view') AND NOT name='sqlite_sequence'
+            ORDER BY name; args=None
+DEBUG 2018-07-05 17:52:55,905 utils 85 140453517879040 (0.000) SELECT "django_migrations"."app", "django_migrations"."name" FROM "django_migrations"; args=()
+DEBUG 2018-07-05 17:52:56,039 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'person'); args=('website', 'person')
+DEBUG 2018-07-05 17:52:56,041 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'position'); args=('website', 'position')
+DEBUG 2018-07-05 17:52:56,042 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'keyword'); args=('website', 'keyword')
+DEBUG 2018-07-05 17:52:56,043 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'sponsor'); args=('website', 'sponsor')
+DEBUG 2018-07-05 17:52:56,045 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'project_umbrella'); args=('website', 'project_umbrella')
+DEBUG 2018-07-05 17:52:56,046 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'project'); args=('website', 'project')
+DEBUG 2018-07-05 17:52:56,047 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'project_role'); args=('website', 'project_role')
+DEBUG 2018-07-05 17:52:56,048 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'project_header'); args=('website', 'project_header')
+DEBUG 2018-07-05 17:52:56,049 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'photo'); args=('website', 'photo')
+DEBUG 2018-07-05 17:52:56,051 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'video'); args=('website', 'video')
+DEBUG 2018-07-05 17:52:56,051 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'talk'); args=('website', 'talk')
+DEBUG 2018-07-05 17:52:56,052 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'publication'); args=('website', 'publication')
+DEBUG 2018-07-05 17:52:56,053 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'poster'); args=('website', 'poster')
+DEBUG 2018-07-05 17:52:56,054 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'news'); args=('website', 'news')
+DEBUG 2018-07-05 17:52:56,055 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'website' AND "django_content_type"."model" = 'banner'); args=('website', 'banner')
+DEBUG 2018-07-05 17:52:56,057 utils 85 140453517879040 (0.001) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+DEBUG 2018-07-05 17:52:56,059 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'website'; args=('website',)
+DEBUG 2018-07-05 17:52:56,060 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'admin' AND "django_content_type"."model" = 'logentry'); args=('admin', 'logentry')
+DEBUG 2018-07-05 17:52:56,062 utils 85 140453517879040 (0.000) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (16) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(16,)
+DEBUG 2018-07-05 17:52:56,063 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'admin'; args=('admin',)
+DEBUG 2018-07-05 17:52:56,064 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'auth' AND "django_content_type"."model" = 'permission'); args=('auth', 'permission')
+DEBUG 2018-07-05 17:52:56,064 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'auth' AND "django_content_type"."model" = 'group'); args=('auth', 'group')
+DEBUG 2018-07-05 17:52:56,065 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'auth' AND "django_content_type"."model" = 'user'); args=('auth', 'user')
+DEBUG 2018-07-05 17:52:56,067 utils 85 140453517879040 (0.000) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (17, 18, 19) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(17, 18, 19)
+DEBUG 2018-07-05 17:52:56,068 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'auth'; args=('auth',)
+DEBUG 2018-07-05 17:52:56,069 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'contenttypes' AND "django_content_type"."model" = 'contenttype'); args=('contenttypes', 'contenttype')
+DEBUG 2018-07-05 17:52:56,070 utils 85 140453517879040 (0.000) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (20) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(20,)
+DEBUG 2018-07-05 17:52:56,070 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'contenttypes'; args=('contenttypes',)
+DEBUG 2018-07-05 17:52:56,071 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'sessions' AND "django_content_type"."model" = 'session'); args=('sessions', 'session')
+DEBUG 2018-07-05 17:52:56,072 utils 85 140453517879040 (0.000) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (21) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(21,)
+DEBUG 2018-07-05 17:52:56,073 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'sessions'; args=('sessions',)
+DEBUG 2018-07-05 17:52:56,075 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'easy_thumbnails' AND "django_content_type"."model" = 'source'); args=('easy_thumbnails', 'source')
+DEBUG 2018-07-05 17:52:56,076 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'easy_thumbnails' AND "django_content_type"."model" = 'thumbnail'); args=('easy_thumbnails', 'thumbnail')
+DEBUG 2018-07-05 17:52:56,077 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'easy_thumbnails' AND "django_content_type"."model" = 'thumbnaildimensions'); args=('easy_thumbnails', 'thumbnaildimensions')
+DEBUG 2018-07-05 17:52:56,079 utils 85 140453517879040 (0.000) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (24, 22, 23) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(24, 22, 23)
+DEBUG 2018-07-05 17:52:56,080 utils 85 140453517879040 (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'easy_thumbnails'; args=('easy_thumbnails',)
+DEBUG 2018-07-05 17:52:57,418 utils 125 139669381912320 (0.004) 
+            SELECT name, type FROM sqlite_master
+            WHERE type in ('table', 'view') AND NOT name='sqlite_sequence'
+            ORDER BY name; args=None
+DEBUG 2018-07-05 17:52:57,432 utils 125 139669381912320 (0.001) SELECT "django_migrations"."app", "django_migrations"."name" FROM "django_migrations"; args=()
+DEBUG 2018-07-05 17:53:00,534 utils 125 139669369775872 (0.003) SELECT "website_banner"."id", "website_banner"."page", "website_banner"."image", "website_banner"."project_id", "website_banner"."cropping", "website_banner"."title", "website_banner"."caption", "website_banner"."alt_text", "website_banner"."link", "website_banner"."favorite", "website_banner"."date_added" FROM "website_banner" WHERE "website_banner"."page" = 'FRONTPAGE'; args=('FRONTPAGE',)
+DEBUG 2018-07-05 17:53:00,537 utils 125 139669369775872 (0.001) SELECT COUNT(*) AS "__count" FROM "website_news"; args=()
+DEBUG 2018-07-05 17:53:00,571 utils 125 139669369775872 (0.003) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC LIMIT 3; args=()
+DEBUG 2018-07-05 17:53:00,616 utils 125 139669369775872 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC, "website_news"."title" ASC LIMIT 2; args=()
+DEBUG 2018-07-05 17:53:00,619 utils 125 139669369775872 (0.001) SELECT "website_person"."id", "website_person"."first_name", "website_person"."middle_name", "website_person"."last_name", "website_person"."email", "website_person"."personal_website", "website_person"."github", "website_person"."twitter", "website_person"."bio", "website_person"."next_position", "website_person"."next_position_url", "website_person"."image", "website_person"."easter_egg", "website_person"."cropping", "website_person"."easter_egg_crop" FROM "website_person" WHERE "website_person"."id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:00,627 utils 125 139669369775872 (0.001) SELECT "website_project"."id", "website_project"."name", "website_project"."short_name", "website_project"."start_date", "website_project"."end_date", "website_project"."gallery_image", "website_project"."cropping", "website_project"."about", "website_project"."updated" FROM "website_project" INNER JOIN "website_news_project" ON ("website_project"."id" = "website_news_project"."project_id") WHERE "website_news_project"."news_id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:00,631 utils 125 139669369775872 (0.001) SELECT "website_person"."id", "website_person"."first_name", "website_person"."middle_name", "website_person"."last_name", "website_person"."email", "website_person"."personal_website", "website_person"."github", "website_person"."twitter", "website_person"."bio", "website_person"."next_position", "website_person"."next_position_url", "website_person"."image", "website_person"."easter_egg", "website_person"."cropping", "website_person"."easter_egg_crop" FROM "website_person" WHERE "website_person"."id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:00,634 utils 125 139669369775872 (0.001) SELECT "website_project"."id", "website_project"."name", "website_project"."short_name", "website_project"."start_date", "website_project"."end_date", "website_project"."gallery_image", "website_project"."cropping", "website_project"."about", "website_project"."updated" FROM "website_project" INNER JOIN "website_news_project" ON ("website_project"."id" = "website_news_project"."project_id") WHERE "website_news_project"."news_id" = 4; args=(4,)
+DEBUG 2018-07-05 17:53:00,643 base 125 139669369775872 Exception while resolving variable 'cropping' in template 'website/news-listing.html'.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 879, in _resolve_lookup
+    current = current[bit]
+  File "/usr/local/lib/python3.6/site-packages/django/core/paginator.py", line 121, in __getitem__
+    raise TypeError
+TypeError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 887, in _resolve_lookup
+    current = getattr(current, bit)
+AttributeError: 'Page' object has no attribute 'cropping'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 894, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'cropping'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 901, in _resolve_lookup
+    (bit, current))  # missing attribute
+django.template.base.VariableDoesNotExist: Failed lookup for key [cropping] in '<Page 1 of 4>'
+DEBUG 2018-07-05 17:53:00,656 utils 125 139669369775872 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC LIMIT 3; args=()
+DEBUG 2018-07-05 17:53:03,121 utils 125 139669369775872 (0.002) SELECT "website_banner"."id", "website_banner"."page", "website_banner"."image", "website_banner"."project_id", "website_banner"."cropping", "website_banner"."title", "website_banner"."caption", "website_banner"."alt_text", "website_banner"."link", "website_banner"."favorite", "website_banner"."date_added" FROM "website_banner" WHERE "website_banner"."page" = 'FRONTPAGE'; args=('FRONTPAGE',)
+DEBUG 2018-07-05 17:53:03,122 utils 125 139669369775872 (0.000) SELECT COUNT(*) AS "__count" FROM "website_news"; args=()
+DEBUG 2018-07-05 17:53:03,135 utils 125 139669369775872 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC LIMIT 3; args=()
+DEBUG 2018-07-05 17:53:03,149 utils 125 139669369775872 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC, "website_news"."title" ASC LIMIT 2 OFFSET 2; args=()
+DEBUG 2018-07-05 17:53:03,151 utils 125 139669369775872 (0.000) SELECT "website_person"."id", "website_person"."first_name", "website_person"."middle_name", "website_person"."last_name", "website_person"."email", "website_person"."personal_website", "website_person"."github", "website_person"."twitter", "website_person"."bio", "website_person"."next_position", "website_person"."next_position_url", "website_person"."image", "website_person"."easter_egg", "website_person"."cropping", "website_person"."easter_egg_crop" FROM "website_person" WHERE "website_person"."id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:03,153 utils 125 139669369775872 (0.000) SELECT "website_project"."id", "website_project"."name", "website_project"."short_name", "website_project"."start_date", "website_project"."end_date", "website_project"."gallery_image", "website_project"."cropping", "website_project"."about", "website_project"."updated" FROM "website_project" INNER JOIN "website_news_project" ON ("website_project"."id" = "website_news_project"."project_id") WHERE "website_news_project"."news_id" = 7; args=(7,)
+DEBUG 2018-07-05 17:53:03,154 utils 125 139669369775872 (0.000) SELECT "website_person"."id", "website_person"."first_name", "website_person"."middle_name", "website_person"."last_name", "website_person"."email", "website_person"."personal_website", "website_person"."github", "website_person"."twitter", "website_person"."bio", "website_person"."next_position", "website_person"."next_position_url", "website_person"."image", "website_person"."easter_egg", "website_person"."cropping", "website_person"."easter_egg_crop" FROM "website_person" WHERE "website_person"."id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:03,156 utils 125 139669369775872 (0.000) SELECT "website_project"."id", "website_project"."name", "website_project"."short_name", "website_project"."start_date", "website_project"."end_date", "website_project"."gallery_image", "website_project"."cropping", "website_project"."about", "website_project"."updated" FROM "website_project" INNER JOIN "website_news_project" ON ("website_project"."id" = "website_news_project"."project_id") WHERE "website_news_project"."news_id" = 5; args=(5,)
+DEBUG 2018-07-05 17:53:03,160 utils 125 139669369775872 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC LIMIT 3; args=()
+DEBUG 2018-07-05 17:53:04,277 utils 125 139669369775872 (0.002) SELECT "website_banner"."id", "website_banner"."page", "website_banner"."image", "website_banner"."project_id", "website_banner"."cropping", "website_banner"."title", "website_banner"."caption", "website_banner"."alt_text", "website_banner"."link", "website_banner"."favorite", "website_banner"."date_added" FROM "website_banner" WHERE "website_banner"."page" = 'FRONTPAGE'; args=('FRONTPAGE',)
+DEBUG 2018-07-05 17:53:04,278 utils 125 139669369775872 (0.000) SELECT COUNT(*) AS "__count" FROM "website_news"; args=()
+DEBUG 2018-07-05 17:53:04,291 utils 125 139669369775872 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC LIMIT 3; args=()
+DEBUG 2018-07-05 17:53:04,305 utils 125 139669369775872 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC, "website_news"."title" ASC LIMIT 2 OFFSET 4; args=()
+DEBUG 2018-07-05 17:53:04,306 utils 125 139669369775872 (0.000) SELECT "website_person"."id", "website_person"."first_name", "website_person"."middle_name", "website_person"."last_name", "website_person"."email", "website_person"."personal_website", "website_person"."github", "website_person"."twitter", "website_person"."bio", "website_person"."next_position", "website_person"."next_position_url", "website_person"."image", "website_person"."easter_egg", "website_person"."cropping", "website_person"."easter_egg_crop" FROM "website_person" WHERE "website_person"."id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:04,308 utils 125 139669369775872 (0.000) SELECT "website_project"."id", "website_project"."name", "website_project"."short_name", "website_project"."start_date", "website_project"."end_date", "website_project"."gallery_image", "website_project"."cropping", "website_project"."about", "website_project"."updated" FROM "website_project" INNER JOIN "website_news_project" ON ("website_project"."id" = "website_news_project"."project_id") WHERE "website_news_project"."news_id" = 2; args=(2,)
+DEBUG 2018-07-05 17:53:04,309 utils 125 139669369775872 (0.000) SELECT "website_person"."id", "website_person"."first_name", "website_person"."middle_name", "website_person"."last_name", "website_person"."email", "website_person"."personal_website", "website_person"."github", "website_person"."twitter", "website_person"."bio", "website_person"."next_position", "website_person"."next_position_url", "website_person"."image", "website_person"."easter_egg", "website_person"."cropping", "website_person"."easter_egg_crop" FROM "website_person" WHERE "website_person"."id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:04,311 utils 125 139669369775872 (0.000) SELECT "website_project"."id", "website_project"."name", "website_project"."short_name", "website_project"."start_date", "website_project"."end_date", "website_project"."gallery_image", "website_project"."cropping", "website_project"."about", "website_project"."updated" FROM "website_project" INNER JOIN "website_news_project" ON ("website_project"."id" = "website_news_project"."project_id") WHERE "website_news_project"."news_id" = 3; args=(3,)
+DEBUG 2018-07-05 17:53:04,313 base 125 139669369775872 Exception while resolving variable 'cropping' in template 'website/news-listing.html'.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 879, in _resolve_lookup
+    current = current[bit]
+  File "/usr/local/lib/python3.6/site-packages/django/core/paginator.py", line 121, in __getitem__
+    raise TypeError
+TypeError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 887, in _resolve_lookup
+    current = getattr(current, bit)
+AttributeError: 'Page' object has no attribute 'cropping'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 894, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'cropping'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 901, in _resolve_lookup
+    (bit, current))  # missing attribute
+django.template.base.VariableDoesNotExist: Failed lookup for key [cropping] in '<Page 3 of 4>'
+DEBUG 2018-07-05 17:53:04,320 base 125 139669369775872 Exception while resolving variable 'cropping' in template 'website/news-listing.html'.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 879, in _resolve_lookup
+    current = current[bit]
+  File "/usr/local/lib/python3.6/site-packages/django/core/paginator.py", line 121, in __getitem__
+    raise TypeError
+TypeError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 887, in _resolve_lookup
+    current = getattr(current, bit)
+AttributeError: 'Page' object has no attribute 'cropping'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 894, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'cropping'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 901, in _resolve_lookup
+    (bit, current))  # missing attribute
+django.template.base.VariableDoesNotExist: Failed lookup for key [cropping] in '<Page 3 of 4>'
+DEBUG 2018-07-05 17:53:04,327 utils 125 139669369775872 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC LIMIT 3; args=()
+DEBUG 2018-07-05 17:53:05,029 utils 125 139669369775872 (0.001) SELECT "website_banner"."id", "website_banner"."page", "website_banner"."image", "website_banner"."project_id", "website_banner"."cropping", "website_banner"."title", "website_banner"."caption", "website_banner"."alt_text", "website_banner"."link", "website_banner"."favorite", "website_banner"."date_added" FROM "website_banner" WHERE "website_banner"."page" = 'FRONTPAGE'; args=('FRONTPAGE',)
+DEBUG 2018-07-05 17:53:05,030 utils 125 139669369775872 (0.000) SELECT COUNT(*) AS "__count" FROM "website_news"; args=()
+DEBUG 2018-07-05 17:53:05,040 utils 125 139669369775872 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC LIMIT 3; args=()
+DEBUG 2018-07-05 17:53:05,052 utils 125 139669369775872 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC, "website_news"."title" ASC LIMIT 2 OFFSET 6; args=()
+DEBUG 2018-07-05 17:53:05,053 utils 125 139669369775872 (0.000) SELECT "website_person"."id", "website_person"."first_name", "website_person"."middle_name", "website_person"."last_name", "website_person"."email", "website_person"."personal_website", "website_person"."github", "website_person"."twitter", "website_person"."bio", "website_person"."next_position", "website_person"."next_position_url", "website_person"."image", "website_person"."easter_egg", "website_person"."cropping", "website_person"."easter_egg_crop" FROM "website_person" WHERE "website_person"."id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:05,055 utils 125 139669369775872 (0.000) SELECT "website_project"."id", "website_project"."name", "website_project"."short_name", "website_project"."start_date", "website_project"."end_date", "website_project"."gallery_image", "website_project"."cropping", "website_project"."about", "website_project"."updated" FROM "website_project" INNER JOIN "website_news_project" ON ("website_project"."id" = "website_news_project"."project_id") WHERE "website_news_project"."news_id" = 6; args=(6,)
+DEBUG 2018-07-05 17:53:05,057 utils 125 139669369775872 (0.000) SELECT "website_person"."id", "website_person"."first_name", "website_person"."middle_name", "website_person"."last_name", "website_person"."email", "website_person"."personal_website", "website_person"."github", "website_person"."twitter", "website_person"."bio", "website_person"."next_position", "website_person"."next_position_url", "website_person"."image", "website_person"."easter_egg", "website_person"."cropping", "website_person"."easter_egg_crop" FROM "website_person" WHERE "website_person"."id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:05,058 utils 125 139669369775872 (0.000) SELECT "website_project"."id", "website_project"."name", "website_project"."short_name", "website_project"."start_date", "website_project"."end_date", "website_project"."gallery_image", "website_project"."cropping", "website_project"."about", "website_project"."updated" FROM "website_project" INNER JOIN "website_news_project" ON ("website_project"."id" = "website_news_project"."project_id") WHERE "website_news_project"."news_id" = 1; args=(1,)
+DEBUG 2018-07-05 17:53:05,061 base 125 139669369775872 Exception while resolving variable 'cropping' in template 'website/news-listing.html'.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 879, in _resolve_lookup
+    current = current[bit]
+  File "/usr/local/lib/python3.6/site-packages/django/core/paginator.py", line 121, in __getitem__
+    raise TypeError
+TypeError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 887, in _resolve_lookup
+    current = getattr(current, bit)
+AttributeError: 'Page' object has no attribute 'cropping'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 894, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'cropping'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 901, in _resolve_lookup
+    (bit, current))  # missing attribute
+django.template.base.VariableDoesNotExist: Failed lookup for key [cropping] in '<Page 4 of 4>'
+DEBUG 2018-07-05 17:53:05,068 utils 125 139669369775872 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC LIMIT 3; args=()
+DEBUG 2018-07-05 17:53:06,702 utils 125 139669369775872 (0.002) SELECT "website_banner"."id", "website_banner"."page", "website_banner"."image", "website_banner"."project_id", "website_banner"."cropping", "website_banner"."title", "website_banner"."caption", "website_banner"."alt_text", "website_banner"."link", "website_banner"."favorite", "website_banner"."date_added" FROM "website_banner" WHERE "website_banner"."page" = 'FRONTPAGE'; args=('FRONTPAGE',)
+DEBUG 2018-07-05 17:53:06,703 utils 125 139669369775872 (0.000) SELECT COUNT(*) AS "__count" FROM "website_news"; args=()
+DEBUG 2018-07-05 17:53:06,716 utils 125 139669369775872 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC LIMIT 3; args=()
+DEBUG 2018-07-05 17:53:06,732 utils 125 139669369775872 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC, "website_news"."title" ASC LIMIT 2 OFFSET 4; args=()
+DEBUG 2018-07-05 17:53:06,734 utils 125 139669369775872 (0.000) SELECT "website_person"."id", "website_person"."first_name", "website_person"."middle_name", "website_person"."last_name", "website_person"."email", "website_person"."personal_website", "website_person"."github", "website_person"."twitter", "website_person"."bio", "website_person"."next_position", "website_person"."next_position_url", "website_person"."image", "website_person"."easter_egg", "website_person"."cropping", "website_person"."easter_egg_crop" FROM "website_person" WHERE "website_person"."id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:06,736 utils 125 139669369775872 (0.000) SELECT "website_project"."id", "website_project"."name", "website_project"."short_name", "website_project"."start_date", "website_project"."end_date", "website_project"."gallery_image", "website_project"."cropping", "website_project"."about", "website_project"."updated" FROM "website_project" INNER JOIN "website_news_project" ON ("website_project"."id" = "website_news_project"."project_id") WHERE "website_news_project"."news_id" = 2; args=(2,)
+DEBUG 2018-07-05 17:53:06,737 utils 125 139669369775872 (0.000) SELECT "website_person"."id", "website_person"."first_name", "website_person"."middle_name", "website_person"."last_name", "website_person"."email", "website_person"."personal_website", "website_person"."github", "website_person"."twitter", "website_person"."bio", "website_person"."next_position", "website_person"."next_position_url", "website_person"."image", "website_person"."easter_egg", "website_person"."cropping", "website_person"."easter_egg_crop" FROM "website_person" WHERE "website_person"."id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:06,739 utils 125 139669369775872 (0.000) SELECT "website_project"."id", "website_project"."name", "website_project"."short_name", "website_project"."start_date", "website_project"."end_date", "website_project"."gallery_image", "website_project"."cropping", "website_project"."about", "website_project"."updated" FROM "website_project" INNER JOIN "website_news_project" ON ("website_project"."id" = "website_news_project"."project_id") WHERE "website_news_project"."news_id" = 3; args=(3,)
+DEBUG 2018-07-05 17:53:06,741 base 125 139669369775872 Exception while resolving variable 'cropping' in template 'website/news-listing.html'.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 879, in _resolve_lookup
+    current = current[bit]
+  File "/usr/local/lib/python3.6/site-packages/django/core/paginator.py", line 121, in __getitem__
+    raise TypeError
+TypeError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 887, in _resolve_lookup
+    current = getattr(current, bit)
+AttributeError: 'Page' object has no attribute 'cropping'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 894, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'cropping'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 901, in _resolve_lookup
+    (bit, current))  # missing attribute
+django.template.base.VariableDoesNotExist: Failed lookup for key [cropping] in '<Page 3 of 4>'
+DEBUG 2018-07-05 17:53:06,748 base 125 139669369775872 Exception while resolving variable 'cropping' in template 'website/news-listing.html'.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 879, in _resolve_lookup
+    current = current[bit]
+  File "/usr/local/lib/python3.6/site-packages/django/core/paginator.py", line 121, in __getitem__
+    raise TypeError
+TypeError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 887, in _resolve_lookup
+    current = getattr(current, bit)
+AttributeError: 'Page' object has no attribute 'cropping'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 894, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'cropping'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 901, in _resolve_lookup
+    (bit, current))  # missing attribute
+django.template.base.VariableDoesNotExist: Failed lookup for key [cropping] in '<Page 3 of 4>'
+DEBUG 2018-07-05 17:53:06,754 utils 125 139669369775872 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC LIMIT 3; args=()
+DEBUG 2018-07-05 17:53:07,831 utils 125 139669369775872 (0.003) SELECT "website_banner"."id", "website_banner"."page", "website_banner"."image", "website_banner"."project_id", "website_banner"."cropping", "website_banner"."title", "website_banner"."caption", "website_banner"."alt_text", "website_banner"."link", "website_banner"."favorite", "website_banner"."date_added" FROM "website_banner" WHERE "website_banner"."page" = 'FRONTPAGE'; args=('FRONTPAGE',)
+DEBUG 2018-07-05 17:53:07,832 utils 125 139669369775872 (0.000) SELECT COUNT(*) AS "__count" FROM "website_news"; args=()
+DEBUG 2018-07-05 17:53:07,845 utils 125 139669369775872 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC LIMIT 3; args=()
+DEBUG 2018-07-05 17:53:07,859 utils 125 139669369775872 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC, "website_news"."title" ASC LIMIT 2 OFFSET 2; args=()
+DEBUG 2018-07-05 17:53:07,861 utils 125 139669369775872 (0.000) SELECT "website_person"."id", "website_person"."first_name", "website_person"."middle_name", "website_person"."last_name", "website_person"."email", "website_person"."personal_website", "website_person"."github", "website_person"."twitter", "website_person"."bio", "website_person"."next_position", "website_person"."next_position_url", "website_person"."image", "website_person"."easter_egg", "website_person"."cropping", "website_person"."easter_egg_crop" FROM "website_person" WHERE "website_person"."id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:07,863 utils 125 139669369775872 (0.000) SELECT "website_project"."id", "website_project"."name", "website_project"."short_name", "website_project"."start_date", "website_project"."end_date", "website_project"."gallery_image", "website_project"."cropping", "website_project"."about", "website_project"."updated" FROM "website_project" INNER JOIN "website_news_project" ON ("website_project"."id" = "website_news_project"."project_id") WHERE "website_news_project"."news_id" = 7; args=(7,)
+DEBUG 2018-07-05 17:53:07,864 utils 125 139669369775872 (0.000) SELECT "website_person"."id", "website_person"."first_name", "website_person"."middle_name", "website_person"."last_name", "website_person"."email", "website_person"."personal_website", "website_person"."github", "website_person"."twitter", "website_person"."bio", "website_person"."next_position", "website_person"."next_position_url", "website_person"."image", "website_person"."easter_egg", "website_person"."cropping", "website_person"."easter_egg_crop" FROM "website_person" WHERE "website_person"."id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:07,866 utils 125 139669369775872 (0.000) SELECT "website_project"."id", "website_project"."name", "website_project"."short_name", "website_project"."start_date", "website_project"."end_date", "website_project"."gallery_image", "website_project"."cropping", "website_project"."about", "website_project"."updated" FROM "website_project" INNER JOIN "website_news_project" ON ("website_project"."id" = "website_news_project"."project_id") WHERE "website_news_project"."news_id" = 5; args=(5,)
+DEBUG 2018-07-05 17:53:07,870 utils 125 139669369775872 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC LIMIT 3; args=()
+DEBUG 2018-07-05 17:53:08,597 utils 125 139669369775872 (0.001) SELECT "website_banner"."id", "website_banner"."page", "website_banner"."image", "website_banner"."project_id", "website_banner"."cropping", "website_banner"."title", "website_banner"."caption", "website_banner"."alt_text", "website_banner"."link", "website_banner"."favorite", "website_banner"."date_added" FROM "website_banner" WHERE "website_banner"."page" = 'FRONTPAGE'; args=('FRONTPAGE',)
+DEBUG 2018-07-05 17:53:08,598 utils 125 139669369775872 (0.000) SELECT COUNT(*) AS "__count" FROM "website_news"; args=()
+DEBUG 2018-07-05 17:53:08,609 utils 125 139669369775872 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC LIMIT 3; args=()
+DEBUG 2018-07-05 17:53:08,622 utils 125 139669369775872 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC, "website_news"."title" ASC LIMIT 2; args=()
+DEBUG 2018-07-05 17:53:08,624 utils 125 139669369775872 (0.000) SELECT "website_person"."id", "website_person"."first_name", "website_person"."middle_name", "website_person"."last_name", "website_person"."email", "website_person"."personal_website", "website_person"."github", "website_person"."twitter", "website_person"."bio", "website_person"."next_position", "website_person"."next_position_url", "website_person"."image", "website_person"."easter_egg", "website_person"."cropping", "website_person"."easter_egg_crop" FROM "website_person" WHERE "website_person"."id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:08,626 utils 125 139669369775872 (0.000) SELECT "website_project"."id", "website_project"."name", "website_project"."short_name", "website_project"."start_date", "website_project"."end_date", "website_project"."gallery_image", "website_project"."cropping", "website_project"."about", "website_project"."updated" FROM "website_project" INNER JOIN "website_news_project" ON ("website_project"."id" = "website_news_project"."project_id") WHERE "website_news_project"."news_id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:08,627 utils 125 139669369775872 (0.000) SELECT "website_person"."id", "website_person"."first_name", "website_person"."middle_name", "website_person"."last_name", "website_person"."email", "website_person"."personal_website", "website_person"."github", "website_person"."twitter", "website_person"."bio", "website_person"."next_position", "website_person"."next_position_url", "website_person"."image", "website_person"."easter_egg", "website_person"."cropping", "website_person"."easter_egg_crop" FROM "website_person" WHERE "website_person"."id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:08,628 utils 125 139669369775872 (0.000) SELECT "website_project"."id", "website_project"."name", "website_project"."short_name", "website_project"."start_date", "website_project"."end_date", "website_project"."gallery_image", "website_project"."cropping", "website_project"."about", "website_project"."updated" FROM "website_project" INNER JOIN "website_news_project" ON ("website_project"."id" = "website_news_project"."project_id") WHERE "website_news_project"."news_id" = 4; args=(4,)
+DEBUG 2018-07-05 17:53:08,631 base 125 139669369775872 Exception while resolving variable 'cropping' in template 'website/news-listing.html'.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 879, in _resolve_lookup
+    current = current[bit]
+  File "/usr/local/lib/python3.6/site-packages/django/core/paginator.py", line 121, in __getitem__
+    raise TypeError
+TypeError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 887, in _resolve_lookup
+    current = getattr(current, bit)
+AttributeError: 'Page' object has no attribute 'cropping'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 894, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'cropping'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 901, in _resolve_lookup
+    (bit, current))  # missing attribute
+django.template.base.VariableDoesNotExist: Failed lookup for key [cropping] in '<Page 1 of 4>'
+DEBUG 2018-07-05 17:53:08,637 utils 125 139669369775872 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC LIMIT 3; args=()
+DEBUG 2018-07-05 17:53:34,339 utils 125 139669369775872 (0.002) SELECT "website_banner"."id", "website_banner"."page", "website_banner"."image", "website_banner"."project_id", "website_banner"."cropping", "website_banner"."title", "website_banner"."caption", "website_banner"."alt_text", "website_banner"."link", "website_banner"."favorite", "website_banner"."date_added" FROM "website_banner" WHERE "website_banner"."page" = 'FRONTPAGE'; args=('FRONTPAGE',)
+DEBUG 2018-07-05 17:53:34,341 utils 125 139669369775872 (0.000) SELECT COUNT(*) AS "__count" FROM "website_news"; args=()
+DEBUG 2018-07-05 17:53:34,356 utils 125 139669369775872 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC LIMIT 3; args=()
+DEBUG 2018-07-05 17:53:34,371 utils 125 139669369775872 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC, "website_news"."title" ASC LIMIT 2; args=()
+DEBUG 2018-07-05 17:53:34,374 utils 125 139669369775872 (0.000) SELECT "website_person"."id", "website_person"."first_name", "website_person"."middle_name", "website_person"."last_name", "website_person"."email", "website_person"."personal_website", "website_person"."github", "website_person"."twitter", "website_person"."bio", "website_person"."next_position", "website_person"."next_position_url", "website_person"."image", "website_person"."easter_egg", "website_person"."cropping", "website_person"."easter_egg_crop" FROM "website_person" WHERE "website_person"."id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:34,376 utils 125 139669369775872 (0.000) SELECT "website_project"."id", "website_project"."name", "website_project"."short_name", "website_project"."start_date", "website_project"."end_date", "website_project"."gallery_image", "website_project"."cropping", "website_project"."about", "website_project"."updated" FROM "website_project" INNER JOIN "website_news_project" ON ("website_project"."id" = "website_news_project"."project_id") WHERE "website_news_project"."news_id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:34,377 utils 125 139669369775872 (0.000) SELECT "website_person"."id", "website_person"."first_name", "website_person"."middle_name", "website_person"."last_name", "website_person"."email", "website_person"."personal_website", "website_person"."github", "website_person"."twitter", "website_person"."bio", "website_person"."next_position", "website_person"."next_position_url", "website_person"."image", "website_person"."easter_egg", "website_person"."cropping", "website_person"."easter_egg_crop" FROM "website_person" WHERE "website_person"."id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:34,380 utils 125 139669369775872 (0.000) SELECT "website_project"."id", "website_project"."name", "website_project"."short_name", "website_project"."start_date", "website_project"."end_date", "website_project"."gallery_image", "website_project"."cropping", "website_project"."about", "website_project"."updated" FROM "website_project" INNER JOIN "website_news_project" ON ("website_project"."id" = "website_news_project"."project_id") WHERE "website_news_project"."news_id" = 4; args=(4,)
+DEBUG 2018-07-05 17:53:34,383 base 125 139669369775872 Exception while resolving variable 'cropping' in template 'website/news-listing.html'.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 879, in _resolve_lookup
+    current = current[bit]
+  File "/usr/local/lib/python3.6/site-packages/django/core/paginator.py", line 121, in __getitem__
+    raise TypeError
+TypeError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 887, in _resolve_lookup
+    current = getattr(current, bit)
+AttributeError: 'Page' object has no attribute 'cropping'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 894, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'cropping'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 901, in _resolve_lookup
+    (bit, current))  # missing attribute
+django.template.base.VariableDoesNotExist: Failed lookup for key [cropping] in '<Page 1 of 4>'
+DEBUG 2018-07-05 17:53:34,391 utils 125 139669369775872 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC LIMIT 3; args=()
+DEBUG 2018-07-05 17:53:49,720 utils 156 139668570515200 (0.005) 
+            SELECT name, type FROM sqlite_master
+            WHERE type in ('table', 'view') AND NOT name='sqlite_sequence'
+            ORDER BY name; args=None
+DEBUG 2018-07-05 17:53:49,724 utils 156 139668570515200 (0.000) SELECT "django_migrations"."app", "django_migrations"."name" FROM "django_migrations"; args=()
+DEBUG 2018-07-05 17:53:52,505 utils 156 139668558378752 (0.003) SELECT "website_banner"."id", "website_banner"."page", "website_banner"."image", "website_banner"."project_id", "website_banner"."cropping", "website_banner"."title", "website_banner"."caption", "website_banner"."alt_text", "website_banner"."link", "website_banner"."favorite", "website_banner"."date_added" FROM "website_banner" WHERE "website_banner"."page" = 'FRONTPAGE'; args=('FRONTPAGE',)
+DEBUG 2018-07-05 17:53:52,507 utils 156 139668558378752 (0.001) SELECT COUNT(*) AS "__count" FROM "website_news"; args=()
+DEBUG 2018-07-05 17:53:52,533 utils 156 139668558378752 (0.002) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC LIMIT 3; args=()
+DEBUG 2018-07-05 17:53:52,548 utils 156 139668558378752 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC, "website_news"."title" ASC LIMIT 8; args=()
+DEBUG 2018-07-05 17:53:52,552 utils 156 139668558378752 (0.001) SELECT "website_person"."id", "website_person"."first_name", "website_person"."middle_name", "website_person"."last_name", "website_person"."email", "website_person"."personal_website", "website_person"."github", "website_person"."twitter", "website_person"."bio", "website_person"."next_position", "website_person"."next_position_url", "website_person"."image", "website_person"."easter_egg", "website_person"."cropping", "website_person"."easter_egg_crop" FROM "website_person" WHERE "website_person"."id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:52,558 utils 156 139668558378752 (0.001) SELECT "website_project"."id", "website_project"."name", "website_project"."short_name", "website_project"."start_date", "website_project"."end_date", "website_project"."gallery_image", "website_project"."cropping", "website_project"."about", "website_project"."updated" FROM "website_project" INNER JOIN "website_news_project" ON ("website_project"."id" = "website_news_project"."project_id") WHERE "website_news_project"."news_id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:52,559 utils 156 139668558378752 (0.000) SELECT "website_person"."id", "website_person"."first_name", "website_person"."middle_name", "website_person"."last_name", "website_person"."email", "website_person"."personal_website", "website_person"."github", "website_person"."twitter", "website_person"."bio", "website_person"."next_position", "website_person"."next_position_url", "website_person"."image", "website_person"."easter_egg", "website_person"."cropping", "website_person"."easter_egg_crop" FROM "website_person" WHERE "website_person"."id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:52,561 utils 156 139668558378752 (0.001) SELECT "website_project"."id", "website_project"."name", "website_project"."short_name", "website_project"."start_date", "website_project"."end_date", "website_project"."gallery_image", "website_project"."cropping", "website_project"."about", "website_project"."updated" FROM "website_project" INNER JOIN "website_news_project" ON ("website_project"."id" = "website_news_project"."project_id") WHERE "website_news_project"."news_id" = 4; args=(4,)
+DEBUG 2018-07-05 17:53:52,562 utils 156 139668558378752 (0.000) SELECT "website_person"."id", "website_person"."first_name", "website_person"."middle_name", "website_person"."last_name", "website_person"."email", "website_person"."personal_website", "website_person"."github", "website_person"."twitter", "website_person"."bio", "website_person"."next_position", "website_person"."next_position_url", "website_person"."image", "website_person"."easter_egg", "website_person"."cropping", "website_person"."easter_egg_crop" FROM "website_person" WHERE "website_person"."id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:52,564 utils 156 139668558378752 (0.000) SELECT "website_project"."id", "website_project"."name", "website_project"."short_name", "website_project"."start_date", "website_project"."end_date", "website_project"."gallery_image", "website_project"."cropping", "website_project"."about", "website_project"."updated" FROM "website_project" INNER JOIN "website_news_project" ON ("website_project"."id" = "website_news_project"."project_id") WHERE "website_news_project"."news_id" = 7; args=(7,)
+DEBUG 2018-07-05 17:53:52,565 utils 156 139668558378752 (0.000) SELECT "website_person"."id", "website_person"."first_name", "website_person"."middle_name", "website_person"."last_name", "website_person"."email", "website_person"."personal_website", "website_person"."github", "website_person"."twitter", "website_person"."bio", "website_person"."next_position", "website_person"."next_position_url", "website_person"."image", "website_person"."easter_egg", "website_person"."cropping", "website_person"."easter_egg_crop" FROM "website_person" WHERE "website_person"."id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:52,567 utils 156 139668558378752 (0.000) SELECT "website_project"."id", "website_project"."name", "website_project"."short_name", "website_project"."start_date", "website_project"."end_date", "website_project"."gallery_image", "website_project"."cropping", "website_project"."about", "website_project"."updated" FROM "website_project" INNER JOIN "website_news_project" ON ("website_project"."id" = "website_news_project"."project_id") WHERE "website_news_project"."news_id" = 5; args=(5,)
+DEBUG 2018-07-05 17:53:52,568 utils 156 139668558378752 (0.000) SELECT "website_person"."id", "website_person"."first_name", "website_person"."middle_name", "website_person"."last_name", "website_person"."email", "website_person"."personal_website", "website_person"."github", "website_person"."twitter", "website_person"."bio", "website_person"."next_position", "website_person"."next_position_url", "website_person"."image", "website_person"."easter_egg", "website_person"."cropping", "website_person"."easter_egg_crop" FROM "website_person" WHERE "website_person"."id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:52,569 utils 156 139668558378752 (0.000) SELECT "website_project"."id", "website_project"."name", "website_project"."short_name", "website_project"."start_date", "website_project"."end_date", "website_project"."gallery_image", "website_project"."cropping", "website_project"."about", "website_project"."updated" FROM "website_project" INNER JOIN "website_news_project" ON ("website_project"."id" = "website_news_project"."project_id") WHERE "website_news_project"."news_id" = 2; args=(2,)
+DEBUG 2018-07-05 17:53:52,571 utils 156 139668558378752 (0.000) SELECT "website_person"."id", "website_person"."first_name", "website_person"."middle_name", "website_person"."last_name", "website_person"."email", "website_person"."personal_website", "website_person"."github", "website_person"."twitter", "website_person"."bio", "website_person"."next_position", "website_person"."next_position_url", "website_person"."image", "website_person"."easter_egg", "website_person"."cropping", "website_person"."easter_egg_crop" FROM "website_person" WHERE "website_person"."id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:52,573 utils 156 139668558378752 (0.000) SELECT "website_project"."id", "website_project"."name", "website_project"."short_name", "website_project"."start_date", "website_project"."end_date", "website_project"."gallery_image", "website_project"."cropping", "website_project"."about", "website_project"."updated" FROM "website_project" INNER JOIN "website_news_project" ON ("website_project"."id" = "website_news_project"."project_id") WHERE "website_news_project"."news_id" = 3; args=(3,)
+DEBUG 2018-07-05 17:53:52,574 utils 156 139668558378752 (0.000) SELECT "website_person"."id", "website_person"."first_name", "website_person"."middle_name", "website_person"."last_name", "website_person"."email", "website_person"."personal_website", "website_person"."github", "website_person"."twitter", "website_person"."bio", "website_person"."next_position", "website_person"."next_position_url", "website_person"."image", "website_person"."easter_egg", "website_person"."cropping", "website_person"."easter_egg_crop" FROM "website_person" WHERE "website_person"."id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:52,575 utils 156 139668558378752 (0.000) SELECT "website_project"."id", "website_project"."name", "website_project"."short_name", "website_project"."start_date", "website_project"."end_date", "website_project"."gallery_image", "website_project"."cropping", "website_project"."about", "website_project"."updated" FROM "website_project" INNER JOIN "website_news_project" ON ("website_project"."id" = "website_news_project"."project_id") WHERE "website_news_project"."news_id" = 6; args=(6,)
+DEBUG 2018-07-05 17:53:52,576 utils 156 139668558378752 (0.000) SELECT "website_person"."id", "website_person"."first_name", "website_person"."middle_name", "website_person"."last_name", "website_person"."email", "website_person"."personal_website", "website_person"."github", "website_person"."twitter", "website_person"."bio", "website_person"."next_position", "website_person"."next_position_url", "website_person"."image", "website_person"."easter_egg", "website_person"."cropping", "website_person"."easter_egg_crop" FROM "website_person" WHERE "website_person"."id" = 8; args=(8,)
+DEBUG 2018-07-05 17:53:52,578 utils 156 139668558378752 (0.000) SELECT "website_project"."id", "website_project"."name", "website_project"."short_name", "website_project"."start_date", "website_project"."end_date", "website_project"."gallery_image", "website_project"."cropping", "website_project"."about", "website_project"."updated" FROM "website_project" INNER JOIN "website_news_project" ON ("website_project"."id" = "website_news_project"."project_id") WHERE "website_news_project"."news_id" = 1; args=(1,)
+DEBUG 2018-07-05 17:53:52,582 base 156 139668558378752 Exception while resolving variable 'cropping' in template 'website/news-listing.html'.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 879, in _resolve_lookup
+    current = current[bit]
+  File "/usr/local/lib/python3.6/site-packages/django/core/paginator.py", line 121, in __getitem__
+    raise TypeError
+TypeError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 887, in _resolve_lookup
+    current = getattr(current, bit)
+AttributeError: 'Page' object has no attribute 'cropping'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 894, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'cropping'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 901, in _resolve_lookup
+    (bit, current))  # missing attribute
+django.template.base.VariableDoesNotExist: Failed lookup for key [cropping] in '<Page 1 of 1>'
+DEBUG 2018-07-05 17:53:52,590 base 156 139668558378752 Exception while resolving variable 'cropping' in template 'website/news-listing.html'.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 879, in _resolve_lookup
+    current = current[bit]
+  File "/usr/local/lib/python3.6/site-packages/django/core/paginator.py", line 121, in __getitem__
+    raise TypeError
+TypeError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 887, in _resolve_lookup
+    current = getattr(current, bit)
+AttributeError: 'Page' object has no attribute 'cropping'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 894, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'cropping'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 901, in _resolve_lookup
+    (bit, current))  # missing attribute
+django.template.base.VariableDoesNotExist: Failed lookup for key [cropping] in '<Page 1 of 1>'
+DEBUG 2018-07-05 17:53:52,594 base 156 139668558378752 Exception while resolving variable 'cropping' in template 'website/news-listing.html'.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 879, in _resolve_lookup
+    current = current[bit]
+  File "/usr/local/lib/python3.6/site-packages/django/core/paginator.py", line 121, in __getitem__
+    raise TypeError
+TypeError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 887, in _resolve_lookup
+    current = getattr(current, bit)
+AttributeError: 'Page' object has no attribute 'cropping'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 894, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'cropping'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 901, in _resolve_lookup
+    (bit, current))  # missing attribute
+django.template.base.VariableDoesNotExist: Failed lookup for key [cropping] in '<Page 1 of 1>'
+DEBUG 2018-07-05 17:53:52,599 base 156 139668558378752 Exception while resolving variable 'cropping' in template 'website/news-listing.html'.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 879, in _resolve_lookup
+    current = current[bit]
+  File "/usr/local/lib/python3.6/site-packages/django/core/paginator.py", line 121, in __getitem__
+    raise TypeError
+TypeError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 887, in _resolve_lookup
+    current = getattr(current, bit)
+AttributeError: 'Page' object has no attribute 'cropping'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 894, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'cropping'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/site-packages/django/template/base.py", line 901, in _resolve_lookup
+    (bit, current))  # missing attribute
+django.template.base.VariableDoesNotExist: Failed lookup for key [cropping] in '<Page 1 of 1>'
+DEBUG 2018-07-05 17:53:52,608 utils 156 139668558378752 (0.000) SELECT "website_news"."id", "website_news"."title", "website_news"."date", "website_news"."author_id", "website_news"."content", "website_news"."image", "website_news"."cropping", "website_news"."caption", "website_news"."alt_text" FROM "website_news" ORDER BY "website_news"."date" DESC LIMIT 3; args=()
+DEBUG 2018-07-05 17:54:04,990 utils 178 140215456683776 (0.004) 
+            SELECT name, type FROM sqlite_master
+            WHERE type in ('table', 'view') AND NOT name='sqlite_sequence'
+            ORDER BY name; args=None
+DEBUG 2018-07-05 17:54:04,993 utils 178 140215456683776 (0.001) SELECT "django_migrations"."app", "django_migrations"."name" FROM "django_migrations"; args=()
