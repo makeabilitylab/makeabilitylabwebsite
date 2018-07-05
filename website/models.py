@@ -274,7 +274,7 @@ class Position(models.Model):
     title = models.CharField(max_length=50, choices=TITLE_CHOICES)
 
     department = models.CharField(max_length=50, default="Computer Science")
-    school = models.CharField(max_length=60, default="University of Maryland")
+    school = models.CharField(max_length=60, default="University of Washington")
 
     def get_start_date_short(self):
         return self.start_date.strftime('%b %Y')
