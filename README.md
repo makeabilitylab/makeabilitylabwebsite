@@ -17,7 +17,7 @@ While the instructions below walk you through a step-by-step process to configur
 4. Open the interactive bash terminal using `docker run -ti --entrypoint=bash <tag>`
 5. Create the local database by running the following commands: `python3 manage.py makemigrations website` and `python3 manage.py migrate`. Type `exit` to leave the interactive terminal.
 6. Create the superuser. Run `make superuser` if make is installed, or `docker run -ti -v database:/code/db -v $(pwd)/media:/code/media --entrypoint=python [tag] manage.py createsuperuser`.
-7. Rebuild the docker images. Use `docker build . [-t] [tag]`
+7. Rebuild the docker images. Use `make build` or `docker build . [-t] [tag]`
 8. Run the local server using Docker. Use `make run` or `docker run -p 8000:8000 -ti -v database:/code/db -v $(pwd)/media:/code/media $(pwd)/website:/code/website [tag]` 
 9. Open the development server in the web browser. This will be at `localhost:8000`.
 
@@ -47,6 +47,7 @@ python3 manage.py makemigrations website
 python3 manage.py migrate
 exit
 make superuser
+make build
 make run
 ```
 
