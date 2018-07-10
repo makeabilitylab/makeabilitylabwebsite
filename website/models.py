@@ -824,8 +824,10 @@ class Banner(models.Model):
     TALKS = "TALKS"
     PROJECTS = "PROJECTS"
     INDPROJECT = "INDPROJECT"
+    NEWSLISTING = "NEWSLISTING"
     PAGE_CHOICES = (
          (FRONTPAGE, "Front Page"),
+         (NEWSLISTING, "News Listings"),
          (PEOPLE, "People"),
          (PUBLICATIONS, "Publications"),
          (TALKS, "Talks"),

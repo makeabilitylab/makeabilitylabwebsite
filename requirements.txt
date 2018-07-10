@@ -13,4 +13,3 @@ google-api-python-client==1.5.3
 pyOpenSSL
 requests
 psycopg2
-django-mathfilters
