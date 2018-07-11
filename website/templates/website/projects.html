@@ -19,6 +19,8 @@
     <script src="{% static 'website/js/isotope.pkgd.min.js' %}"></script>
     <script src="{% static 'website/js/fixedSideBar.js' %}"></script>
     <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
+    <script src="https://isotope.metafizzy.co/js/isotope-docs.min.js"></script>
+    <script src="{% static 'website/js/projects.js' %}"></script>
 {% endblock %}
 
 {% block scripts %}
@@ -27,6 +29,8 @@
     $(document).ready(function () {
 	    $('#fixed-side-bar').fixedSideBar()
     });
+
+
 
 {% endblock %}
 
@@ -76,32 +80,33 @@
         </div>
 
         <div id="fixed-side-bar" class="hidden-xs">
-            <div id="filter-bar">
 
+
+            <div id="keywords">
+                <h1 style="margin-top:0px">AREA</h1>
+                <ul class="filter-list">
+                    <li>Accessibility</li>
+                    <li>Education</li>
+                    <li>Fabrication</li>
+                    <li>Health/Wellness</li>
+                    <li>Smart Cities</li>
+                    <li>Sustainability</li>
+                </ul>
+
+                <h1 style="margin-top:0px">TECHNOLOGY</h1>
+                <ul class="filter-list">
+                    <li>Augmented Reality</li>
+                    <li>Computer Vision</li>
+                    <li>Custom Hardware</li>
+                    <li>E-Textiles</li>
+                    <li>Machine Learning</li>
+                    <li>Wearables</li>
+                </ul>
             </div>
             <!-- TODO: possibly add in number of each thing in parantheses -->
             <!-- TODO: support mouseover filtering so that when you mouseover a selection in left-menu, it auto-filters during hover -->
             <!-- TODO: support parallax hovering--or zoom-in hovering--over project thumbnail like vanschneider.com. Could also have mouseover details like grantburke.com/design-portfolio -->
             <!-- TODO: hhook tihs up to isotope https://isotope.metafizzy.co/layout-modes.html for sorting, filtering -->
-            <h1 style="margin-top:0px">AREA</h1>
-            <ul class="filter-list">
-                <li>Accessibility</li>
-                <li>Education</li>
-                <li>Fabrication</li>
-                <li>Health/Wellness</li>
-                <li>Smart Cities</li>
-                <li>Sustainability</li>
-            </ul>
-
-            <h1 style="margin-top:0px">TECHNOLOGY</h1>
-            <ul class="filter-list">
-                <li>Augmented Reality</li>
-                <li>Computer Vision</li>
-                <li>Custom Hardware</li>
-                <li>E-Textiles</li>
-                <li>Machine Learning</li>
-                <li>Wearables</li>
-            </ul>
 
             <!-- Tech filter: augmented reality, machine learning, custom hardware, computer vision -->
         </div>
@@ -109,16 +114,18 @@
 
 
         <div id="main-content" class="project-list">
-            <!-- TODO: consider listing dates active or keywords underneath each project thumbnail in addition to name -->
-            {% for project in projects %}
-                <div class="col-xs-12 col-md-3 project-column">
-                    <a href="{% url 'website:project' project.short_name %}" style="color:black;">
-                        <img src="{% thumbnail project.gallery_image 300x180 box=project.cropping crop detail %}" class="img-responsive">
-                        <p class="artifact-title">{{ project.name }}</p>
-                    </a>
-                    <div style="min-height:15px"></div>
-                </div>
-            {% endfor %}
+            <div class="grid">
+                <!-- TODO: consider listing dates active or keywords underneath each project thumbnail in addition to name -->
+                {% for project in projects %}
+                    <div class= '{{ project.get_div_class_name }}'>
+                        <a href="{% url 'website:project' project.short_name %}" style="color:black;">
+                            <img src="{% thumbnail project.gallery_image 300x180 box=project.cropping crop detail %}" class="img-responsive">
+                            <p class="artifact-title">{{ project.name }}</p>
+                        </a>
+                        <div style="min-height:15px"></div>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
