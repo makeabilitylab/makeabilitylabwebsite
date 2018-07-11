@@ -136,7 +136,7 @@
 	}
 
 	$.fn.updateCitationPopover = function() {
-		$(this).popover()
+		$(this).popover();
 
 		// Manual trigger to get around idiosyncrasies of bootstrap's popover control
 		$(this).click(function() {
