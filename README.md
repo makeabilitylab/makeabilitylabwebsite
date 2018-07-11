@@ -19,7 +19,7 @@ While the instructions below walk you through a step-by-step process to configur
 6. Create the superuser. Run `make superuser` if make is installed, or `docker run -ti -v database:/code/db -v $(pwd)/media:/code/media --entrypoint=python [tag] manage.py createsuperuser`.
 7. Rebuild the docker images. Use `make build` or `docker build . [-t] [tag]`
 8. Run the local server using Docker. Use `make run` or `docker run -p 8000:8000 -ti -v database:/code/db -v $(pwd)/media:/code/media $(pwd)/website:/code/website [tag]` 
-9. Open the development server in the web browser. This will be at `localhost:8000`.
+9. Open the development server in the web browser. This will be at `localhost:8000`. You should see a skeleton of the website (but no content). To fill this with test content for development purposes, see Bootstrapping Content below.
 
 After running the `docker run` command, you will not need to rebuild or rerun the Docker container after making changes. However, you will still need to refresh the webpage in order to see new updates.
 
@@ -50,6 +50,21 @@ make superuser
 make build
 make run
 ```
+## Bootstrapping Content
+To support quickly adding content for development, we have two automated tools that download data from Jon’s UMD website. 
+
+1. Go into the Docker shell, run `make shell` (If you're not using Docker, simply run these commands in terminal)
+2. Now, to import pubs, run `python3 manage.py importpubs`
+3. To import talks, run `python3 manage.py importtalks`
+
+A few notes about this. 
+* All publications/talks are downloaded from cs.umd.edu/~jonf/ so they must already exist on Jon’s site before being added in this way.
+* Authors added using this method are not assigned a position, and so they won’t appear on the People page until one is manually added. However they will be assigned a star wars image.
+* The publications will not allow for duplication, so any publications with the same title as an existing one are ignored. This is not true for talks.
+* Publications with no PDF are ignored. Talks with no PDF and no slide deck are ignored, however talks with only a slide deck will be converted automatically to PDF’s using unoconv (This takes a long time)
+* Projects which are specified in the bibtex/xml by project, will be created if necessary. Anyone who is an author or speaker will be added to associated projects, and any keywords from the paper will also be assigned to the project. The above is true of assigned project_umbrellas as well.
+
+Importantly, we will have to revise how we do this bootstrapping because Jon's UMD site is going away and because he no longer wants to maintain his own separate backend from the Makeability Lab website (in other words, the ML website will be the sole source of data thus eliminating the source of the bootstrap content). See Issue https://github.com/jonfroehlich/makeabilitylabwebsite/issues/420.
 
 ## Setting up Docker in PyCharm
 We recommend using PyCharm as an IDE. Note that in order to configure PyCharm with Docker, you must have the professional version. Students can get this for free at: https://www.jetbrains.com/student/
