@@ -14,7 +14,7 @@ While the instructions below walk you through a step-by-step process to configur
   
 2. Clone this repository using `git clone` and navigate to the project home directory using the `cd` command.
 
-3. Build the docker images. This can be done by running `make build`, if make is installed. Alternatively, you can run `docker build . [-t] <tag>` to give your build a name (We recommend tagging it as `makelab_image` for easy access). This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
+3. Build the docker images. This can be done by running `make build`, if make is installed. Alternatively, you can run `docker build .` or `docker build . -t <tag>`--the latter allows you to tag your build with a name (we recommend tagging it as `makelab_image` for easy access). This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
 
 4. Open the interactive bash terminal using `docker run -ti --entrypoint=bash <tag>`
 
@@ -75,7 +75,7 @@ make run
 
 4. Clone this repository using `git clone` and navigate to the project home directory using the `cd` command.
 
-5. Build the docker images. Run `docker build . [-t] <tag>` to give your build a name (We recommend tagging it as `makelab_image` for easy access). This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
+5. Build the docker images. Run `docker build .` or `docker build . -t <tag>`--the latter allows you to tag your build with a name (we recommend tagging it as `makelab_image` for easy access). This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
 
 6. Open the interactive bash terminal using `docker run -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media --entrypoint=bash [tag]`
 
