@@ -136,7 +136,7 @@
 	}
 
 	$.fn.updateCitationPopover = function() {
-		$(this).popover()
+		$(this).popover({placement: "auto right"});
 
 		// Manual trigger to get around idiosyncrasies of bootstrap's popover control
 		$(this).click(function() {
