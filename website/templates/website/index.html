@@ -7,15 +7,15 @@
 {% load cropping %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{% static 'website/css/index.css' %}">
-    <link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/index.css' %}?version=1">
+    <link rel="stylesheet" href="{% static 'website/css/publications.css' %}?version=1">
     <link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}">
 {% endblock %}
 
 {% block external_scripts %}
 
 <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
-<script src="{% static 'website/js/citationPopover.js' %}"></script>
+<script src="{% static 'website/js/citationPopover.js' %}?version=1"></script>
 
 {% endblock %}
 
@@ -122,7 +122,7 @@
 
 
     <!-- This is a news overlay on the banner -->
-    <div class="container-fluid" style="z-index: 15; position: absolute; top: 100px; right: 150px; background: rgba(0, 0, 0, 0.65); padding: 6px 10px 1px 10px; border-radius: 5px">
+    <div class="container-fluid news-listing" style="z-index: 15; position: absolute; top: 100px; right: 150px; background: rgba(0, 0, 0, 0.65); padding: 6px 10px 1px 10px; border-radius: 5px">
         <div style="width: 200px">
             {% for news_item in news|slice:"5" %}
                 <p class="line-clamp" style="margin-bottom:15px; color:white; font-family:Roboto;">

@@ -36,3 +36,6 @@ makeabilitylab_django.log
 ./media/*
 
 static/
+
+media/*
+!media/testData

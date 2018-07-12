@@ -7,6 +7,12 @@
 }
 
 
+@media only screen and (max-width: 600px) {
+	.citation-link {
+		display: none;
+	}
+}
+
 @media (max-width: 768px){
     .publication-list {
 	margin-top: 25px;
