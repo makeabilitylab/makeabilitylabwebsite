@@ -85,7 +85,7 @@
             {{ active_prof|length }} Prof
             {% if active_postdoc or active_phd or active_ms%}, {% endif %}
             {% if active_postdoc %} {{ active_postdoc|length }} Postdoc{% endif %}
-            {% if active_phd or active_ms%}, {% endif %}
+            {% if active_postdoc %}, {% endif %}
             {% if active_phd %} {{ active_phd|length }} PhD{% endif %}
             {% if active_ms%}, {% endif %}
             {% if active_ms %} {{ active_ms|length }} MS{% endif %}

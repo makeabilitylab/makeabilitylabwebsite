@@ -276,7 +276,7 @@ class Position(models.Model):
     title = models.CharField(max_length=50, choices=TITLE_CHOICES)
 
     department = models.CharField(max_length=50, default="Computer Science")
-    school = models.CharField(max_length=60, default="University of Maryland")
+    school = models.CharField(max_length=60, default="University of Washington")
 
     def get_start_date_short(self):
         return self.start_date.strftime('%b %Y')
@@ -351,15 +351,21 @@ class Position(models.Model):
 
     # Returns true if member is current based on end date
     def is_current_collaborator(self):
-        # print('Checkpoint 2: ' + self.person.get_full_name() + ' is collaborator? ' + str(self.is_collaborator()))
-
         return self.is_collaborator() and \
                (self.start_date is not None and self.start_date <= date.today() and \
                self.end_date is None or (self.end_date is not None and self.end_date >= date.today()))
 
-    # Returns true if member is an alumni member
+    # Returns true if member is an alumni member (used to differentiate between future members)
     def is_alumni_member(self):
-        return self.is_member() and self.end_date != None and self.end_date < date.today()
+        return self.is_member() and \
+               self.start_date < date.today() and \
+               self.end_date != None and self.end_date < date.today()
+
+    # Returns true if collaborator is a past collaborator (used to differentiate between future collaborators)
+    def is_past_collaborator(self):
+        return self.is_collaborator() and \
+               self.start_date < date.today() and \
+               self.end_date != None and self.end_date < date.today()
 
     def __str__(self):
         return "Name={}, Role={}, Title={}".format(self.person.get_full_name(), self.role, self.title)
@@ -494,7 +500,14 @@ class Project_Role(models.Model):
             return "{}-{}".format(self.start_date.year, self.end_date.year)
         
     def is_active(self):
-        return self.start_date is not None and self.start_date <= date.today() and self.end_date is None or (self.end_date is not None and self.end_date >= date.today())
+        return self.start_date is not None and self.start_date <= date.today() and \
+               (self.end_date is None or self.end_date >= date.today())
+
+    # This function is used to differentiate between past and future roles
+    def is_past(self):
+        return self.start_date is not None and self.start_date < date.today() and \
+               (self.end_date is not None and self.end_date < date.today())
+
 
     def __str__(self):
         return "Name={}, PI/Co-PI={}".format(self.person.get_full_name(), self.pi_member)
