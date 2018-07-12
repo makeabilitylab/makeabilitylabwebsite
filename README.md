@@ -9,7 +9,7 @@ While the instructions below walk you through a step-by-step process to configur
 - PyCharm
 - Git
 
-# Docker Installation
+# Docker Installation (Mac)
 1. If you don't have Docker yet, you can download it [here](https://store.docker.com/search?type=edition&offering=community). We use the Community Edition. Open up the application. Run `docker version` to make sure that it is running. 
   
 2. Clone this repository using `git clone` and navigate to the project home directory using the `cd` command.
@@ -50,6 +50,43 @@ make superuser
 make build
 make run
 ```
+
+# Docker Installation (Windows)
+1. If you don't have Docker yet, you can download it [here](https://store.docker.com/search?type=edition&offering=community). We use the Community Edition. Open up the application. When prompted to check whether to use Windows containers instead of Linux containers, do not check the box. Run `docker version` to make sure that it is running. 
+  If you previously installed Docker, please navigate to the Docker settings, in the window go to the Reset tab and click "Restore Factory defaults". This will ensure that there will be no conflicts in allocating ports later on.
+
+When first starting up Docker, navigate to the Docker icon in hidden icons and right-click to bring up settings. In settings, navigate to the "Shared Drives" tab and select the drive that you have cloned the git repository to. Click "Apply" and you will be prompted to enter the password for your machine.
+[![https://gyazo.com/16d374eeadcd0cc550b8ab17f4bcbe5f](https://i.gyazo.com/16d374eeadcd0cc550b8ab17f4bcbe5f.gif)](https://gyazo.com/16d374eeadcd0cc550b8ab17f4bcbe5f)
+
+2. Before you clone the repository, run this command `git config --global core.autocrlf false` in the directory you will be cloning the repository to. Windows crlf is unrecognized in Linux, thus we must set this auto-conversion as false to prevent look-up errors.
+3. Clone this repository using `git clone` and navigate to the project home directory using the `cd` command.
+4. Build the docker images. Run `docker build . [-t] <tag>` to give your build a name (We recommend tagging it as `makelab_image` for easy access). This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
+5. Open the interactive bash terminal using `docker run -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media --entrypoint=bash [tag]`
+6. Create the local database. Run the following commands: `python3 manage.py makemigrations website` and `python3 manage.py migrate`. Type `exit` to leave the interactive terminal.
+7. Create the superuser. Run `docker run -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media --entrypoint=python [tag] manage.py createsuperuser`.
+8. Rebuild the docker images. Use `docker build . [-t] [tag]`
+9. Run the local server using Docker. Use `docker run -p 8000:8000 -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media -v ${pwd}/website:/code/website [tag]` 
+10. Open the development server in the web browser. This will be at `localhost:8000`.
+
+After running the `docker run` command, you will not need to rebuild or rerun the Docker container after making changes. However, you will still need to refresh the webpage in order to see new updates. This development server will now persist even when you close down PowerShell. Thus, if you try to run the `docker run -p 8000:8000 -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media -v ${pwd}/website:/code/website [tag]` command again, you will receive the error:  `Error response from daemon: driver failed programming external connectivity on endpoint ecstatic_minsky (69ef6a6c62ca6b54bc81976758f03bf6e0c80362e3a9b7a8890714b4cc57d07f): Bind for 0.0.0.0:8000 failed: port is already allocated.`
+### Sample setup:
+```
+# navigate to the directory you will be cloning the repository into
+git config --global core.autocrlf false
+git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git
+cd .\makeabilitylabwebsite\
+docker build . -t makelab_image
+docker run -ti -v ${pwd}/db:/code/db -v $(pwd)/media:/code/media --entrypoint=bash makelab_image
+python3 manage.py makemigrations website
+python3 manage.py migrate
+exit
+docker run -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media --entrypoint=python makelab_image manage.py createsuperuser
+docker build . -t makelab_image
+docker run -p 8000:8000 -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media -v ${pwd}/website:/code/website makelab_image
+```
+### Manual Installation (In the event that Docker fails to run)
+Proceed to the manual installation instructions [here](https://docs.google.com/document/d/1LJPSSZA0kLzUX34pq4TgYP406bGH_1JhBtFLEPax7a8/edit?usp=sharing)
+
 ## Setting up Docker in PyCharm
 We recommend using PyCharm as an IDE. Note that in order to configure PyCharm with Docker, you must have the professional version. Students can get this for free at: https://www.jetbrains.com/student/
 
