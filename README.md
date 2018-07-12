@@ -52,7 +52,14 @@ make run
 ```
 
 # Docker Installation (Windows)
-1. If you don't have Docker yet, you can download it [here](https://store.docker.com/search?type=edition&offering=community). We use the Community Edition. Open up the application. When prompted to check whether to use Windows containers instead of Linux containers, do not check the box. Run `docker version` to make sure that it is running. If you previously installed Docker, please navigate to the Docker settings, in the window go to the Reset tab and click "Restore Factory defaults". This will ensure that there will be no conflicts in allocating ports later on.
+1. If you don't have Docker yet, you can download it [here](https://store.docker.com/search?type=edition&offering=community). We use the Community Edition. 
+
+2. During the install, you will be prompted with a Configuration Dialog that will ask whether to use Windows containers instead of Linux containers. Do not check the box.
+![InstallingDockerWindows_ConfigScreen](https://github.com/jonfroehlich/makeabilitylabwebsite/blob/master/readme/InstallingDockerWindows_ConfigScreen_UseWindowsContainersCheckbox.png)
+
+3. Goto the Start Menu and open `Docker for Windows.` If it asks you to enable Hyper-V, you should say Yes and restart.
+
+3. Run `docker version` to make sure that it is running. If you previously installed Docker, please navigate to the Docker settings, in the window go to the Reset tab and click "Restore Factory defaults". This will ensure that there will be no conflicts in allocating ports later on.
 
 2. When first starting up Docker, navigate to the Docker icon in hidden icons and right-click to bring up settings. In settings, navigate to the "Shared Drives" tab and select the drive that you have cloned the git repository to. Click "Apply" and you will be prompted to enter the password for your machine.
 [![https://gyazo.com/16d374eeadcd0cc550b8ab17f4bcbe5f](https://i.gyazo.com/16d374eeadcd0cc550b8ab17f4bcbe5f.gif)](https://gyazo.com/16d374eeadcd0cc550b8ab17f4bcbe5f)
