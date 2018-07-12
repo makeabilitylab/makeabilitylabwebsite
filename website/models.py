@@ -7,6 +7,7 @@ from datetime import date
 from datetime import timedelta
 from website.utils.fileutils import UniquePathAndRename
 import os
+import re
 from random import choice
 from django.core.files import File
 
@@ -30,6 +31,11 @@ class Person(models.Model):
     first_name = models.CharField(max_length=40)
     middle_name = models.CharField(max_length=50, blank=True, null=True)
     last_name = models.CharField(max_length=50)
+
+    # TODO: Need to figure out how to make this not add the em-dash when autocompleted
+    # URL Name for this person generated from the first and last names
+    # Default: Jon E Froehlich --> jon-froehlich
+
     email = models.EmailField(blank=True, null=True)
     personal_website = models.URLField(blank=True, null=True)
     github = models.URLField(blank=True, null=True)
@@ -103,6 +109,7 @@ class Person(models.Model):
 
     # Returns True is person is current member of lab or current collaborator
     def is_active(self):
+        # print(self.get_full_name() + " is active? " + str(self.is_current_member()) + " " + str(self.is_current_collaborator()))
         return self.is_current_member() or self.is_current_collaborator()
     is_active.short_description = "Is Active?"
 
@@ -132,6 +139,7 @@ class Person(models.Model):
     def is_current_collaborator(self):
         latest_position = self.get_latest_position()
         if latest_position is not None:
+            # print('Checkpoint 1: ' + str(latest_position.is_current_collaborator()))
             return latest_position.is_current_collaborator()
         else:
             return False
@@ -165,11 +173,10 @@ class Person(models.Model):
             # See: https://docs.djangoproject.com/en/1.11/topics/db/queries/#related-objects
             print("Printing all positions for " + self.get_full_name())
             for position in self.position_set.all():
-               print(position.start_date)
+                print(position.start_date)
 
             print("The latest position for " + self.get_full_name())
             print(self.position_set.latest('start_date'))
-
             return self.position_set.latest('start_date')
 
     # Returns the start date of current position. Used in Admin Interface. See PersonAdmin in admin.py
@@ -229,9 +236,9 @@ class Position(models.Model):
     start_date = models.DateField()
     end_date = models.DateField(blank=True, null=True)
     advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Advisor')
-    co_advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Co_Advisor')
+    co_advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Co_Advisor', verbose_name='Co-advisor')
     grad_mentor = models.ForeignKey('Person', blank=True, null=True, related_name='Grad_Mentor')
-   
+
     # According to Django docs, best to have field choices within the primary
     # class that uses them. See https://docs.djangoproject.com/en/1.9/ref/models/fields/#choices
     MEMBER = "Member"
@@ -338,13 +345,15 @@ class Position(models.Model):
     def is_current_member(self):
         return self.is_member() and \
                self.start_date is not None and self.start_date <= date.today() and \
-               self.end_date is None or (self.end_date is not None and self.end_date >= date.today())
+               (self.end_date is None or (self.end_date is not None and self.end_date >= date.today()))
 
     # Returns true if member is current based on end date
     def is_current_collaborator(self):
+        # print('Checkpoint 2: ' + self.person.get_full_name() + ' is collaborator? ' + str(self.is_collaborator()))
+
         return self.is_collaborator() and \
-               self.start_date is not None and self.start_date <= date.today() and \
-               self.end_date is None or (self.end_date is not None and self.end_date >= date.today())
+               (self.start_date is not None and self.start_date <= date.today() and \
+               self.end_date is None or (self.end_date is not None and self.end_date >= date.today()))
 
     # Returns true if member is an alumni member
     def is_alumni_member(self):

@@ -23,7 +23,7 @@ $(window).load(function () {
 		groupsForCategory: {
 			"Year": groupVideosByYear(),
 			"Project": groupVideosByProject(),
-			"None": [{"name": group_category_none_name, items: videos}]
+			"None": groupVideosByNone(),
 		},
 		defaultCategory: "None",
 		passesFilter: passesFilter,
@@ -37,6 +37,21 @@ $(window).load(function () {
 		$('#filter-textbox').val(initialFilter);
 	$('#filter-bar').applyFilter();
 });
+
+// returns a list of videos in reverse chronological order (most recent video first)
+function groupVideosByNone() {
+	var tempGroup = {};
+	tempGroup[group_category_none_name] = [];
+	videos.forEach(function(video, index, array) {
+		tempGroup[group_category_none_name].push(video);
+	});
+	tempGroup[group_category_none_name].sort(function(a, b) { return b.date - a.date });
+
+	var groups = []
+	groups.push({"name": group_category_none_name, "items": tempGroup[group_category_none_name]});
+
+	return groups;
+}
 
 // returns a list of videos grouped by year, sorted with the most recent year first
 // TODO: this is same function as in talks.js (and possibly publications.js). Consolidate?
@@ -53,6 +68,7 @@ function groupVideosByYear()
 
 	var groups = []
 	for(group in tempGroups) {
+		tempGroups[group].sort(function(a, b) {return b.date - a.date});
 		groups.push({"name": group, "items": tempGroups[group]});
 	}
 
@@ -69,9 +85,12 @@ function groupVideosByYear()
 // to be more like talks.js
 function groupVideosByProject()
 {
+	// tempGroups holds all videos that are contained under the same project
 	var tempGroups = {};
+
 	videos.forEach(function(video, index, array) {
 		group = video.project_short_name;
+		// console.log("Video: " + video.title + ", Date: " + video.date.toString());
 		if(!(group in tempGroups)) {
 			tempGroups[group] = [];
 		}
@@ -80,11 +99,13 @@ function groupVideosByProject()
 
 	var groups = []
 	for(group in tempGroups) {
+		tempGroups[group].sort(function(a, b) { return b.date - a.date});
+		// project name, all videos associated with the project
 		groups.push({"name": group, "items": tempGroups[group]});
 	}
 
-	// years are sorted chronologically, all of the other groupings are sorted by frequency
-	groups.sort(function(a,b) { return b.items.length - a.items.length });
+	// groupings are done by the date of the most recent video from each project
+	groups.sort(function(a,b) { return b.items[0].date - a.items[0].date });
 
 	return groups;
 }

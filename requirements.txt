@@ -1,7 +1,7 @@
 # Run `pip3 install -r requirements.txt` to install dependencies
 
 django==1.9
-wand==0.4.2
+wand==0.4.4
 bibtexparser==0.6.2
 Pillow==3.2.0
 django-extensions==1.6.7
