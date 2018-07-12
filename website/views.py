@@ -6,6 +6,8 @@ from django.conf import settings
 from operator import itemgetter, attrgetter, methodcaller
 from datetime import date
 
+# The Google Analytics stuff is all broken now. It was originally used to track the popularity
+# of pages, projects, and downloads. Not sure what we should do with it now.
 # from . import googleanalytics
 
 max_banners = 7 # TODO: figure out best way to specify these settings... like, is it good to have them up here?
