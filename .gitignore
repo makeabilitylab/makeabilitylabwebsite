@@ -33,4 +33,8 @@ ssl_access_log
 
 makeabilitylab_django.log
 
+media/*
+
+website/test_cases/*
+
 static/
