@@ -31,7 +31,7 @@ class Person(models.Model):
     first_name = models.CharField(max_length=40)
     middle_name = models.CharField(max_length=50, blank=True, null=True)
     last_name = models.CharField(max_length=50)
-    url_name = models.CharField(editable=False, max_length=50)
+    url_name = models.CharField(editable=False, max_length=50, default='placeholder')
     email = models.EmailField(blank=True, null=True)
     personal_website = models.URLField(blank=True, null=True)
     github = models.URLField(blank=True, null=True)
