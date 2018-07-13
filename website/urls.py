@@ -13,5 +13,6 @@ urlpatterns = [
     url(r'^projects/$', views.projects, name='projects'),
     url(r'^projects/(?P<project_name>[a-zA-Z ]+)/$', views.project, name='project'),
     url(r'^project/(?P<project_name>[a-zA-Z ]+)/$', views.project, name='project'),
-    url(r'^news/(?P<news_id>[0-9]+)/$', views.news, name='news')
+    url(r'^news/$', views.news_listing, name='news_listing'),
+    url(r'^news/(?P<news_id>[0-9]+)/$', views.news, name='news'),
 ]
