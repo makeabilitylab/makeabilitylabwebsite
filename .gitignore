@@ -1,3 +1,4 @@
+media/
 import/temp/*
 .idea/vcs.xml
 .idea/workspace.xml
@@ -32,3 +33,7 @@ ssl_access_log
 .idea/modules.xml
 
 makeabilitylab_django.log
+
+static/
+
+media/
