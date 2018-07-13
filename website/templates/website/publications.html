@@ -43,7 +43,7 @@
                 "first_name": "{{ author.first_name }}",
                 "middle_name": "{{ author.middle_name }}",
                 "last_name": "{{ author.last_name }}",
-                "link": "{% url 'website:member' author.id %}"
+                "link": "{% url 'website:member' author.get_url_name %}"
                 },
             {% endfor %}
             ],
