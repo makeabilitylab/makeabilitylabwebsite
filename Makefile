@@ -13,7 +13,7 @@ build:
 	docker build . -t $(IMAGE_NAME)
 
 run: build
-	docker run -p 8000:8000 -ti -v database:/code/db -v $$(pwd)/media:/code/media $$(pwd)/website:/code/website $(IMAGE_NAME)
+	docker run -p 8000:8000 -ti -v database:/code/db -v $$(pwd)/media:/code/media -v $$(pwd)/website:/code/website $(IMAGE_NAME)
 
 gitpull:
 	git pull origin master
