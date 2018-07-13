@@ -165,19 +165,19 @@ class Person(models.Model):
     def get_latest_position(self):
         # print(self.position_set.exists())
         if self.position_set.exists() is False:
-            print("The person '{}' has no position set".format(self.get_full_name()))
+            #print("The person '{}' has no position set".format(self.get_full_name()))
             return None
         else:
-            print("self.position_set is not None")
+            #print("self.position_set is not None")
 
             # The Person model can access its positions because of the foreign key relationship
             # See: https://docs.djangoproject.com/en/1.11/topics/db/queries/#related-objects
-            print("Printing all positions for " + self.get_full_name())
-            for position in self.position_set.all():
-                print(position.start_date)
+            #print("Printing all positions for " + self.get_full_name())
+            #for position in self.position_set.all():
+                #print(position.start_date)
 
-            print("The latest position for " + self.get_full_name())
-            print(self.position_set.latest('start_date'))
+            #print("The latest position for " + self.get_full_name())
+            #print(self.position_set.latest('start_date'))
             return self.position_set.latest('start_date')
 
     # Returns the start date of current position. Used in Admin Interface. See PersonAdmin in admin.py
@@ -211,20 +211,18 @@ class Person(models.Model):
 
     def save(self, *args, **kwargs):
         dir_path = os.path.dirname(os.path.dirname(__file__))
-        print(dir_path)
-        print(__file__)
-        print(os.path.join(os.path.dirname(__file__), '..'))
-        print(os.path.dirname(os.path.realpath(__file__)))
-        print(os.path.abspath(os.path.dirname(__file__)))
         #image_path = glob.glob('')
-        star_wars_dir = os.path.join(dir_path, '/media/images/StarWarsFiguresFullSquare/Rebels/')
+        #depends on the existence of a test.png in the layer above the targeted dir
+        image_path = glob.glob('./media/images/StarWarsFigureFullSquare/test.png')
+        print(image_path)
+        star_wars_dir = os.path.join(dir_path, '')
         print(star_wars_dir)
-        image_choice = File(open(star_wars_dir+get_random_starwars(star_wars_dir), 'rb'))
-        if not self.image:
-            self.image = image_choice
-        if self.pk is None:
-            self.easter_egg = image_choice
-            #Get a star wars pic
+        #image_choice = File(open(star_wars_dir+get_random_starwars(star_wars_dir), 'rb'))
+        #if not self.image:
+        #    self.image = image_choice
+        #if self.pk is None:
+        #    self.easter_egg = image_choice
+        #    #Get a star wars pic
         super(Person, self).save(*args, **kwargs)
     
     class Meta:
@@ -237,9 +235,11 @@ class Person(models.Model):
 def person_delete(sender, instance, **kwargs):
     if instance.image:
         instance.image.delete(False)
-    
+
+
+
 def get_person():
-    return Person.objects.get(last_name="Froehlich")
+    return Person.objects.get(last_name='Froehlich')
 
 class Position(models.Model):
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
@@ -774,7 +774,7 @@ def poster_delete(sender, instance, **kwargs):
 class News(models.Model):
     title = models.CharField(max_length=255)
     date = models.DateField(default=date.today)
-    author = models.ForeignKey(Person,null=True, on_delete=models.SET_NULL)
+    author = models.ForeignKey(Person, null=True, on_delete=models.SET_NULL)
     content = models.TextField()
     #Following the scheme of above thumbnails in other models
     image = models.ImageField(blank=True, upload_to=UniquePathAndRename("news", True), max_length=255)
