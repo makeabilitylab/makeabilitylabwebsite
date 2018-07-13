@@ -564,6 +564,9 @@ class Video(models.Model):
         cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
         return cap_title
 
+    def get_year(self):
+        return self.date.year
+
     def __str__(self):
         return self.title
 
