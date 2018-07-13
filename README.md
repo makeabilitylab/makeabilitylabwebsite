@@ -5,13 +5,15 @@ This repository contains the Makeability Lab's website, which is written in Djan
 
 # Table of Contents
 * [Dev Prereqs](#dev-prereqs)
-* [Docker Installation](#docker-installation)
-* [Deploying to Production](#deploying-to-production)
+* [Docker Installation (Mac)](#docker-installation-mac)
+* [Docker Installation (Windows)](#docker-installation-windows)
+* [Bootstrapping Content](#bootstrapping-content)
+* [Test and Production Servers](#test-and-production-servers)
+* [Deploying Code to UW Servers](#deploying-code-to-uw-servers)
 * [Makeability Lab Data](#makeability-lab-data)
 * [Manual Installation](#manual-installation)
 * [Contributing](#contributing)
 * [Troubleshooting](#troubleshooting)
-
 
 # Dev Prereqs
 While the instructions below walk you through a step-by-step process to configure your machine for developing the Makeability Lab website, here's a summary of the tools we use:
