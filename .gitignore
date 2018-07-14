@@ -1,3 +1,4 @@
+media/
 import/temp/*
 .idea/vcs.xml
 .idea/workspace.xml
@@ -38,3 +39,6 @@ media/*
 website/test_cases/*
 
 static/
+
+
+

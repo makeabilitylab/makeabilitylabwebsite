@@ -2,6 +2,16 @@ research-area-icon-label{
     text-align: center;
 }
 
+.news-listing {
+    display: none;
+}
+
+@media only screen and (min-width: 600px) {
+    .news-listing{
+        display: inline;
+    }
+}
+
 .research-area-icon-row img {
     width: 100%;
 }

@@ -153,16 +153,15 @@ function deploy_container($deployto,$containername){
  * @param string $deployto
  */
 function do_checkout_branch($req, $deployto, $operation){
-GLOBAL $DEPLOY_BRANCH;
         
 	if($operation != "TAG"){
 	//if($operation == "Push Hook" && !empty($DEPLOY_BRANCH)){
 		$branch=determine_branch_name($req);
-		if(!empty($DEPLOY_BRANCH) && $branch == $DEPLOY_BRANCH){
+		if($branch == $operation){
 			$cmd = "bash -c 'cd $deployto; git checkout $branch' 2>&1";
 		}
 		else{
-			$cmd = "bash -c 'cd $deployto; git checkout $DEPLOY_BRANCH' 2>&1";
+			$cmd = "bash -c 'cd $deployto; git checkout $operation' 2>&1";
 		}
 	}
 	else{
@@ -196,16 +195,12 @@ GLOBAL $DEPLOY_BRANCH;
  */
 function determine_branch_name( $request) {
     // push request, branch is in request[ref]
-    if ($request['object_kind'] === 'push') {
+    if (isset($reqest['ref'])) {
         // strip out the refs/head nonsense -- doesn't look like bare
         // branch is listed anywhere in the request
         return preg_replace("|refs/heads/|", "", $request['ref']);
     }
 
-    // merge request, branch is in request[object_attributes][target_branch]
-    else if ($request['object_kind'] === 'merge_request') {
-        return $request['object_attributes']['target_branch'];
-    } 
     _log("Unable to determine branch name. Maybe this wasn't a pull or merge request?");
 }
 
