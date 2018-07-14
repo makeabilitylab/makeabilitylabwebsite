@@ -10,9 +10,6 @@ class Command(BaseCommand):
         for news in News.objects.all():
             d = news.date
             n_date = datetime.combine(d, datetime.min.time())
-            news=()
-            for person in project.people.all():
-                print(person.get_full_name()+" "+project.name)
-                start_date = project.start_date if project.start_date else datetime.now()
-                proj_role = Project_Role(person=person, project=project, start_date=start_date)
-                proj_role.save()
+            news.date = n_date
+            news.save()
+            
