@@ -7,7 +7,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         print('Updating urls...')
         for person in Person.objects.all():
-            print('Name: ' + person.first_name + person.last_name)
-            person.url_name = (person.first_name + person.last_name).lower()
+            print('Name: ' + person.first_name + ' ' + person.last_name)
+            person.url_name = (person.first_name + person.last_name).lower().replace(' ', '')
             print('URL Name: ' + person.url_name)
             person.save()

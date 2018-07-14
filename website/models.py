@@ -217,7 +217,7 @@ class Person(models.Model):
         image_choice = File(open(star_wars_dir+get_random_starwars(star_wars_dir), 'rb'))
 
         # automatically set url_name field
-        self.url_name = (self.first_name + self.last_name).lower()
+        self.url_name = (self.first_name + self.last_name).lower().replace(' ', '')
         if not self.image:
             self.image = image_choice
         if self.pk is None:
