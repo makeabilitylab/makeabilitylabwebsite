@@ -8,7 +8,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for news in News.objects.all():
-            d = news.date
+            print("COMANNNDNDNNDNDNDNDNND")
+            d = news.date.date()
+            print(d)
             n_date = datetime.combine(d, datetime.min.time())
             news.date = n_date
             news.save()
