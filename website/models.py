@@ -426,7 +426,8 @@ class Project(models.Model):
     def get_keywords_as_string(self):
         all_keywords = ""
         for keyword in self.keywords.all():
-            all_keywords += keyword.__str__() + "(0,int,false)"
+            # put all the keywords, separated by "()"
+            all_keywords += keyword.__str__() + "()"
         return all_keywords
 
 

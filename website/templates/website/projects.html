@@ -18,20 +18,11 @@
 {% block external_scripts %}
     <script src="{% static 'website/js/isotope.pkgd.min.js' %}"></script>
     <script src="{% static 'website/js/fixedSideBar.js' %}"></script>
-    <script src="{% static 'website/js/isotope-filterBar.js' %}?version=1"></script>
-    <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
-    <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
-    <script src="{% static 'website/js/isotope-helper.js' %}"></script>
-    <script src="{% static 'website/js/isotope-filtering.js' %}"></script>
-
-{% endblock %}
-
-{% block scripts %}
-
-    // Init the fixed side bar
-    $(document).ready(function () {
-	    $('#fixed-side-bar').fixedSideBar()
-    });
+    <script src="{% static 'website/js/isotope/isotope-filterBar.js' %}?version=30"></script>
+    <script src="{% static 'website/js/jquery-ui.min.js' %}?version=30"></script>
+    <script src="{% static 'website/js/jquery-ui.min.js' %}?version=30"></script>
+    <script src="{% static 'website/js/isotope/isotope-init.js' %}?version=30"></script>
+    <script src="{% static 'website/js/isotope/isotope-filtering.js' %}?version=30"></script>
 
 {% endblock %}
 
@@ -80,7 +71,13 @@
             <br/>
             <input class="shortTextbox" id="filter-textbox-backup" placeholder="FILTER" type="text" value="">
         </div>
-        <div id ="isotope_data_container" style="display:none">isotopeFilterSortData(.sortingAndFiltering,str)gridName(.grid,str)filteringKeywordContainer(#keywords,str)</div>
+        <div id ="isotope_data_container" style="display:none">
+            sortFilterContainer(.sortingAndFiltering,str)
+            gridName(.grid,str)
+            filteringKeywordContainer(#keywords,str)
+            sideBarContainer(#fixed-side-bar,str)
+            scrollTop(175,int)
+        </div>
         <div id="fixed-side-bar" class="hidden-xs">
             <div id="keywords">
                 <h1>Filter By</h1>

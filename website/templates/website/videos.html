@@ -18,13 +18,13 @@
 {% block external_scripts %}
     <script src="{% static 'website/js/isotope.pkgd.min.js' %}"></script>
     <script src="{% static 'website/js/fixedSideBar.js' %}"></script>
-    <script src="{% static 'website/js/filterBar.js' %}?version=3"></script>
-    <script src="{% static 'website/js/isotope-filterBar.js' %}?version=2"></script>
-    <script src="{% static 'website/js/jquery-ui.min.js' %}?version=1"></script>
-    <script src="{% static 'website/js/isotope-helper.js' %}?version=1"></script>
-     <script src="{% static 'website/js/isotope-header-creator.js' %}?version=1"></script>
-    <script src="{% static 'website/js/isotope-filtering.js' %}?version=3"></script>
-    <script src="{% static 'website/js/isotope-sorting.js' %}?version=1"></script>
+    <script src="{% static 'website/js/filterBar.js' %}?version=9"></script>
+    <script src="{% static 'website/js/isotope/isotope-filterBar.js' %}?version=9"></script>
+    <script src="{% static 'website/js/jquery-ui.min.js' %}?version=9"></script>
+    <script src="{% static 'website/js/isotope/isotope-init.js' %}?version=9"></script>
+     <script src="{% static 'website/js/isotope/isotope-header-creator.js' %}?version=9"></script>
+    <script src="{% static 'website/js/isotope/isotope-filtering.js' %}?version=9"></script>
+    <script src="{% static 'website/js/isotope/isotope-sorting.js' %}?version=9"></script>
 
 
 
@@ -115,16 +115,24 @@
                 <div id="keywords-sorting">
                     <h1>Filter By</h1>
                     <ul style="list-style-type: none">
-                        <li><a>Year</a></li>
-                        <li><a>Project</a></li>
-                        <li><a>None</a></li>
+                        <li><a sorting-order="false">Year</a></li>
+                        <li><a sorting-order="true">Project</a></li>
+                        <li><a sorting-order="false">None</a></li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <div id ="isotope_data_container" style="display:none">isotopeFilterSortData(.sortingAndFiltering,str)gridName(.grid,str)headerClass(h1,str)headerStyle(margin: 0; background: white;,str)filteringKeywordContainer(#keywords-all,str)sortingKeywordContainer(#keywords-sorting,str)</div>
-
+        <div id ="isotope_data_container" style="display:none">
+            sortFilterContainer(.sortingAndFiltering,str)
+            gridName(.grid,str)
+            headerClass(h1,str)
+            headerStyle(margin: 0; background: white;,str)
+            filteringKeywordContainer(#keywords-all,str)
+            sortingKeywordContainer(#keywords-sorting,str)
+            sideBarContainer(#fixed-side-bar,str)
+            scrollTop(175,int)
+        </div>
 
         <div class="video-list" id="main-content">
 
@@ -148,7 +156,7 @@
                                 <span class="decor_pdf"> | </span><a href='{{ video.publication.pdf_file }}' class="video-paper-link">Paper</a>
                             </p>
 
-                            <div class="sortingAndFiltering" style="display:none">Year({{ video.get_year }},int,false)Project({{video.project.name}},str,true)Header(false,boolean,true)</div>
+                            <div class="sortingAndFiltering" style="display:none">Year({{ video.get_year }},int,false)Project({{video.project.name}},str,true)</div>
                             <div class="Date" style="display:none">{{video.date.year}}{{video.date.month}}{{video.date.day}}</div>
                         </div>
                     {% endfor %}
