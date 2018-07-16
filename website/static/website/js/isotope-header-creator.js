@@ -18,12 +18,9 @@ $(window).load(function () {
     //go through each item in the grid
     $(gridName + ' .item').each(function(){
         var sortFilterDataContainer = getAttribute($(isotope_data_container).text(), "isotopeFilterSortData");
-        console.log("header creation: " + sortFilterDataContainer);
-
         //get the types of headers from categories, split by ';'
         var text = $(this).find(sortFilterDataContainer)[0].textContent;
         var textSplit = text.split(')');
-        console.log(textSplit);
         //go through textSplit, only create headers that are unique and not "".
         for(var i = 0; i < textSplit.length; i++) {
             if(textSplit[i] === "")

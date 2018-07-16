@@ -2,9 +2,6 @@
 var filteringScheme = "None";
 
 $(window).load(function () {
-    $('body').on('click', function (e) {
-        handleFilteringClick(e);
-    });
     $(getAttribute($(isotope_data_container).text(), "gridName")).isotope({
         columnWidth: 100,
         rowGap: 100,
@@ -26,17 +23,21 @@ function filterByFilteringScheme()
     var className = getAttribute($(isotope_data_container).text(), "isotopeFilterSortData");
 
     className = className.substr(1,className.length);
-    console.log($(this).attr("class") + " className " + className);
     //see if we can get the data about this filtering scheme
     var data = getAttribute(this.getElementsByClassName(className)[0].textContent, filteringScheme.split(';')[0]);
+
+    if(data === null)
+    {
+        return false;
+    }
     //if data is null, then return false, otherwise check if the data is equal to the filteringScheme or if the filtering scheme doesn't contain data.
-    return data !== null && (filteringScheme.indexOf(';') === -1 || filteringScheme.split(';')[1] === (data + ""));
+    return (filteringScheme.indexOf(';') === -1 || filteringScheme.split(';')[1].trim() === (data + "").trim());
 }
 
 function handleFilteringClick(e)
 {
     //get the text, get the keyword container
-    var text = $(e.target).text();
+    var text = $(e.target).attr("name");
     var keywordContainer = getAttribute($(isotope_data_container).text(), "filteringKeywordContainer");
     if(isKeyword(keywordContainer, text))
     {

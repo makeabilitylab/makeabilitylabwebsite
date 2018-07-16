@@ -38,7 +38,7 @@ function isKeyword(keywordContainer, text)
 {
     var keywords = [];
     $(keywordContainer + ' a').each(function(){
-        keywords.push($(this).text());
+        keywords.push($(this).attr("name"));
     });
 
     for (var i = 0; i < keywords.length; i++)
@@ -59,6 +59,7 @@ function getParsedData(str)
     }
     var parsing = str.split('(')[1].split(',')[1];
     var data = str.split('(')[1].split(',')[0];
+    data = data.trim();
     if(parsing === "int")
     {
         return parseInt(data);
