@@ -26,7 +26,7 @@
         return function debounced() {
             if (timeout) {
                 clearTimeout(timeout);
-            }
+            } $('#fixed-side-bar').resizeSideBar();
 
             function delayed() {
                 fn();

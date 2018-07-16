@@ -1,11 +1,8 @@
-
 var keywords = [];
 var grid;
-var gridName = '.grid';
 var current_sorting_scheme = "None";
 
 $(window).load(function () {
-
     //handling clicks
     $('body').on('click', function (e) {
         handleClick(e);
@@ -17,8 +14,8 @@ $(window).load(function () {
     });
     console.log(keywords);
 
-
-    headerNames = [];
+    //dynamically insert the headers
+    var headerNames = [];
     $(gridName + ' .item').each(function(){
         var text = this.getElementsByClassName('sortingAndFiltering')[0].textContent;
         var textSplit = text.split(';');
@@ -48,7 +45,10 @@ $(window).load(function () {
             }
         },
         filter: filterByFilteringScheme,
+        sortBy : ['sorting_scheme', 'date']
     });
+
+    $('#main-content').textContent = current_sorting_scheme;
 
 });
 
@@ -139,10 +139,6 @@ function handleClick(e)
         //sort, first by sorting scheme and then by date
         $grid.isotope('updateSortData').isotope();
         $grid.isotope({ sortBy : ['sorting_scheme', 'date']});
-    }
-    else
-    {
-        $grid.isotope({ filter: '*'});
     }
 }
 

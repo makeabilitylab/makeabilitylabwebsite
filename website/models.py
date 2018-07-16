@@ -423,6 +423,13 @@ class Project(models.Model):
 
     updated = models.DateField(auto_now=True)
 
+    def get_keywords_as_string(self):
+        all_keywords = ""
+        for keyword in self.keywords.all():
+            all_keywords += keyword.__str__() + "(0,int,false)"
+        return all_keywords
+
+
     def get_pi(self):
         return self.project_role_set.get(pi_member="PI").person
 

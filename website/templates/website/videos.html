@@ -19,8 +19,13 @@
     <script src="{% static 'website/js/isotope.pkgd.min.js' %}"></script>
     <script src="{% static 'website/js/fixedSideBar.js' %}"></script>
     <script src="{% static 'website/js/filterBar.js' %}"></script>
-     <script src="{% static 'website/js/isotope-filtering-and-sorting.js' %}"></script>
     <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
+    <script src="{% static 'website/js/isotope-helper.js' %}"></script>
+     <script src="{% static 'website/js/isotope-header-creator.js' %}"></script>
+    <script src="{% static 'website/js/isotope-filtering.js' %}"></script>
+    <script src="{% static 'website/js/isotope-sorting.js' %}"></script>
+
+
 
 {% endblock %}
 
@@ -96,9 +101,6 @@
 {% endblock %}
 
 {% block content %}
-    <div id = "keywords">
-
-    </div>
 
     <div id="content" class="container">
 
@@ -108,23 +110,23 @@
         </div>
 
         <div id="fixed-side-bar" class="hidden-xs">
-            <div id="filter-bar">
+            <div id="keywords-all">
+                <div id="keywords-sorting">
+                    <h1>Filter By</h1>
+                    <ul style="list-style-type: none">
+                        <li><a>Year</a></li>
+                        <li><a>Project</a></li>
+                        <li><a>None</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
 
-        <div id="keywords">
-            <ul>
-                <li>Project</li>
-                <li>Year</li>
-            </ul>
-
-        </div>
-
+        <div id ="isotope_data_container" style="display:none">isotopeFilterSortData(.sortingAndFiltering,str)gridName(.grid,str)headerClass(h1,str)headerStyle(margin: 0; background: white;,str)filteringKeywordContainer(#keywords-all,str)sortingKeywordContainer(#keywords-sorting,str)</div>
 
 
         <div class="video-list" id="main-content">
-            Loading content... (Please make sure JavaScript is enabled)
-            <h1 class="group-template row" name="Group Name"></h1>
+
             <!-- col-xs is the Bootstrap prefix for extra small devices (<768px)
                  col-md is the Bootstrap prefix for medium devices (≥992px)
                  See: https://getbootstrap.com/docs/3.3/css/#grid-options
@@ -134,19 +136,18 @@
                  6 cells (so two columns). In our case, we have 1 column on mobile and 3 columns on larger screens -->
                 <div class="grid">
                     {% for video in videos %}
-                        <!-- filter by class name -->
-                        <div class= 'item' name = "video">
+                        <div class= 'item' name = "video" style="width:30%; margin:1.5%; background:white">
                             <div class="video-container">
                                 <iframe class="video" src={{ video.get_embed }} frameborder="0" allowfullscreen></iframe>
                             </div>
                             <p class="artifact-title line-clamp">{{ video.get_title }}</p>
                             <p class="artifact-venue line-clamp-one-line">{{ video.caption }}</p>
-                            <p class="artifact-links">
+                            <p class="artiinks">
                                 <span class="decor_video"></span><a href='{{ video.video_url }}' class="video-link">Video</a>
                                 <span class="decor_pdf"> | </span><a href='{{ video.publication.pdf_file }}' class="video-paper-link">Paper</a>
                             </p>
 
-                            <div class="sortingAndFiltering" style="display:none">Year:{{ video.get_year }},int;Project: {{video.project.name}},str</div>
+                            <div class="sortingAndFiltering" style="display:none">Year({{ video.get_year }},int,false)Project({{video.project.name}},str,true)Header(false,boolean,true)</div>
                             <div class="Date" style="display:none">{{video.date.year}}{{video.date.month}}{{video.date.day}}</div>
                         </div>
                     {% endfor %}
