@@ -789,7 +789,7 @@ def poster_delete(sender, instance, **kwargs):
 class News(models.Model):
     title = models.CharField(max_length=255)
     #date = models.DateTimeField(default=timezone.now)
-    #date = models.DateField(default=date.today)
+    date = models.DateField(default=date.today)
     author = models.ForeignKey(Person)
     content = models.TextField()
     #Following the scheme of above thumbnails in other models
