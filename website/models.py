@@ -788,7 +788,8 @@ def poster_delete(sender, instance, **kwargs):
 
 class News(models.Model):
     title = models.CharField(max_length=255)
-    date = models.DateTimeField(default=timezone.now, blank=True)
+    #date = models.DateTimeField(default=timezone.now)
+    #date = models.DateField(default=date.today)
     author = models.ForeignKey(Person)
     content = models.TextField()
     #Following the scheme of above thumbnails in other models
@@ -808,11 +809,12 @@ class News(models.Model):
 
     project = models.ManyToManyField(Project, blank=True, null=True)
 
-    def time_now(self):
-        if self.date > timezone.now() - datetime.timedelta(hours=24):
-            return str(timezone.now().hour - self.date.hour) + ' hours ago'
-        else:
-            return self.short_date()
+    #def time_now(self):
+    #    d = self.date.date() - datetime.timedelta(seconds=0)
+    #    if d > timezone.now() - datetime.timedelta(hours=24):
+    #        return str(int(timezone.now().hour) - int(self.date.hour)) + ' hours ago'
+    #    else:
+    #        return self.short_date()
 
 
     def short_date(self):
