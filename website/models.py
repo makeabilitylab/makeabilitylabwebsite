@@ -210,19 +210,22 @@ class Person(models.Model):
         return self.get_full_name()
 
     def save(self, *args, **kwargs):
+        print('====================================')
+        #problem code
         dir_path = os.path.dirname(os.path.dirname(__file__))
-        #image_path = glob.glob('')
-        #depends on the existence of a test.png in the layer above the targeted dir
-        image_path = glob.glob('./media/images/StarWarsFigureFullSquare/test.png')
-        print(image_path)
-        star_wars_dir = os.path.join(dir_path, '')
-        print(star_wars_dir)
-        #image_choice = File(open(star_wars_dir+get_random_starwars(star_wars_dir), 'rb'))
+        image_path = glob.glob('./media/images/StarWarsFiguresFullSquare/Rebels/locator.png')[0].replace('locator.png', '').split('/')[1:]
+        dir = ''
+        for item in image_path:
+            dir = os.path.join(dir, item)
+
+        print(os.path.abspath(__file__))
+        #star_wars_dir = os.path.join(, dir)
+        #image_choice = File(open(, 'rb'))
         #if not self.image:
         #    self.image = image_choice
         #if self.pk is None:
         #    self.easter_egg = image_choice
-        #    #Get a star wars pic
+        #Get a star wars pic
         super(Person, self).save(*args, **kwargs)
     
     class Meta:
