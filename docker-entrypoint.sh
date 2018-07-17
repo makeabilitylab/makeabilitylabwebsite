@@ -16,6 +16,7 @@ echo "Running makemigrations and migrate explicitly to website (often fixes some
 python manage.py makemigrations website
 python manage.py migrate website
 
+
 # Start server
 echo "Starting server"
 python manage.py runserver 0.0.0.0:8000
