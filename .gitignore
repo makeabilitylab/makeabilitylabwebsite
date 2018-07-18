@@ -33,7 +33,8 @@ ssl_access_log
 .idea/modules.xml
 
 makeabilitylab_django.log
-
+media/*
+!media/images/StarWarsFiguresFullSquare/Rebels
 static/
 
 

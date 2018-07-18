@@ -9,6 +9,7 @@ from datetime import timedelta
 import datetime
 from website.utils.fileutils import UniquePathAndRename
 import os
+import glob
 import re
 from random import choice
 from django.core.files import File
@@ -162,19 +163,19 @@ class Person(models.Model):
     def get_latest_position(self):
         # print(self.position_set.exists())
         if self.position_set.exists() is False:
-            print("The person '{}' has no position set".format(self.get_full_name()))
+            #print("The person '{}' has no position set".format(self.get_full_name()))
             return None
         else:
-            print("self.position_set is not None")
+            #print("self.position_set is not None")
 
             # The Person model can access its positions because of the foreign key relationship
             # See: https://docs.djangoproject.com/en/1.11/topics/db/queries/#related-objects
-            print("Printing all positions for " + self.get_full_name())
-            for position in self.position_set.all():
-                print(position.start_date)
+            #print("Printing all positions for " + self.get_full_name())
+            #for position in self.position_set.all():
+                #print(position.start_date)
 
-            print("The latest position for " + self.get_full_name())
-            print(self.position_set.latest('start_date'))
+            #print("The latest position for " + self.get_full_name())
+            #print(self.position_set.latest('start_date'))
             return self.position_set.latest('start_date')
 
     # Returns the start date of current position. Used in Admin Interface. See PersonAdmin in admin.py
@@ -212,17 +213,18 @@ class Person(models.Model):
         return self.get_full_name()
 
     def save(self, *args, **kwargs):
-        dir_path = os.path.dirname(os.path.dirname(__file__))
-        star_wars_dir = dir_path+"/import/images/StarWarsFiguresFullSquare/Rebels/"
-        image_choice = File(open(star_wars_dir+get_random_starwars(star_wars_dir), 'rb'))
-
+        dir = os.path.abspath('.')
+        #requires the volume mount from docker
+        dir = os.path.join('images', 'StarWarsFiguresFullSquare', 'Rebels')
+        star_wars_dir = os.path.join(dir, get_random_starwars(dir))
+        image_choice = File(open(star_wars_dir, 'rb'))
         # automatically set url_name field
         self.url_name = (self.first_name + self.last_name).lower().replace(' ', '')
+
         if not self.image:
             self.image = image_choice
         if self.pk is None:
             self.easter_egg = image_choice
-            #Get a star wars pic
         super(Person, self).save(*args, **kwargs)
     
     class Meta:
@@ -233,15 +235,19 @@ class Person(models.Model):
 def person_delete(sender, instance, **kwargs):
     if instance.image:
         instance.image.delete(False)
-    
-        
+
+
+
+def get_person():
+    return Person.objects.get(last_name='Froehlich')
+
 class Position(models.Model):
-    person = models.ForeignKey(Person)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField(blank=True, null=True)
-    advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Advisor')
-    co_advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Co_Advisor', verbose_name='Co-advisor')
-    grad_mentor = models.ForeignKey('Person', blank=True, null=True, related_name='Grad_Mentor')
+    advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Advisor', on_delete=models.SET_DEFAULT, default=get_person)
+    co_advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Co_Advisor', verbose_name='Co-advisor', on_delete=models.SET_NULL)
+    grad_mentor = models.ForeignKey('Person', blank=True, null=True, related_name='Grad_Mentor', on_delete=models.SET_NULL)
 
     # According to Django docs, best to have field choices within the primary
     # class that uses them. See https://docs.djangoproject.com/en/1.9/ref/models/fields/#choices
@@ -476,8 +482,8 @@ class Project(models.Model):
         return self.name
         
 class Project_Role(models.Model):
-    person = models.ForeignKey(Person)
-    project = models.ForeignKey(Project)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
     role = models.TextField(blank=True, null=True)
     start_date = models.DateField()
     end_date = models.DateField(blank=True, null=True)
@@ -525,7 +531,7 @@ class Project_header(models.Model):
     caption = models.CharField(max_length=255, blank=True, null=True)
     video_url = models.URLField(blank=True, null=True)
     image = models.ImageField(upload_to='projects/images/', blank=True, null=True, max_length=255)
-    project = models.ForeignKey(Project, blank=True, null=True)
+    project = models.ForeignKey(Project, blank=True, null=True, on_delete=models.CASCADE)
 
     def get_visual(self):
         if self.video_url:
@@ -547,7 +553,7 @@ class Photo(models.Model):
     picture = models.ImageField(upload_to='projects/images/', max_length=255)
     caption = models.CharField(max_length=255, blank=True, null=True)
     alt_text = models.CharField(max_length=255, blank=True, null=True)
-    project = models.ForeignKey(Project, blank=True, null=True)
+    project = models.ForeignKey(Project, blank=True, null=True, on_delete=models.SET_NULL)
     picture.help_text = 'You must select "Save and continue editing" at the bottom of the page after uploading a new image for cropping. Please note that since we are using a responsive design with fixed height banners, your selected image may appear differently on various screens.'
 
     # Copied from person model
@@ -570,7 +576,7 @@ class Video(models.Model):
     title = models.CharField(max_length=255)
     caption = models.CharField(max_length=255, blank=True, null=True)
     date = models.DateField(null=True)
-    project = models.ForeignKey(Project, blank=True, null=True)
+    project = models.ForeignKey(Project, blank=True, null=True, on_delete=models.SET_NULL)
 
     def get_embed(self):
         #TODO this assumes that all videos are YouTube. This is not the case.
@@ -667,8 +673,8 @@ class Publication(models.Model):
     official_url = models.URLField(blank=True, null=True)
     geo_location = models.CharField(max_length=255, blank=True, null=True)
 
-    video = models.OneToOneField(Video, on_delete=models.CASCADE, null=True, blank=True)
-    talk = models.ForeignKey(Talk, blank=True, null=True)
+    video = models.OneToOneField(Video, on_delete=models.DO_NOTHING, null=True, blank=True)
+    talk = models.ForeignKey(Talk, blank=True, null=True, on_delete=models.DO_NOTHING)
 
     series = models.CharField(max_length=255, blank=True, null=True)
     isbn = models.CharField(max_length=255, blank=True, null=True)
@@ -757,7 +763,7 @@ def publication_delete(sender, instance, **kwards):
         instance.pdf_file.delete(False)
 
 class Poster(models.Model):
-    publication = models.ForeignKey(Publication, blank=True, null=True)
+    publication = models.ForeignKey(Publication, blank=True, null=True, on_delete=models.DO_NOTHING)
 
     # If publication is set, then these fields will be drawn from Publication
     # and ignored here.
@@ -789,8 +795,8 @@ def poster_delete(sender, instance, **kwargs):
 class News(models.Model):
     title = models.CharField(max_length=255)
     #date = models.DateTimeField(default=timezone.now)
-    date = models.DateField(default=date.today)
-    author = models.ForeignKey(Person)
+    date = models.DateField(default=date.today)    
+    author = models.ForeignKey(Person, null=True, on_delete=models.SET_NULL)    
     content = models.TextField()
     #Following the scheme of above thumbnails in other models
     image = models.ImageField(blank=True, upload_to=UniquePathAndRename("news", True), max_length=255)
@@ -858,7 +864,7 @@ class Banner(models.Model):
     page = models.CharField(max_length=50, choices=PAGE_CHOICES, default="FRONTPAGE")
     image = models.ImageField(blank=True, upload_to=UniquePathAndRename("banner", True), max_length=255)
     #This field is only needed if the banner has been assigned to a specific project. The field is used by project_ind to select project specific banners so we don't have to add each project to the PAGE_CHOICES dictionary.
-    project = models.ForeignKey(Project, blank=True, null=True)
+    project = models.ForeignKey(Project, blank=True, null=True, on_delete=models.CASCADE)
     project.help_text = "If this banner is for a specific project, set the page to Ind_Project. You must also set this field to the desired project for your banner to be displayed on that projects page."
     # def image_preview(self):
     #     if self.image:
