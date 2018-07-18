@@ -1,12 +1,12 @@
 # Isotope Implementation
 This is a collection of scripts that implement sorting, filtering, sidebars, and headers for Isotope.
 
-# Rquired Scripts
+# Required Scripts
 For this implementation, these scripts must be included in the HTML:
 1. isotope.pkgd.min.js
 2. isotope-init.js
 
-This implementation is dependant on isotope, which is why ```isotope.pkgd.min.js``` is required. The ```isotope-init.js``` sets up important JS variables and sets up the isotope grid.
+This implementation is dependent on isotope, which is why ```isotope.pkgd.min.js``` is required. The ```isotope-init.js``` sets up important JS variables and sets up the isotope grid.
 
 # General HTML requirements
 - There must be a div with the id "isotope_data_container" in the HTML page. In this, you must put all relevant configuration data. 
