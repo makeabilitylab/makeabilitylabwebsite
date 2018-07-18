@@ -131,7 +131,7 @@
             filteringKeywordContainer(#keywords-all,str)
             sortingKeywordContainer(#keywords-sorting,str)
             sideBarContainer(#fixed-side-bar,str)
-            scrollTop(175,int)
+            scrollTop(100,int)
         </div>
 
         <div class="video-list" id="main-content">
@@ -156,7 +156,7 @@
                                 <span class="decor_pdf"> | </span><a href='{{ video.publication.pdf_file }}' class="video-paper-link">Paper</a>
                             </p>
 
-                            <div class="sortingAndFiltering" style="display:none">Year({{ video.get_year }},int,false)Project({{video.project.name}},str,true)</div>
+                            <div class="sortingAndFiltering" style="display:none">Year({{ video.get_year }},int)Project({{video.project.name}},str)</div>
                             <div class="Date" style="display:none">{{video.date.year}}{{video.date.month}}{{video.date.day}}</div>
                         </div>
                     {% endfor %}

@@ -4,7 +4,6 @@
  * Generates filters on top of the ones specified in HTML using sort-filter data container
  */
 
-
 var filterKeywords = [];
 var filterNames = [];
 function isotopeFilterBarInit(){
@@ -41,12 +40,13 @@ function isotopeFilterBarInit(){
             if(textSplit[i] === "") {
                 continue;
             }
-            var data = textSplit[i].split('(')[1].split(',')[0];
-            if(filterNames.indexOf(textSplit[i].split('(')[0] + ";" + data) === -1) {
-                filterNames.push(textSplit[i].split('(')[0] + ";" + data);
+            if(filterNames.indexOf(textSplit[i]) === -1) {
+                filterNames.push(textSplit[i]);
             }
         }
     });
+    console.log(filterNames);
+    console.log(filterKeywords);
 }
 
 // handles the onclick for filter bar
@@ -55,40 +55,59 @@ function handleFilterBarClick(e)
     // get our text
     var text = $(e.target).attr("name");
 
-    // scroll up to
-    $("html, body").animate({ scrollTop: 175 }, 1000);
+    //formula to calculate a smooth scroll time, caps at one second.
+    var timeToScroll = 1000 * (-100/(Math.abs(window.scrollY - scrollTop + 100)) + 1);
+    console.log(scrollTop, timeToScroll);
+    // scroll up to "scrollTop"
+    $("html, body").animate({scrollTop:scrollTop}, timeToScroll);
 
+    //handle the filtering click if it exists
     if(typeof handleFilteringClick !== typeof undefined){
-        handleFilteringClick(e);
+        //wait for the scroll before filtering
+        setTimeout(function(){handleFilteringClick(e)}, timeToScroll);
     }
+
+    //handle the sorting click if it exists
     if(typeof handleSortingClick !== typeof undefined) {
-        handleSortingClick(e);
-    }
+        //wait for the scroll before sorting
+        setTimeout(function(){handleSortingClick(e)}, timeToScroll);
 
-    if(filterKeywords.indexOf(text) > -1) {
-        var filter_keywords_to_remove = $(filteringKeywordContainer).find('.added-filter-keywords');
-        for(var i = 0; i < filter_keywords_to_remove.length; i++) {
-            filter_keywords_to_remove[i].remove();
-        }
+        //only delete/insert filter keywords if sorting is enabled and a resort was triggered.
+        if(filterKeywords.indexOf(text) > -1) {
+            var filter_keywords_to_remove = $(filteringKeywordContainer).find('.added-filter-keywords');
+            for(var i = 0; i < filter_keywords_to_remove.length; i++) {
+                filter_keywords_to_remove[i].remove();
+            }
 
-        var numFilterMatches = 0;
-        for(var i = 0; i < filterNames.length; i++) {
-            if(filterNames[i].indexOf(text) !== -1) {
-                numFilterMatches++;
+            var filterMatches = [];
+            for(var i = 0; i < filterNames.length; i++) {
+                if(filterNames[i].indexOf(text) !== -1) {
+                    filterMatches.push(filterNames[i]);
+                    console.log(filterNames[i]);
+                }
+            }
+            //sort these names so that we can put them in order
+            filterMatches = sortFilterNamesByProperty(filterMatches, text);
+            console.log("in filter-bar: ")
+            //if there are more than 0 filter matches, add the text as a header.
+            if(filterMatches.length > 0) {
+                $(filteringKeywordContainer).append("<h1 class='added-filter-keywords'>" + text + "</h1>");
+            }
+
+            //put all of the properties we can filter by
+            for(var i = 0; i < filterMatches.length; i++) {
+                     $(filteringKeywordContainer).append("<li class='added-filter-keywords' style='list-style-type:none;cursor:pointer;'><a name='"+ filterMatches[i] +"'>" + parsePropertyValue(filterMatches[i]) + "</a></li>")
+            }
+
+            //add 'all' to the bottom if there are more than 0 filter matches
+            if(filterMatches.length > 0) {
+                $(filteringKeywordContainer).append("<li class='added-filter-keywords' style='list-style-type:none;cursor:pointer;'><a name='" + text + "'>all</a></li>");
             }
         }
-
-        if(numFilterMatches > 0) {
-            $(filteringKeywordContainer).append("<h1 class='added-filter-keywords'>" + text + "</h1>");
-        }
-
-        for(var i = 0; i < filterNames.length; i++) {
-            if(filterNames[i].indexOf(text) !== -1) {
-                 $(filteringKeywordContainer).append("<li class='added-filter-keywords' style='list-style-type:none;cursor:pointer;'><a name='"+ filterNames[i] +"'>" + filterNames[i].split(';')[1] + "</a></li>")
-            }
-        }
-        if(numFilterMatches > 0) {
-            $(filteringKeywordContainer).append("<li class='added-filter-keywords' style='list-style-type:none;cursor:pointer;'><a name='" + text + "'>all</a></li>");
-        }
     }
+
+
+
+
+
 }

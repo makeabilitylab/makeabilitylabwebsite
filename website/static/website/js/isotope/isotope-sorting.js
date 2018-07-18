@@ -37,7 +37,12 @@ function isotopeSortInit() {
 function sortBySortingScheme (itemElem)
 {
     // get the value of the property that we're sorting by.
-    return getValueOfProperty($(itemElem).find(sortFilterDataContainer)[0].textContent, sortingScheme);
+    var val = getValueOfProperty($(itemElem).find(sortFilterDataContainer)[0].textContent, sortingScheme);
+    //so that uppercase letters aren't sorted above lowercase ones
+    if(typeof val === "string") {
+        val = val.toLowerCase();
+    }
+    return val;
 }
 
 // sorts based on the date (reverse chronological)
@@ -45,6 +50,30 @@ function sortByDate(itemElem)
 {
     var date_str = $(itemElem).find('.Date')[0].textContent;
     return parseInt(date_str);
+}
+
+//sorts filtering names by a scheme and by an order. Used by the filter-bar, if sorting is being used
+function sortFilterNamesByProperty (filterNames, scheme){
+    var ascending = getIsPropertyAscending(sortingKeywordContainer, scheme);
+    filterNames = filterNames.sort(function(a,b){
+        //parse the properties
+        var valA = parsePropertyValue(a);
+        var valB = parsePropertyValue(b);
+
+        //so that uppercase letters aren't sorted above lowercase ones
+        if(typeof valA === "string") {
+            valA = valA.toLowerCase();
+        }
+        if(typeof valB === "string") {
+            valB = valB.toLowerCase();
+        }
+
+        return valA-valB;
+    });
+    if(!ascending) {
+        filterNames = filterNames.reverse();
+    }
+    return filterNames;
 }
 
 // handles click when called

@@ -27,15 +27,15 @@ function filterByFilteringScheme() {
     }
 
     // check if we have the property, if not return false.
-    if(!hasProperty($(this).find(sortFilterDataContainer)[0].textContent, filteringScheme.split(';')[0])) {
+    if(!hasProperty($(this).find(sortFilterDataContainer)[0].textContent, filteringScheme.split('(')[0])) {
         return false;
     }
 
     // get filterable data
-    var data = getValueOfProperty($(this).find(sortFilterDataContainer)[0].textContent, filteringScheme.split(';')[0]);
+    var data = getValueOfProperty($(this).find(sortFilterDataContainer)[0].textContent, filteringScheme.split('(')[0]);
 
     // if data is null, then return false, otherwise check if the data is equal to the filteringScheme or if the filtering scheme doesn't contain data.
-    return (filteringScheme.indexOf(';') === -1 || filteringScheme.split(';')[1].trim() === (data + "").trim());
+    return (filteringScheme.indexOf('(') === -1 || (parsePropertyValue(filteringScheme) + "").trim() === (data + "").trim());
 }
 
 // handles the filter click
