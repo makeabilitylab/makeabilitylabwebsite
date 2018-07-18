@@ -1,3 +1,4 @@
+media/
 import/temp/*
 .idea/vcs.xml
 .idea/workspace.xml
@@ -35,3 +36,6 @@ makeabilitylab_django.log
 media/*
 !media/images/StarWarsFiguresFullSquare/Rebels
 static/
+
+
+

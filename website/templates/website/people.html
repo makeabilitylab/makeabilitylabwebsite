@@ -85,7 +85,7 @@
             {{ active_prof|length }} Prof
             {% if active_postdoc or active_phd or active_ms%}, {% endif %}
             {% if active_postdoc %} {{ active_postdoc|length }} Postdoc{% endif %}
-            {% if active_phd or active_ms%}, {% endif %}
+            {% if active_postdoc %}, {% endif %}
             {% if active_phd %} {{ active_phd|length }} PhD{% endif %}
             {% if active_ms%}, {% endif %}
             {% if active_ms %} {{ active_ms|length }} MS{% endif %}
@@ -93,7 +93,7 @@
         <div class="row main-content">
             {% for member in active_prof_grad %}
                 <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-                    <a href="{% url 'website:member' member.person.id %}">
+                    <a href="{% url 'website:member' member.person.url_name %}">
 			<div class="easter-egg-col">
 			    <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
 			    <div class="overlay-easter-egg">
@@ -102,7 +102,7 @@
 			</div>
                     </a>
                     <div class="item-info">
-                        <a href="{% url 'website:member' member.person.id %}">
+                        <a href="{% url 'website:member' member.person.url_name %}">
                             <h5>{{ member.person.get_full_name }}</h5>
                         </a>
 			{{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
@@ -122,7 +122,7 @@
         <div class="row main-content">
             {% for member in active_undergrad %}
                 <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-                    <a href="{% url 'website:member' member.person.id %}">
+                    <a href="{% url 'website:member' member.person.url_name %}">
                         <div class="easter-egg-col">
 			    <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
 			    <div class="overlay-easter-egg">
@@ -131,7 +131,7 @@
 			</div>
                     </a>
                     <div class="item-info">
-                        <a href="{% url 'website:member' member.person.id %}">
+                        <a href="{% url 'website:member' member.person.url_name %}">
                             <h5>{{ member.person.get_full_name }}</h5>
                         </a>
 			{{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
@@ -151,7 +151,7 @@
         <div class="row main-content">
             {% for member in active_highschool %}
                 <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-                    <a href="{% url 'website:member' member.person.id %}">
+                    <a href="{% url 'website:member' member.person.url_name %}">
                         <div class="easter-egg-col">
 			    <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
 			    <div class="overlay-easter-egg">
@@ -160,7 +160,7 @@
 			</div>
                     </a>
                     <div class="item-info">
-                        <a href="{% url 'website:member' member.person.id %}">
+                        <a href="{% url 'website:member' member.person.url_name %}">
                             <h5>{{ member.person.get_full_name }}</h5>
                         </a>
 			{{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
@@ -192,7 +192,7 @@
 	<div class="row main-content">
 	{% for member in alumni_prof_grad %}
 	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-                <a href="{% url 'website:member' member.person.id %}">
+                <a href="{% url 'website:member' member.person.url_name %}">
                     <div class="easter-egg-col">
 			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
 			<div class="overlay-easter-egg">
@@ -201,7 +201,7 @@
 		    </div>
                 </a>
                 <div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}">
+                    <a href="{% url 'website:member' member.person.url_name %}">
                         <h5>{{ member.person.get_full_name }}</h5>
                     </a>
 		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
@@ -222,7 +222,7 @@
 	<div class="row main-content">
 	    {% for member in alumni_undergrad %}
 	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-                <a href="{% url 'website:member' member.person.id %}">
+                <a href="{% url 'website:member' member.person.url_name %}">
                     <div class="easter-egg-col">
 			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
 			<div class="overlay-easter-egg">
@@ -231,7 +231,7 @@
 		    </div>
                 </a>
                 <div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}">
+                    <a href="{% url 'website:member' member.person.url_name %}">
                         <h5>{{ member.person.get_full_name }}</h5>
                     </a>
 		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
@@ -252,7 +252,7 @@
 	<div class="row main-content">
 	    {% for member in alumni_highschool %}
 	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-                <a href="{% url 'website:member' member.person.id %}">
+                <a href="{% url 'website:member' member.person.url_name %}">
                     <div class="easter-egg-col">
 			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
 			<div class="overlay-easter-egg">
@@ -261,7 +261,7 @@
 		    </div>
                 </a>
                 <div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}">
+                    <a href="{% url 'website:member' member.person.url_name %}">
                         <h5>{{ member.person.get_full_name }}</h5>
                     </a>
 		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
@@ -283,7 +283,7 @@
         <div class="row main-content">
             {% for collaborator in cur_collaborators %}
                 <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-                    <a href="{% url 'website:member' collaborator.person.id %}">
+                    <a href="{% url 'website:member' collaborator.person.url_name %}">
                         <div class="easter-egg-col">
 			    <img src="{% thumbnail collaborator.person.image 245x245 box=collaborator.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
 			    <div class="overlay-easter-egg">
@@ -292,7 +292,7 @@
 			</div>
                     </a>
                     <div class="item-info">
-                        <a href="{% url 'website:member' collaborator.person.id %}">
+                        <a href="{% url 'website:member' collaborator.person.url_name %}">
                             <h5>{{ collaborator.person.get_full_name }}</h5>
                         </a>
 			{{collaborator.get_start_date_short}} - {{collaborator.get_end_date_short}}<br/>
@@ -314,7 +314,7 @@
         <div class="row main-content">
             {% for collaborator in past_collaborators %}
                 <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-                    <a href="{% url 'website:member' collaborator.person.id %}">
+                    <a href="{% url 'website:member' collaborator.person.url_name %}">
                         <div class="easter-egg-col">
 			    <img src="{% thumbnail collaborator.person.image 245x245 box=collaborator.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
 			    <div class="overlay-easter-egg">
@@ -323,7 +323,7 @@
 			</div>
                     </a>
                     <div class="item-info">
-                        <a href="{% url 'website:member' collaborator.person.id %}">
+                        <a href="{% url 'website:member' collaborator.person.url_name %}">
                             <h5>{{ collaborator.person.get_full_name }}</h5>
                         </a>
 			{{collaborator.get_start_date_short}} - {{collaborator.get_end_date_short}}<br/>

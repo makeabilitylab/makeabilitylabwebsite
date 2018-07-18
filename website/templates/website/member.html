@@ -144,7 +144,7 @@
 					<p>{{item.title}}</p>
 				    </a>
 				</div>
-				<p class="news_date">{{item.short_date}} | <a href="{% url 'website:member' item.author.id %}">{{item.author.first_name}}</a></p><!--</p><p class="news_date">{{item.author}}</p>-->
+				<p class="news_date">{{item.short_date}} | <a href="{% url 'website:member' item.author.url_name %}">{{item.author.first_name}}</a></p><!--</p><p class="news_date">{{item.author}}</p>-->
 			    </div>
 			</div>
 			<div class="row news_body">
@@ -178,7 +178,7 @@
 				<p class="publication-title">{{pub.title}}</p>
 				<p class="publication-authors">
 				    {% for author in pub.authors.all %}
-				    <span class="publication-author"><a href="{% url 'website:member' author.id %}">{{author.get_full_name}}</a>&nbsp;</span>
+				    <span class="publication-author"><a href="{% url 'website:member' author.url_name %}">{{author.get_full_name}}</a>&nbsp;</span>
 				    {% endfor %}
 				</p>
 				<p class="publication-stats">
@@ -209,9 +209,9 @@
 				<p class="talk-speakers">
 				    {% for speaker in talk.speakers.all %}
 				    {% if forloop.last %}
-				    <span class="talk-speaker"><a href="{% url 'website:member' speaker.id %}">{{speaker.get_full_name}}</a></span>
+				    <span class="talk-speaker"><a href="{% url 'website:member' speaker.get_url_name %}">{{speaker.get_full_name}}</a></span>
 				    {% else %}
-				    <span class="talk-speaker"><a href="{% url 'website:member' speaker.id %}">{{speaker.get_full_name}}</a>,&nbsp;</span>
+				    <span class="talk-speaker"><a href="{% url 'website:member' speaker.get_url_name %}">{{speaker.get_full_name}}</a>,&nbsp;</span>
 				    {% endif %}
 				    {% endfor %}
 				</p>

@@ -7,7 +7,7 @@
 {% load cropping %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{% static 'website/css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/index.css' %}?version=1">
     <link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
     <link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}">
 {% endblock %}
@@ -66,7 +66,7 @@
                 "first_name": "{{ author.first_name }}",
                 "middle_name": "{{ author.middle_name }}",
                 "last_name": "{{ author.last_name }}",
-                "link": "{% url 'website:member' author.id %}"
+                "link": "{% url 'website:member' author.url_name %}"
                 },
             {% endfor %}
             ],
@@ -122,7 +122,7 @@
 
 
     <!-- This is a news overlay on the banner -->
-    <div class="container-fluid" style="z-index: 15; position: absolute; top: 100px; right: 150px; background: rgba(0, 0, 0, 0.65); padding: 6px 10px 1px 10px; border-radius: 5px">
+    <div class="container-fluid news-listing" style="z-index: 15; position: absolute; top: 100px; right: 150px; background: rgba(0, 0, 0, 0.65); padding: 6px 10px 1px 10px; border-radius: 5px">
         <div style="width: 200px">
             {% for news_item in news|slice:"5" %}
                 <p class="line-clamp" style="margin-bottom:15px; color:white; font-family:Roboto;">
@@ -243,7 +243,7 @@
                     </p>
                     <p class="artifact-authors line-clamp3">
                         {% for author in pub.authors.all %}
-                            <a href="{% url 'website:member' author.id %}">{{author.get_full_name}}</a>{% if not forloop.last %},{% endif %}
+                            <a href="{% url 'website:member' author.url_name %}">{{author.get_full_name}}</a>{% if not forloop.last %},{% endif %}
                         {% endfor %}
                     </p>
 
@@ -256,7 +256,7 @@
                         <p class="pub-download-links">
                             <a href="../../media/{{ pub.pdf_file }}">PDF</a>
                             {% if pub.official_url %}<a href="{{ pub.official_url }}">| Official Link</a> |{% endif %}
-                            | <a data-toggle="popover" data-html="true" data-trigger="manual" tabindex="0" title="Citation" data-content="Empty Citation" class="publication-citation-link">Citation</a>
+                            <span class="citation-link">| <a data-toggle="popover" data-html="true" data-trigger="manual" tabindex="0" title="Citation" data-content="Empty Citation" class="publication-citation-link">Citation</a></span>
                             {% if pub.talk.pdf_file %}<a href="../../media/{{ pub.talk.pdf_file }}">| Talk</a>{% endif %}
                         </p>
                     {% endif %}
@@ -290,7 +290,7 @@
                             <!-- TODO: figure out how to remove vertical space between speakers and subtitle -->
 
                             {% for speaker in talk.speakers.all %}
-                                <a href="{% url 'website:member' speaker.id %}">{{ speaker.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
+                                <a href="{% url 'website:member' speaker.url_name %}">{{ speaker.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
                             {% endfor %}
                         </p>
                         <!-- TODO: add in YouTube of talk? -->

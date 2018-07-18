@@ -4,7 +4,9 @@ from sortedm2m.fields import SortedManyToManyField
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete
 from datetime import date
+from django.utils import timezone
 from datetime import timedelta
+import datetime
 from website.utils.fileutils import UniquePathAndRename
 import os
 import glob
@@ -32,11 +34,7 @@ class Person(models.Model):
     first_name = models.CharField(max_length=40)
     middle_name = models.CharField(max_length=50, blank=True, null=True)
     last_name = models.CharField(max_length=50)
-
-    # TODO: Need to figure out how to make this not add the em-dash when autocompleted
-    # URL Name for this person generated from the first and last names
-    # Default: Jon E Froehlich --> jon-froehlich
-
+    url_name = models.CharField(editable=False, max_length=50, default='placeholder')
     email = models.EmailField(blank=True, null=True)
     personal_website = models.URLField(blank=True, null=True)
     github = models.URLField(blank=True, null=True)
@@ -206,6 +204,11 @@ class Person(models.Model):
             return u"{0} {1}".format(self.first_name, self.last_name)
     get_full_name.short_description = "Full Name"
 
+    # Returns the URL name for this person
+    # Format: firstlast
+    def get_url_name(self):
+        return self.url_name
+
     def __str__(self):
         return self.get_full_name()
 
@@ -215,6 +218,9 @@ class Person(models.Model):
         dir = os.path.join('images', 'StarWarsFiguresFullSquare', 'Rebels')
         star_wars_dir = os.path.join(dir, get_random_starwars(dir))
         image_choice = File(open(star_wars_dir, 'rb'))
+        # automatically set url_name field
+        self.url_name = (self.first_name + self.last_name).lower().replace(' ', '')
+
         if not self.image:
             self.image = image_choice
         if self.pk is None:
@@ -225,8 +231,6 @@ class Person(models.Model):
         ordering = ['last_name', 'first_name']
         verbose_name_plural = 'People'
 
-
-        
 @receiver(pre_delete, sender=Person)
 def person_delete(sender, instance, **kwargs):
     if instance.image:
@@ -264,6 +268,8 @@ class Position(models.Model):
     ASSISTANT_PROF = "Assistant Professor"
     ASSOCIATE_PROF = "Associate Professor"
     FULL_PROF = "Professor"
+    RESEARCH_SCIENTIST = "Research Scientist"
+    SOFTWARE_DEVELOPER = "Software Developer"
     UNKNOWN = "Uncategorized"
 
     TITLE_CHOICES = (
@@ -275,12 +281,14 @@ class Position(models.Model):
          (ASSISTANT_PROF, ASSISTANT_PROF),
          (ASSOCIATE_PROF, ASSOCIATE_PROF),
          (FULL_PROF, FULL_PROF),
+         (RESEARCH_SCIENTIST, RESEARCH_SCIENTIST),
+         (SOFTWARE_DEVELOPER, SOFTWARE_DEVELOPER),
          (UNKNOWN, UNKNOWN)
     )
     title = models.CharField(max_length=50, choices=TITLE_CHOICES)
 
     department = models.CharField(max_length=50, default="Computer Science")
-    school = models.CharField(max_length=60, default="University of Maryland")
+    school = models.CharField(max_length=60, default="University of Washington")
 
     def get_start_date_short(self):
         return self.start_date.strftime('%b %Y')
@@ -355,15 +363,21 @@ class Position(models.Model):
 
     # Returns true if member is current based on end date
     def is_current_collaborator(self):
-        # print('Checkpoint 2: ' + self.person.get_full_name() + ' is collaborator? ' + str(self.is_collaborator()))
-
         return self.is_collaborator() and \
                (self.start_date is not None and self.start_date <= date.today() and \
                self.end_date is None or (self.end_date is not None and self.end_date >= date.today()))
 
-    # Returns true if member is an alumni member
+    # Returns true if member is an alumni member (used to differentiate between future members)
     def is_alumni_member(self):
-        return self.is_member() and self.end_date != None and self.end_date < date.today()
+        return self.is_member() and \
+               self.start_date < date.today() and \
+               self.end_date != None and self.end_date < date.today()
+
+    # Returns true if collaborator is a past collaborator (used to differentiate between future collaborators)
+    def is_past_collaborator(self):
+        return self.is_collaborator() and \
+               self.start_date < date.today() and \
+               self.end_date != None and self.end_date < date.today()
 
     def __str__(self):
         return "Name={}, Role={}, Title={}".format(self.person.get_full_name(), self.role, self.title)
@@ -498,7 +512,14 @@ class Project_Role(models.Model):
             return "{}-{}".format(self.start_date.year, self.end_date.year)
         
     def is_active(self):
-        return self.start_date is not None and self.start_date <= date.today() and self.end_date is None or (self.end_date is not None and self.end_date >= date.today())
+        return self.start_date is not None and self.start_date <= date.today() and \
+               (self.end_date is None or self.end_date >= date.today())
+
+    # This function is used to differentiate between past and future roles
+    def is_past(self):
+        return self.start_date is not None and self.start_date < date.today() and \
+               (self.end_date is not None and self.end_date < date.today())
+
 
     def __str__(self):
         return "Name={}, PI/Co-PI={}".format(self.person.get_full_name(), self.pi_member)
@@ -526,6 +547,7 @@ class Project_header(models.Model):
 
     class Meta:
         verbose_name = "Project About Visual"
+
 
 class Photo(models.Model):
     picture = models.ImageField(upload_to='projects/images/', max_length=255)
@@ -661,6 +683,9 @@ class Publication(models.Model):
     publisher_address = models.CharField(max_length=255, blank=True, null=True)
     acmid = models.CharField(max_length=255, blank=True, null=True)
 
+
+
+
     CONFERENCE = "Conference"
     ARTICLE = "Article"
     JOURNAL = "Journal"
@@ -769,8 +794,9 @@ def poster_delete(sender, instance, **kwargs):
 
 class News(models.Model):
     title = models.CharField(max_length=255)
-    date = models.DateField(default=date.today)
-    author = models.ForeignKey(Person, null=True, on_delete=models.SET_NULL)
+    date = models.DateTimeField(default=date.today)
+    author = models.ForeignKey(Person, null=True, on_delete=models.SET_NULL)    
+    
     content = models.TextField()
     #Following the scheme of above thumbnails in other models
     image = models.ImageField(blank=True, upload_to=UniquePathAndRename("news", True), max_length=255)
@@ -788,7 +814,14 @@ class News(models.Model):
     alt_text = models.CharField(max_length=1024, blank=True, null=True)
 
     project = models.ManyToManyField(Project, blank=True, null=True)
-    
+
+    def time_now(self):
+        if self.date > timezone.now() - datetime.timedelta(hours=24):
+            return str(timezone.now().hour - self.date.hour) + ' hours ago'
+        else:
+            return self.short_date()
+
+
     def short_date(self):
         month=self.date.strftime('%b')
         day=self.date.strftime('%d')
@@ -817,8 +850,10 @@ class Banner(models.Model):
     TALKS = "TALKS"
     PROJECTS = "PROJECTS"
     INDPROJECT = "INDPROJECT"
+    NEWSLISTING = "NEWSLISTING"
     PAGE_CHOICES = (
          (FRONTPAGE, "Front Page"),
+         (NEWSLISTING, "News Listings"),
          (PEOPLE, "People"),
          (PUBLICATIONS, "Publications"),
          (TALKS, "Talks"),
