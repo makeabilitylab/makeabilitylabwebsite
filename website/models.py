@@ -210,24 +210,15 @@ class Person(models.Model):
         return self.get_full_name()
 
     def save(self, *args, **kwargs):
-
-        #problem code
-        dir_path = os.path.dirname(os.path.dirname(__file__))
-
-        image_path = glob.glob('./media/images/StarWarsFiguresFullSquare/Rebels/locator.png')[0].replace('locator.png', '').split('/')[1:]
-        dir = ''
-        for item in image_path:
-           dir = os.path.join(dir, item)
-        #code/ + image_path
-
-        star_wars_dir = os.path.join(dir_path, dir)
-        star_wars_dir = os.path.join(star_wars_dir, get_random_starwars(star_wars_dir))
+        dir = os.path.abspath('.')
+        #requires the volume mount from docker
+        dir = os.path.join('images', 'StarWarsFiguresFullSquare', 'Rebels')
+        star_wars_dir = os.path.join(dir, get_random_starwars(dir))
         image_choice = File(open(star_wars_dir, 'rb'))
         if not self.image:
             self.image = image_choice
         if self.pk is None:
             self.easter_egg = image_choice
-        #Get a star wars pic
         super(Person, self).save(*args, **kwargs)
     
     class Meta:
