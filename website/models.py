@@ -210,6 +210,15 @@ class Person(models.Model):
         return self.get_full_name()
 
     def save(self, *args, **kwargs):
+        dir = os.path.abspath('.')
+        #requires the volume mount from docker
+        dir = os.path.join('images', 'StarWarsFiguresFullSquare', 'Rebels')
+        star_wars_dir = os.path.join(dir, get_random_starwars(dir))
+        image_choice = File(open(star_wars_dir, 'rb'))
+        if not self.image:
+            self.image = image_choice
+        if self.pk is None:
+            self.easter_egg = image_choice
         super(Person, self).save(*args, **kwargs)
     
     class Meta:
