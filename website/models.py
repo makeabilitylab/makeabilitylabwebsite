@@ -4,9 +4,12 @@ from sortedm2m.fields import SortedManyToManyField
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete
 from datetime import date
+from django.utils import timezone
 from datetime import timedelta
+import datetime
 from website.utils.fileutils import UniquePathAndRename
 import os
+import glob
 import re
 from random import choice
 from django.core.files import File
@@ -31,11 +34,7 @@ class Person(models.Model):
     first_name = models.CharField(max_length=40)
     middle_name = models.CharField(max_length=50, blank=True, null=True)
     last_name = models.CharField(max_length=50)
-
-    # TODO: Need to figure out how to make this not add the em-dash when autocompleted
-    # URL Name for this person generated from the first and last names
-    # Default: Jon E Froehlich --> jon-froehlich
-
+    url_name = models.CharField(editable=False, max_length=50, default='placeholder')
     email = models.EmailField(blank=True, null=True)
     personal_website = models.URLField(blank=True, null=True)
     github = models.URLField(blank=True, null=True)
@@ -164,19 +163,19 @@ class Person(models.Model):
     def get_latest_position(self):
         # print(self.position_set.exists())
         if self.position_set.exists() is False:
-            print("The person '{}' has no position set".format(self.get_full_name()))
+            #print("The person '{}' has no position set".format(self.get_full_name()))
             return None
         else:
-            print("self.position_set is not None")
+            #print("self.position_set is not None")
 
             # The Person model can access its positions because of the foreign key relationship
             # See: https://docs.djangoproject.com/en/1.11/topics/db/queries/#related-objects
-            print("Printing all positions for " + self.get_full_name())
-            for position in self.position_set.all():
-                print(position.start_date)
+            #print("Printing all positions for " + self.get_full_name())
+            #for position in self.position_set.all():
+                #print(position.start_date)
 
-            print("The latest position for " + self.get_full_name())
-            print(self.position_set.latest('start_date'))
+            #print("The latest position for " + self.get_full_name())
+            #print(self.position_set.latest('start_date'))
             return self.position_set.latest('start_date')
 
     # Returns the start date of current position. Used in Admin Interface. See PersonAdmin in admin.py
@@ -205,39 +204,50 @@ class Person(models.Model):
             return u"{0} {1}".format(self.first_name, self.last_name)
     get_full_name.short_description = "Full Name"
 
+    # Returns the URL name for this person
+    # Format: firstlast
+    def get_url_name(self):
+        return self.url_name
+
     def __str__(self):
         return self.get_full_name()
 
     def save(self, *args, **kwargs):
-        dir_path = os.path.dirname(os.path.dirname(__file__))
-        star_wars_dir = dir_path+"/import/images/StarWarsFiguresFullSquare/Rebels/"
-        image_choice = File(open(star_wars_dir+get_random_starwars(star_wars_dir), 'rb'))
+        dir = os.path.abspath('.')
+        #requires the volume mount from docker
+        dir = os.path.join('images', 'StarWarsFiguresFullSquare', 'Rebels')
+        star_wars_dir = os.path.join(dir, get_random_starwars(dir))
+        image_choice = File(open(star_wars_dir, 'rb'))
+        # automatically set url_name field
+        self.url_name = (self.first_name + self.last_name).lower().replace(' ', '')
+
         if not self.image:
             self.image = image_choice
         if self.pk is None:
             self.easter_egg = image_choice
-            #Get a star wars pic
         super(Person, self).save(*args, **kwargs)
     
     class Meta:
         ordering = ['last_name', 'first_name']
         verbose_name_plural = 'People'
 
-
-        
 @receiver(pre_delete, sender=Person)
 def person_delete(sender, instance, **kwargs):
     if instance.image:
         instance.image.delete(False)
-    
-        
+
+
+
+def get_person():
+    return Person.objects.get(last_name='Froehlich')
+
 class Position(models.Model):
-    person = models.ForeignKey(Person)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField(blank=True, null=True)
-    advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Advisor')
-    co_advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Co_Advisor', verbose_name='Co-advisor')
-    grad_mentor = models.ForeignKey('Person', blank=True, null=True, related_name='Grad_Mentor')
+    advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Advisor', on_delete=models.SET_DEFAULT, default=get_person)
+    co_advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Co_Advisor', verbose_name='Co-advisor', on_delete=models.SET_NULL)
+    grad_mentor = models.ForeignKey('Person', blank=True, null=True, related_name='Grad_Mentor', on_delete=models.SET_NULL)
 
     # According to Django docs, best to have field choices within the primary
     # class that uses them. See https://docs.djangoproject.com/en/1.9/ref/models/fields/#choices
@@ -254,10 +264,12 @@ class Position(models.Model):
     UGRAD = "Undergrad"
     MS_STUDENT = "MS Student"
     PHD_STUDENT = "PhD Student"
-    POST_DOC = "Post-doc"
+    POST_DOC = "Post doc"
     ASSISTANT_PROF = "Assistant Professor"
     ASSOCIATE_PROF = "Associate Professor"
     FULL_PROF = "Professor"
+    RESEARCH_SCIENTIST = "Research Scientist"
+    SOFTWARE_DEVELOPER = "Software Developer"
     UNKNOWN = "Uncategorized"
 
     TITLE_CHOICES = (
@@ -269,9 +281,16 @@ class Position(models.Model):
          (ASSISTANT_PROF, ASSISTANT_PROF),
          (ASSOCIATE_PROF, ASSOCIATE_PROF),
          (FULL_PROF, FULL_PROF),
+         (RESEARCH_SCIENTIST, RESEARCH_SCIENTIST),
+         (SOFTWARE_DEVELOPER, SOFTWARE_DEVELOPER),
          (UNKNOWN, UNKNOWN)
     )
     title = models.CharField(max_length=50, choices=TITLE_CHOICES)
+
+    CURRENT_MEMBER = "Current Member"
+    PAST_MEMBER = "Past Member"
+    CURRENT_COLLABORATOR = "Current Collaborator"
+    PAST_COLLABORATOR = "Past Collaborator"
 
     department = models.CharField(max_length=50, default="Computer Science")
     school = models.CharField(max_length=60, default="University of Washington")
@@ -349,15 +368,21 @@ class Position(models.Model):
 
     # Returns true if member is current based on end date
     def is_current_collaborator(self):
-        # print('Checkpoint 2: ' + self.person.get_full_name() + ' is collaborator? ' + str(self.is_collaborator()))
-
         return self.is_collaborator() and \
                (self.start_date is not None and self.start_date <= date.today() and \
                self.end_date is None or (self.end_date is not None and self.end_date >= date.today()))
 
-    # Returns true if member is an alumni member
+    # Returns true if member is an alumni member (used to differentiate between future members)
     def is_alumni_member(self):
-        return self.is_member() and self.end_date != None and self.end_date < date.today()
+        return self.is_member() and \
+               self.start_date < date.today() and \
+               self.end_date != None and self.end_date < date.today()
+
+    # Returns true if collaborator is a past collaborator (used to differentiate between future collaborators)
+    def is_past_collaborator(self):
+        return self.is_collaborator() and \
+               self.start_date < date.today() and \
+               self.end_date != None and self.end_date < date.today()
 
     def __str__(self):
         return "Name={}, Role={}, Title={}".format(self.person.get_full_name(), self.role, self.title)
@@ -470,8 +495,8 @@ class Project(models.Model):
         return self.name
         
 class Project_Role(models.Model):
-    person = models.ForeignKey(Person)
-    project = models.ForeignKey(Project)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
     role = models.TextField(blank=True, null=True)
     start_date = models.DateField()
     end_date = models.DateField(blank=True, null=True)
@@ -500,7 +525,14 @@ class Project_Role(models.Model):
             return "{}-{}".format(self.start_date.year, self.end_date.year)
         
     def is_active(self):
-        return self.start_date is not None and self.start_date <= date.today() and self.end_date is None or (self.end_date is not None and self.end_date >= date.today())
+        return self.start_date is not None and self.start_date <= date.today() and \
+               (self.end_date is None or self.end_date >= date.today())
+
+    # This function is used to differentiate between past and future roles
+    def is_past(self):
+        return self.start_date is not None and self.start_date < date.today() and \
+               (self.end_date is not None and self.end_date < date.today())
+
 
     def __str__(self):
         return "Name={}, PI/Co-PI={}".format(self.person.get_full_name(), self.pi_member)
@@ -512,7 +544,7 @@ class Project_header(models.Model):
     caption = models.CharField(max_length=255, blank=True, null=True)
     video_url = models.URLField(blank=True, null=True)
     image = models.ImageField(upload_to='projects/images/', blank=True, null=True, max_length=255)
-    project = models.ForeignKey(Project, blank=True, null=True)
+    project = models.ForeignKey(Project, blank=True, null=True, on_delete=models.CASCADE)
 
     def get_visual(self):
         if self.video_url:
@@ -529,11 +561,12 @@ class Project_header(models.Model):
     class Meta:
         verbose_name = "Project About Visual"
 
+
 class Photo(models.Model):
     picture = models.ImageField(upload_to='projects/images/', max_length=255)
     caption = models.CharField(max_length=255, blank=True, null=True)
     alt_text = models.CharField(max_length=255, blank=True, null=True)
-    project = models.ForeignKey(Project, blank=True, null=True)
+    project = models.ForeignKey(Project, blank=True, null=True, on_delete=models.SET_NULL)
     picture.help_text = 'You must select "Save and continue editing" at the bottom of the page after uploading a new image for cropping. Please note that since we are using a responsive design with fixed height banners, your selected image may appear differently on various screens.'
 
     # Copied from person model
@@ -556,7 +589,7 @@ class Video(models.Model):
     title = models.CharField(max_length=255)
     caption = models.CharField(max_length=255, blank=True, null=True)
     date = models.DateField(null=True)
-    project = models.ForeignKey(Project, blank=True, null=True)
+    project = models.ForeignKey(Project, blank=True, null=True, on_delete=models.SET_NULL)
 
     def get_embed(self):
         #TODO this assumes that all videos are YouTube. This is not the case.
@@ -656,8 +689,8 @@ class Publication(models.Model):
     official_url = models.URLField(blank=True, null=True)
     geo_location = models.CharField(max_length=255, blank=True, null=True)
 
-    video = models.OneToOneField(Video, on_delete=models.CASCADE, null=True, blank=True)
-    talk = models.ForeignKey(Talk, blank=True, null=True)
+    video = models.OneToOneField(Video, on_delete=models.DO_NOTHING, null=True, blank=True)
+    talk = models.ForeignKey(Talk, blank=True, null=True, on_delete=models.DO_NOTHING)
 
     series = models.CharField(max_length=255, blank=True, null=True)
     isbn = models.CharField(max_length=255, blank=True, null=True)
@@ -665,6 +698,9 @@ class Publication(models.Model):
     publisher = models.CharField(max_length=255, blank=True, null=True)
     publisher_address = models.CharField(max_length=255, blank=True, null=True)
     acmid = models.CharField(max_length=255, blank=True, null=True)
+
+
+
 
     CONFERENCE = "Conference"
     ARTICLE = "Article"
@@ -743,7 +779,7 @@ def publication_delete(sender, instance, **kwards):
         instance.pdf_file.delete(False)
 
 class Poster(models.Model):
-    publication = models.ForeignKey(Publication, blank=True, null=True)
+    publication = models.ForeignKey(Publication, blank=True, null=True, on_delete=models.DO_NOTHING)
 
     # If publication is set, then these fields will be drawn from Publication
     # and ignored here.
@@ -774,8 +810,9 @@ def poster_delete(sender, instance, **kwargs):
 
 class News(models.Model):
     title = models.CharField(max_length=255)
-    date = models.DateField(default=date.today)
-    author = models.ForeignKey(Person)
+    date = models.DateTimeField(default=date.today)
+    author = models.ForeignKey(Person, null=True, on_delete=models.SET_NULL)    
+    
     content = models.TextField()
     #Following the scheme of above thumbnails in other models
     image = models.ImageField(blank=True, upload_to=UniquePathAndRename("news", True), max_length=255)
@@ -793,7 +830,14 @@ class News(models.Model):
     alt_text = models.CharField(max_length=1024, blank=True, null=True)
 
     project = models.ManyToManyField(Project, blank=True, null=True)
-    
+
+    def time_now(self):
+        if self.date > timezone.now() - datetime.timedelta(hours=24):
+            return str(timezone.now().hour - self.date.hour) + ' hours ago'
+        else:
+            return self.short_date()
+
+
     def short_date(self):
         month=self.date.strftime('%b')
         day=self.date.strftime('%d')
@@ -822,8 +866,10 @@ class Banner(models.Model):
     TALKS = "TALKS"
     PROJECTS = "PROJECTS"
     INDPROJECT = "INDPROJECT"
+    NEWSLISTING = "NEWSLISTING"
     PAGE_CHOICES = (
          (FRONTPAGE, "Front Page"),
+         (NEWSLISTING, "News Listings"),
          (PEOPLE, "People"),
          (PUBLICATIONS, "Publications"),
          (TALKS, "Talks"),
@@ -833,7 +879,7 @@ class Banner(models.Model):
     page = models.CharField(max_length=50, choices=PAGE_CHOICES, default="FRONTPAGE")
     image = models.ImageField(blank=True, upload_to=UniquePathAndRename("banner", True), max_length=255)
     #This field is only needed if the banner has been assigned to a specific project. The field is used by project_ind to select project specific banners so we don't have to add each project to the PAGE_CHOICES dictionary.
-    project = models.ForeignKey(Project, blank=True, null=True)
+    project = models.ForeignKey(Project, blank=True, null=True, on_delete=models.CASCADE)
     project.help_text = "If this banner is for a specific project, set the page to Ind_Project. You must also set this field to the desired project for your banner to be displayed on that projects page."
     # def image_preview(self):
     #     if self.image:
