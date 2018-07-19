@@ -1,0 +1,32 @@
+{% load staticfiles %}
+{% load thumbnail %}
+{% load cropping %}
+{% load ml_tags %}
+
+{% for title in sorted_titles %}
+    {% if map_status_to_title_to_people|get_item:member_status and map_status_to_title_to_people|get_item:member_status|get_item:title %}
+        {% for member in map_status_to_title_to_people|get_item:member_status|get_item:title %}
+            <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
+                <a href="{% url 'website:member' member.person.url_name %}">
+                    <div class="easter-egg-col">
+                        <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}"
+                             class="img-responsive main-image"/>
+                        <div class="overlay-easter-egg">
+                            <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail upscale %}"
+                                 class="img-responsive">
+                        </div>
+                    </div>
+                </a>
+                <div class="item-info">
+                    <a href="{% url 'website:member' member.person.url_name %}">
+                        <h5>{{ member.person.get_full_name }}</h5>
+                    </a>
+                    {{ member.get_start_date_short }} - {{ member.get_end_date_short }}<br/>
+                    {{ member.title }}<br/>
+                    {{ member.department }}<br/>
+                    {{ member.school }}
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endfor %}

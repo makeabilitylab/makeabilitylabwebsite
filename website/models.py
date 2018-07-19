@@ -287,6 +287,11 @@ class Position(models.Model):
     )
     title = models.CharField(max_length=50, choices=TITLE_CHOICES)
 
+    CURRENT_MEMBER = "Current Member"
+    PAST_MEMBER = "Past Member"
+    CURRENT_COLLABORATOR = "Current Collaborator"
+    PAST_COLLABORATOR = "Past Collaborator"
+
     department = models.CharField(max_length=50, default="Computer Science")
     school = models.CharField(max_length=60, default="University of Washington")
 
