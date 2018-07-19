@@ -63,6 +63,7 @@ def index(request):
 def people(request):
     positions = Position.objects.all()
     map_status_to_title_to_people = dict()
+    map_status_to_subheader = dict()
     current_members_subheader = ""
 
     for position in positions:
@@ -88,7 +89,6 @@ def people(request):
 
         map_status_to_title_to_people[member_status_name][title].append(position)
 
-
     for status, map_title_to_people in map_status_to_title_to_people.items():
         for title, people_with_title in map_title_to_people.items():
             if "Current" in status:
@@ -98,19 +98,29 @@ def people(request):
             else:
                 # sort past members and collaborators by end date (so people
                 # who ended most recently are shown first)
-                people_with_title.sort(key = operator.attrgetter('end_date'))
+                people_with_title.sort(key=operator.attrgetter('end_date'))
 
     sorted_titles = ("Professor", Position.RESEARCH_SCIENTIST, Position.POST_DOC, Position.SOFTWARE_DEVELOPER,
                      Position.PHD_STUDENT, Position.MS_STUDENT, Position.UGRAD, Position.HIGH_SCHOOL)
 
-    need_comma = False
-    for title in sorted_titles:
-        if title in map_status_to_title_to_people[Position.CURRENT_MEMBER] and len(map_status_to_title_to_people[Position.CURRENT_MEMBER][title]) > 0:
-            if need_comma:
-                current_members_subheader += ", "
+    # Professors can't be past members, so deal with this case
+    if Position.PAST_MEMBER in map_status_to_title_to_people and \
+            "Professor" in map_status_to_title_to_people[Position.PAST_MEMBER]:
+        del map_status_to_title_to_people[Position.PAST_MEMBER]["Professor"]
 
-            current_members_subheader += title + " (" + str(len(map_status_to_title_to_people[Position.CURRENT_MEMBER][title])) + ")"
-            need_comma = True
+    # setup subheaders
+    for status, map_title_to_people in map_status_to_title_to_people.items():
+        if status not in map_status_to_subheader:
+            map_status_to_subheader[status] = ""
+
+        need_comma = False
+        for title in sorted_titles:
+            if title in map_title_to_people and len(map_title_to_people[title]) > 0:
+                if need_comma:
+                    map_status_to_subheader[status] += ", "
+
+                map_status_to_subheader[status] += title + " (" + str(len(map_title_to_people[title])) + ")"
+                need_comma = True
 
     all_banners = Banner.objects.filter(page=Banner.PEOPLE)
     displayed_banners = choose_banners(all_banners)
@@ -118,8 +128,8 @@ def people(request):
     context = {
         'people': Person.objects.all(),
         'map_status_to_title_to_people': map_status_to_title_to_people,
-        'current_members_subheader' : current_members_subheader,
-        'sorted_titles' : sorted_titles,
+        'map_status_to_subheader': map_status_to_subheader,
+        'sorted_titles': sorted_titles,
         'positions': positions,
         'banners': displayed_banners,
         'debug': settings.DEBUG
@@ -141,7 +151,7 @@ def member(request, member_id):
         person = get_object_or_404(Person, pk=member_id)
     else:
         person = get_object_or_404(Person, url_name__iexact=member_id)
-        
+
     news = person.news_set.order_by('-date')[:news_items_num]
     publications = person.publication_set.order_by('-date')
     talks = person.talk_set.order_by('-date')
@@ -273,9 +283,9 @@ def news_listing(request):
     filter = request.GET.get('filter', None)
     groupby = request.GET.get('groupby', "No-Group")
     now = datetime.datetime.utcnow().replace(tzinfo=utc)
-    news_list =News.objects.all()
+    news_list = News.objects.all()
 
-    #start the paginator on the first page
+    # start the paginator on the first page
     page = request.GET.get('page', 1)
 
     # change the int parameter below to control the amount of objects displayed on a page
@@ -294,6 +304,7 @@ def news_listing(request):
                'time_now': now,
                'debug': settings.DEBUG}
     return render(request, 'website/news-listing.html', context)
+
 
 def news(request, news_id):
     all_banners = Banner.objects.filter(page=Banner.FRONTPAGE)

@@ -86,7 +86,7 @@
         <h1 name="currentteam" style="margin-top:0">Current Team</h1>
         <div class="row main-content">
             {# TODO: Shiven, this h4 subheader is what we will want to change into isotope filter #}
-            <h4>{{ current_members_subheader }}</h4>
+            <h4>{{ map_status_to_subheader|get_item:"Current Member" }}</h4>
             {# We use reusable templates here to cut down on code redundancy #}
             {# See: https://docs.djangoproject.com/en/dev/ref/templates/builtins/#include #}
             {% include "snippets/display_people_snippet.html" with member_status="Current Member" %}
@@ -94,16 +94,19 @@
 
         <h1 name="alumni">Alumni</h1>
         <div class="row main-content">
+            <h4>{{ map_status_to_subheader|get_item:"Past Member" }}</h4>
             {% include "snippets/display_people_snippet.html" with member_status="Past Member" %}
         </div>
 
         <h1 name="collaborators">Current Collaborators</h1>
         <div class="row main-content">
+            <h4>{{ map_status_to_subheader|get_item:"Current Collaborator" }}</h4>
             {% include "snippets/display_people_snippet.html" with member_status="Current Collaborator" %}
         </div>
 
         <h1 name="pastcollaborators">Past Collaborators</h1>
         <div class="row main-content">
+            <h4>{{ map_status_to_subheader|get_item:"Past Collaborator" }}</h4>
             {% include "snippets/display_people_snippet.html" with member_status="Past Collaborator" %}
         </div>
     </div>
