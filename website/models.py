@@ -264,7 +264,7 @@ class Position(models.Model):
     UGRAD = "Undergrad"
     MS_STUDENT = "MS Student"
     PHD_STUDENT = "PhD Student"
-    POST_DOC = "Post-doc"
+    POST_DOC = "Post doc"
     ASSISTANT_PROF = "Assistant Professor"
     ASSOCIATE_PROF = "Associate Professor"
     FULL_PROF = "Professor"

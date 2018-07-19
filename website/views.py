@@ -86,6 +86,28 @@ def people(request):
     cur_collaborators = []
     past_collaborators = []
 
+    map_title_to_current_members = dict()
+    # for title, not_used in Position.TITLE_CHOICES:
+    for position in positions:
+        if position.is_current_member():
+            title = position.title
+            if "Professor" in position.title:  # necessary to collapse all prof categories to 1
+                title = "Professor"
+
+            if title not in map_title_to_current_members:
+                map_title_to_current_members[title] = list()
+            else:
+                map_title_to_current_members[title].append(position)
+
+    for title, current_members_with_title in map_title_to_current_members.items():
+        current_members_with_title.sort(key=operator.attrgetter('start_date'))
+
+    sorted_titles = ("Professor", Position.RESEARCH_SCIENTIST, Position.POST_DOC, Position.SOFTWARE_DEVELOPER,
+                     Position.PHD_STUDENT, Position.MS_STUDENT, Position.UGRAD, Position.HIGH_SCHOOL)
+
+
+    # TODO: not sure why we're not just using a hashmap datastructure here
+    # rather than all of these lists... seems really tedious
     for position in positions:
         if position.is_current_member():
             if position.is_professor() or position.is_grad_student():
@@ -130,6 +152,8 @@ def people(request):
     active_ms.sort(key=operator.attrgetter('start_date'))
     active_undergrad.sort(key=operator.attrgetter('start_date'))
     active_highschool.sort(key=operator.attrgetter('start_date'))
+
+    # sort alumni
     alumni_members.sort(key=operator.attrgetter('end_date'))
     alumni_prof.sort(key=operator.attrgetter('end_date'))
     alumni_postdoc.sort(key=operator.attrgetter('end_date'))
@@ -144,6 +168,8 @@ def people(request):
     alumni_ms.reverse()
     alumni_undergrad.reverse()
     alumni_highschool.reverse()
+
+    # sort collaborators
     cur_collaborators.sort(key=operator.attrgetter('start_date'))
     past_collaborators.sort(key=operator.attrgetter('end_date'))
     past_collaborators.reverse()
@@ -153,6 +179,10 @@ def people(request):
     active_prof_grad.extend(active_postdoc)
     active_prof_grad.extend(active_phd)
     active_prof_grad.extend(active_ms)
+    active_members.extend(active_prof_grad)
+    active_members.extend(active_undergrad)
+    active_members.extend(active_highschool)
+
     alumni_prof_grad.extend(alumni_prof)
     alumni_prof_grad.extend(alumni_postdoc)
     alumni_prof_grad.extend(alumni_phd)
@@ -193,8 +223,12 @@ def people(request):
     all_banners = Banner.objects.filter(page=Banner.PEOPLE)
     displayed_banners = choose_banners(all_banners)
 
+    print(map_title_to_current_members)
+
     context = {
         'people': Person.objects.all(),
+        'current_members': map_title_to_current_members,
+        'sorted_titles' : sorted_titles,
         'active_members': active_members,
         'active_prof_grad': active_prof_grad,
         'active_prof': active_prof,
