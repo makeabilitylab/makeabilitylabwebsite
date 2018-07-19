@@ -9,16 +9,17 @@
 
 {% block stylesheets %}
 
-<link rel="stylesheet" href="{% static 'website/css/people.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/people.css' %}">
 
 {% endblock %}
 
 {% block external_scripts %}
-<script src="{% static 'website/js/peopleHeightFix.js' %}"></script>
+    <script src="{% static 'website/js/peopleHeightFix.js' %}"></script>
 {% endblock %}
 
 {% block maincarousel %}
-    <div id="mainCarousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="10000" data-pause="false">
+    <div id="mainCarousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="10000"
+         data-pause="false">
         <div class="page-title shadow-left">
             <div class="container carousel-container">
                 <div class="overlay-title">People</div>
@@ -27,16 +28,17 @@
         <!-- Wrapper for slides -->
         <div class="carousel-inner" role="listbox">
             {% for banner in banners %}
-            <div class="item {% if forloop.first %}active{% endif %}">
-		{% if banner.link %}
-		<a href="{{banner.link}}">
-		    {% else %}
-		    {% if banner.project %}
-		    <a href="{% url 'website:project' banner.project.short_name %}">
-			{% endif %}
-			{% endif %}
-			<div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})" aria-label="{{ banner.alt_text }}" title="{{ banner.alt_text }}"></div>
-			<!-- <div class="overlay">
+                <div class="item {% if forloop.first %}active{% endif %}">
+                    {% if banner.link %}
+                        <a href="{{ banner.link }}">
+                    {% else %}
+                        {% if banner.project %}
+                            <a href="{% url 'website:project' banner.project.short_name %}">
+                        {% endif %}
+                    {% endif %}
+                    <div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})"
+                         aria-label="{{ banner.alt_text }}" title="{{ banner.alt_text }}"></div>
+                    <!-- <div class="overlay">
 			     <div class="container carousel-container">
                              <div class="carousel-caption carousel-caption-right">
                              {% autoescape off %} {# enable HTML tags #}
@@ -50,55 +52,59 @@
                              </div>
 			     </div>
 			     </div> -->
-			{% if banner.link %}</a>{% endif %}
-		    {% if banner.project %}
-		</a>
-		{% endif %}
-            </div>
+                    {% if banner.link %}</a>{% endif %}
+                    {% if banner.project %}
+                        </a>
+                    {% endif %}
+                </div>
             {% endfor %}
         </div>
         <ol class="carousel-indicators"  {% if banners|length < 2 %} style="display: none" {% endif %}>
-          {% for banner in banners %}
-          <li data-target="#mainCarousel" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
-          {% endfor %}
-       </ol>
+            {% for banner in banners %}
+                <li data-target="#mainCarousel" data-slide-to="{{ forloop.counter0 }}"
+                    {% if forloop.first %}class="active"{% endif %}></li>
+            {% endfor %}
+        </ol>
     </div>
 {% endblock %}
 
 {% block content %}
-<div id="content" class="container" data-spy="scroll" data-target="#navbar-scroll" data-offset="50">
-    <div class="navbar navbar-filter" role="navigation">
-        <ol class="navbar-right breadcrumb">
-            {% if current_members %}<li><a href="#currentteam" class="scroll">Current Team</a></li> {% endif %}
-            {% if alumni_members %}<li><a href="#alumni" class="scroll">Alumni</a></li> {% endif %}
-            {% if cur_collaborators %}<li><a href="#collaborators" class="scroll">Collaborators</a></li> {% endif %}
-            {% if past_collaborators %}<li><a href="#pastcollaborators" class="scroll">Past Collaborators</a></li> {% endif %}
-        </ol>
+    <div id="content" class="container" data-spy="scroll" data-target="#navbar-scroll" data-offset="50">
+        <div class="navbar navbar-filter" role="navigation">
+            <ol class="navbar-right breadcrumb">
+                {% if current_members %}
+                    <li><a href="#currentteam" class="scroll">Current Team</a></li> {% endif %}
+                {% if alumni_members %}
+                    <li><a href="#alumni" class="scroll">Alumni</a></li> {% endif %}
+                {% if cur_collaborators %}
+                    <li><a href="#collaborators" class="scroll">Collaborators</a></li> {% endif %}
+                {% if past_collaborators %}
+                    <li><a href="#pastcollaborators" class="scroll">Past Collaborators</a></li> {% endif %}
+            </ol>
+        </div>
+
+        <h1 name="currentteam" style="margin-top:0">Current Team</h1>
+        <div class="row main-content">
+            {# TODO: Shiven, this h4 subheader is what we will want to change into isotope filter #}
+            <h4>{{ current_members_subheader }}</h4>
+            {# We use reusable templates here to cut down on code redundancy #}
+            {# See: https://docs.djangoproject.com/en/dev/ref/templates/builtins/#include #}
+            {% include "snippets/display_people_snippet.html" with member_status="Current Member" %}
+        </div>
+
+        <h1 name="alumni">Alumni</h1>
+        <div class="row main-content">
+            {% include "snippets/display_people_snippet.html" with member_status="Past Member" %}
+        </div>
+
+        <h1 name="collaborators">Current Collaborators</h1>
+        <div class="row main-content">
+            {% include "snippets/display_people_snippet.html" with member_status="Current Collaborator" %}
+        </div>
+
+        <h1 name="pastcollaborators">Past Collaborators</h1>
+        <div class="row main-content">
+            {% include "snippets/display_people_snippet.html" with member_status="Past Collaborator" %}
+        </div>
     </div>
-
-    <h1 name="currentteam" style="margin-top:0">Current Team</h1>
-    <div class="row main-content">
-        <h4>{{ current_members_subheader }}</h4> {# TODO: Shiven, this subheader is what we will want to change into isotope filter #}
-        {# We use reusable templates here to cut down on code redundancy #}
-        {# See: https://docs.djangoproject.com/en/dev/ref/templates/builtins/#include #}
-        {% include "snippets/display_people_snippet.html" with member_status="Current Member" %}
-    </div>
-
-    <h1 name="alumni">Alumni</h1>
-    <div class="row main-content">
-        {% include "snippets/display_people_snippet.html" with member_status="Past Member" %}
-    </div>
-
-    <h1 name="collaborators">Current Collaborators</h1>
-    <div class="row main-content">
-        {% include "snippets/display_people_snippet.html" with member_status="Current Collaborator" %}
-    </div>
-
-    <h1 name="pastcollaborators">Past Collaborators</h1>
-    <div class="row main-content">
-        {% include "snippets/display_people_snippet.html" with member_status="Past Collaborator" %}
-    </div>
-
-
-</div>
 {% endblock %}
