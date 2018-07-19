@@ -95,7 +95,7 @@ make run
 
 8. Create the superuser. Run `docker run -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media --entrypoint=python [tag] manage.py createsuperuser`.
 
-9. Rebuild the docker images. Use `docker build . [-t] [tag]`
+9. Rebuild the docker images. Use `docker build . -t [tag]`
 
 10. Run the local server using Docker. Use `docker run -p 8000:8000 -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media -v ${pwd}/website:/code/website [tag]` 
 
