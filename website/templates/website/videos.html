@@ -18,16 +18,9 @@
 {% block external_scripts %}
     <script src="{% static 'website/js/isotope.pkgd.min.js' %}"></script>
     <script src="{% static 'website/js/fixedSideBar.js' %}"></script>
-    <script src="{% static 'website/js/filterBar.js' %}?version=9"></script>
-    <script src="{% static 'website/js/isotope/isotope-filterBar.js' %}?version=9"></script>
-    <script src="{% static 'website/js/jquery-ui.min.js' %}?version=9"></script>
-    <script src="{% static 'website/js/isotope/isotope-init.js' %}?version=9"></script>
-     <script src="{% static 'website/js/isotope/isotope-header-creator.js' %}?version=9"></script>
-    <script src="{% static 'website/js/isotope/isotope-filtering.js' %}?version=9"></script>
-    <script src="{% static 'website/js/isotope/isotope-sorting.js' %}?version=9"></script>
-
-
-
+    <script src="{% static 'website/js/filterBar.js' %}"></script>
+    <script src="{% static 'website/js/videos.js' %}"></script>
+    <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
 {% endblock %}
 
 {% block scripts %}
@@ -42,18 +35,6 @@
             "url_embeddable": "{{video.get_embed}}",
             "project_short_name": "{{video.project.short_name}}",
             "pub_title": "{{video.publication}}",
-            "date": new Date("{{ video.date}}"),
-            "speakers": [
-				{% for speaker in video.publication.talk.speakers.all %}
-				{
-					"name": "{{speaker.get_full_name}}",
-					"first_name": "{{speaker.first_name}}",
-					"middle_name": "{{speaker.middle_name}}",
-					"last_name": "{{speaker.last_name}}",
-					"link": "{% url 'website:member' speaker.id %}"
-				},
-				{% endfor %}
-			],
             "pub_url": "../../media/{{video.publication.pdf_file}}"
         },
 		{% endfor %}
@@ -102,7 +83,6 @@
 {% endblock %}
 
 {% block content %}
-
     <div id="content" class="container">
 
         <div class="visible-xs">
@@ -111,31 +91,13 @@
         </div>
 
         <div id="fixed-side-bar" class="hidden-xs">
-            <div id="keywords-all">
-                <div id="keywords-sorting">
-                    <h1>Filter By</h1>
-                    <ul style="list-style-type: none">
-                        <li><a sorting-order="false">Year</a></li>
-                        <li><a sorting-order="true">Project</a></li>
-                        <li><a sorting-order="false">None</a></li>
-                    </ul>
-                </div>
+            <div id="filter-bar">
             </div>
         </div>
 
-        <div id ="isotope_data_container" style="display:none">
-            sortFilterContainer(.sortingAndFiltering,str)
-            gridName(.grid,str)
-            headerClass(h1,str)
-            headerStyle(margin: 0; background: white;,str)
-            filteringKeywordContainer(#keywords-all,str)
-            sortingKeywordContainer(#keywords-sorting,str)
-            sideBarContainer(#fixed-side-bar,str)
-            scrollTop(100,int)
-        </div>
-
         <div class="video-list" id="main-content">
-
+            Loading content... (Please make sure JavaScript is enabled)
+            <h1 class="group-template row" name="Group Name"></h1>
             <!-- col-xs is the Bootstrap prefix for extra small devices (<768px)
                  col-md is the Bootstrap prefix for medium devices (≥992px)
                  See: https://getbootstrap.com/docs/3.3/css/#grid-options
@@ -143,24 +105,17 @@
                  So, for example, col-xs-12 col-md-6 states that on small devices, a single column should
                  stretch across all 12 grid cells. On a medium device, a single column should stretch across
                  6 cells (so two columns). In our case, we have 1 column on mobile and 3 columns on larger screens -->
-                <div class="grid">
-                    {% for video in videos %}
-                        <div class= 'item' name = "video" style="width:30%; margin:1.5%; background:white">
-                            <div class="video-container">
-                                <iframe class="video" src={{ video.get_embed }} frameborder="0" allowfullscreen></iframe>
-                            </div>
-                            <p class="artifact-title line-clamp">{{ video.get_title }}</p>
-                            <p class="artifact-venue line-clamp-one-line">{{ video.caption }}</p>
-                            <p class="artiinks">
-                                <span class="decor_video"></span><a href='{{ video.video_url }}' class="video-link">Video</a>
-                                <span class="decor_pdf"> | </span><a href='{{ video.publication.pdf_file }}' class="video-paper-link">Paper</a>
-                            </p>
-
-                            <div class="sortingAndFiltering" style="display:none">Year({{ video.get_year }},int)Project({{video.project.name}},str)</div>
-                            <div class="Date" style="display:none">{{video.date.year}}{{video.date.month}}{{video.date.day}}</div>
-                        </div>
-                    {% endfor %}
+            <div class="video-template col-xs-12 col-md-4 video-column">
+                <div class="video-container">
+                    <iframe class="video" src="" frameborder="0" allowfullscreen></iframe>
                 </div>
+                <p class="artifact-title line-clamp">Video Title</p>
+                <p class="artifact-venue line-clamp-one-line">Video Caption</p>
+                <p class="artifact-links">
+                    <span class="decor_video"></span><a href="" class="video-link">Video</a>
+                    <span class="decor_pdf"> | </span><a href="" class="video-paper-link">Paper</a>
+                </p>
+            </div>
         </div>
 
         <!-- display without javascript -->
