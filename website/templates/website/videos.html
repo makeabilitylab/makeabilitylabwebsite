@@ -1,0 +1,151 @@
+{#	TODO: limit keywords/projects by page size to avoid overflow #}
+
+{% extends "website/base.html" %}
+
+{% block pagetitle %}Videos{% endblock %}
+
+{% load staticfiles %}
+{% load cropping %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{% static 'website/css/video.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/fixed_side_bar.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/jquery-ui.min.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/jquery-ui.theme.min.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}">
+{% endblock %}
+
+{% block external_scripts %}
+    <script src="{% static 'website/js/isotope.pkgd.min.js' %}"></script>
+    <script src="{% static 'website/js/fixedSideBar.js' %}"></script>
+    <script src="{% static 'website/js/filterBar.js' %}"></script>
+    <script src="{% static 'website/js/videos.js' %}"></script>
+    <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
+{% endblock %}
+
+{% block scripts %}
+
+	var videos = [
+		{% for video in videos %}
+		{
+			"title": "{{video.get_title}}",
+            "caption": "{{video.caption}}",
+            "date": new Date("{{video.date}}"),
+            "url": "{{video.video_url}}",
+            "url_embeddable": "{{video.get_embed}}",
+            "project_short_name": "{{video.project.short_name}}",
+            "pub_title": "{{video.publication}}",
+            "pub_url": "../../media/{{video.publication.pdf_file}}"
+        },
+		{% endfor %}
+	];
+
+    initialFilter = "{{ filter }}";
+    initialGroupBy = "{{ groupby }}";
+
+{% endblock %}
+
+
+{% block maincarousel %}
+    <!-- TODO: would be great if the video carousel background images were videos that auto-played. Obviously, hardest part about that is video aspect ratio -->
+    <div id="mainCarousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="10000" data-pause="false">
+        <div class="page-title shadow-left">
+            <div class="container carousel-container">
+                <div class="overlay-title">Videos</div>
+            </div>
+        </div>
+
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner" role="listbox">
+            {% for banner in banners %}
+            <div class="item {% if forloop.first %}active{% endif %}">
+		{% if banner.link %}
+		<a href="{{banner.link}}">
+		    {% else %}
+		    {% if banner.project %}
+		    <a href="{% url 'website:project' banner.project.short_name %}">
+			{% endif %}
+			{% endif %}
+			<div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})" aria-label="{{ banner.alt_text }}" title="{{ banner.alt_text}}"></div>
+			{% if banner.link %}</a>{% endif %}
+		    {% if banner.project %}
+		</a>
+		{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        <ol class="carousel-indicators"  {% if banners|length < 2 %} style="display: none" {% endif %}>
+          {% for banner in banners %}
+          <li data-target="#mainCarousel" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
+          {% endfor %}
+       </ol>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div id="content" class="container">
+
+        <div class="visible-xs">
+            <br/>
+            <input class="shortTextbox" id="filter-textbox-backup" placeholder="FILTER" type="text" value="">
+        </div>
+
+        <div id="fixed-side-bar" class="hidden-xs">
+            <div id="filter-bar">
+            </div>
+        </div>
+
+        <div class="video-list" id="main-content">
+            Loading content... (Please make sure JavaScript is enabled)
+            <h1 class="group-template row" name="Group Name"></h1>
+            <!-- col-xs is the Bootstrap prefix for extra small devices (<768px)
+                 col-md is the Bootstrap prefix for medium devices (≥992px)
+                 See: https://getbootstrap.com/docs/3.3/css/#grid-options
+                 Grids always have 12 columns in Bootstrap.
+                 So, for example, col-xs-12 col-md-6 states that on small devices, a single column should
+                 stretch across all 12 grid cells. On a medium device, a single column should stretch across
+                 6 cells (so two columns). In our case, we have 1 column on mobile and 3 columns on larger screens -->
+            <div class="video-template col-xs-12 col-md-4 video-column">
+                <div class="video-container">
+                    <iframe class="video" src="" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <p class="artifact-title line-clamp">Video Title</p>
+                <p class="artifact-venue line-clamp-one-line">Video Caption</p>
+                <p class="artifact-links">
+                    <span class="decor_video"></span><a href="" class="video-link">Video</a>
+                    <span class="decor_pdf"> | </span><a href="" class="video-paper-link">Paper</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- display without javascript -->
+        <!-- Comment out this code if you want to see how to display videos without Javascript -->
+{#        <div class="video-list" id="main-content">#}
+{#            Display without Javascript#}
+{#            {% for video in videos %}#}
+{#                <!-- col-xs is the Bootstrap prefix for extra small devices (<768px)#}
+{#                     col-md is the Bootstrap prefix for medium devices (≥992px)#}
+{#                     See: https://getbootstrap.com/docs/3.3/css/#grid-options#}
+{#                     Grids always have 12 columns in Bootstrap.#}
+{#                     So, for example, col-xs-12 col-md-6 states that on small devices, a single column should#}
+{#                     stretch across all 12 grid cells. On a medium device, a single column should stretch across#}
+{#                     6 cells (so two columns). In our case, we have 1 column on mobile and 3 columns on larger screens -->#}
+{#                <div class="col-xs-12 col-md-4 video-column">#}
+{#                    <div class="video-container">#}
+{#                        <iframe class="video" src="{{video.get_embed}}" frameborder="0" allowfullscreen></iframe>#}
+{#                    </div>#}
+{#                    <p class="video-title line-clamp">{{video.title}}</p>#}
+{#                    <p class="video-location line-clamp-one-line">{{video.caption}} </p>#}
+{#                    <p class="video-links">#}
+{#                        <a href="{{video.video_url}}">YouTube</a>#}
+{#                        {% if video.publication %}#}
+{#                        | <a href="../../media/{{video.publication.pdf_file}}">Paper</a>#}
+{#                        {% endif %}#}
+{#                    </p>#}
+{#                </div>#}
+{#            {% endfor %}#}
+{#        </div>#}
+
+
+    </div>
+{% endblock %}
