@@ -96,9 +96,9 @@ def people(request):
                 # people who started earliest are shown first)
                 people_with_title.sort(key=operator.attrgetter('start_date'))
             else:
-                # sort past members and collaborators by end date (so people
+                # sort past members and collaborators reverse chronologically by end date (so people
                 # who ended most recently are shown first)
-                people_with_title.sort(key=operator.attrgetter('end_date'))
+                people_with_title.sort(key=operator.attrgetter('end_date'), reverse=True)
 
     sorted_titles = ("Professor", Position.RESEARCH_SCIENTIST, Position.POST_DOC, Position.SOFTWARE_DEVELOPER,
                      Position.PHD_STUDENT, Position.MS_STUDENT, Position.UGRAD, Position.HIGH_SCHOOL)
