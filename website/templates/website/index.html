@@ -194,7 +194,7 @@
             <!-- TODO: Consider adding age of video into display somehow -->
             {#  Slice limits to a number of elements in list; see https://stackoverflow.com/a/3907661 #}
             {% for video in videos|slice:"3" %}
-                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 video-column">
+                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4 video-column">
                     <div class="video">
                         <!-- TODO: fix this on mobile; has weird aspect ratio because of fixed height -->
                         <iframe class="youtube-player" src="{{video.get_embed}}" frameborder="0" allowfullscreen></iframe>
