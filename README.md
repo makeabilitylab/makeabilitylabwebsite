@@ -83,7 +83,7 @@ make run
 4. We need to configure Docker so that our local drives are available to our containers. From the system tray, open Docker -> Settings.  In Settings, navigate to the "Shared Drives" tab and select the drive that will host the Makeability Lab code/server. Click "Apply" and you will be prompted to enter the password for your machine.
 [![https://gyazo.com/16d374eeadcd0cc550b8ab17f4bcbe5f](https://i.gyazo.com/16d374eeadcd0cc550b8ab17f4bcbe5f.gif)](https://gyazo.com/16d374eeadcd0cc550b8ab17f4bcbe5f)
 
-3. Before you clone the repository, run this command `git config --global core.autocrlf false` in the directory you will be cloning the repository to. Windows crlf is unrecognized in Linux, thus we must set this auto-conversion as false to prevent look-up errors.
+3. Before you clone the repository, run this command `git config --global core.autocrlf false` in the directory you will be cloning the repository to. Windows crlf is unrecognized in Linux, thus we must set this auto-conversion as false to prevent look-up errors. If you don't do this, your dev environment will not work (see this [Issue](https://github.com/jonfroehlich/makeabilitylabwebsite/issues/429#issuecomment-406443833))
 
 4. Clone this repository using `git clone` and navigate to the project home directory using the `cd` command.
 
