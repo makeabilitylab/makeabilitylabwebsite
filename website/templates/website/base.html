@@ -115,9 +115,9 @@
     {% block navbar %}
         <!-- Navigation -->
         <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+            <div class="container" style="height:50px; width:100%; object-fit: contain">
+                <div class="navbar-header" style="height:50px; width:100%; object-fit: contain">
+                    <button style="float:right" type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
                         <i class="fa fa-bars"></i>
                     </button>
                     <a class="navbar-brand page-scroll" href="{% url 'website:index' %}">
@@ -128,24 +128,29 @@
 
                         <div class="lab-text"><span style="font-family: roboto-bold; margin-left: 2px;">Make</span>ability</span> Lab</div>
                     </a>
+
+                     <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+                        <ul class="nav navbar-nav">
+                            <!-- To automatically highlight active links, I followed this code:
+                             http://stackoverflow.com/a/29495310 -->
+                            {% with request.resolver_match.url_name as url_name %}
+                                <li class="{% if url_name == 'index' %}active{% endif %}"><a href="{% url 'website:index' %}">Home</a></li>
+                                <li class="{% if url_name == 'people' %}active{% endif %}"><a href="{% url 'website:people' %}">People</a></li>
+                                <li class="{% if url_name == 'projects' %}active{% endif %}"><a href="{% url 'website:projects' %}">Projects</a></li>
+                                <li class="{% if url_name == 'news_listing' %}active{% endif %}"><a href="{% url 'website:news_listing' %}">News</a></li>
+                                <li class="{% if url_name == 'publications' %}active{% endif %}"><a href="{% url 'website:publications' %}">Publications</a></li>
+                                <li class="{% if url_name == 'talks' %}active{% endif %}"><a href="{% url 'website:talks' %}">Talks</a></li>
+                                <li class="{% if url_name == 'videos' %}active{% endif %}"><a href="{% url 'website:videos' %}">Videos</a></li>
+                            {% endwith %}
+                        </ul>
+                     </div>
+
                 </div>
 
                 <!-- Collect the nav links, forms, and other content for toggling -->
-                <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
-                    <ul class="nav navbar-nav">
-                        <!-- To automatically highlight active links, I followed this code:
-                         http://stackoverflow.com/a/29495310 -->
-                        {% with request.resolver_match.url_name as url_name %}
-                            <li class="{% if url_name == 'index' %}active{% endif %}"><a href="{% url 'website:index' %}">Home</a></li>
-                            <li class="{% if url_name == 'people' %}active{% endif %}"><a href="{% url 'website:people' %}">People</a></li>
-			                <li class="{% if url_name == 'projects' %}active{% endif %}"><a href="{% url 'website:projects' %}">Projects</a></li>
-                            <li class="{% if url_name == 'news_listing' %}active{% endif %}"><a href="{% url 'website:news_listing' %}">News</a></li>
-                            <li class="{% if url_name == 'publications' %}active{% endif %}"><a href="{% url 'website:publications' %}">Publications</a></li>
-                            <li class="{% if url_name == 'talks' %}active{% endif %}"><a href="{% url 'website:talks' %}">Talks</a></li>
-                            <li class="{% if url_name == 'videos' %}active{% endif %}"><a href="{% url 'website:videos' %}">Videos</a></li>
-                        {% endwith %}
-                    </ul>
-                </div>
+
+
+
                 <!-- /.navbar-collapse -->
             </div>
             <!-- /.container -->
