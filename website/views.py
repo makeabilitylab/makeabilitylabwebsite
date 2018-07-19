@@ -86,33 +86,47 @@ def people(request):
     cur_collaborators = []
     past_collaborators = []
 
-    map_title_to_current_members = dict()
+    map_status_to_title_to_people = dict()
     current_members_subheader = ""
 
     for position in positions:
+        title = position.title
+        if "Professor" in position.title:  # necessary to collapse all prof categories to 1
+            title = "Professor"
+
+        member_status_name = ""
         if position.is_current_member():
-            title = position.title
-            if "Professor" in position.title:  # necessary to collapse all prof categories to 1
-                title = "Professor"
+            member_status_name = Position.CURRENT_MEMBER
+        elif position.is_alumni_member():
+            member_status_name = Position.PAST_MEMBER
+        elif position.is_current_collaborator():
+            member_status_name = Position.CURRENT_COLLABORATOR
+        elif position.is_past_collaborator():
+            member_status_name = Position.PAST_COLLABORATOR
 
-            if title not in map_title_to_current_members:
-                map_title_to_current_members[title] = list()
+        if member_status_name not in map_status_to_title_to_people:
+            map_status_to_title_to_people[member_status_name] = dict()
 
-            map_title_to_current_members[title].append(position)
+        if title not in map_status_to_title_to_people[member_status_name]:
+            map_status_to_title_to_people[member_status_name][title] = list()
 
-    for title, current_members_with_title in map_title_to_current_members.items():
-        current_members_with_title.sort(key=operator.attrgetter('start_date'))
+        map_status_to_title_to_people[member_status_name][title].append(position)
+
+
+    for status, map_title_to_people in map_status_to_title_to_people.items():
+        for title, people_with_title in map_title_to_people.items():
+            people_with_title.sort(key=operator.attrgetter('start_date'))
 
     sorted_titles = ("Professor", Position.RESEARCH_SCIENTIST, Position.POST_DOC, Position.SOFTWARE_DEVELOPER,
                      Position.PHD_STUDENT, Position.MS_STUDENT, Position.UGRAD, Position.HIGH_SCHOOL)
 
     need_comma = False
     for title in sorted_titles:
-        if title in map_title_to_current_members and len(map_title_to_current_members[title]) > 0:
+        if title in map_status_to_title_to_people[Position.CURRENT_MEMBER] and len(map_status_to_title_to_people[Position.CURRENT_MEMBER][title]) > 0:
             if need_comma:
                 current_members_subheader += ", "
 
-            current_members_subheader += title + " (" + str(len(map_title_to_current_members[title])) + ")"
+            current_members_subheader += title + " (" + str(len(map_status_to_title_to_people[Position.CURRENT_MEMBER][title])) + ")"
             need_comma = True
 
 
@@ -233,11 +247,10 @@ def people(request):
     all_banners = Banner.objects.filter(page=Banner.PEOPLE)
     displayed_banners = choose_banners(all_banners)
 
-    print(map_title_to_current_members)
 
     context = {
         'people': Person.objects.all(),
-        'current_members': map_title_to_current_members,
+        'map_status_to_title_to_people': map_status_to_title_to_people,
         'current_members_subheader' : current_members_subheader,
         'sorted_titles' : sorted_titles,
         'active_members': active_members,

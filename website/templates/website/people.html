@@ -77,35 +77,29 @@
     </div>
 
     <h1 name="currentteam" style="margin-top:0">Current Team</h1>
-        <div class="row main-content">
-            <h4>{{ current_members_subheader }}</h4> {# TODO: Shiven, this subheader is what we will want to change into isotope filter #}
-            {% for title in sorted_titles %}
-                {% if current_members|get_item:title %}
-                    {% for member in current_members|get_item:title %}
-                        <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-                            <a href="{% url 'website:member' member.person.url_name %}">
-                                <div class="easter-egg-col">
-                                    <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-                                    <div class="overlay-easter-egg">
-                                        <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail upscale %}" class="img-responsive">
-                                    </div>
-                                </div>
-                            </a>
-                            <div class="item-info">
-                                <a href="{% url 'website:member' member.person.url_name %}">
-                                    <h5>{{ member.person.get_full_name }}</h5>
-                                </a>
-                                {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-                                {{ member.title }}<br/>
-                                {{ member.department }}<br/>
-                                {{ member.school }}
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endfor %}
-        </div>
+    <div class="row main-content">
+        <h4>{{ current_members_subheader }}</h4> {# TODO: Shiven, this subheader is what we will want to change into isotope filter #}
+        {# We use reusable templates here to cut down on code redundancy #}
+        {# See: https://docs.djangoproject.com/en/dev/ref/templates/builtins/#include #}
+        {% include "snippets/display_people_snippet.html" with member_status="Current Member" %}
+    </div>
 
+    <h1 name="alumni">Alumni</h1>
+    <div class="row main-content">
+        {% include "snippets/display_people_snippet.html" with member_status="Past Member" %}
+    </div>
+
+    <h1 name="collaborators">Current Collaborators</h1>
+    <div class="row main-content">
+        {% include "snippets/display_people_snippet.html" with member_status="Current Collaborator" %}
+    </div>
+
+    <h1 name="pastcollaborators">Past Collaborators</h1>
+    <div class="row main-content">
+        {% include "snippets/display_people_snippet.html" with member_status="Past Collaborator" %}
+    </div>
+
+    !!!!!OLD DISPLAY CODE!!!!!
 	{% if alumni_members %}
         <hr>
         <h1 name="alumni">Alumni ({{alumni_members|length}})</h1>
