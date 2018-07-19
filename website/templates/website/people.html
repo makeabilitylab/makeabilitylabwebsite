@@ -78,15 +78,7 @@
 
     <h1 name="currentteam" style="margin-top:0">Current Team</h1>
         <div class="row main-content">
-{#            Num of current positions: {{ current_members|length }} <br/>#}
-{#            {% for key, value in current_members.items %}#}
-{#                {{ key }} : {{ value }}<br/>#}
-{#            {% endfor %}#}
-            Num people: {{ people|length }} Num positions: {{ positions | length }} <br/>
-            {% for title in sorted_titles %}
-                {{ title }} ({{ current_members|get_item:title|length }}) : {{ current_members|get_item:title }} <br/>
-            {% endfor %}
-
+            <h4>{{ current_members_subheader }}</h4> {# TODO: Shiven, this subheader is what we will want to change into isotope filter #}
             {% for title in sorted_titles %}
                 {% if current_members|get_item:title %}
                     {% for member in current_members|get_item:title %}

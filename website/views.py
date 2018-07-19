@@ -87,7 +87,8 @@ def people(request):
     past_collaborators = []
 
     map_title_to_current_members = dict()
-    # for title, not_used in Position.TITLE_CHOICES:
+    current_members_subheader = ""
+
     for position in positions:
         if position.is_current_member():
             title = position.title
@@ -104,6 +105,15 @@ def people(request):
 
     sorted_titles = ("Professor", Position.RESEARCH_SCIENTIST, Position.POST_DOC, Position.SOFTWARE_DEVELOPER,
                      Position.PHD_STUDENT, Position.MS_STUDENT, Position.UGRAD, Position.HIGH_SCHOOL)
+
+    need_comma = False
+    for title in sorted_titles:
+        if title in map_title_to_current_members and len(map_title_to_current_members[title]) > 0:
+            if need_comma:
+                current_members_subheader += ", "
+
+            current_members_subheader += title + " (" + str(len(map_title_to_current_members[title])) + ")"
+            need_comma = True
 
 
     # TODO: not sure why we're not just using a hashmap datastructure here
@@ -228,6 +238,7 @@ def people(request):
     context = {
         'people': Person.objects.all(),
         'current_members': map_title_to_current_members,
+        'current_members_subheader' : current_members_subheader,
         'sorted_titles' : sorted_titles,
         'active_members': active_members,
         'active_prof_grad': active_prof_grad,
