@@ -61,31 +61,7 @@ def index(request):
 
 
 def people(request):
-    # template = loader.get_template('website/people.html')
-    # context = RequestContext(request, {
-    #     'people': Person.objects.all(),
-    # })
-    # return HttpResponse(template.render(context))
     positions = Position.objects.all()
-    active_members = []
-    active_prof_grad = []
-    active_prof = []
-    active_postdoc = []
-    active_phd = []
-    active_ms = []
-    active_undergrad = []
-    active_highschool = []
-    alumni_members = []
-    alumni_prof_grad = []
-    alumni_prof = []
-    alumni_postdoc = []
-    alumni_phd = []
-    alumni_ms = []
-    alumni_undergrad = []
-    alumni_highschool = []
-    cur_collaborators = []
-    past_collaborators = []
-
     map_status_to_title_to_people = dict()
     current_members_subheader = ""
 
@@ -115,7 +91,14 @@ def people(request):
 
     for status, map_title_to_people in map_status_to_title_to_people.items():
         for title, people_with_title in map_title_to_people.items():
-            people_with_title.sort(key=operator.attrgetter('start_date'))
+            if "Current" in status:
+                # sort current members and collaborators by start date first (so
+                # people who started earliest are shown first)
+                people_with_title.sort(key=operator.attrgetter('start_date'))
+            else:
+                # sort past members and collaborators by end date (so people
+                # who ended most recently are shown first)
+                people_with_title.sort(key = operator.attrgetter('end_date'))
 
     sorted_titles = ("Professor", Position.RESEARCH_SCIENTIST, Position.POST_DOC, Position.SOFTWARE_DEVELOPER,
                      Position.PHD_STUDENT, Position.MS_STUDENT, Position.UGRAD, Position.HIGH_SCHOOL)
@@ -129,148 +112,14 @@ def people(request):
             current_members_subheader += title + " (" + str(len(map_status_to_title_to_people[Position.CURRENT_MEMBER][title])) + ")"
             need_comma = True
 
-
-    # TODO: not sure why we're not just using a hashmap datastructure here
-    # rather than all of these lists... seems really tedious
-    for position in positions:
-        if position.is_current_member():
-            if position.is_professor() or position.is_grad_student():
-                if position.is_professor():
-                    active_prof.append(position)
-                elif position.title == Position.POST_DOC:
-                    active_postdoc.append(position)
-                elif position.title == Position.PHD_STUDENT:
-                    active_phd.append(position)
-                elif position.title == Position.MS_STUDENT:
-                    active_ms.append(position)
-            elif position.title == Position.UGRAD:
-                active_undergrad.append(position)
-            elif position.title == Position.HIGH_SCHOOL:
-                active_highschool.append(position)
-        elif position.is_alumni_member():
-            if position.is_professor() or position.is_grad_student():
-                if position.is_professor():
-                    alumni_prof.append(position)
-                elif position.title == Position.POST_DOC:
-                    alumni_postdoc.append(position)
-                elif position.title == Position.PHD_STUDENT:
-                    alumni_phd.append(position)
-                elif position.title == Position.MS_STUDENT:
-                    alumni_ms.append(position)
-            elif position.title == Position.UGRAD:
-                alumni_undergrad.append(position)
-            elif position.title == Position.HIGH_SCHOOL:
-                alumni_highschool.append(position)
-        elif position.is_collaborator():
-            if position.is_current_collaborator():
-                cur_collaborators.append(position)
-            else:
-                if position.is_past_collaborator():
-                    past_collaborators.append(position)
-
-    # sort active members/collaborators by seniority, and alumni/past 
-    # collaborators by end data (most recent first)
-    active_prof.sort(key=operator.attrgetter('start_date'))
-    active_postdoc.sort(key=operator.attrgetter('start_date'))
-    active_phd.sort(key=operator.attrgetter('start_date'))
-    active_ms.sort(key=operator.attrgetter('start_date'))
-    active_undergrad.sort(key=operator.attrgetter('start_date'))
-    active_highschool.sort(key=operator.attrgetter('start_date'))
-
-    # sort alumni
-    alumni_members.sort(key=operator.attrgetter('end_date'))
-    alumni_prof.sort(key=operator.attrgetter('end_date'))
-    alumni_postdoc.sort(key=operator.attrgetter('end_date'))
-    alumni_phd.sort(key=operator.attrgetter('end_date'))
-    alumni_ms.sort(key=operator.attrgetter('end_date'))
-    alumni_undergrad.sort(key=operator.attrgetter('end_date'))
-    alumni_highschool.sort(key=operator.attrgetter('end_date'))
-    alumni_members.reverse()
-    alumni_prof.reverse()
-    alumni_postdoc.reverse()
-    alumni_phd.reverse()
-    alumni_ms.reverse()
-    alumni_undergrad.reverse()
-    alumni_highschool.reverse()
-
-    # sort collaborators
-    cur_collaborators.sort(key=operator.attrgetter('start_date'))
-    past_collaborators.sort(key=operator.attrgetter('end_date'))
-    past_collaborators.reverse()
-
-    # merge lists for easier display
-    active_prof_grad.extend(active_prof)
-    active_prof_grad.extend(active_postdoc)
-    active_prof_grad.extend(active_phd)
-    active_prof_grad.extend(active_ms)
-    active_members.extend(active_prof_grad)
-    active_members.extend(active_undergrad)
-    active_members.extend(active_highschool)
-
-    alumni_prof_grad.extend(alumni_prof)
-    alumni_prof_grad.extend(alumni_postdoc)
-    alumni_prof_grad.extend(alumni_phd)
-    alumni_prof_grad.extend(alumni_ms)
-
-    seen = []
-    for member in alumni_prof_grad:
-        if member.person in seen:
-            alumni_prof_grad.remove(member)
-        else:
-            seen.append(member.person)
-
-    seen = []
-    for member in alumni_undergrad:
-        if member.person in seen:
-            alumni_undergrad.remove(member)
-        else:
-            seen.append(member.person)
-
-    seen = []
-    for member in alumni_highschool:
-        if member.person in seen:
-            alumni_highschool.remove(member)
-        else:
-            seen.append(member.person)
-
-    alumni_members.extend(alumni_prof_grad)
-    alumni_members.extend(alumni_undergrad)
-    alumni_members.extend(alumni_highschool)
-
-    seen = []
-    for member in alumni_members:
-        if member.person in seen:
-            alumni_members.remove(member)
-        else:
-            seen.append(member.person)
-
     all_banners = Banner.objects.filter(page=Banner.PEOPLE)
     displayed_banners = choose_banners(all_banners)
-
 
     context = {
         'people': Person.objects.all(),
         'map_status_to_title_to_people': map_status_to_title_to_people,
         'current_members_subheader' : current_members_subheader,
         'sorted_titles' : sorted_titles,
-        'active_members': active_members,
-        'active_prof_grad': active_prof_grad,
-        'active_prof': active_prof,
-        'active_postdoc': active_postdoc,
-        'active_phd': active_phd,
-        'active_ms': active_ms,
-        'active_undergrad': active_undergrad,
-        'active_highschool': active_highschool,
-        'alumni_members': alumni_members,
-        'alumni_prof_grad': alumni_prof_grad,
-        'alumni_prof': alumni_prof,
-        'alumni_postdoc': alumni_postdoc,
-        'alumni_phd': alumni_phd,
-        'alumni_ms': alumni_ms,
-        'alumni_undergrad': alumni_undergrad,
-        'alumni_highschool': alumni_highschool,
-        'cur_collaborators': cur_collaborators,
-        'past_collaborators': past_collaborators,
         'positions': positions,
         'banners': displayed_banners,
         'debug': settings.DEBUG
