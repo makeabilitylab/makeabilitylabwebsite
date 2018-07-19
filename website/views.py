@@ -96,8 +96,8 @@ def people(request):
 
             if title not in map_title_to_current_members:
                 map_title_to_current_members[title] = list()
-            else:
-                map_title_to_current_members[title].append(position)
+
+            map_title_to_current_members[title].append(position)
 
     for title, current_members_with_title in map_title_to_current_members.items():
         current_members_with_title.sort(key=operator.attrgetter('start_date'))

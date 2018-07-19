@@ -82,9 +82,9 @@
 {#            {% for key, value in current_members.items %}#}
 {#                {{ key }} : {{ value }}<br/>#}
 {#            {% endfor %}#}
-
+            Num people: {{ people|length }} Num positions: {{ positions | length }} <br/>
             {% for title in sorted_titles %}
-                {{ title }} ({{ current_members|get_item:title }}),
+                {{ title }} ({{ current_members|get_item:title|length }}) : {{ current_members|get_item:title }} <br/>
             {% endfor %}
 
             {% for title in sorted_titles %}
