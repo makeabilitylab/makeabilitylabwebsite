@@ -63,8 +63,8 @@ def index(request):
 def people(request):
     positions = Position.objects.all()
     map_status_to_title_to_people = dict()
-    map_status_to_subheader = dict()
-    current_members_subheader = ""
+    map_status_to_headers = dict()
+    map_header_text_to_header_name = dict()
 
     for position in positions:
         title = position.title
@@ -108,18 +108,26 @@ def people(request):
             "Professor" in map_status_to_title_to_people[Position.PAST_MEMBER]:
         del map_status_to_title_to_people[Position.PAST_MEMBER]["Professor"]
 
-    # setup subheaders
+    # setup headers
     for status, map_title_to_people in map_status_to_title_to_people.items():
-        if status not in map_status_to_subheader:
-            map_status_to_subheader[status] = ""
+        if status not in map_status_to_headers:
+            map_status_to_headers[status] = dict()
+
+        # get the subHeaders, headerTexts, and headerNames
+        map_status_to_headers[status]["subHeader"] = ""
+        map_status_to_headers[status]["headerText"] = list()
 
         need_comma = False
         for title in sorted_titles:
             if title in map_title_to_people and len(map_title_to_people[title]) > 0:
                 if need_comma:
-                    map_status_to_subheader[status] += ", "
+                    map_status_to_headers[status]["subHeader"] += ", "
 
-                map_status_to_subheader[status] += title + " (" + str(len(map_title_to_people[title])) + ")"
+                header = title + " (" + str(len(map_title_to_people[title])) + ")"
+                print(title)
+                map_status_to_headers[status]["subHeader"] += header
+                map_status_to_headers[status]["headerText"].append(header)
+                map_header_text_to_header_name[title + " (" + str(len(map_title_to_people[title])) + ")"] = title
                 need_comma = True
 
     all_banners = Banner.objects.filter(page=Banner.PEOPLE)
@@ -128,7 +136,8 @@ def people(request):
     context = {
         'people': Person.objects.all(),
         'map_status_to_title_to_people': map_status_to_title_to_people,
-        'map_status_to_subheader': map_status_to_subheader,
+        'map_status_to_headers': map_status_to_headers,
+        'map_header_text_to_header_name':  map_header_text_to_header_name,
         'sorted_titles': sorted_titles,
         'positions': positions,
         'banners': displayed_banners,

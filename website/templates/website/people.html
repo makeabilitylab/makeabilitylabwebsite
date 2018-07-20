@@ -15,6 +15,10 @@
 
 {% block external_scripts %}
     <script src="{% static 'website/js/peopleHeightFix.js' %}"></script>
+    <script src="{% static 'website/js/isotope/isotope-init.js' %}"></script>
+    <script src="{% static 'website/js/isotope/isotope-filterBar.js' %}?version=1"></script>
+    <script src="{% static 'website/js/isotope/isotope-filtering.js' %}"></script>
+    <script src="{% static '/website/js/isotope.pkgd.min.js' %}"></script>
 {% endblock %}
 
 {% block maincarousel %}
@@ -69,6 +73,14 @@
 {% endblock %}
 
 {% block content %}
+    <div id="isotope_data_container" style="display:none">
+        sortFilterContainer(.sortingAndFiltering,str)
+        gridName(.grid,str)
+        filteringKeywordContainer(#filterKeywords,str)
+        sideBarContainer(#filterBar,str)
+        scrollTop(175,int)
+    </div>
+
     <div id="content" class="container" data-spy="scroll" data-target="#navbar-scroll" data-offset="50">
         <div class="navbar navbar-filter" role="navigation">
             <ol class="navbar-right breadcrumb">
@@ -86,27 +98,39 @@
         <h1 name="currentteam" style="margin-top:0">Current Team</h1>
         <div class="row main-content">
             {# TODO: Shiven, this h4 subheader is what we will want to change into isotope filter #}
-            <h4>{{ map_status_to_subheader|get_item:"Current Member" }}</h4>
+            <div id="filterBar">
+                <div id="filterKeywords">
+                    {% for headerText in map_status_to_headers|get_item:"Current Member"|get_item:"headerText" %}
+                        <a name= "{{map_header_text_to_header_name|get_item:headerText }}">{{headerText}},</a>
+                    {% endfor %}
+                    <a name="None">all</a>
+                </div>
+            </div>
+
+
             {# We use reusable templates here to cut down on code redundancy #}
             {# See: https://docs.djangoproject.com/en/dev/ref/templates/builtins/#include #}
-            {% include "snippets/display_people_snippet.html" with member_status="Current Member" %}
+            <div class = "grid">
+                {% include "snippets/display_people_snippet.html" with member_status="Current Member" %}
+            </div>
+
         </div>
 
         <h1 name="alumni">Alumni</h1>
         <div class="row main-content">
-            <h4>{{ map_status_to_subheader|get_item:"Past Member" }}</h4>
+            <h4>{{ map_status_to_headers|get_item:"Past Member"|get_item:"subHeader" }}</h4>
             {% include "snippets/display_people_snippet.html" with member_status="Past Member" %}
         </div>
 
         <h1 name="collaborators">Current Collaborators</h1>
         <div class="row main-content">
-            <h4>{{ map_status_to_subheader|get_item:"Current Collaborator" }}</h4>
+            <h4>{{ map_status_to_headers|get_item:"Current Collaborator"|get_item:"subHeader" }}</h4>
             {% include "snippets/display_people_snippet.html" with member_status="Current Collaborator" %}
         </div>
 
         <h1 name="pastcollaborators">Past Collaborators</h1>
         <div class="row main-content">
-            <h4>{{ map_status_to_subheader|get_item:"Past Collaborator" }}</h4>
+            <h4>{{ map_status_to_headers|get_item:"Past Collaborator"|get_item:"subHeader" }}</h4>
             {% include "snippets/display_people_snippet.html" with member_status="Past Collaborator" %}
         </div>
     </div>
