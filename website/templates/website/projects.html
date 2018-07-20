@@ -18,17 +18,14 @@
 {% block external_scripts %}
     <script src="{% static 'website/js/isotope.pkgd.min.js' %}"></script>
     <script src="{% static 'website/js/fixedSideBar.js' %}"></script>
-    <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
-{% endblock %}
-
-{% block scripts %}
-
-    // Init the fixed side bar
-    $(document).ready(function () {
-	    $('#fixed-side-bar').fixedSideBar()
-    });
+    <script src="{% static 'website/js/isotope/isotope-filterBar.js' %}?version=30"></script>
+    <script src="{% static 'website/js/jquery-ui.min.js' %}?version=30"></script>
+    <script src="{% static 'website/js/jquery-ui.min.js' %}?version=30"></script>
+    <script src="{% static 'website/js/isotope/isotope-init.js' %}?version=30"></script>
+    <script src="{% static 'website/js/isotope/isotope-filtering.js' %}?version=30"></script>
 
 {% endblock %}
+
 
 
 {% block maincarousel %}
@@ -74,51 +71,55 @@
             <br/>
             <input class="shortTextbox" id="filter-textbox-backup" placeholder="FILTER" type="text" value="">
         </div>
-
+        <div id ="isotope_data_container" style="display:none">
+            sortFilterContainer(.sortingAndFiltering,str)
+            gridName(.grid,str)
+            filteringKeywordContainer(#keywords,str)
+            sideBarContainer(#fixed-side-bar,str)
+            scrollTop(175,int)
+        </div>
         <div id="fixed-side-bar" class="hidden-xs">
-            <div id="filter-bar">
+            <div id="keywords">
+                <h1>Filter By</h1>
+                <h2>AREA</h2>
+                <ul class="filter-list">
+                    <li><a>Accessibility</a></li>
+                    <li><a>Education</a></li>
+                    <li><a>Fabrication</a></li>
+                    <li><a>Health/Wellness</a></li>
+                    <li><a>Smart Cities</a></li>
+                    <li><a>Sustainability</a></li>
+                </ul>
 
+                <h2>TECH</h2>
+                <ul class="filter-list">
+                    <li><a>Augmented Reality</a></li>
+                    <li><a>Computer Vision</a></li>
+                    <li><a>Custom Hardware</a></li>
+                    <li><a>E-Textiles</a></li>
+                    <li><a>Machine Learning</a></li>
+                    <li><a>Wearables</a></li>
+                </ul>
+                <li class="filter-list"><a>None</a></li>
             </div>
-            <!-- TODO: possibly add in number of each thing in parantheses -->
-            <!-- TODO: support mouseover filtering so that when you mouseover a selection in left-menu, it auto-filters during hover -->
-            <!-- TODO: support parallax hovering--or zoom-in hovering--over project thumbnail like vanschneider.com. Could also have mouseover details like grantburke.com/design-portfolio -->
-            <!-- TODO: hhook tihs up to isotope https://isotope.metafizzy.co/layout-modes.html for sorting, filtering -->
-            <h1 style="margin-top:0px">AREA</h1>
-            <ul class="filter-list">
-                <li>Accessibility</li>
-                <li>Education</li>
-                <li>Fabrication</li>
-                <li>Health/Wellness</li>
-                <li>Smart Cities</li>
-                <li>Sustainability</li>
-            </ul>
-
-            <h1 style="margin-top:0px">TECHNOLOGY</h1>
-            <ul class="filter-list">
-                <li>Augmented Reality</li>
-                <li>Computer Vision</li>
-                <li>Custom Hardware</li>
-                <li>E-Textiles</li>
-                <li>Machine Learning</li>
-                <li>Wearables</li>
-            </ul>
-
-            <!-- Tech filter: augmented reality, machine learning, custom hardware, computer vision -->
         </div>
 
 
 
         <div id="main-content" class="project-list">
-            <!-- TODO: consider listing dates active or keywords underneath each project thumbnail in addition to name -->
-            {% for project in projects %}
-                <div class="col-xs-12 col-md-3 project-column">
-                    <a href="{% url 'website:project' project.short_name %}" style="color:black;">
-                        <img src="{% thumbnail project.gallery_image 300x180 box=project.cropping crop detail %}" class="img-responsive">
-                        <p class="artifact-title">{{ project.name }}</p>
-                    </a>
-                    <div style="min-height:15px"></div>
-                </div>
-            {% endfor %}
+            <div class="grid">
+                {% for project in projects %}
+                        <div class="item" name="project" style="width:30%; margin:1.5%; background:white">
+                            <a href="{% url 'website:project' project.short_name %}" style="color:black;">
+                                <img src="{% thumbnail project.gallery_image 300x180 box=project.cropping crop detail %}" class="img-responsive">
+                                <p class="artifact-title">{{ project.name }}</p>
+                            </a>
+                            <div style="min-height:15px"></div>
+                            <div class="sortingAndFiltering" style="display:none">{{ project.get_keywords_as_string }}</div>
+                            <div class="Date" style="display:none">{{project.start_date.year}}{{project.start_date.month}}{{project.start_date.day}}</div>
+                        </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
