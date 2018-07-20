@@ -95,8 +95,9 @@
             </ol>
         </div>
 
-        <h1 name="currentteam" style="margin-top:0">Current Team</h1>
+
         <div class="row main-content">
+            <h1 name="currentteam" style="margin-top:0">Current Team</h1>
             {# TODO: Shiven, this h4 subheader is what we will want to change into isotope filter #}
             <div id="filterBar">
                 <div id="filterKeywords">
@@ -116,20 +117,23 @@
 
         </div>
 
-        <h1 name="alumni">Alumni</h1>
+
         <div class="row main-content">
+            <h1 name="alumni">Alumni</h1>
             <h4>{{ map_status_to_headers|get_item:"Past Member"|get_item:"subHeader" }}</h4>
             {% include "snippets/display_people_snippet.html" with member_status="Past Member" %}
         </div>
 
-        <h1 name="collaborators">Current Collaborators</h1>
+
         <div class="row main-content">
+            <h1 name="collaborators">Current Collaborators</h1>
             <h4>{{ map_status_to_headers|get_item:"Current Collaborator"|get_item:"subHeader" }}</h4>
             {% include "snippets/display_people_snippet.html" with member_status="Current Collaborator" %}
         </div>
 
-        <h1 name="pastcollaborators">Past Collaborators</h1>
+
         <div class="row main-content">
+            <h1 name="pastcollaborators">Past Collaborators</h1>
             <h4>{{ map_status_to_headers|get_item:"Past Collaborator"|get_item:"subHeader" }}</h4>
             {% include "snippets/display_people_snippet.html" with member_status="Past Collaborator" %}
         </div>
