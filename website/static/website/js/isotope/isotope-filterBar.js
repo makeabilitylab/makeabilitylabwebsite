@@ -8,7 +8,8 @@ var filterKeywords = [];
 var filterNames = [];
 function isotopeFilterBarInit(){
     // start the sidebar container
-    $(sideBarContainer).fixedSideBar();
+    if(typeof fixedSideBar !== typeof undefined)
+        $(sideBarContainer).fixedSideBar();
 
     $(sideBarContainer + ' li a').each(function(){
         // set the name attribute to the text of the element if the name attribute doesn't exist.
@@ -56,7 +57,7 @@ function handleFilterBarClick(e)
     var text = $(e.target).attr("name");
 
     //formula to calculate a smooth scroll time, caps at one second.
-    var timeToScroll = 1000 * (-100/(Math.abs(window.scrollY - scrollTop + 100)) + 1);
+    var timeToScroll = 1000 * (-100/(Math.abs(window.scrollY - scrollTop)+ 100) + 1);
     console.log(scrollTop, timeToScroll);
     // scroll up to "scrollTop"
     $("html, body").animate({scrollTop:scrollTop}, timeToScroll);
