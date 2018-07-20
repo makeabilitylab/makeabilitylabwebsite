@@ -113,15 +113,18 @@
 	<div class="news-listing-list" id="main-content">
         {% for n in news %}
 	    <div class="news-listing-template">
-            <div class="news-listing-id">[N. {{ n.id }}]</div>
                 <div class="news-listing-image">
-                    <img src="{% thumbnail n.image 250x250 box=news.cropping crop detail %}" class="news-listing-image-image img-responsive"/>
+                    {% if news.image %}
+                    <img src="{% thumbnail n.image 200x200 box=news.cropping crop detail %}" class="news-listing-image-image img-responsive"/>
+                    {% else %}
+                    <img src="{% static 'website/img/news_icon.png' %}" class="big-news-image" height="200" width="200">
+                    {% endif %}
                 </div>
                 <div class="news-listing-info">
                     <p class="artifact-title" style="font-size:28px;">{{ n.title }}</p>
                     <p class="news-listing-author-outside">
                         <span class="news-listing-author"><a href="{% url 'website:member' member_id=n.author.id %}">{{ n.author }}</a> &mdash;</span>
-                            <span class="news-listing-author-last">{{ n.time_now }}</span>
+                            <span class="news-listing-author-last">{{ n.short_date }}</span>
                     </p>
                     <p class="news-listing-content">
                         <span>{{ n.content | slice:":255" }} . . . <a href="{% url 'website:news' news_id=n.id %}">[read more]</a></span>

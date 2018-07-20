@@ -157,6 +157,11 @@ class Person(models.Model):
 
         return is_alumni_member
 
+    # Returns the earliest this person was ever a member
+    def get_earliest_member_position(self):
+        # The result of a QuerySet is a QuerySet so you can chain them together...
+        return self.position_set.filter(role=Position.MEMBER).earliest('start_date')
+
     # Returns the latest position for the person
     # TODO: consider renaming this to get_current_position
     # TODO: This assume that postion_set.all() is already ordered by start_date. I don't think this is necessarily true.
@@ -236,8 +241,6 @@ def person_delete(sender, instance, **kwargs):
     if instance.image:
         instance.image.delete(False)
 
-
-
 def get_person():
     return Person.objects.get(last_name='Froehlich')
 
@@ -296,7 +299,11 @@ class Position(models.Model):
     school = models.CharField(max_length=60, default="University of Washington")
 
     def get_start_date_short(self):
-        return self.start_date.strftime('%b %Y')
+        if self.is_current_member():
+            #TODO return the earliest this person was ever a member
+            return self.person.get_earliest_member_position().start_date.strftime('%b %Y')
+        else:
+            return self.start_date.strftime('%b %Y')
 
     def get_end_date_short(self):
         return self.end_date.strftime('%b %Y') if self.end_date != None else "Present"
@@ -354,13 +361,13 @@ class Position(models.Model):
 
     # Returns true if grad student
     def is_grad_student(self):
-        return self.title == Position.MS_STUDENT or self.title == Position.PHD_STUDENT or self.title == Position.POST_DOC
+        return self.title == Position.MS_STUDENT or self.title == Position.PHD_STUDENT
 
+    # Returns true if high school student
     def is_high_school(self):
         return self.title == Position.HIGH_SCHOOL
 
     # Returns true if member is current based on end date
-    # TODO this is a weird function and is badly named. How is it different form is_member? Confusing.
     def is_current_member(self):
         return self.is_member() and \
                self.start_date is not None and self.start_date <= date.today() and \
@@ -700,8 +707,6 @@ class Publication(models.Model):
     acmid = models.CharField(max_length=255, blank=True, null=True)
 
 
-
-
     CONFERENCE = "Conference"
     ARTICLE = "Article"
     JOURNAL = "Journal"
@@ -810,9 +815,9 @@ def poster_delete(sender, instance, **kwargs):
 
 class News(models.Model):
     title = models.CharField(max_length=255)
-    date = models.DateTimeField(default=date.today)
+    #date = models.DateTimeField(default=timezone.now)
+    date = models.DateField(default=date.today) #check this line, might be diff
     author = models.ForeignKey(Person, null=True, on_delete=models.SET_NULL)    
-    
     content = models.TextField()
     #Following the scheme of above thumbnails in other models
     image = models.ImageField(blank=True, upload_to=UniquePathAndRename("news", True), max_length=255)
@@ -831,11 +836,12 @@ class News(models.Model):
 
     project = models.ManyToManyField(Project, blank=True, null=True)
 
-    def time_now(self):
-        if self.date > timezone.now() - datetime.timedelta(hours=24):
-            return str(timezone.now().hour - self.date.hour) + ' hours ago'
-        else:
-            return self.short_date()
+    #def time_now(self):
+    #    d = self.date.date() - datetime.timedelta(seconds=0)
+    #    if d > timezone.now() - datetime.timedelta(hours=24):
+    #        return str(int(timezone.now().hour) - int(self.date.hour)) + ' hours ago'
+    #    else:
+    #        return self.short_date()
 
 
     def short_date(self):
