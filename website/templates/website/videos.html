@@ -35,7 +35,19 @@
             "url_embeddable": "{{video.get_embed}}",
             "project_short_name": "{{video.project.short_name}}",
             "pub_title": "{{video.publication}}",
-            "pub_url": "../../media/{{video.publication.pdf_file}}"
+            "pub_url": "../../media/{{video.publication.pdf_file}}",
+            "talk":"{{video.publication.talk.title}}",
+            "speakers": [
+				{% for speaker in video.publication.talk.speakers.all %}
+				{
+					"name": "{{speaker.get_full_name}}",
+					"first_name": "{{speaker.first_name}}",
+					"middle_name": "{{speaker.middle_name}}",
+					"last_name": "{{speaker.last_name}}",
+					"link": "{% url 'website:member' speaker.id %}"
+				},
+				{% endfor %}
+			],
         },
 		{% endfor %}
 	];

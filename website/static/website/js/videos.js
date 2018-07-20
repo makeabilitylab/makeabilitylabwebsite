@@ -19,10 +19,12 @@ $(window).load(function () {
 	$('#fixed-side-bar').fixedSideBar();
 	$('#filter-bar').filterBar({
 		items: videos,
-		categories: ["Year", "Project", "None"],
+		categories: ["Year", "Project", "Talks", "Speakers", "None"],
 		groupsForCategory: {
 			"Year": groupVideosByYear(),
 			"Project": groupVideosByProject(),
+			"Talks": groupVideosByTalk(),
+			"Speakers": groupVideosBySpeaker(),
 			"None": groupVideosByNone(),
 		},
 		defaultCategory: "None",
@@ -55,8 +57,7 @@ function groupVideosByNone() {
 
 // returns a list of videos grouped by year, sorted with the most recent year first
 // TODO: this is same function as in talks.js (and possibly publications.js). Consolidate?
-function groupVideosByYear()
-{
+function groupVideosByYear() {
 	var tempGroups = {};
 	videos.forEach(function(video, index, array) {
 		var group = video.date.getFullYear().toString();
@@ -66,16 +67,7 @@ function groupVideosByYear()
 		tempGroups[group].push(video);
 	});
 
-	var groups = []
-	for(group in tempGroups) {
-		tempGroups[group].sort(function(a, b) {return b.date - a.date});
-		groups.push({"name": group, "items": tempGroups[group]});
-	}
-
-	// years are sorted chronologically, all of the other groupings are sorted by frequency
-	groups.sort(function(a,b) { return parseInt(b.name) - parseInt(a.name) });
-
-	return groups;
+	return sortGroupsByDate(tempGroups);
 }
 
 // returns a list of videos grouped by project, sorted with the most frequent project first
@@ -83,32 +75,69 @@ function groupVideosByYear()
 // TODO: this is same function as in talks.js (and possibly publications.js). Consolidate? Actually, not the same because
 // videos can only belong to one and only one group currently. If this switches to many-to-one, then we have to update this
 // to be more like talks.js
-function groupVideosByProject()
-{
+function groupVideosByProject(){
 	// tempGroups holds all videos that are contained under the same project
 	var tempGroups = {};
-
 	videos.forEach(function(video, index, array) {
 		group = video.project_short_name;
-		// console.log("Video: " + video.title + ", Date: " + video.date.toString());
-		if(!(group in tempGroups)) {
-			tempGroups[group] = [];
+		//filter out the videos unaffiliated with projects
+		if(video.project_short_name !== "") {
+			if(!(group in tempGroups)) {
+				tempGroups[group] = [];
+			}
+			tempGroups[group].push(video);
 		}
-		tempGroups[group].push(video);
 	});
+	return sortGroupsByDate(tempGroups);
+}
 
+function groupVideosByTalk() {
+	var tempGroups = {};
+	videos.forEach(function(video, index, array) {
+		video.speakers.forEach(function(speaker, ind, arr) {
+            if (speaker !== "") {
+            	group = speaker.name;
+                if (!(group in tempGroups)) {
+                    tempGroups[group] = [];
+                }
+                tempGroups[group].push(video);
+            }
+        });
+	});
+	return sortGroupsByDate(tempGroups);
+}
+
+function groupVideosBySpeaker()
+{
+	var tempGroups = {};
+	videos.forEach(function(video, index, array) {
+
+		if(video.speakers.length) {
+            if (!(group in tempGroups)) {
+                tempGroups[group] = [];
+            }
+            tempGroups[group].push(video);
+        }
+	});
+	return sortGroupsByDate(tempGroups);
+}
+
+
+//sorts groups by the date of the first item, sorts items inside each group by date in reverse chronological order (earliest first)
+function sortGroupsByDate(unsortedGroups)
+{
 	var groups = []
-	for(group in tempGroups) {
-		tempGroups[group].sort(function(a, b) { return b.date - a.date});
-		// project name, all videos associated with the project
-		groups.push({"name": group, "items": tempGroups[group]});
+	for(group in unsortedGroups) {
+		//sort all the items in each group in reverse chronological order
+		unsortedGroups[group].sort(function(a, b) { return b.date - a.date});
+		groups.push({"name": group, "items": unsortedGroups[group]});
 	}
 
-	// groupings are done by the date of the most recent video from each project
+	// groupings are sorted by the date of the most recent item in the group
 	groups.sort(function(a,b) { return b.items[0].date - a.items[0].date });
-
 	return groups;
 }
+
 
 // returns true if the publication contains the text entered into the filter box anywhere
 // in the title, speakers, venue, keywords, or projects
