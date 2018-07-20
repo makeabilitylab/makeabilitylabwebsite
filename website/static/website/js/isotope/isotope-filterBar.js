@@ -11,7 +11,7 @@ function isotopeFilterBarInit(){
     if(typeof fixedSideBar !== typeof undefined)
         $(sideBarContainer).fixedSideBar();
 
-    $(sideBarContainer + ' li a').each(function(){
+    $(sideBarContainer + ' a').each(function(){
         // set the name attribute to the text of the element if the name attribute doesn't exist.
         var attr = $(this).attr("name");
         if(typeof attr === typeof undefined || attr === false) {
@@ -19,7 +19,7 @@ function isotopeFilterBarInit(){
         }
 
         // set the style so that we get the cursor
-        $(this).attr("style", 'cursor: pointer;');
+        $(this).attr("style", 'cursor: pointer;font-weight:normal;');
 
         //  put this into filterKeywords
         filterKeywords.push($(this).attr("name"));
@@ -55,6 +55,15 @@ function handleFilterBarClick(e)
 {
     // get our text
     var text = $(e.target).attr("name");
+
+    //unbold everything
+    $(sideBarContainer + ' a').each(function() {
+        // set the style so that we get the cursor
+        $(this).attr("style", 'cursor: pointer;font-weight:normal;');
+    });
+
+    $(e.target).attr("style", 'cursor: pointer;font-weight:bold;');
+
 
     //formula to calculate a smooth scroll time, caps at one second.
     var timeToScroll = 1000 * (-100/(Math.abs(window.scrollY - scrollTop)+ 100) + 1);
