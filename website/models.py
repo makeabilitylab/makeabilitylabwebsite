@@ -455,14 +455,6 @@ class Project(models.Model):
 
     updated = models.DateField(auto_now=True)
 
-    def get_keywords_as_string(self):
-        all_keywords = ""
-        for keyword in self.keywords.all():
-            # put all the keywords, separated by "()"
-            all_keywords += keyword.__str__() + "()"
-        return all_keywords
-
-
     def get_pi(self):
         return self.project_role_set.get(pi_member="PI").person
 
@@ -611,9 +603,6 @@ class Video(models.Model):
         # Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
         cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
         return cap_title
-
-    def get_year(self):
-        return self.date.year
 
     def __str__(self):
         return self.title
