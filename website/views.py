@@ -108,6 +108,15 @@ def people(request):
             "Professor" in map_status_to_title_to_people[Position.PAST_MEMBER]:
         del map_status_to_title_to_people[Position.PAST_MEMBER]["Professor"]
 
+    # to avoid getting errors when there are no people in these categories, set our defaults
+    positionNames = [Position.CURRENT_MEMBER, Position.CURRENT_COLLABORATOR, Position.PAST_MEMBER,
+                     Position.PAST_COLLABORATOR]
+    for position in positionNames:
+        map_status_to_headers[position] = dict()
+        map_status_to_headers[position]["subHeader"] = "None"
+        map_status_to_headers[position]["headerText"] = list()
+
+
     # setup headers
     for status, map_title_to_people in map_status_to_title_to_people.items():
         if status not in map_status_to_headers:
