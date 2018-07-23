@@ -162,7 +162,10 @@
             <div class="row justify-content-end">
                 <!-- TODO fix the right alignment -->
                 <div class="col-xs-12 see-all-artifacts">
-                    <a href="{% url 'website:projects' %}">See All Projects ></a>
+                    <div class="col-xs-12"></div>
+                    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 see-all-artifacts pull-right see-all-artifacts">
+                        <a href="{% url 'website:projects' %}">See All Projects ></a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -211,7 +214,10 @@
                 </div>
             {% endfor %}
             <div class="col-xs-12 see-all-artifacts">
-                <a href="{% url 'website:videos' %}">See All Videos ></a>
+                <div class="col-xs-12"></div>
+                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 see-all-artifacts pull-right see-all-artifacts">
+                    <a href="{% url 'website:videos' %}" style="margin:15px">See All Videos ></a>
+                </div>
             </div>
         </div>
     </div>
@@ -261,7 +267,10 @@
                 </div>
             {% endfor %}
             <div class="col-xs-12 see-all-artifacts">
-                <a href="{% url 'website:publications' %}">See All Papers ></a>
+                <div class="col-xs-12"></div>
+                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 see-all-artifacts pull-right see-all-artifacts">
+                    <a href="{% url 'website:publications' %}" style="margin:15px">See All Papers ></a>
+                </div>
             </div>
         </div>
     </div>
@@ -299,7 +308,10 @@
                 </div>
             {% endfor %}
             <div class="col-xs-12 see-all-artifacts">
-                <a href="{% url 'website:talks' %}">See All Talks ></a>
+                <div class="col-xs-12"></div>
+                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 see-all-artifacts pull-right see-all-artifacts">
+                    <a href="{% url 'website:talks' %}" style="margin:15px">See All Talks ></a>
+                </div>
             </div>
         </div>
     </div>
