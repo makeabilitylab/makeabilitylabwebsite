@@ -151,7 +151,7 @@
         <h1 class="section-header" style="margin-top:25px">Recent Projects</h1>
         <div class="section">
             {% for project in projects|slice:"8" %}
-                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project-column">
+                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project-column" style="margin-bottom:20px">
                         <a href="{% url 'website:project' project.short_name %}"></a>
                          <div style="background: black; width:100%; height: 180px; contain: content;">
                              <img style="width:100%; height: auto; position: relative;top: 50%; left: 50%;transform: translate(-50%,-50%);object-fit: cover" src="{% thumbnail project.gallery_image "300x180" crop="center" %}">
