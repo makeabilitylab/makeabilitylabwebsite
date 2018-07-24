@@ -439,6 +439,7 @@
                         <div class="row">
                             <a href="{% url 'website:news' news_item.id %}">
                                 <div class="col-xs-4" style="white-space:nowrap;">
+				    {#  Date formats here: https://docs.djangoproject.com/en/1.11/ref/templates/builtins/#std:templatefilter-date #}	
                                     <p>{{ news_item.date|date:"N d, Y" }}</p>
                                 </div>
                                 <div class="col-xs-8">
