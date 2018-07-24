@@ -435,12 +435,19 @@
                     {# To add news dynamically, we need to use a context processor. See our custom process in context_processors.py #}
                     {# See: https://stackoverflow.com/questions/36093221/how-to-put-variable-from-database-into-base-html-template #}
 
-                    <ul>
                     {% for news_item in recent_news %}
-                        {#  Date formats here: https://docs.djangoproject.com/en/1.11/ref/templates/builtins/#std:templatefilter-date #}
-                        <li><a href="{% url 'website:news' news_item.id %}">{{ news_item.date|date:"N d, Y" }} &nbsp;&nbsp;&nbsp; {{ news_item.title }}</a></li>
+                        <div class="row">
+                            <a href="{% url 'website:news' news_item.id %}">
+                                <div class="col-xs-4" style="white-space:nowrap;">
+				    {#  Date formats here: https://docs.djangoproject.com/en/1.11/ref/templates/builtins/#std:templatefilter-date #}	
+                                    <p>{{ news_item.date|date:"N d, Y" }}</p>
+                                </div>
+                                <div class="col-xs-8">
+                                    <p class= "line-clamp">{{ news_item.title }}</p>
+                                </div>
+                            </a>
+                        </div>
                     {% endfor %}
-                    </ul>
 
                 </div>
 
