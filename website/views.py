@@ -65,6 +65,7 @@ def people(request):
     map_status_to_title_to_people = dict()
     map_status_to_headers = dict()
     map_header_text_to_header_name = dict()
+    map_status_to_num_people = dict()
 
     for position in positions:
         title = position.title
@@ -122,9 +123,11 @@ def people(request):
         if status not in map_status_to_headers:
             map_status_to_headers[status] = dict()
 
+
         # get the subHeaders, headerTexts, and headerNames
         map_status_to_headers[status]["subHeader"] = ""
         map_status_to_headers[status]["headerText"] = list()
+        map_status_to_num_people[status] = 0
 
         need_comma = False
         for title in sorted_titles:
@@ -137,6 +140,7 @@ def people(request):
                 map_status_to_headers[status]["subHeader"] += header
                 map_status_to_headers[status]["headerText"].append(header)
                 map_header_text_to_header_name[title + " (" + str(len(map_title_to_people[title])) + ")"] = title
+                map_status_to_num_people[status] += len(map_title_to_people[title])
                 need_comma = True
 
     all_banners = Banner.objects.filter(page=Banner.PEOPLE)
@@ -145,6 +149,7 @@ def people(request):
     context = {
         'people': Person.objects.all(),
         'map_status_to_title_to_people': map_status_to_title_to_people,
+        'map_status_to_num_people': map_status_to_num_people,
         'map_status_to_headers': map_status_to_headers,
         'map_header_text_to_header_name':  map_header_text_to_header_name,
         'sorted_titles': sorted_titles,
