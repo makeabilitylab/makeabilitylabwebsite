@@ -7,80 +7,112 @@
  * Contains helper functions for other filtering/sorting related logic.
  */
 
+var isotope_data_container_class = '.isotope_data_container';
 
-var isotope_data_container = '#isotope_data_container';
+var allIsotopeProperties = [];
 
 // get all of these properties from the isotope data container
-
-// required always
-var gridName;
-var sortFilterDataContainer;
-
-// required for header generation
-var headerStyle;
-var headerClass;
-
-// required for filtering
-var filteringKeywordContainer;
-// required for sorting
-var sortingKeywordContainer;
-
-// required for the filter-bar
-var sideBarContainer;
-var scrollTop;
+var currentIsotopeProperties = {
+    gridName:null,
+    sortFilterDataContainer:null,
+    headerStyle:null,
+    headerClass:null,
+    headerStyle:null,
+    filteringKeywordContainer:null,
+    sortingKeywordContainer:null,
+    sideBarContainer:null,
+    scrollTop:0,
+};
 
 $(window).load(function () {
+
     // get all the properties, throw errors if we can't find them. Call initialization functions for other isotopes if they exist.
-    gridName = getValueOfProperty($(isotope_data_container).text(), "gridName");
-    sortFilterDataContainer = getValueOfProperty($(isotope_data_container).text(), "sortFilterContainer");
-    if(gridName === null) {
-        throw "gridName property could not be found in isotope_data_container! Please add the gridName property!";
-    }
-    if(sortFilterDataContainer === null) {
-        throw "sortFilterContainer property could not be found in isotope_data_container! Please add the sortFilterContainer property!";
-    }
-    if(typeof isotopeHeaderInit !== typeof undefined) {
-        headerStyle = getValueOfProperty($(isotope_data_container).text(), "headerStyle");
-        headerClass = getValueOfProperty($(isotope_data_container).text(), "headerClass");
-        if(headerStyle === null) {
-            throw "headerStyle property could not be found in isotope_data_container! Please add the headerStyle property!";
+    $('body ' + isotope_data_container_class).each(function() {
+        var isotopeProperties = {};
+        Object.assign(isotopeProperties, currentIsotopeProperties);
+        isotopeProperties['gridName'] = getValueOfProperty($(this).text(), "gridName");
+        isotopeProperties['sortFilterDataContainer'] = getValueOfProperty($(this).text(), "sortFilterContainer");
+        if (isotopeProperties['gridName'] === null) {
+            throw "gridName property could not be found in isotope_data_container! Please add the gridName property!";
         }
-        if(headerClass === null) {
-            throw "headerClass property could not be found in isotope_data_container! Please add the headerClass property!";
+        if (isotopeProperties['sortFilterDataContainer'] === null) {
+            throw "sortFilterContainer property could not be found in isotope_data_container! Please add the sortFilterContainer property!";
         }
+        if (typeof isotopeHeaderInit !== typeof undefined) {
+            isotopeProperties['headerStyle'] = getValueOfProperty($(this).text(), "headerStyle");
+            isotopeProperties['headerClass'] = getValueOfProperty($(this).text(), "headerClass");
+            if (isotopeProperties['headerStyle'] === null) {
+                throw "headerStyle property could not be found in isotope_data_container! Please add the headerStyle property!";
+            }
+            if (isotopeProperties['headerClass'] === null) {
+                throw "headerClass property could not be found in isotope_data_container! Please add the headerClass property!";
+            }
+        }
+        if (typeof isotopeFilterInit !== typeof undefined) {
+            isotopeProperties['filteringKeywordContainer'] = getValueOfProperty($(this).text(), "filteringKeywordContainer");
+            if (isotopeProperties['filteringKeywordContainer'] === null) {
+                throw "filteringKeywordContainer property could not be found in isotope_data_container! Please add the filteringKeywordContainer property!";
+            }
+        }
+        if (typeof isotopeSortInit !== typeof undefined) {
+            isotopeProperties['sortingKeywordContainer'] = getValueOfProperty($(this).text(), "sortingKeywordContainer");
+            if (isotopeProperties['sortingKeywordContainer'] === null) {
+                throw "sortingKeywordContainer property could not be found in isotope_data_container! Please add the sortingKeywordContainer property!";
+            }
+        }
+        if (typeof isotopeFilterBarInit !== typeof undefined) {
+            isotopeProperties['sideBarContainer'] = getValueOfProperty($(this).text(), "sideBarContainer");
+            isotopeProperties['scrollTop'] = getValueOfProperty($(this).text(), "scrollTop");
+            if (isotopeProperties['scrollTop'] === null) {
+                throw "scrollTop property could not be found in isotope_data_container! Please add the scrollTop property!";
+            }
+            if (isotopeProperties['sideBarContainer'] === null) {
+                throw "sideBarContainer property could not be found in isotope_data_container! Please add the sideBarContainer property!";
+            }
+        }
+        // set layout mode to fit rows.
+        $(isotopeProperties['gridName']).isotope({
+            layoutMode: 'fitRows'
+        });
+
+        console.log(allIsotopeProperties.length);
+        allIsotopeProperties.push(isotopeProperties);
+    });
+
+
+
+
+    for(var i = 0; i < allIsotopeProperties.length; i++) (function(i){
+        currentIsotopeProperties = allIsotopeProperties[i];
+        init();
+        $(allIsotopeProperties[i]['sideBarContainer']).on('click', function (e) {
+            if(currentIsotopeProperties !== allIsotopeProperties[i]){
+                currentIsotopeProperties = allIsotopeProperties[i];
+                console.log("handling click");
+                init();
+            }
+
+            console.log("finished init, moving to filter bar");
+            handleFilterBarClick(e);
+        });
+    })(i);
+});
+
+function init(){
+    if (typeof isotopeHeaderInit !== typeof undefined) {
         isotopeHeaderInit();
     }
-    if(typeof isotopeFilterInit !== typeof undefined) {
-        filteringKeywordContainer = getValueOfProperty($(isotope_data_container).text(), "filteringKeywordContainer");
-        if(filteringKeywordContainer === null) {
-            throw "filteringKeywordContainer property could not be found in isotope_data_container! Please add the filteringKeywordContainer property!";
-        }
+    if (typeof isotopeFilterInit !== typeof undefined) {
         isotopeFilterInit();
     }
-    if(typeof isotopeSortInit !== typeof undefined) {
-        sortingKeywordContainer = getValueOfProperty($(isotope_data_container).text(), "sortingKeywordContainer");
-        if(sortingKeywordContainer === null) {
-            throw "sortingKeywordContainer property could not be found in isotope_data_container! Please add the sortingKeywordContainer property!";
-        }
+    if (typeof isotopeSortInit !== typeof undefined) {
         isotopeSortInit();
     }
-    if(typeof isotopeFilterBarInit !== typeof undefined) {
-        sideBarContainer = getValueOfProperty($(isotope_data_container).text(), "sideBarContainer");
-        scrollTop = getValueOfProperty($(isotope_data_container).text(), "scrollTop");
-        if (scrollTop === null) {
-            throw "scrollTop property could not be found in isotope_data_container! Please add the scrollTop property!";
-        }
-        if (sideBarContainer === null) {
-            throw "sideBarContainer property could not be found in isotope_data_container! Please add the sideBarContainer property!";
-        }
+    if (typeof isotopeFilterBarInit !== typeof undefined) {
         isotopeFilterBarInit();
     }
+}
 
-    // set layout mode to fit rows.
-    $(gridName).isotope({
-        layoutMode: 'fitRows'
-    });
-});
 
 // gets value of a property
 function getValueOfProperty(text, property){

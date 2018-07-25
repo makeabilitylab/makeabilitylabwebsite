@@ -9,9 +9,9 @@ function isotopeHeaderInit() {
     var headerNames = [];
 
     // go through each item in the grid
-    $(gridName + ' .item').each(function(){
+    $($(currentIsotopeProperties['gridName']) + ' .item').each(function(){
         // get the types of headers from categories, split by ')'
-        var text = $(this).find(sortFilterDataContainer)[0].textContent;
+        var text = $(this).find($(currentIsotopeProperties['sortFilterDataContainer']))[0].textContent;
         var textSplit = text.split(')');
 
         // go through textSplit, only create headers that are unique and not empty.
@@ -25,8 +25,8 @@ function isotopeHeaderInit() {
             if(headerNames.indexOf(textSplit[i]) === -1) {
                 headerNames.push(textSplit[i]);
                 //  really long html insertion to properly make header.
-                $(gridName).append("<div class='item' name='header' style='width: 100%; height: 50px; background: white;'><" + headerClass + " style="
-                + headerStyle + ">"+ data +"</" + headerClass + "><div class=" + sortFilterDataContainer.substr(1, sortFilterDataContainer.length) + " style ='display:none'>"
+                $(currentIsotopeProperties['gridName']).append("<div class='item' name='header' style='width: 100%; height: 50px; background: white;'><" + currentIsotopeProperties['headerClass'] + " style="
+                + currentIsotopeProperties['headerStyle'] + ">"+ data +"</" + currentIsotopeProperties['headerClass'] + "><div class=" + currentIsotopeProperties['sortFilterDataContainer'].substr(1, cur
                 + textSplit[i] + "</div><div class='Date' style='display:none'>"+ (Number.MAX_SAFE_INTEGER) +"</div></div>");
             }
         }

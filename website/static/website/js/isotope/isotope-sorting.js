@@ -13,7 +13,7 @@ var $grid;
 // function to initialize sorting
 function isotopeSortInit() {
     // set the properties of the grid
-    $grid = $(gridName).isotope({
+    $grid = $(currentIsotopeProperties['gridName']).isotope({
         // get the sorting data
         getSortData: {
             sorting_scheme: function (itemElem) {
@@ -27,7 +27,7 @@ function isotopeSortInit() {
         // get our current scheme for sorting
         sortAscending: {
             // check if we need to sort in ascending order or not.
-            sorting_scheme: getIsPropertyAscending(sortingKeywordContainer, sortingScheme),
+            sorting_scheme: getIsPropertyAscending(currentIsotopeProperties['sortingKeywordContainer'], sortingScheme),
             date: false
         },
     });
@@ -37,7 +37,7 @@ function isotopeSortInit() {
 function sortBySortingScheme (itemElem)
 {
     // get the value of the property that we're sorting by.
-    var val = getValueOfProperty($(itemElem).find(sortFilterDataContainer)[0].textContent, sortingScheme);
+    var val = getValueOfProperty($(itemElem).find(currentIsotopeProperties['sortFilterDataContainer'])[0].textContent, sortingScheme);
     //so that uppercase letters aren't sorted above lowercase ones
     if(typeof val === "string") {
         val = val.toLowerCase();
@@ -54,7 +54,7 @@ function sortByDate(itemElem)
 
 //sorts filtering names by a scheme and by an order. Used by the filter-bar, if sorting is being used
 function sortFilterNamesByProperty (filterNames, scheme){
-    var ascending = getIsPropertyAscending(sortingKeywordContainer, scheme);
+    var ascending = getIsPropertyAscending(currentIsotopeProperties['sortingKeywordContainer'], scheme);
     filterNames = filterNames.sort(function(a,b){
         //parse the properties
         var valA = parsePropertyValue(a);
@@ -82,7 +82,7 @@ function handleSortingClick(e){
     var text = $(e.target).attr("name");
 
     // check if the text is in the sorting keyword container
-    if(isTextInContainer(sortingKeywordContainer, text))
+    if(isTextInContainer(currentIsotopeProperties['sortingKeywordContainer'], text))
     {
         // if it is, then set the sorting scheme and the grid settings
         sortingScheme = text;
@@ -100,7 +100,7 @@ function handleSortingClick(e){
 
             sortAscending: {
                 // check if we need to sort in ascending order or not.
-                sorting_scheme: getIsPropertyAscending(sortingKeywordContainer, sortingScheme),
+                sorting_scheme: getIsPropertyAscending(currentIsotopeProperties['sortingKeywordConatiner'], sortingScheme),
                 date: false
             },
         });
