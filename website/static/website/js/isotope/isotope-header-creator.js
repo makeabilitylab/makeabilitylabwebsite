@@ -26,7 +26,7 @@ function isotopeHeaderInit() {
                 headerNames.push(textSplit[i]);
                 //  really long html insertion to properly make header.
                 $(currentIsotopeProperties['gridName']).append("<div class='item' name='header' style='width: 100%; height: 50px; background: white;'><" + currentIsotopeProperties['headerClass'] + " style="
-                + currentIsotopeProperties['headerStyle'] + ">"+ data +"</" + currentIsotopeProperties['headerClass'] + "><div class=" + currentIsotopeProperties['sortFilterDataContainer'].substr(1, currentIsotopeProperties['sortFilterDataContainer'].length) + " style ='display:none'>"
+                + currentIsotopeProperties['headerStyle'] + ">"+ data +"</" + currentIsotopeProperties['headerClass'] + "><div class=" + currentIsotopeProperties['sortFilterDataContainer'].substr(1, cur
                 + textSplit[i] + "</div><div class='Date' style='display:none'>"+ (Number.MAX_SAFE_INTEGER) +"</div></div>");
             }
         }

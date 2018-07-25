@@ -15,13 +15,10 @@
 
 {% block external_scripts %}
     <script src="{% static 'website/js/peopleHeightFix.js' %}"></script>
-<<<<<<< Updated upstream
-=======
     <script src="{% static 'website/js/isotope/isotope-init.js' %}?version=2"></script>
     <script src="{% static 'website/js/isotope/isotope-filterBar.js' %}?version=2"></script>
     <script src="{% static 'website/js/isotope/isotope-filtering.js' %}"></script>
     <script src="{% static '/website/js/isotope.pkgd.min.js' %}"></script>
->>>>>>> Stashed changes
 {% endblock %}
 
 {% block maincarousel %}
@@ -76,9 +73,6 @@
 {% endblock %}
 
 {% block content %}
-<<<<<<< Updated upstream
-    <div id="content" class="container" data-spy="scroll" data-target="#navbar-scroll" data-offset="50">
-=======
     <div class="isotope_data">
         <div class= "isotope_data_container" id="isotope_data_container_current_members" style="display:none">
             sortFilterContainer(.sortingAndFiltering,str)
@@ -112,7 +106,6 @@
 
 
     <div id="content" class="container" data-spy="scroll" data-target="#navbar-scroll" data-offset="50" style="width:100%">
->>>>>>> Stashed changes
         <div class="navbar navbar-filter" role="navigation">
             <ol class="navbar-right breadcrumb">
                 {% if current_members %}
@@ -125,28 +118,6 @@
                     <li><a href="#pastcollaborators" class="scroll">Past Collaborators</a></li> {% endif %}
             </ol>
         </div>
-
-<<<<<<< Updated upstream
-        <h1 name="currentteam" style="margin-top:0">Current Team</h1>
-        <div class="row main-content">
-            {# TODO: Shiven, this h4 subheader is what we will want to change into isotope filter #}
-            <h4>{{ map_status_to_subheader|get_item:"Current Member" }}</h4>
-            {# We use reusable templates here to cut down on code redundancy #}
-            {# See: https://docs.djangoproject.com/en/dev/ref/templates/builtins/#include #}
-            {% include "snippets/display_people_snippet.html" with member_status="Current Member" %}
-        </div>
-
-        <h1 name="alumni">Alumni</h1>
-        <div class="row main-content">
-            <h4>{{ map_status_to_subheader|get_item:"Past Member" }}</h4>
-            {% include "snippets/display_people_snippet.html" with member_status="Past Member" %}
-        </div>
-
-        <h1 name="collaborators">Current Collaborators</h1>
-        <div class="row main-content">
-            <h4>{{ map_status_to_subheader|get_item:"Current Collaborator" }}</h4>
-            {% include "snippets/display_people_snippet.html" with member_status="Current Collaborator" %}
-=======
 
         <div class="content" style="width:100%">
             <h1 class= "currentteam" name="currentteam" style="margin-top:0">Current Team</h1>
@@ -165,7 +136,6 @@
         <div class = "grid_current_members">
             {% include "snippets/display_people_snippet.html" with member_status="Current Member" %}
         </div>
-
 
         <div class="content" style="width:100%">
             <h1 class= "alumni" name="alumni">Alumni</h1>
@@ -192,19 +162,11 @@
                     <a name="None">all</a>
                 </div>
             </div>
-
->>>>>>> Stashed changes
         </div>
-         <div class = "grid_collaborators" style="width:100%">
+        <div class = "grid_collaborators" style="width:100%">
              {% include "snippets/display_people_snippet.html" with member_status="Current Collaborator" %}
-         </div>
+        </div>
 
-
-<<<<<<< Updated upstream
-        <h1 name="pastcollaborators">Past Collaborators</h1>
-        <div class="row main-content">
-            <h4>{{ map_status_to_subheader|get_item:"Past Collaborator" }}</h4>
-=======
         <div class="content" style="width:100%">
             <h1 class= "pastcollaborators" name="pastcollaborators">Past Collaborators</h1>
             <div id="filterBar_Past_Collaborators">
@@ -218,7 +180,6 @@
         </div>
 
         <div class = "grid_past_collaborators">
->>>>>>> Stashed changes
             {% include "snippets/display_people_snippet.html" with member_status="Past Collaborator" %}
         </div>
     </div>

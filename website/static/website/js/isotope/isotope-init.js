@@ -7,7 +7,6 @@
  * Contains helper functions for other filtering/sorting related logic.
  */
 
-
 var isotope_data_container_class = '.isotope_data_container';
 
 var allIsotopeProperties = [];

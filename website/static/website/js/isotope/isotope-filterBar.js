@@ -25,11 +25,11 @@ function isotopeFilterBarInit(){
         filterKeywords.push($(this).attr("name"));
     });
 
-
     //  go through each item in the grid
     $(currentIsotopeProperties['gridName'] + ' .item').each(function(){
         // get the types of headers from categories, split by ')'
         var text = $(this).find(currentIsotopeProperties['sortFilterDataContainer'])[0].textContent;
+
         var textSplit = text.split(')');
         // go through textSplit, only create headers that are unique and not empty
         for(var i = 0; i < textSplit.length; i++) {
@@ -51,7 +51,6 @@ function offset(el) {
     scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     return { top: rect.top + scrollTop, left: rect.left + scrollLeft }
 }
-
 // handles the onclick for filter bar
 function handleFilterBarClick(e)
 {
