@@ -6,7 +6,11 @@
 {% for title in sorted_titles %}
     {% if map_status_to_title_to_people|get_item:member_status and map_status_to_title_to_people|get_item:member_status|get_item:title %}
         {% for member in map_status_to_title_to_people|get_item:member_status|get_item:title %}
+<<<<<<< Updated upstream
             <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
+=======
+            <div class="item" name="member" style="background:white; margin: 10px; width: 240px; height:400px; object-fit: contain">
+>>>>>>> Stashed changes
                 <a href="{% url 'website:member' member.person.url_name %}">
                     <div class="easter-egg-col">
                         <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}"
@@ -26,6 +30,17 @@
                     {{ member.department }}<br/>
                     {{ member.school }}
                 </div>
+<<<<<<< Updated upstream
+=======
+                <div class="sortingAndFiltering" style="display:none">
+                    <!-- special case for professors since each type of prof does not get their own category -->
+                    {% if  "Professor" in member|title %}
+                        Professor()
+                    {% else %}
+                        {{ member.title }}()
+                    {% endif %}
+                </div>
+>>>>>>> Stashed changes
             </div>
         {% endfor %}
     {% endif %}
