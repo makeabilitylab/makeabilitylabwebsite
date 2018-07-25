@@ -1,0 +1,11 @@
+<!-- From: https://stackoverflow.com/questions/34959897/set-favicon-in-django-admin -->
+{% extends "admin/base.html" %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrahead %}
+    <link rel="icon" href="{{STATIC_URL}}website/img/favicon-32x32.png"/>
+{% endblock %}
+{% block branding %}
+    <h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></h1>
+{% endblock %}
