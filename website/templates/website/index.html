@@ -163,7 +163,7 @@
                 <!-- TODO fix the right alignment -->
                 <div class="col-xs-12 see-all-artifacts">
                     <div class="col-xs-12"></div>
-                    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 see-all-artifacts pull-right see-all-artifacts">
+                    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 see-all-artifacts pull-right">
                         <a href="{% url 'website:projects' %}">See All Projects ></a>
                     </div>
                 </div>
@@ -215,7 +215,7 @@
             {% endfor %}
             <div class="col-xs-12 see-all-artifacts">
                 <div class="col-xs-12"></div>
-                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 see-all-artifacts pull-right see-all-artifacts">
+                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 see-all-artifacts pull-right">
                     <a href="{% url 'website:videos' %}" style="margin:15px">See All Videos ></a>
                 </div>
             </div>
@@ -223,7 +223,7 @@
     </div>
 
 
-    <div id="makelab-recent-papers" class="container-fluid makelab-content-container">
+    <div id="makelab-recent-papers" class="makelab-content-container">
         <h1 class="section-header">Recent Papers</h1>
         <div class="section">
             {% for pub in publications|slice:"6" %}
@@ -268,7 +268,7 @@
             {% endfor %}
             <div class="col-xs-12 see-all-artifacts">
                 <div class="col-xs-12"></div>
-                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 see-all-artifacts pull-right see-all-artifacts">
+                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 see-all-artifacts pull-right">
                     <a href="{% url 'website:publications' %}" style="margin:15px">See All Papers ></a>
                 </div>
             </div>
@@ -276,7 +276,7 @@
     </div>
 
 
-    <div id="makelab-recent-talks" class="container-fluid makelab-content-container">
+    <div id="makelab-recent-talks" class="makelab-content-container">
         <h1 class="section-header">Recent Talks</h1>
         <div class="section">
 
@@ -309,7 +309,7 @@
             {% endfor %}
             <div class="col-xs-12 see-all-artifacts">
                 <div class="col-xs-12"></div>
-                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 see-all-artifacts pull-right see-all-artifacts">
+                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 see-all-artifacts pull-right">
                     <a href="{% url 'website:talks' %}" style="margin:15px">See All Talks ></a>
                 </div>
             </div>
