@@ -49,6 +49,8 @@ research-area-icon-label{
     /*margin-left: 40px;*/
     /*margin-right: 40px;*/
     width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .no-margin {
