@@ -424,14 +424,23 @@ h5 {
 .makelab-footer-row{
 	/*margin-top: 20px;*/
 	/*margin-bottom: 20px;*/
+	max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.makelab-footer-affiliations-row{
+.makelab-footer-affiliations{
 	background-color: black; /* should be same color as navbar header */
 	padding-right: 5px;
 	padding-left: 5px;
 	padding-top: 30px;
 	padding-bottom: 30px;
+}
+
+.makelab-footer-affiliations-row{
+	max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .makelab-footer-affiliation-logo{
