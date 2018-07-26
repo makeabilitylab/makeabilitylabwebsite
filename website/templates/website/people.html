@@ -15,7 +15,7 @@
 
 {% block external_scripts %}
     <script src="{% static 'website/js/peopleHeightFix.js' %}"></script>
-    <script src="{% static 'website/js/isotope/isotope-init.js' %}?version=2"></script>
+    <script src="{% static 'website/js/isotope/isotope-init.js' %}?version=3"></script>
     <script src="{% static 'website/js/isotope/isotope-filterBar.js' %}?version=2"></script>
     <script src="{% static 'website/js/isotope/isotope-filtering.js' %}"></script>
     <script src="{% static '/website/js/isotope.pkgd.min.js' %}"></script>
@@ -127,7 +127,7 @@
                     {% for headerText in map_status_to_headers|get_item:"Current Member"|get_item:"headerText" %}
                         <a name= "{{map_header_text_to_header_name|get_item:headerText }}">{{headerText}},</a>
                     {% endfor %}
-                    <a name="None">All ({{ map_status_to_num_people|get_item:"Current Member" }})</a>
+                    <a name="None" style="font-weight:bold;">All ({{ map_status_to_num_people|get_item:"Current Member" }})</a>
                 </div>
             </div>
         </div>
@@ -144,7 +144,7 @@
                     {% for headerText in map_status_to_headers|get_item:"Past Member"|get_item:"headerText" %}
                         <a name= "{{map_header_text_to_header_name|get_item:headerText }}">{{headerText}},</a>
                     {% endfor %}
-                    <a name="None">All ({{ map_status_to_num_people|get_item:"Past Member" }})</a>
+                    <a name="None" style="font-weight:bold;">All ({{ map_status_to_num_people|get_item:"Past Member" }})</a>
                 </div>
             </div>
         </div>
@@ -159,7 +159,7 @@
                     {% for headerText in map_status_to_headers|get_item:"Current Collaborator"|get_item:"headerText" %}
                         <a name= "{{map_header_text_to_header_name|get_item:headerText }}">{{headerText}},</a>
                     {% endfor %}
-                    <a name="None">All ({{ map_status_to_num_people|get_item:"Current Collaborator" }})</a>
+                    <a name="None" style="font-weight:bold;">All ({{ map_status_to_num_people|get_item:"Current Collaborator" }})</a>
                 </div>
             </div>
         </div>
@@ -174,7 +174,7 @@
                     {% for headerText in map_status_to_headers|get_item:"Past Collaborator"|get_item:"headerText" %}
                         <a name= "{{map_header_text_to_header_name|get_item:headerText }}">{{headerText}},</a>
                     {% endfor %}
-                    <a name="None">All ({{ map_status_to_num_people|get_item:"Past Collaborator" }})</a>
+                    <a name="None" style="font-weight:bold;">All ({{ map_status_to_num_people|get_item:"Past Collaborator" }})</a>
                 </div>
             </div>
         </div>

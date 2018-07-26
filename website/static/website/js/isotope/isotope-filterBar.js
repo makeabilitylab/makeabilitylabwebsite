@@ -18,8 +18,16 @@ function isotopeFilterBarInit(){
             $(this).attr("name", $(this).text());
         }
 
-        // set the style so that we get the cursor
-        $(this).attr("style", 'cursor: pointer;font-weight:normal;');
+        // set the style so that we get the cursor, also don't modify the style of the bolding if it's already there.
+        if($(this).attr("style") !== undefined && $(this).attr("style").indexOf("font-weight:bold") !== -1)
+        {
+            $(this).attr("style", 'cursor: pointer;font-weight:bold;');
+        }
+        else
+        {
+            $(this).attr("style", 'cursor: pointer;font-weight:normal;');
+        }
+
 
         //  put this into filterKeywords
         filterKeywords.push($(this).attr("name"));
