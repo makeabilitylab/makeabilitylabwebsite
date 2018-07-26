@@ -147,7 +147,7 @@
               https://stackoverflow.com/questions/15757036/creating-a-zoom-effect-on-an-image-on-hover-using-css
     -->
 
-    <div id="makelab-recent-projects" class="container">
+    <div id="makelab-recent-projects" class="makelab-content-container">
         <h1 class="section-header" style="margin-top:25px">Recent Projects</h1>
         <div class="section">
             {% for project in projects|slice:"8" %}
@@ -191,7 +191,7 @@
 {#    </div>#}
 
     <!-- TODO: the ../../media directory should be a variable and not a constant -->
-    <div id="makelab-recent-videos" class="container-fluid makelab-content-container">
+    <div id="makelab-recent-videos" class="makelab-content-container">
         <h1 class="section-header">Recent Videos</h1>
         <div class="section">
             <!-- TODO: Consider adding age of video into display somehow -->

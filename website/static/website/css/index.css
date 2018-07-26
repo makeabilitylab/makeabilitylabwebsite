@@ -46,8 +46,9 @@ research-area-icon-label{
 }
 
 .makelab-content-container{
-    margin-left: 40px;
-    margin-right: 40px;
+    /*margin-left: 40px;*/
+    /*margin-right: 40px;*/
+    width: 1200px;
 }
 
 .no-margin {
