@@ -9,12 +9,157 @@ import datetime
 from django.utils.timezone import utc
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
+<<<<<<< HEAD
 # The Google Analytics stuff is all broken now. It was originally used to track the popularity
 # of pages, projects, and downloads. Not sure what we should do with it now.
 # from . import googleanalytics
 
 max_banners = 7  # TODO: figure out best way to specify these settings... like, is it good to have them up here?
 filter_all_pubs_prior_to_date = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
+=======
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
+from website.serializers import PersonSerializer, TalkSerializer, PublicationSerializer
+
+# from . import googleanalytics
+
+@csrf_exempt
+def person_list(request):
+    '''
+    List all code persons, or create a new person
+    :param request:
+    :return: JsonResponse
+    '''
+    if request.method == 'GET':
+        persons = Person.objects.all()
+        serializer = PersonSerializer(persons, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    elif request.method =='POST':
+        data = JSONParser().parse(request)
+        serializer = PersonSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
+@csrf_exempt
+def person_detail(request, pk):
+    """
+    Retrieve, update or delete a code snippet.
+    """
+    try:
+        person = Person.objects.get(pk=pk)
+    except Person.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        serializer = PersonSerializer(person)
+        return JsonResponse(serializer.data)
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = PersonSerializer(person, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        person.delete()
+        return HttpResponse(status=204)
+
+@csrf_exempt
+def talks_list(request):
+    '''
+    List all code talks, or create a new talks
+    :param request:
+    :return: JsonResponse
+    '''
+    if request.method == 'GET':
+        talks = Talk.objects.all()
+        serializer = TalkSerializer(talks, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    elif request.method =='POST':
+        data = JSONParser().parse(request)
+        serializer = TalkSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
+@csrf_exempt
+def talks_detail(request, pk):
+    """
+    Retrieve, update or delete a code snippet.
+    """
+    try:
+        talk = Talk.objects.get(pk=pk)
+    except Person.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        serializer = TalkSerializer(talk)
+        return JsonResponse(serializer.data)
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = TalkSerializer(talk, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
+    elif request.method == 'DELETE':
+        talk.delete()
+        return HttpResponse(status=204)\
+
+@csrf_exempt
+def pubs_list(request):
+    '''
+    List all code talks, or create a new talks
+    :param request:
+    :return: JsonResponse
+    '''
+    if request.method == 'GET':
+        pubs = Publication.objects.all()
+        serializer = PublicationSerializer(pubs, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    elif request.method =='POST':
+        data = JSONParser().parse(request)
+        serializer = PublicationSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
+@csrf_exempt
+def pubs_detail(request, pk):
+    """
+    Retrieve, update or delete a code snippet.
+    """
+    try:
+        pubs = Publication.objects.get(pk=pk)
+    except Person.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        serializer = PublicationSerializer(pubs)
+        return JsonResponse(serializer.data)
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = PublicationSerializer(pubs, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
+    elif request.method == 'DELETE':
+        pubs.delete()
+        return HttpResponse(status=204)
+
+max_banners = 7 # TODO: figure out best way to specify these settings... like, is it good to have them up here?
+filter_all_pubs_prior_to_date = datetime.date(2012, 1, 1) # Date Makeability Lab was formed
 
 
 # Every view is passed settings.DEBUG. This is used to insert the appropriate google analytics tracking when in
