@@ -114,10 +114,10 @@
         {% for n in news %}
 	    <div class="news-listing-template">
                 <div class="news-listing-image">
-                    {% if news.image %}
-                    <img src="{% thumbnail n.image 200x200 box=news.cropping crop detail %}" class="news-listing-image-image img-responsive"/>
+                    {% if n.image %}
+                        <img src="{% thumbnail n.image 200x200 box=news.cropping crop detail %}" class="news-listing-image-image img-responsive"/>
                     {% else %}
-                    <img src="{% static 'website/img/news_icon.png' %}" class="big-news-image" height="200" width="200">
+                        <img src="{% static 'website/img/news_icon.png' %}" class="big-news-image" height="200" width="200">
                     {% endif %}
                 </div>
                 <div class="news-listing-info">
@@ -127,7 +127,7 @@
                             <span class="news-listing-author-last">{{ n.short_date }}</span>
                     </p>
                     <p class="news-listing-content">
-                        <span>{{ n.content | slice:":255" }} . . . <a href="{% url 'website:news' news_id=n.id %}">[read more]</a></span>
+                        <span>{{ n.content | slice:":255" | safe}} . . . <a href="{% url 'website:news' news_id=n.id %}">[read more]</a></span>
                     </p>
                 </div>
 
