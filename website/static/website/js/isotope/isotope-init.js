@@ -85,15 +85,17 @@ $(window).load(function () {
     for(var i = 0; i < allIsotopeProperties.length; i++) (function(i){
         currentIsotopeProperties = allIsotopeProperties[i];
         init();
-        $(allIsotopeProperties[i]['sideBarContainer']).on('click', function (e) {
-            if(currentIsotopeProperties !== allIsotopeProperties[i]){
-                currentIsotopeProperties = allIsotopeProperties[i];
-                console.log("handling click");
-                init();
-            }
+        $(currentIsotopeProperties['sideBarContainer'] + ' a').each(function(idx, item){
+            $(item).on('click', function (e) {
+                if (currentIsotopeProperties !== allIsotopeProperties[i]) {
+                    currentIsotopeProperties = allIsotopeProperties[i];
+                    console.log("handling click");
+                    init();
+                }
 
-            console.log("finished init, moving to filter bar");
-            handleFilterBarClick(e);
+                console.log("finished init, moving to filter bar");
+                handleFilterBarClick(e);
+            });
         });
     })(i);
 });
