@@ -4,6 +4,8 @@
 echo "Collecting static files"
 python manage.py collectstatic --noinput
 
+#python manage.py datetodatetime
+
 # Apply database migrations
 # TODO: explore doing migration in compose yml file: https://stackoverflow.com/a/44283611
 echo "Running makemigrations and migrate"

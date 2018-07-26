@@ -5,19 +5,25 @@
 {% load staticfiles %}
 {% load thumbnail %}
 {% load cropping %}
+{% load ml_tags %}
 
 {% block stylesheets %}
 
-<link rel="stylesheet" href="{% static 'website/css/people.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/people.css' %}">
 
 {% endblock %}
 
 {% block external_scripts %}
-<script src="{% static 'website/js/peopleHeightFix.js' %}"></script>
+    <script src="{% static 'website/js/peopleHeightFix.js' %}"></script>
+    <script src="{% static 'website/js/isotope/isotope-init.js' %}?version=2"></script>
+    <script src="{% static 'website/js/isotope/isotope-filterBar.js' %}?version=2"></script>
+    <script src="{% static 'website/js/isotope/isotope-filtering.js' %}"></script>
+    <script src="{% static '/website/js/isotope.pkgd.min.js' %}"></script>
 {% endblock %}
 
 {% block maincarousel %}
-    <div id="mainCarousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="10000" data-pause="false">    
+    <div id="mainCarousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="10000"
+         data-pause="false">
         <div class="page-title shadow-left">
             <div class="container carousel-container">
                 <div class="overlay-title">People</div>
@@ -26,16 +32,17 @@
         <!-- Wrapper for slides -->
         <div class="carousel-inner" role="listbox">
             {% for banner in banners %}
-            <div class="item {% if forloop.first %}active{% endif %}">
-		{% if banner.link %}
-		<a href="{{banner.link}}">
-		    {% else %}
-		    {% if banner.project %}
-		    <a href="{% url 'website:project' banner.project.short_name %}">
-			{% endif %}
-			{% endif %}
-			<div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})" aria-label="{{ banner.alt_text }}" title="{{ banner.alt_text }}"></div>
-			<!-- <div class="overlay">
+                <div class="item {% if forloop.first %}active{% endif %}">
+                    {% if banner.link %}
+                        <a href="{{ banner.link }}">
+                    {% else %}
+                        {% if banner.project %}
+                            <a href="{% url 'website:project' banner.project.short_name %}">
+                        {% endif %}
+                    {% endif %}
+                    <div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})"
+                         aria-label="{{ banner.alt_text }}" title="{{ banner.alt_text }}"></div>
+                    <!-- <div class="overlay">
 			     <div class="container carousel-container">
                              <div class="carousel-caption carousel-caption-right">
                              {% autoescape off %} {# enable HTML tags #}
@@ -49,294 +56,131 @@
                              </div>
 			     </div>
 			     </div> -->
-			{% if banner.link %}</a>{% endif %}
-		    {% if banner.project %}
-		</a>
-		{% endif %}
-            </div>
+                    {% if banner.link %}</a>{% endif %}
+                    {% if banner.project %}
+                        </a>
+                    {% endif %}
+                </div>
             {% endfor %}
         </div>
         <ol class="carousel-indicators"  {% if banners|length < 2 %} style="display: none" {% endif %}>
-          {% for banner in banners %}
-          <li data-target="#mainCarousel" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
-          {% endfor %}
-       </ol>
+            {% for banner in banners %}
+                <li data-target="#mainCarousel" data-slide-to="{{ forloop.counter0 }}"
+                    {% if forloop.first %}class="active"{% endif %}></li>
+            {% endfor %}
+        </ol>
     </div>
 {% endblock %}
 
 {% block content %}
-<div id="content" class="container" data-spy="scroll" data-target="#navbar-scroll" data-offset="50">
-    <div class="navbar navbar-filter" role="navigation">
-        <ol class="navbar-right breadcrumb">
-            {% if active_prof_grad %}<li><a href="#profgrad" class="scroll">Professor and Graduate Students</a></li> {% endif %}
-            {% if active_undergrad %}<li><a href="#undergrad" class="scroll">Undergraduate Students</a></li> {% endif %}
-            {% if active_highschool %}<li><a href="#highschool" class="scroll">High School Students</a></li> {% endif %}
-            {% if alumni_members %}<li><a href="#alumni" class="scroll">Alumni</a></li> {% endif %}
-            {% if cur_collaborators %}<li><a href="#collaborators" class="scroll">Collaborators</a></li> {% endif %}
-            {% if past_collaborators %}<li><a href="#pastcollaborators" class="scroll">Past Collaborators</a></li> {% endif %}
-        </ol>
+    <div class="isotope_data">
+        <div class= "isotope_data_container" id="isotope_data_container_current_members" style="display:none">
+            sortFilterContainer(.sortingAndFiltering,str)
+            gridName(.grid_current_members,str)
+            filteringKeywordContainer(#filterKeywords_Current_Members,str)
+            sideBarContainer(#filterBar_Current_Members,str)
+            scrollTop(.currentteam,str)
+        </div>
+        <div class= "isotope_data_container" id="isotope_data_container_alumni" style="display:none">
+            sortFilterContainer(.sortingAndFiltering,str)
+            gridName(.grid_alumni,str)
+            filteringKeywordContainer(#filterKeywords_Alumni,str)
+            sideBarContainer(#filterBar_Alumni,str)
+            scrollTop(.alumni,str)
+        </div>
+        <div class= "isotope_data_container" id="isotope_data_container_collaborators" style="display:none">
+            sortFilterContainer(.sortingAndFiltering,str)
+            gridName(.grid_collaborators,str)
+            filteringKeywordContainer(#filterKeywords_Collaborators,str)
+            sideBarContainer(#filterBar_Collaborators,str)
+            scrollTop(.collaborators,str)
+        </div>
+        <div class= "isotope_data_container" id="isotope_data_container_past_collaborators" style="display:none">
+            sortFilterContainer(.sortingAndFiltering,str)
+            gridName(.grid_past_collaborators,str)
+            filteringKeywordContainer(#filterKeywords_Past_Collaborators,str)
+            sideBarContainer(#filterBar_Past_Collaborators,str)
+            scrollTop(.pastcollaborators,str)
+        </div>
     </div>
-    {% if active_prof_grad %}
-        {#  To get the length of a list in a template, use | length. #}
-        {#      See: http://stackoverflow.com/questions/13138859/django-length-of-a-list #}
-        <h1 name="profgrad" style="margin-top:0">Professor and Graduate Students</h1>
-        <h4>
-            {# TODO: the comma handling here should be applied to all other parts of the page that count people #}
-            {{ active_prof|length }} Prof
-            {% if active_postdoc or active_phd or active_ms%}, {% endif %}
-            {% if active_postdoc %} {{ active_postdoc|length }} Postdoc{% endif %}
-            {% if active_phd or active_ms%}, {% endif %}
-            {% if active_phd %} {{ active_phd|length }} PhD{% endif %}
-            {% if active_ms%}, {% endif %}
-            {% if active_ms %} {{ active_ms|length }} MS{% endif %}
-        </h4>
-        <div class="row main-content">
-            {% for member in active_prof_grad %}
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-                    <a href="{% url 'website:member' member.person.id %}">
-			<div class="easter-egg-col">
-			    <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			    <div class="overlay-easter-egg">
-				<img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail upscale %}" class="img-responsive">
-			    </div>
-			</div>
-                    </a>
-                    <div class="item-info">
-                        <a href="{% url 'website:member' member.person.id %}">
-                            <h5>{{ member.person.get_full_name }}</h5>
-                        </a>
-			{{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-                        {{ member.title }}<br/>
-			{{ member.department }}
-                        <br/>
-                        {{ member.school }}
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-        {% if active_undergrad or active_highschool or alumni_members or cur_collaborators or past_collaborators %}<hr>{% endif %}
-    {% endif %}
-    {% if active_undergrad %}
-        <h1 name="undergrad">Undergraduate Students</h1>
-        <h4>{{ active_undergrad|length}} Undergrad</h4>
-        <div class="row main-content">
-            {% for member in active_undergrad %}
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-                    <a href="{% url 'website:member' member.person.id %}">
-                        <div class="easter-egg-col">
-			    <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			    <div class="overlay-easter-egg">
-				<img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail upscale %}" class="img-responsive">
-			    </div>
-			</div>
-                    </a>
-                    <div class="item-info">
-                        <a href="{% url 'website:member' member.person.id %}">
-                            <h5>{{ member.person.get_full_name }}</h5>
-                        </a>
-			{{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-                        {{ member.title }}<br/>
-			{{ member.department}}
-                        <br/>
-                        {{ member.school }}
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-        {% if active_highschool or alumni_members or cur_collaborators or past_collaborators %}<hr>{% endif %}
-    {% endif %}
-    {% if active_highschool %}
-        <h1 name="highschool">High School Students</h1>
-        <h4>{{ active_highschool|length}} HS</h4>
-        <div class="row main-content">
-            {% for member in active_highschool %}
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-                    <a href="{% url 'website:member' member.person.id %}">
-                        <div class="easter-egg-col">
-			    <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			    <div class="overlay-easter-egg">
-				<img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail upscale %}" class="img-responsive">
-			    </div>
-			</div>
-                    </a>
-                    <div class="item-info">
-                        <a href="{% url 'website:member' member.person.id %}">
-                            <h5>{{ member.person.get_full_name }}</h5>
-                        </a>
-			{{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-                        {{ member.title }}
-                        <br/>
-                        {{ member.school }}
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-        {% if alumni_members or cur_collaborators or past_collaborators %}<hr>{% endif %}
-	{% endif %}
-	{% if alumni_members %}
-        <h1 name="alumni">Alumni ({{alumni_members|length}})</h1>
-	<div class="navbar navbar-filter" role="navigation">
-            <ol class="navbar-left breadcrumb alumni-navbar">
-		{% if alumni_prof_grad %}<li><a href="#alumniprofgrad" class="scroll">Professor and Graduate Students</a></li> {% endif %}
-		{% if alumni_undergrad %}<li><a href="#alumniundergrad" class="scroll">Undergraduate Students</a></li> {% endif %}
-		{% if alumni_highschool %}<li><a href="#alumnihighschool" class="scroll">High School Students</a></li> {% endif %}
+
+
+    <div id="content" class="container" data-spy="scroll" data-target="#navbar-scroll" data-offset="50" style="width:100%">
+        <div class="navbar navbar-filter" role="navigation">
+            <ol class="navbar-right breadcrumb">
+                {% if current_members %}
+                    <li><a href="#currentteam" class="scroll">Current Team</a></li> {% endif %}
+                {% if alumni_members %}
+                    <li><a href="#alumni" class="scroll">Alumni</a></li> {% endif %}
+                {% if cur_collaborators %}
+                    <li><a href="#collaborators" class="scroll">Collaborators</a></li> {% endif %}
+                {% if past_collaborators %}
+                    <li><a href="#pastcollaborators" class="scroll">Past Collaborators</a></li> {% endif %}
             </ol>
-	</div>
-	{%endif%}
-	{% if alumni_prof_grad %}
-	<h4 name="alumniprofgrad">{% if alumni_prof %}{{ alumni_prof|length }} Prof, {% endif %}
-            {% if alumni_postdoc %} {{ alumni_postdoc|length }} Postdoc, {% endif %}
-            {% if alumni_phd %} {{ alumni_phd|length }} PhD{% if alumni_ms %}, {% endif %} {% endif %}
-            {% if alumni_ms %} {{ alumni_ms|length }} MS{% endif %}
-        </h4>
-	<div class="row main-content">
-	{% for member in alumni_prof_grad %}
-	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-                <a href="{% url 'website:member' member.person.id %}">
-                    <div class="easter-egg-col">
-			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			<div class="overlay-easter-egg">
-			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail upscale %}" class="img-responsive">
-			</div>
-		    </div>
-                </a>
-                <div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}">
-                        <h5>{{ member.person.get_full_name }}</h5>
-                    </a>
-		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-                    {{ member.title }}
-		    {% if member.is_high_school %}{% else %}<br/>
-		    {{ member.department }}
-		    {% endif %}
-                    <br/>
-                    {{ member.school }}
+        </div>
+
+        <div class="content" style="width:100%">
+            <h1 class= "currentteam" name="currentteam" style="margin-top:0">Current Team</h1>
+            {# TODO: Shiven, this h4 subheader is what we will want to change into isotope filter #}
+            <div id="filterBar_Current_Members">
+                <div id="filterKeywords_Current_Members">
+                    {% for headerText in map_status_to_headers|get_item:"Current Member"|get_item:"headerText" %}
+                        <a name= "{{map_header_text_to_header_name|get_item:headerText }}">{{headerText}},</a>
+                    {% endfor %}
+                    <a name="None">All ({{ map_status_to_num_people|get_item:"Current Member" }})</a>
                 </div>
             </div>
-            {% endfor %}
         </div>
-	<hr/>
-	{% endif %}
-	{% if alumni_undergrad %}
-	<h4 name="alumniundergrad">{% comment %}{% if alumni_undergrad|length > 1 %} Alumni {% else %} Alumnus {% endif %}{% endcomment %} Undergraduate Students ({{alumni_undergrad|length}})</h4>
-	<div class="row main-content">
-	    {% for member in alumni_undergrad %}
-	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-                <a href="{% url 'website:member' member.person.id %}">
-                    <div class="easter-egg-col">
-			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			<div class="overlay-easter-egg">
-			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail upscale %}" class="img-responsive">
-			</div>
-		    </div>
-                </a>
-                <div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}">
-                        <h5>{{ member.person.get_full_name }}</h5>
-                    </a>
-		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-                    {{ member.title }}
-		    {% if member.is_high_school %}{% else %}<br/>
-		    {{ member.department }}
-		    {% endif %}
-                    <br/>
-                    {{ member.school }}
+        {# We use reusable templates here to cut down on code redundancy #}
+        {# See: https://docs.djangoproject.com/en/dev/ref/templates/builtins/#include #}
+        <div class = "grid_current_members">
+            {% include "snippets/display_people_snippet.html" with member_status="Current Member" %}
+        </div>
+
+        <div class="content" style="width:100%">
+            <h1 class= "alumni" name="alumni">Alumni</h1>
+            <div id="filterBar_Alumni">
+                <div id="filterKeywords_Alumni">
+                    {% for headerText in map_status_to_headers|get_item:"Past Member"|get_item:"headerText" %}
+                        <a name= "{{map_header_text_to_header_name|get_item:headerText }}">{{headerText}},</a>
+                    {% endfor %}
+                    <a name="None">All ({{ map_status_to_num_people|get_item:"Past Member" }})</a>
                 </div>
             </div>
-            {% endfor %}
         </div>
-	<hr/>
-	{% endif %}
-	{% if alumni_highschool %}
-	<h4 name="alumnihighschool">{% comment %}{% if alumni_highschool|length > 1 %} Alumni {% else %} Alumnus {% endif %}{% endcomment %} Highschool Students ({{alumni_highschool|length}})</h4>
-	<div class="row main-content">
-	    {% for member in alumni_highschool %}
-	    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-                <a href="{% url 'website:member' member.person.id %}">
-                    <div class="easter-egg-col">
-			<img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			<div class="overlay-easter-egg">
-			    <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail upscale %}" class="img-responsive">
-			</div>
-		    </div>
-                </a>
-                <div class="item-info">
-                    <a href="{% url 'website:member' member.person.id %}">
-                        <h5>{{ member.person.get_full_name }}</h5>
-                    </a>
-		    {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-                    {{ member.title }}
-		    {% if member.is_high_school %}{% else %}<br/>
-		    {{ member.department }}
-		    {% endif %}
-                    <br/>
-                    {{ member.school }}
+        <div class = "grid_alumni">
+            {% include "snippets/display_people_snippet.html" with member_status="Past Member" %}
+        </div>
+
+        <div class="content" style="width:100%">
+            <h1 class= "collaborators" name="collaborators">Current Collaborators</h1>
+            <div id="filterBar_Collaborators">
+                <div id="filterKeywords_Collaborators">
+                    {% for headerText in map_status_to_headers|get_item:"Current Collaborator"|get_item:"headerText" %}
+                        <a name= "{{map_header_text_to_header_name|get_item:headerText }}">{{headerText}},</a>
+                    {% endfor %}
+                    <a name="None">All ({{ map_status_to_num_people|get_item:"Current Collaborator" }})</a>
                 </div>
             </div>
-            {% endfor %}
         </div>
-	<hr/>
-	{% endif %}
-    {% if cur_collaborators %}
-        <h1 name="collaborators">Collaborators</h1>
-        <h4>{{ cur_collaborators|length}} {% if cur_collaborators|length > 1 %} Collaborators {% else %} Collaborator {% endif %}</h4>
-        <div class="row main-content">
-            {% for collaborator in cur_collaborators %}
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-                    <a href="{% url 'website:member' collaborator.person.id %}">
-                        <div class="easter-egg-col">
-			    <img src="{% thumbnail collaborator.person.image 245x245 box=collaborator.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			    <div class="overlay-easter-egg">
-				<img src="{% thumbnail collaborator.person.easter_egg 245x245 box=collaborator.person.easter_egg_crop crop detail upscale %}" class="img-responsive">
-			    </div>
-			</div>
-                    </a>
-                    <div class="item-info">
-                        <a href="{% url 'website:member' collaborator.person.id %}">
-                            <h5>{{ collaborator.person.get_full_name }}</h5>
-                        </a>
-			{{collaborator.get_start_date_short}} - {{collaborator.get_end_date_short}}<br/>
-                        {{ collaborator.title }}
-			{% if collaborator.is_high_school %}{% else %}<br/>
-			{{ collaborator.department}}
-			{% endif %}
-                        <br/>
-                        {{ collaborator.school }}
-                    </div>
+        <div class = "grid_collaborators" style="width:100%">
+             {% include "snippets/display_people_snippet.html" with member_status="Current Collaborator" %}
+        </div>
+
+        <div class="content" style="width:100%">
+            <h1 class= "pastcollaborators" name="pastcollaborators">Past Collaborators</h1>
+            <div id="filterBar_Past_Collaborators">
+                <div id="filterKeywords_Past_Collaborators">
+                    {% for headerText in map_status_to_headers|get_item:"Past Collaborator"|get_item:"headerText" %}
+                        <a name= "{{map_header_text_to_header_name|get_item:headerText }}">{{headerText}},</a>
+                    {% endfor %}
+                    <a name="None">All ({{ map_status_to_num_people|get_item:"Past Collaborator" }})</a>
                 </div>
-            {% endfor %}
+            </div>
         </div>
-        {% if past_collaborators %}<hr>{% endif %}
-    {% endif %}
-    {% if past_collaborators %}
-        <h1 name="pastcollaborators">Past Collaborators</h1>
-        <h4>{{ past_collaborators|length}} {% if past_collaborators|length > 1 %} Collaborators {% else %} Collaborator {% endif %}</h4>
-        <div class="row main-content">
-            {% for collaborator in past_collaborators %}
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-                    <a href="{% url 'website:member' collaborator.person.id %}">
-                        <div class="easter-egg-col">
-			    <img src="{% thumbnail collaborator.person.image 245x245 box=collaborator.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-			    <div class="overlay-easter-egg">
-				<img src="{% thumbnail collaborator.person.easter_egg 245x245 box=collaborator.person.easter_egg_crop crop detail upscale %}" class="img-responsive">
-			    </div>
-			</div>
-                    </a>
-                    <div class="item-info">
-                        <a href="{% url 'website:member' collaborator.person.id %}">
-                            <h5>{{ collaborator.person.get_full_name }}</h5>
-                        </a>
-			{{collaborator.get_start_date_short}} - {{collaborator.get_end_date_short}}<br/>
-                        {{ collaborator.title }}
-			{% if collaborator.is_high_school %}{% else %}<br/>
-			{{ collaborator.department }}
-			{% endif %}
-                        <br/>
-                        {{ collaborator.school }}
-                    </div>
-                </div>
-            {% endfor %}
+
+        <div class = "grid_past_collaborators">
+            {% include "snippets/display_people_snippet.html" with member_status="Past Collaborator" %}
         </div>
-    {% endif %}
-</div>
+    </div>
 {% endblock %}

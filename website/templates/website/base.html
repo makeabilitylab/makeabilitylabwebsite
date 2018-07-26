@@ -10,6 +10,8 @@
     {% load staticfiles %}
     {% load cropping %}
 
+    <link rel="shortcut icon" href="{% static 'website/img/ml-favicon.png' %}" />
+
     <!-- Load some fonts -->
     <!-- Raleway: https://fonts.google.com/specimen/Raleway -->
 {#    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />#}
@@ -115,9 +117,9 @@
     {% block navbar %}
         <!-- Navigation -->
         <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+            <div class="container" style="height:50px; width:100%; object-fit: contain">
+                <div class="navbar-header" style="height:50px; width:100%; object-fit: contain">
+                    <button style="float:right" type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
                         <i class="fa fa-bars"></i>
                     </button>
                     <a class="navbar-brand page-scroll" href="{% url 'website:index' %}">
@@ -128,23 +130,29 @@
 
                         <div class="lab-text"><span style="font-family: roboto-bold; margin-left: 2px;">Make</span>ability</span> Lab</div>
                     </a>
+
+                     <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+                        <ul class="nav navbar-nav">
+                            <!-- To automatically highlight active links, I followed this code:
+                             http://stackoverflow.com/a/29495310 -->
+                            {% with request.resolver_match.url_name as url_name %}
+                                <li class="{% if url_name == 'index' %}active{% endif %}"><a href="{% url 'website:index' %}">Home</a></li>
+                                <li class="{% if url_name == 'people' %}active{% endif %}"><a href="{% url 'website:people' %}">People</a></li>
+                                <li class="{% if url_name == 'projects' %}active{% endif %}"><a href="{% url 'website:projects' %}">Projects</a></li>
+                                <li class="{% if url_name == 'news_listing' %}active{% endif %}"><a href="{% url 'website:news_listing' %}">News</a></li>
+                                <li class="{% if url_name == 'publications' %}active{% endif %}"><a href="{% url 'website:publications' %}">Publications</a></li>
+                                <li class="{% if url_name == 'talks' %}active{% endif %}"><a href="{% url 'website:talks' %}">Talks</a></li>
+                                <li class="{% if url_name == 'videos' %}active{% endif %}"><a href="{% url 'website:videos' %}">Videos</a></li>
+                            {% endwith %}
+                        </ul>
+                     </div>
+
                 </div>
 
                 <!-- Collect the nav links, forms, and other content for toggling -->
-                <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
-                    <ul class="nav navbar-nav">
-                        <!-- To automatically highlight active links, I followed this code:
-                         http://stackoverflow.com/a/29495310 -->
-                        {% with request.resolver_match.url_name as url_name %}
-                            <li class="{% if url_name == 'index' %}active{% endif %}"><a href="{% url 'website:index' %}">Home</a></li>
-                            <li class="{% if url_name == 'people' %}active{% endif %}"><a href="{% url 'website:people' %}">People</a></li>
-			                <li class="{% if url_name == 'projects' %}active{% endif %}"><a href="{% url 'website:projects' %}">Projects</a></li>
-                            <li class="{% if url_name == 'publications' %}active{% endif %}"><a href="{% url 'website:publications' %}">Publications</a></li>
-                            <li class="{% if url_name == 'talks' %}active{% endif %}"><a href="{% url 'website:talks' %}">Talks</a></li>
-                            <li class="{% if url_name == 'videos' %}active{% endif %}"><a href="{% url 'website:videos' %}">Videos</a></li>
-                        {% endwith %}
-                    </ul>
-                </div>
+
+
+
                 <!-- /.navbar-collapse -->
             </div>
             <!-- /.container -->
@@ -413,13 +421,13 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="jonf@cs.uw.edu">
+                                    <a href="mailto:jonf@cs.uw.edu">
                                         <!--<img src="{% static 'website/img/logos/email_logo_white.png' %}" class="makelab-footer-connect-logo"/> Email-->
                                         <i class="fa fa-2x fa-envelope w3-hover-opacity"></i>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="jonf@cs.uw.edu">
+                                    <a href="https://github.com/jonfroehlich/makeabilitylabwebsite">
                                         <!--<img src="{% static 'website/img/logos/github_logo_white.png' %}" class="makelab-footer-connect-logo"/> Github -->
 
                                         <i class="fa fa-2x fa-github-square w3-hover-black"></i>
@@ -434,12 +442,19 @@
                     {# To add news dynamically, we need to use a context processor. See our custom process in context_processors.py #}
                     {# See: https://stackoverflow.com/questions/36093221/how-to-put-variable-from-database-into-base-html-template #}
 
-                    <ul>
                     {% for news_item in recent_news %}
-                        {#  Date formats here: https://docs.djangoproject.com/en/1.11/ref/templates/builtins/#std:templatefilter-date #}
-                        <li><a href="{% url 'website:news' news_item.id %}">{{ news_item.date|date:"N d, Y" }} &nbsp;&nbsp;&nbsp; {{ news_item.title }}</a></li>
+                        <div class="row">
+                            <a href="{% url 'website:news' news_item.id %}">
+                                <div class="col-xs-4" style="white-space:nowrap;">
+				    {#  Date formats here: https://docs.djangoproject.com/en/1.11/ref/templates/builtins/#std:templatefilter-date #}	
+                                    <p>{{ news_item.date|date:"N d, Y" }}</p>
+                                </div>
+                                <div class="col-xs-8">
+                                    <p class= "line-clamp">{{ news_item.title }}</p>
+                                </div>
+                            </a>
+                        </div>
                     {% endfor %}
-                    </ul>
 
                 </div>
 
@@ -451,6 +466,7 @@
                             <li class="{% if url_name == 'index' %}active{% endif %}"><a href="{% url 'website:index' %}"> &nbsp;> &nbsp; Home</a></li>
     {#                        <li>About Us</li>#}
                             <li class="{% if url_name == 'people' %}active{% endif %}"><a href="{% url 'website:people' %}">&nbsp;> &nbsp; People</a></li>
+                            <li class="{% if url_name == 'news_listing' %}active{% endif %}"><a href="{% url 'website:news_listing' %}">&nbsp;> &nbsp; News</a></li>
     {#                  <li class="{% if url_name == 'projects' %}active{% endif %}"><a href="{% url 'website:projects' %}">&nbsp;> &nbsp; Projects</a></li>#}
                             <li class="{% if url_name == 'publications' %}active{% endif %}"><a href="{% url 'website:publications' %}">&nbsp;> &nbsp; Publications</a></li>
                             <li class="{% if url_name == 'talks' %}active{% endif %}"><a href="{% url 'website:talks' %}">&nbsp;> &nbsp; Talks</a></li>

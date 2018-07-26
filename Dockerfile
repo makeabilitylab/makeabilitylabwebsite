@@ -16,8 +16,7 @@
 FROM python:3
 
 # Setup some other prereqs needed:
-RUN apt-get update
-RUN apt-get --assume-yes install imagemagick ghostscript sqlite3 
+RUN apt-get update && apt-get --assume-yes install imagemagick ghostscript sqlite3 
 
 # The ENV instruction sets the environment variable <key> to the <value> in ENV <key> <value>. 
 # See: https://docs.docker.com/engine/reference/builder/#environment-replacement
