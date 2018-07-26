@@ -105,7 +105,7 @@
     </div>
 
 
-    <div id="content" class="container" data-spy="scroll" data-target="#navbar-scroll" data-offset="50" style="width:100%">
+    <div id="content" class="container" data-spy="scroll" data-target="#navbar-scroll" data-offset="50" style="width:100%; max-width: 1170px">
         <div class="navbar navbar-filter" role="navigation">
             <ol class="navbar-right breadcrumb">
                 {% if current_members %}
@@ -122,7 +122,7 @@
         <div class="content" style="width:100%">
             <h1 class= "currentteam" name="currentteam" style="margin-top:0">Current Team</h1>
             {# TODO: Shiven, this h4 subheader is what we will want to change into isotope filter #}
-            <div id="filterBar_Current_Members">
+            <div id="filterBar_Current_Members" style="margin-bottom: 7px">
                 <div id="filterKeywords_Current_Members">
                     {% for headerText in map_status_to_headers|get_item:"Current Member"|get_item:"headerText" %}
                         <a name= "{{map_header_text_to_header_name|get_item:headerText }}">{{headerText}},</a>
@@ -139,7 +139,7 @@
 
         <div class="content" style="width:100%">
             <h1 class= "alumni" name="alumni">Alumni</h1>
-            <div id="filterBar_Alumni">
+            <div id="filterBar_Alumni" style="margin-bottom: 7px">
                 <div id="filterKeywords_Alumni">
                     {% for headerText in map_status_to_headers|get_item:"Past Member"|get_item:"headerText" %}
                         <a name= "{{map_header_text_to_header_name|get_item:headerText }}">{{headerText}},</a>
@@ -154,7 +154,7 @@
 
         <div class="content" style="width:100%">
             <h1 class= "collaborators" name="collaborators">Current Collaborators</h1>
-            <div id="filterBar_Collaborators">
+            <div id="filterBar_Collaborators" style="margin-bottom: 7px">
                 <div id="filterKeywords_Collaborators">
                     {% for headerText in map_status_to_headers|get_item:"Current Collaborator"|get_item:"headerText" %}
                         <a name= "{{map_header_text_to_header_name|get_item:headerText }}">{{headerText}},</a>
@@ -169,7 +169,7 @@
 
         <div class="content" style="width:100%">
             <h1 class= "pastcollaborators" name="pastcollaborators">Past Collaborators</h1>
-            <div id="filterBar_Past_Collaborators">
+            <div id="filterBar_Past_Collaborators" style="margin-bottom: 7px">
                 <div id="filterKeywords_Past_Collaborators">
                     {% for headerText in map_status_to_headers|get_item:"Past Collaborator"|get_item:"headerText" %}
                         <a name= "{{map_header_text_to_header_name|get_item:headerText }}">{{headerText}},</a>
