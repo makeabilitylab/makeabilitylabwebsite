@@ -171,7 +171,7 @@ class PublicationAdmin(admin.ModelAdmin):
         elif db_field.name == "project_umbrellas":
             kwargs["widget"] = widgets.FilteredSelectMultiple("project umbrellas", is_stacked=False)
         elif db_field.name == "keywords":
-            kwargs["widget"] = widgets.FilteredSelectMultiple("projects", is_stacked=False)
+            kwargs["widget"] = widgets.FilteredSelectMultiple("keywords", is_stacked=False)
         return super(PublicationAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
     # Uncomment this function to enable auto-entry from bibtex

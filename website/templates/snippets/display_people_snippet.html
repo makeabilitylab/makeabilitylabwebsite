@@ -6,7 +6,7 @@
 {% for title in sorted_titles %}
     {% if map_status_to_title_to_people|get_item:member_status and map_status_to_title_to_people|get_item:member_status|get_item:title %}
         {% for member in map_status_to_title_to_people|get_item:member_status|get_item:title %}
-            <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
+            <div class="item" name="member" style="background:white; margin-right: 15px; width: 210px; height:391px; object-fit: contain">
                 <a href="{% url 'website:member' member.person.url_name %}">
                     <div class="easter-egg-col">
                         <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}"
@@ -17,7 +17,7 @@
                         </div>
                     </div>
                 </a>
-                <div class="item-info">
+                <div class="item-info" style="background:white">
                     <a href="{% url 'website:member' member.person.url_name %}">
                         <h5>{{ member.person.get_full_name }}</h5>
                     </a>
@@ -25,6 +25,14 @@
                     {{ member.title }}<br/>
                     {{ member.department }}<br/>
                     {{ member.school }}
+                </div>
+                <div class="sortingAndFiltering" style="display:none">
+                    <!-- special case for professors since each type of prof does not get their own category -->
+                    {% if  "Professor" in member|title %}
+                        Professor()
+                    {% else %}
+                        {{ member.title }}()
+                    {% endif %}
                 </div>
             </div>
         {% endfor %}

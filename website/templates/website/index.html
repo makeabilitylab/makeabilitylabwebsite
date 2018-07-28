@@ -146,12 +146,12 @@
               https://codepen.io/Remedy/pen/ZYJrpp
               https://stackoverflow.com/questions/15757036/creating-a-zoom-effect-on-an-image-on-hover-using-css
     -->
-    <!-- TODO: add in a "more..." somewhere--maybe underneat the section header, maybe after last row centered -->
-    <div id="makelab-recent-projects" class="container-fluid makelab-content-container">
+
+    <div id="makelab-recent-projects" class="makelab-content-container">
         <h1 class="section-header" style="margin-top:25px">Recent Projects</h1>
         <div class="section">
             {% for project in projects|slice:"8" %}
-                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project-column">
+                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project-column" style="margin-bottom:20px">
                         <a href="{% url 'website:project' project.short_name %}"></a>
                          <div style="background: black; width:100%; height: 180px; contain: content;">
                              <img style="width:100%; height: auto; position: relative;top: 50%; left: 50%;transform: translate(-50%,-50%);object-fit: cover" src="{% thumbnail project.gallery_image "300x180" crop="center" %}">
@@ -162,7 +162,10 @@
             <div class="row justify-content-end">
                 <!-- TODO fix the right alignment -->
                 <div class="col-xs-12 see-all-artifacts">
-                    <a href="{% url 'website:projects' %}">See All Projects ></a>
+                    <div class="col-xs-12"></div>
+                    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 see-all-artifacts pull-right">
+                        <a href="{% url 'website:projects' %}">See All Projects ></a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -188,7 +191,7 @@
 {#    </div>#}
 
     <!-- TODO: the ../../media directory should be a variable and not a constant -->
-    <div id="makelab-recent-videos" class="container-fluid makelab-content-container">
+    <div id="makelab-recent-videos" class="makelab-content-container">
         <h1 class="section-header">Recent Videos</h1>
         <div class="section">
             <!-- TODO: Consider adding age of video into display somehow -->
@@ -211,13 +214,16 @@
                 </div>
             {% endfor %}
             <div class="col-xs-12 see-all-artifacts">
-                <a href="{% url 'website:videos' %}">See All Videos ></a>
+                <div class="col-xs-12"></div>
+                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 see-all-artifacts pull-right">
+                    <a href="{% url 'website:videos' %}" style="margin:15px">See All Videos ></a>
+                </div>
             </div>
         </div>
     </div>
 
 
-    <div id="makelab-recent-papers" class="container-fluid makelab-content-container">
+    <div id="makelab-recent-papers" class="makelab-content-container">
         <h1 class="section-header">Recent Papers</h1>
         <div class="section">
             {% for pub in publications|slice:"6" %}
@@ -261,13 +267,16 @@
                 </div>
             {% endfor %}
             <div class="col-xs-12 see-all-artifacts">
-                <a href="{% url 'website:publications' %}">See All Papers ></a>
+                <div class="col-xs-12"></div>
+                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 see-all-artifacts pull-right">
+                    <a href="{% url 'website:publications' %}" style="margin:15px">See All Papers ></a>
+                </div>
             </div>
         </div>
     </div>
 
 
-    <div id="makelab-recent-talks" class="container-fluid makelab-content-container">
+    <div id="makelab-recent-talks" class="makelab-content-container">
         <h1 class="section-header">Recent Talks</h1>
         <div class="section">
 
@@ -299,7 +308,10 @@
                 </div>
             {% endfor %}
             <div class="col-xs-12 see-all-artifacts">
-                <a href="{% url 'website:talks' %}">See All Talks ></a>
+                <div class="col-xs-12"></div>
+                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 see-all-artifacts pull-right">
+                    <a href="{% url 'website:talks' %}" style="margin:15px">See All Talks ></a>
+                </div>
             </div>
         </div>
     </div>
