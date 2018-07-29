@@ -1,34 +1,12 @@
 from rest_framework import serializers
 from website.models import Person, Publication, Talk, Video, Project, Project_umbrella
 
-class PersonSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Person
-        fields = ('id','first_name', 'middle_name', 'last_name', 'email', 'personal_website', 'github', 'twitter', 'bio', 'next_position', 'next_position_url', 'image', 'easter_egg')
-
-
-class ProjectSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Project
-        #many to many: sponsors, project_umbrellas, keywords
-        fields = ('name', 'short_name', 'sponsors', 'start_date', 'end_date', 'project_umbrellas', 'keywords', 'gallery_image', 'about', 'updated')
-        depth = 3
-
-class ProjectUmbrellaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Project_umbrella
-        #many to many: keywords
-        fields = ('name',
-                  'short_name',
-                  'keywords')
-        depth = 2
-
 class PublicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Publication
         #the serializer will automatically scan relations between objects up to a certain depth and pass it to the JSON
         #http://www.django-rest-framework.org/api-guide/serializers/#specifying-nested-serialization
-        depth = 5
+        depth = 10
         #many to many: authors, projects, project_umbrellas,
         #one to one:video
         #fk: talk
@@ -49,10 +27,10 @@ class PublicationSerializer(serializers.ModelSerializer):
                   'geo_location',
                   'video',
                   'talk',
-                  'series'
+                  'series',
                   'isbn',
                   'doi',
-                  'publisher'
+                  'publisher',
                   'publisher_address',
                   'acmid',
                   'pub_venue_type',
@@ -80,15 +58,4 @@ class TalkSerializer(serializers.ModelSerializer):
                   'raw_file',
                   'thumbnail'
         )
-        depth = 4
-
-class VideoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Video
-        fields = ('video_url',
-                  'video_preview_url',
-                  'title',
-                  'caption',
-                  'date',
-                  'project')
-        depth = 3
+        depth = 10

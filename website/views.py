@@ -9,11 +9,11 @@ import datetime
 from django.utils.timezone import utc
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser
-from website.serializers import PersonSerializer, TalkSerializer, PublicationSerializer
+from django.http import Http404
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from website.serializers import TalkSerializer, PublicationSerializer
 
 # The Google Analytics stuff is all broken now. It was originally used to track the popularity
 # of pages, projects, and downloads. Not sure what we should do with it now.
@@ -22,138 +22,95 @@ from website.serializers import PersonSerializer, TalkSerializer, PublicationSer
 max_banners = 7  # TODO: figure out best way to specify these settings... like, is it good to have them up here?
 filter_all_pubs_prior_to_date = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed\
 
-@csrf_exempt
-def person_list(request):
+class TalkList(APIView):
     '''
-    List all code persons, or create a new person
-    :param request:
-    :return: JsonResponse
+    List all talks, or create a new talk
     '''
-    if request.method == 'GET':
-        persons = Person.objects.all()
-        serializer = PersonSerializer(persons, many=True)
-        return JsonResponse(serializer.data, safe=False)
-    elif request.method =='POST':
-        data = JSONParser().parse(request)
-        serializer = PersonSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
-
-@csrf_exempt
-def person_detail(request, pk):
-    """
-    Retrieve, update or delete a code snippet.
-    """
-    try:
-        person = Person.objects.get(pk=pk)
-    except Person.DoesNotExist:
-        return HttpResponse(status=404)
-
-    if request.method == 'GET':
-        serializer = PersonSerializer(person)
-        return JsonResponse(serializer.data)
-
-    elif request.method == 'PUT':
-        data = JSONParser().parse(request)
-        serializer = PersonSerializer(person, data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
-
-    elif request.method == 'DELETE':
-        person.delete()
-        return HttpResponse(status=204)
-
-@csrf_exempt
-def talks_list(request):
-    '''
-    List all code talks, or create a new talks
-    :param request:
-    :return: JsonResponse
-    '''
-    if request.method == 'GET':
+    def get(self, request, format = None):
         talks = Talk.objects.all()
-        serializer = TalkSerializer(talks, many=True)
-        return JsonResponse(serializer.data, safe=False)
-    elif request.method =='POST':
-        data = JSONParser().parse(request)
-        serializer = TalkSerializer(data=data)
+        serializer = TalkSerializer(talks,many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = TalkSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@csrf_exempt
-def talks_detail(request, pk):
+class TalkDetail(APIView):
     """
-    Retrieve, update or delete a code snippet.
+    Retrieve, update or delete a snippet instance.
     """
-    try:
-        talk = Talk.objects.get(pk=pk)
-    except Person.DoesNotExist:
-        return HttpResponse(status=404)
+    def get_object(self, pk):
+        try:
+            return Talk.objects.get(pk=pk)
+        except Talk.DoesNotExist:
+            raise Http404
 
-    if request.method == 'GET':
+    def get(self, request, pk, format=None):
+        talk = self.get_object(pk)
         serializer = TalkSerializer(talk)
-        return JsonResponse(serializer.data)
+        return Response(serializer.data)
 
-    elif request.method == 'PUT':
-        data = JSONParser().parse(request)
-        serializer = TalkSerializer(talk, data=data)
+    def put(self, request, pk, format=None):
+        talk = self.get_object(pk)
+        serializer = TalkSerializer(talk, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
-    elif request.method == 'DELETE':
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        talk = self.get_object(pk)
         talk.delete()
-        return HttpResponse(status=204)\
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
-@csrf_exempt
-def pubs_list(request):
+class PubsList(APIView):
     '''
-    List all code talks, or create a new talks
-    :param request:
-    :return: JsonResponse
+    List all talks, or create a new talk
     '''
-    if request.method == 'GET':
+    def get(self, request, format = None):
         pubs = Publication.objects.all()
-        serializer = PublicationSerializer(pubs, many=True)
-        return JsonResponse(serializer.data, safe=False)
-    elif request.method =='POST':
-        data = JSONParser().parse(request)
-        serializer = PublicationSerializer(data=data)
+        serializer = PublicationSerializer(pubs,many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = PublicationSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@csrf_exempt
-def pubs_detail(request, pk):
+class PubsDetail(APIView):
     """
-    Retrieve, update or delete a code snippet.
+    Retrieve, update or delete a snippet instance.
     """
-    try:
-        pubs = Publication.objects.get(pk=pk)
-    except Person.DoesNotExist:
-        return HttpResponse(status=404)
+    def get_object(self, pk):
+        try:
+            return Publication.objects.get(pk=pk)
+        except Publication.DoesNotExist:
+            raise Http404
 
-    if request.method == 'GET':
-        serializer = PublicationSerializer(pubs)
-        return JsonResponse(serializer.data)
+    def get(self, request, pk, format=None):
+        pub = self.get_object(pk)
+        serializer = PublicationSerializer(pub)
+        return Response(serializer.data)
 
-    elif request.method == 'PUT':
-        data = JSONParser().parse(request)
-        serializer = PublicationSerializer(pubs, data=data)
+    def put(self, request, pk, format=None):
+        pub = self.get_object(pk)
+        serializer = PublicationSerializer(pub, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
-    elif request.method == 'DELETE':
-        pubs.delete()
-        return HttpResponse(status=204)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        pub = self.get_object(pk)
+        pub.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 
 max_banners = 7 # TODO: figure out best way to specify these settings... like, is it good to have them up here?
 filter_all_pubs_prior_to_date = datetime.date(2012, 1, 1) # Date Makeability Lab was formed

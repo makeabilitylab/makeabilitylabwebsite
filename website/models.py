@@ -7,8 +7,6 @@ from datetime import date
 from datetime import timedelta
 from website.utils.fileutils import UniquePathAndRename
 import os
-import glob
-import re
 from random import choice
 from django.core.files import File
 
