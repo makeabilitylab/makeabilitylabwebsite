@@ -9,7 +9,7 @@ function isotopeHeaderInit() {
     var headerNames = [];
 
     // go through each item in the grid
-    $($(currentIsotopeProperties['gridName']) + ' .item').each(function(){
+    $(currentIsotopeProperties['gridName'] + ' .item').each(function(){
         // get the types of headers from categories, split by ')'
         var text = $(this).find($(currentIsotopeProperties['sortFilterDataContainer']))[0].textContent;
         var textSplit = text.split(')');
@@ -25,9 +25,25 @@ function isotopeHeaderInit() {
             if(headerNames.indexOf(textSplit[i]) === -1) {
                 headerNames.push(textSplit[i]);
                 //  really long html insertion to properly make header.
-                $(currentIsotopeProperties['gridName']).append("<div class='item' name='header' style='width: 100%; height: 50px; background: white;'><" + currentIsotopeProperties['headerClass'] + " style="
-                + currentIsotopeProperties['headerStyle'] + ">"+ data +"</" + currentIsotopeProperties['headerClass'] + "><div class=" + currentIsotopeProperties['sortFilterDataContainer'].substr(1, cur
-                + textSplit[i] + "</div><div class='Date' style='display:none'>"+ (Number.MAX_SAFE_INTEGER) +"</div></div>");
+                $(currentIsotopeProperties['gridName']).append(
+                    //creating an item wrapper so that the header can be put in the grid
+                    "<div class='item' name='header' style='width: 100%; height: 50px; background: white;'>" +
+                        // making the visible header, putting in the data to be shown
+                        "<" + currentIsotopeProperties['headerClass'] + " style=" + currentIsotopeProperties['headerStyle'] + ">" +
+                            data +
+                        "</" + currentIsotopeProperties['headerClass'] + ">" +
+
+                        // making the sortFilterData container
+                        "<div style='display:none' class=" + currentIsotopeProperties['sortFilterDataContainer'].substr(1, currentIsotopeProperties['sortFilterDataContainer'].length) + ">" +
+                            textSplit[i] +
+                        "</div>" +
+
+                        // making the Date container (and setting the date to the max value so that the header is sorted first)
+                        "<div class='Date' style='display:none'>" +
+                            (Number.MAX_SAFE_INTEGER) +
+                        "</div>" +
+                    "</div>"
+                );
             }
         }
     });
