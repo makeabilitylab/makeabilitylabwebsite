@@ -28,7 +28,7 @@ function isotopeFilterBarInit(){
         {
             $(this).attr("style", 'cursor: pointer;font-weight:normal;');
         }
-
+        $(this).attr("class", "keyword");
 
         //  put this into filterKeywords
         filterKeywords.push($(this).attr("name"));
@@ -59,10 +59,15 @@ function offset(el) {
     return { top: rect.top + scrollTop, left: rect.left + scrollLeft }
 }
 // handles the onclick for filter bar
-function handleFilterBarClick(e)
-{
+function handleFilterBarClick(e) {
+    //if it's not a keyword, ignore it.
+    if($(e.target).attr("class") !== "keyword") {
+        return;
+    }
     // get our text
     var text = $(e.target).attr("name");
+
+
 
     //unbold everything
     $(currentIsotopeProperties['sideBarContainer'] + ' a').each(function() {
@@ -93,7 +98,6 @@ function handleFilterBarClick(e)
 
     //handle the sorting click if it exists
     if(typeof handleSortingClick !== typeof undefined) {
-        console.log("DOING DAT SORTING");
         //wait for the scroll before sorting
         setTimeout(function(){handleSortingClick(e)}, timeToScroll);
 
@@ -119,12 +123,12 @@ function handleFilterBarClick(e)
 
             //put all of the properties we can filter by
             for(var i = 0; i < filterMatches.length; i++) {
-                     $(currentIsotopeProperties['filteringKeywordContainer']).append("<li class='added-filter-keywords' style='list-style-type:none;cursor:pointer;'><a name='"+ filterMatches[i] +"'>" + parsePropertyValue(filterMatches[i]) + "</a></li>")
+                     $(currentIsotopeProperties['filteringKeywordContainer']).append("<li class='added-filter-keywords' style='list-style-type:none;cursor:pointer;'><a class= 'keyword' name='"+ filterMatches[i] +"'>" + parsePropertyValue(filterMatches[i]) + "</a></li>")
             }
 
             //add 'all' to the bottom if there are more than 0 filter matches
             if(filterMatches.length > 0) {
-                $(currentIsotopeProperties['filteringKeywordContainer']).append("<li class='added-filter-keywords' style='list-style-type:none;cursor:pointer;'><a name='" + text + "'>all</a></li>");
+                $(currentIsotopeProperties['filteringKeywordContainer']).append("<li class='added-filter-keywords' style='list-style-type:none;cursor:pointer;'><a class= 'keyword' name='" + text + "'>all</a></li>");
             }
         }
     }
