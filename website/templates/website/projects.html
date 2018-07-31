@@ -109,7 +109,7 @@
         <div id="main-content" class="project-list">
             <!-- TODO: consider listing dates active or keywords underneath each project thumbnail in addition to name -->
             {% for project in projects %}
-		<!-- Extra conditional added to not display projects with zero publications -->
+		 <!-- Extra conditional added to not display projects with zero publications -->
                 {% if project.get_most_recent_publication %}
                     <div class="col-xs-12 col-md-3 project-column">
                         <a href="{% url 'website:project' project.short_name %}" style="color:black;">
