@@ -226,7 +226,7 @@ class Person(models.Model):
     def save(self, *args, **kwargs):
         dir = os.path.abspath('.')
         # requires the volume mount from docker
-        dir = os.path.join('images', 'StarWarsFiguresFullSquare', 'Rebels')
+        dir = os.path.join('media', 'images', 'StarWarsFiguresFullSquare', 'Rebels')
         star_wars_dir = os.path.join(dir, get_random_starwars(dir))
         image_choice = File(open(star_wars_dir, 'rb'))
         if not self.image:
@@ -258,20 +258,14 @@ def person_delete(sender, instance, **kwargs):
         instance.image.delete(False)
 
 
-def get_person():
-    return Person.objects.get(last_name='Froehlich')
-
-
 class Position(models.Model):
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField(blank=True, null=True)
-    advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Advisor', on_delete=models.SET_DEFAULT,
-                                default=get_person)
-    co_advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Co_Advisor',
-                                   verbose_name='Co-advisor', on_delete=models.SET_NULL)
-    grad_mentor = models.ForeignKey('Person', blank=True, null=True, related_name='Grad_Mentor',
-                                    on_delete=models.SET_NULL)
+    advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Advisor', on_delete=models.SET_NULL)
+    co_advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Co_Advisor', verbose_name='Co-advisor', on_delete=models.SET_NULL)
+    grad_mentor = models.ForeignKey('Person', blank=True, null=True, related_name='Grad_Mentor', on_delete=models.SET_NULL)
+
 
     # According to Django docs, best to have field choices within the primary
     # class that uses them. See https://docs.djangoproject.com/en/1.9/ref/models/fields/#choices
