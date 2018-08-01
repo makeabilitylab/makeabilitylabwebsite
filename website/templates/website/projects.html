@@ -106,18 +106,19 @@
             <!-- Tech filter: augmented reality, machine learning, custom hardware, computer vision -->
         </div>
 
-
-
         <div id="main-content" class="project-list">
             <!-- TODO: consider listing dates active or keywords underneath each project thumbnail in addition to name -->
             {% for project in projects %}
-                <div class="col-xs-12 col-md-3 project-column">
-                    <a href="{% url 'website:project' project.short_name %}" style="color:black;">
-                        <img src="{% thumbnail project.gallery_image 300x180 box=project.cropping crop detail %}" class="img-responsive">
-                        <p class="artifact-title">{{ project.name }}</p>
-                    </a>
-                    <div style="min-height:15px"></div>
-                </div>
+		  <!-- Extra conditional added to not display projects with zero publications -->
+                {% if project.get_most_recent_publication %}
+                    <div class="col-xs-12 col-md-3 project-column">
+                        <a href="{% url 'website:project' project.short_name %}" style="color:black;">
+                            <img src="{% thumbnail project.gallery_image 300x180 box=project.cropping crop detail %}" class="img-responsive">
+                            <p class="artifact-title">{{ project.name }}</p>
+                        </a>
+                        <div style="min-height:15px"></div>
+                    </div>
+                {% endif %}
             {% endfor %}
         </div>
     </div>

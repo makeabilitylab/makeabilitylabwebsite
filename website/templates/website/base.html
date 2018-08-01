@@ -116,45 +116,50 @@
 
     {% block navbar %}
         <!-- Navigation -->
-        <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
-            <div class="container" style="height:50px; width:100%; object-fit: contain">
-                <div class="navbar-header" style="height:50px; width:100%; object-fit: contain">
-                    <button style="float:right" type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
-                        <i class="fa fa-bars"></i>
-                    </button>
-                    <a class="navbar-brand page-scroll" href="{% url 'website:index' %}">
-                        <!-- <i class="fa fa-gears"></i>  <span style="font-family: roboto-bold">make</span>ability</span> lab-->
-                        <!-- <img src="{% static 'website/img/logos/makelab_logo_bolder_white_no_text_100x68.png' %}" height="20" /> -->
-                        {# TODO: the text following the logo does not look vertically centered. Should be fixed. #}
-                        <img src="{% static 'website/img/logos/makelab_logo_white_no_text_100x67.png' %}" height="20" />
+        <nav class="navbar navbar-custom navbar-fixed-top" role="navigation" >
+            <div class="container-fluid" style="width:100%; max-width:1170px; margin:auto">
+                <div class = "row">
+                    <div class="col-xs-12" style="padding:0px">
 
-                        <div class="lab-text"><span style="font-family: roboto-bold; margin-left: 2px;">Make</span>ability</span> Lab</div>
-                    </a>
+                        <div class="navbar-header">
 
-                     <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
-                        <ul class="nav navbar-nav">
-                            <!-- To automatically highlight active links, I followed this code:
-                             http://stackoverflow.com/a/29495310 -->
-                            {% with request.resolver_match.url_name as url_name %}
-                                <li class="{% if url_name == 'index' %}active{% endif %}"><a href="{% url 'website:index' %}">Home</a></li>
-                                <li class="{% if url_name == 'people' %}active{% endif %}"><a href="{% url 'website:people' %}">People</a></li>
-                                <li class="{% if url_name == 'projects' %}active{% endif %}"><a href="{% url 'website:projects' %}">Projects</a></li>
-                                <li class="{% if url_name == 'news_listing' %}active{% endif %}"><a href="{% url 'website:news_listing' %}">News</a></li>
-                                <li class="{% if url_name == 'publications' %}active{% endif %}"><a href="{% url 'website:publications' %}">Publications</a></li>
-                                <li class="{% if url_name == 'talks' %}active{% endif %}"><a href="{% url 'website:talks' %}">Talks</a></li>
-                                <li class="{% if url_name == 'videos' %}active{% endif %}"><a href="{% url 'website:videos' %}">Videos</a></li>
-                            {% endwith %}
-                        </ul>
-                     </div>
+                            <button style="" type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+                                <i class="fa fa-bars"></i>
+                            </button>
 
+                            <a class="navbar-brand page-scroll" href="{% url 'website:index' %}">
+                                <!-- <i class="fa fa-gears"></i>  <span style="font-family: roboto-bold">make</span>ability</span> lab-->
+                                <!-- <img src="{% static 'website/img/logos/makelab_logo_bolder_white_no_text_100x68.png' %}" height="20" /> -->
+                                {# TODO: the text following the logo does not look vertically centered. Should be fixed. #}
+                                <img src="{% static 'website/img/logos/makelab_logo_white_no_text_100x67.png' %}" height="20" />
+
+                                <div class="lab-text"><span style="font-family: roboto-bold; margin-left: 2px;">Make</span>ability</span> Lab</div>
+                            </a>
+
+                        </div>
+
+                        <div class="collapse navbar-collapse navbar-main-collapse">
+                            <ul class="nav navbar-nav pull-right">
+                                <!-- To automatically highlight active links, I followed this code:
+                                 http://stackoverflow.com/a/29495310 -->
+                                {% with request.resolver_match.url_name as url_name %}
+                                    <li class="{% if url_name == 'index' %}active{% endif %}"><a href="{% url 'website:index' %}">Home</a></li>
+                                    <li class="{% if url_name == 'people' %}active{% endif %}"><a href="{% url 'website:people' %}">People</a></li>
+                                    <li class="{% if url_name == 'projects' %}active{% endif %}"><a href="{% url 'website:projects' %}">Projects</a></li>
+                                    <li class="{% if url_name == 'news_listing' %}active{% endif %}"><a href="{% url 'website:news_listing' %}">News</a></li>
+                                    <li class="{% if url_name == 'publications' %}active{% endif %}"><a href="{% url 'website:publications' %}">Publications</a></li>
+                                    <li class="{% if url_name == 'talks' %}active{% endif %}"><a href="{% url 'website:talks' %}">Talks</a></li>
+                                    <li class="{% if url_name == 'videos' %}active{% endif %}"><a href="{% url 'website:videos' %}">Videos</a></li>
+                                {% endwith %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <!-- /.navbar-collapse -->
                 </div>
-
-                <!-- Collect the nav links, forms, and other content for toggling -->
-
-
-
-                <!-- /.navbar-collapse -->
             </div>
+
             <!-- /.container -->
         </nav>
     {% endblock %}
@@ -385,10 +390,9 @@
 
     {% block footer %}
 
-        <div class="container-fluid makelab-footer">
+        <div class="makelab-footer">
             <div class="row makelab-footer-row">
                 <div class="col-xs-1">
-
 
                 </div>
                 <div class="col-xs-2 makelab-footer-col" style="margin-bottom: 5em;">
@@ -486,7 +490,8 @@
             <!-- TODO: Consider adding a sponsorship row? -->
             <!-- TODO: The centering looks weird on this. Also responsive design wraps columns, which I don't like. Ideally, I think, on small devices, should just switch to single row;
                  TODO: Fix UMD CS logo so that the text is bigger -->
-            <div class="row makelab-footer-affiliations-row">
+            <div class="makelab-footer-affiliations">
+                <div class="row makelab-footer-affiliations-row">
                 <div class="col-xs-1">
 
                 </div>
@@ -526,7 +531,7 @@
 
                 </div>
             </div>
-
+            </div>
         </div>
     {% endblock %}
 </div>
