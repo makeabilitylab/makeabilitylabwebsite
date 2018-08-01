@@ -1,4 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
+from django.utils.six import BytesIO
+from rest_framework.parsers import JSONParser
 from website.models import Person, Position, Keyword, Publication, Video, Project, Project_umbrella, Project_Role
 import bibtexparser
 from django.core.files import File
@@ -19,7 +21,18 @@ def get_val_key(key, dic):
 def parse_authors(author_list):
     i = 0
     ret = list()
-    authors_names =
+    authors_names = []
+
+class Command(BaseCommand):
+
+    def handle(self, *args, **options):
+        url = "http://localhost:8000/api/pubs/?format=json"
+        response = requests.get(url)
+        stream = BytesIO(response.context)
+        data = JSONParser().parse(stream)
+        print(data)
+
+
 
 '''
 # Relies on names being separated by and
