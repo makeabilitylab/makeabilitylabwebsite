@@ -327,22 +327,27 @@ class Position(models.Model):
 
     # Returns an abbreviated version of the department field
     def get_department_abbreviated(self):
-        if self.department.lower() == "computer science":
-            return 'CS'
+        department_keywords_normal = ["building science", "architecture", "bioengineering"]
+        department_keywords_map = ["BuildSci", "Arch", "BIOE"]
+        abbrv = ""
+        if "computer science" in self.department.lower():
+            abbrv += 'CS,'
         elif "computer science" in self.department.lower() and "engineering" in self.department.lower():
-            return 'CSE'
-        elif "information" in self.department.lower():
-            return 'iSchool'
-        elif "ischool" in self.department.lower():
-            return 'iSchool'
-        elif 'building science' in self.department.lower():
-            return 'BuildSci'
+            abbrv += 'CSE,'
         elif 'computer engineering' in self.department.lower():
-            return 'CprE'
-        elif 'architecture' in self.department.lower():
-            return 'Arch'
-        elif 'bioengineering' in self.department.lower():
-            return 'BIOE'
+            abbrv += 'CprE,'
+
+        if "information" in self.department.lower() or "ischool" in self.department.lower():
+            abbrv += 'iSchool,'
+
+        for keyword in department_keywords_normal:
+            counter = 0
+            if keyword in self.department.lower():
+                abbrv += department_keywords_map[counter]
+                counter += 1
+
+        if abbrv.__len__() > 0:
+            return abbrv[:abbrv.__len__() - 1]
         else:
             return "".join(e[0] for e in self.department.split(" "))
 
@@ -624,8 +629,14 @@ class Video(models.Model):
 
     # Returns a cap case title
     def get_title(self):
-        # Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
-        cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
+        words = self.title.split()
+        cap_title = ""
+        first = True
+        for word in words:
+            if not first:
+                cap_title += " "
+            cap_title += word[0].upper() + word[1:].lower()
+            first = False
         return cap_title
 
     def __str__(self):
