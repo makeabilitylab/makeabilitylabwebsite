@@ -629,8 +629,14 @@ class Video(models.Model):
 
     # Returns a cap case title
     def get_title(self):
-        # Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
-        cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
+        words = self.title.split()
+        cap_title = ""
+        first = True
+        for word in words:
+            if not first:
+                cap_title += " "
+            cap_title += word[0].upper() + word[1:].lower()
+            first = False
         return cap_title
 
     def __str__(self):
