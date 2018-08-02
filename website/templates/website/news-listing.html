@@ -1,0 +1,161 @@
+{#	TODO: limit keywords/projects by page size to avoid overflow #}
+{#	TODO: auto-add using bibtex #}
+
+{% extends "website/base.html" %}
+
+{% block pagetitle %}News{% endblock %}
+
+{% load staticfiles %}
+{% load thumbnail %}
+{% load cropping %}
+
+{% block stylesheets %}
+
+<link rel="stylesheet" href="{% static 'website/css/news-listing.css' %}?version=1">
+<link rel="stylesheet" href="{% static 'website/css/fixed_side_bar.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/jquery-ui.min.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/jquery-ui.theme.min.css' %}">
+{% endblock %}
+
+{% block external_scripts %}
+
+<script src="{% static 'website/js/isotope.pkgd.min.js' %}"></script>
+<script src="{% static 'website/js/fixedSideBar.js' %}"></script>
+<script src="{% static 'website/js/filterBar.js' %}"></script>
+<script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
+<script src="{% static 'website/js/citationPopover.js' %}"></script>
+
+
+
+{% endblock %}
+
+{% block scripts %}
+    var newslisting = [
+        {% for n in news %}
+        {
+            "id": "A.###",
+            "title": "{{ n.title }}",
+            "author": {
+                "name": "{{ n.author.get_full_name }}",
+                "first_name": "{{ n.author.first_name }}",
+                "middle_name": "{{ n.author.middle_name }}",
+                "last_name": "{{ n.author.last_name }}",
+                "link": "{% url 'website:member' n.author.id %}"
+            },
+            "date": new Date("{{ n.date }}"),
+            "content": "Fixed Content",
+            "link": {% url 'website:news' n.id %}
+            "projects": [
+                {% for p in n.project.all %}
+                    "{{ p.short_name }}",
+                {% endfor %}
+            ]
+        },
+        {% endfor %}
+    ];
+
+    initialFilter = "{{ filter }}";
+    initialGroupBy = "{{ groupby }}";
+
+{% endblock %}
+
+{% block maincarousel %}
+<div id="mainCarousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="10000" data-pause="false">
+    <div class="page-title shadow-left">
+        <div class="container carousel-container">
+            <div class="overlay-title">News</div>
+        </div>
+    </div>
+    <!-- Wrapper for slides -->
+    <div class="carousel-inner" role="listbox">
+        {% for banner in banners %}
+        <div class="item {% if forloop.first %}active{% endif %}">
+	    {% if banner.link %}
+	    <a href="{{banner.link}}">
+		{% else %}
+		{% if banner.project %}
+		<a href="{% url 'website:project' banner.project.short_name %}">
+		    {% endif %}
+		    {% endif %}
+		    <div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})" aria-label="{{ banner.alt_text }}" title="{{ banner.alt_text}}"></div>
+		    <!-- <div class="overlay">
+			 <div class="container carousel-container">
+			 <div class="carousel-caption carousel-caption-right">
+			 {% autoescape off %} {# enable HTML tags #}
+			 <div class="carousel-caption-title">
+			 {{ banner.title }}
+			 </div>
+			 <div class="carousel-caption-text">
+			 {{ banner.caption }}
+			 </div>
+			 {% endautoescape %}
+			 </div>
+			 </div>
+			 </div> -->
+		    {% if banner.link %}</a>{% endif %}
+		{% if banner.project %}
+	    </a>
+	    {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    <ol class="carousel-indicators"  {% if banners|length < 2 %} style="display: none" {% endif %}>
+        {% for banner in banners %}
+        <li data-target="#mainCarousel" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
+        {% endfor %}
+    </ol>
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content" class="container">
+
+	<div class="news-listing-list" id="main-content">
+        {% for n in news %}
+	    <div class="news-listing-template">
+                <div class="news-listing-image">
+                    {% if news.image %}
+                    <img src="{% thumbnail n.image 200x200 box=news.cropping crop detail %}" class="news-listing-image-image img-responsive"/>
+                    {% else %}
+                    <img src="{% static 'website/img/news_icon.png' %}" class="big-news-image" height="200" width="200">
+                    {% endif %}
+                </div>
+                <div class="news-listing-info">
+                    <p class="artifact-title" style="font-size:28px;">{{ n.title }}</p>
+                    <p class="news-listing-author-outside">
+                        <span class="news-listing-author"><a href="{% url 'website:member' member_id=n.author.id %}">{{ n.author }}</a> &mdash;</span>
+                            <span class="news-listing-author-last">{{ n.short_date }}</span>
+                    </p>
+                    <p class="news-listing-content">
+                        <span>{{ n.content | slice:":255" }} . . . <a href="{% url 'website:news' news_id=n.id %}">[read more]</a></span>
+                    </p>
+                </div>
+
+            </div>
+        {% endfor %}
+        </div>
+        <div class="container">
+            <div class="news-listing-pagination">
+            {% if news.has_other_pages %}
+                      <ul class="pagination" style="margin-right: auto; margin-left: auto">
+                            {% if news.has_previous %}
+                                <li><a href="?page={{ news.previous_page_number }}">Newer</a></li>
+                            {% else %}
+                            {% endif %}
+                            {% for i in news.paginator.page_range %}
+                                {% if news.number == i %}
+                                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                                {% else %}
+                                    <li><a href="?page={{ i }}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                                {% if news.has_next %}
+                                    <li><a href="?page={{ news.next_page_number }}">Older</a></li>
+                                {% else %}
+                            {% endif %}
+                      </ul>
+                {% endif %}
+                </div>
+            </div>
+    </div>
+{% endblock %}

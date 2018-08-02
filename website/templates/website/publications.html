@@ -31,6 +31,7 @@
 {% endblock %}
 
 {% block scripts %}
+    {% load ml_tags %}
     var publications = [
         {% for pub in publications %}
         {
@@ -43,11 +44,11 @@
                 "first_name": "{{ author.first_name }}",
                 "middle_name": "{{ author.middle_name }}",
                 "last_name": "{{ author.last_name }}",
-                "link": "{% url 'website:member' author.id %}"
+                "link": "{% url 'website:member' author.get_url_name %}"
                 },
             {% endfor %}
             ],
-            "date": new Date("{{ pub.date }}"),
+            "date": {{ pub.date|jsdate }},
             "pdf": "../../media/{{ pub.pdf_file }}",
             "video_url": "{{ pub.video.video_url }}",
             "thumbnail": "{% thumbnail pub.thumbnail 300x0 detail %}",
@@ -183,7 +184,7 @@
                     <span class="publication-keyword"><span class="publication-keyword-text">keyword</span>,&nbsp;</span>
                     <span class="publication-keyword-last"><span class="publication-keyword-text">keyword</span></span>
                     </p>
-                    <div class="publication-download">Download: <a href="link" class="publication-download-link">[pdf]</a> <span class="publication-video-link-label">| Video: <a href="link" class="publication-video-link">[youtube]</a></span> | Export <a data-toggle="popover" data-html="true" data-trigger="manual" tabindex="0" title="Citation" data-content="Empty Citation" class="publication-citation-link">[Citation]</a></div>
+                    <div class="publication-download">Download: <a href="link" class="publication-download-link">[pdf]</a> <span class="publication-video-link-label">| Video: <a href="link" class="publication-video-link">[youtube]</a></span> <span class="citation-link">| Export <a data-toggle="popover" data-html="true" data-trigger="manual" tabindex="0" title="Citation" data-content="Empty Citation" class="publication-citation-link">[Citation]</a></span></div>
                 </div>
             </div>
         </div>

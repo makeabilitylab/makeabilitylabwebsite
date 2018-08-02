@@ -1,5 +1,5 @@
 from django.contrib import admin
-
+from django.contrib.admin import widgets
 from .models import Person, Publication, Position, Talk, Project, Poster, Keyword, News, Banner, Video, Project_header, Photo, Project_umbrella, Project_Role, Sponsor
 from website.admin_list_filters import CurrentMemberListFilter, PositionListFilter, PubVenueTypeListFilter, PubVenueListFilter
 
@@ -77,12 +77,25 @@ class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
             kwargs["queryset"] = filtered_persons
         return super(NewsAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
+    def formfield_for_manytomany(self, db_field, request=None, **kwargs):
+        if db_field.name == "project":
+            kwargs["widget"] = widgets.FilteredSelectMultiple("project", is_stacked=False)
+        return super(NewsAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
+
 
 class PhotoAdmin(ImageCroppingMixin, admin.ModelAdmin):
     list_display = ('__str__', 'admin_thumbnail')
 
 class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
     inlines = [ProjectHeaderInline]
+    def formfield_for_manytomany(self, db_field, request=None, **kwargs):
+        if db_field.name == "sponsors":
+            kwargs["widget"] = widgets.FilteredSelectMultiple("sponsors", is_stacked=False)
+        if db_field.name == "keywords":
+            kwargs["widget"] = widgets.FilteredSelectMultiple("keywords", is_stacked=False)
+        if db_field.name == "project_umbrellas":
+            kwargs["widget"] = widgets.FilteredSelectMultiple("project umbrellas", is_stacked=False)
+        return super(ProjectAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
@@ -98,7 +111,6 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
     #https://www.elements.nl/2015/03/16/getting-the-most-out-of-django-admin-filters/
     #related to: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/238
     list_filter = (CurrentMemberListFilter, PositionListFilter)
-    # prepopulated_fields = {'url_name':('first_name', 'last_name',)}
 
 class VideoAdmin(admin.ModelAdmin):
     # The list display lets us control what is shown in the default persons table at Home > Website > Videos
@@ -113,13 +125,24 @@ class TalkAdmin(admin.ModelAdmin):
     # Based on: https://stackoverflow.com/a/17457828
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         print("TalkAdmin.formfield_for_manytomany: db_field: {} db_field.name {} request: {}".format(db_field, db_field.name, request))
+        if db_field.name == "projects":
+            kwargs["widget"] = widgets.FilteredSelectMultiple("projects", is_stacked=False)
+        if db_field.name == "project_umbrellas":
+            kwargs["widget"] = widgets.FilteredSelectMultiple("project umbrellas", is_stacked=False, )
         if db_field.name == "speakers":
             current_member_and_collab_ids = [person.id for person in Person.objects.all() if person.is_current_member()]
-            filtered_persons = Person.objects.filter(id__in=current_member_and_collab_ids).order_by('first_name')
-            print(filtered_persons)
-            kwargs["queryset"] = filtered_persons
-        return super(TalkAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+            filtered_speakers = Person.objects.filter(id__in=current_member_and_collab_ids).order_by('first_name')
+            kwargs["queryset"] = filtered_speakers
+            kwargs["widget"] = widgets.FilteredSelectMultiple("speakers", is_stacked=False)
+        if db_field.name == "keywords":
+            kwargs["widget"] = widgets.FilteredSelectMultiple("keywords", is_stacked=False)
+        return super(TalkAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
+class ProjectUmbrellaAdmin(admin.ModelAdmin):
+    def formfield_for_manytomany(self, db_field, request=None, **kwargs):
+        if db_field.name == "keywords":
+            kwargs["widget"] = widgets.FilteredSelectMultiple("keywords", is_stacked=False)
+        return super(ProjectUmbrellaAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 class PublicationAdmin(admin.ModelAdmin):
     fieldsets = [
@@ -139,6 +162,17 @@ class PublicationAdmin(admin.ModelAdmin):
     ordering = ('-date',)
 
     list_filter = (PubVenueTypeListFilter, PubVenueListFilter)
+
+    def formfield_for_manytomany(self, db_field, request=None, **kwargs):
+        if db_field.name == "authors":
+            kwargs["widget"] = widgets.FilteredSelectMultiple("authors", is_stacked=False)
+        elif db_field.name == "projects":
+            kwargs["widget"] = widgets.FilteredSelectMultiple("projects", is_stacked=False)
+        elif db_field.name == "project_umbrellas":
+            kwargs["widget"] = widgets.FilteredSelectMultiple("project umbrellas", is_stacked=False)
+        elif db_field.name == "keywords":
+            kwargs["widget"] = widgets.FilteredSelectMultiple("keywords", is_stacked=False)
+        return super(PublicationAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
     # Uncomment this function to enable auto-entry from bibtex
     # The following code is based in part on a hint by this Stackoverflow post: http://stackoverflow.com/a/4952370
@@ -213,5 +247,5 @@ admin.site.register(News, NewsAdmin)
 admin.site.register(Banner, BannerAdmin)
 admin.site.register(Video, VideoAdmin)
 admin.site.register(Photo, PhotoAdmin)
-admin.site.register(Project_umbrella)
+admin.site.register(Project_umbrella, ProjectUmbrellaAdmin)
 admin.site.register(Sponsor)

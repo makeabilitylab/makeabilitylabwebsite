@@ -16,8 +16,7 @@
 FROM python:3
 
 # Setup some other prereqs needed:
-RUN apt-get update
-RUN apt-get --assume-yes install imagemagick ghostscript sqlite3 
+RUN apt-get update && apt-get --assume-yes install imagemagick ghostscript sqlite3 
 
 # The ENV instruction sets the environment variable <key> to the <value> in ENV <key> <value>. 
 # See: https://docs.docker.com/engine/reference/builder/#environment-replacement
@@ -47,7 +46,7 @@ RUN pip install -r requirements.txt
 
 # Add the current directory to /code/
 ADD . /code/
-
+ADD media /code/
 # The EXPOSE instruction informs Docker that the container listens on the specified network ports at runtime. 
 # You can specify whether the port listens on TCP or UDP, and the default is TCP if the protocol is not specified.
 # Note: The EXPOSE instruction does not actually publish the port. To actually publish the port when running the container, 

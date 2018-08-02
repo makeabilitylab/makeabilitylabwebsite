@@ -2,6 +2,16 @@ research-area-icon-label{
     text-align: center;
 }
 
+.news-listing {
+    display: none;
+}
+
+@media only screen and (min-width: 600px) {
+    .news-listing{
+        display: inline;
+    }
+}
+
 .research-area-icon-row img {
     width: 100%;
 }
@@ -36,8 +46,11 @@ research-area-icon-label{
 }
 
 .makelab-content-container{
-    margin-left: 40px;
-    margin-right: 40px;
+    /*margin-left: 40px;*/
+    /*margin-right: 40px;*/
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .no-margin {

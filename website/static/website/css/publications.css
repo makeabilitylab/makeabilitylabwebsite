@@ -1,5 +1,11 @@
 /* TODO: Cleanup the CSS in this file and start using artifact-title, artifact-venue, etc. from base.css */
 /* TODO: update--cleanup in progress. Note that any change here may impact publications.js and filterBar.js */
+@media only screen and (max-width: 600px){
+	.citation-link{
+		display: none;
+	}
+}
+
 
 @media (max-width: 768px){
     .publication-list {
@@ -22,6 +28,7 @@
 .citation-links {
     text-align: right;
     margin-bottom: -5px;
+	cursor: pointer;
 }
 
 .publication-list h1 {
