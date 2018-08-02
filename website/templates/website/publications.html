@@ -31,6 +31,7 @@
 {% endblock %}
 
 {% block scripts %}
+    {% load ml_tags %}
     var publications = [
         {% for pub in publications %}
         {
@@ -47,7 +48,7 @@
                 },
             {% endfor %}
             ],
-            "date": new Date("{{ pub.date }}"),
+            "date": {{ pub.date|jsdate }},
             "pdf": "../../media/{{ pub.pdf_file }}",
             "video_url": "{{ pub.video.video_url }}",
             "thumbnail": "{% thumbnail pub.thumbnail 300x0 detail %}",

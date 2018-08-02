@@ -8,3 +8,12 @@ register = template.Library()
 @register.filter
 def get_item(dictionary, key):
     return dictionary.get(key)
+
+@register.filter(name='jsdate')
+def jsdate(d):
+    """formats a python date into a js Date() constructor.
+    """
+    try:
+        return "new Date({0},{1},{2})".format(d.year, d.month - 1, d.day)
+    except AttributeError:
+        return 'undefined'
