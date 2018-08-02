@@ -26,9 +26,10 @@ def parse_authors(author_list):
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        url = "http://localhost:8000/api/pubs/?format=json"
+        os.environ['NO_PROXY'] = '127.0.0.1'
+        url = "127.0.0.1:8000/api/pubs/"
         response = requests.get(url)
-        stream = BytesIO(response.context)
+        stream = BytesIO(response.content)
         data = JSONParser().parse(stream)
         print(data)
 

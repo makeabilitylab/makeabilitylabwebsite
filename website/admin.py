@@ -250,6 +250,4 @@ admin.site.register(Photo, PhotoAdmin)
 admin.site.register(Project_umbrella, ProjectUmbrellaAdmin)
 admin.site.register(Sponsor)
 admin.site.register(Position)
-admin.site.register(Project_umbrella)
-admin.site.register(Sponsor)
 
