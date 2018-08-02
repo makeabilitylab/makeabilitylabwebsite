@@ -35,10 +35,6 @@ ssl_access_log
 makeabilitylab_django.log
 media/*
 !media/images/StarWarsFiguresFullSquare/Rebels
-<<<<<<< HEAD
 
 
 
-=======
-static/
->>>>>>> working easter_egg choice with correct docker volume mount

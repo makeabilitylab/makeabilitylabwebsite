@@ -249,5 +249,3 @@ admin.site.register(Video, VideoAdmin)
 admin.site.register(Photo, PhotoAdmin)
 admin.site.register(Project_umbrella, ProjectUmbrellaAdmin)
 admin.site.register(Sponsor)
-admin.site.register(Position)
-
