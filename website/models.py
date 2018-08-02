@@ -4,9 +4,7 @@ from sortedm2m.fields import SortedManyToManyField
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete
 from datetime import date
-from django.utils import timezone
 from datetime import timedelta
-import datetime
 from website.utils.fileutils import UniquePathAndRename
 import os
 from random import choice
@@ -35,7 +33,11 @@ class Person(models.Model):
     first_name = models.CharField(max_length=40)
     middle_name = models.CharField(max_length=50, blank=True, null=True)
     last_name = models.CharField(max_length=50)
-    url_name = models.CharField(editable=False, max_length=50, default='placeholder')
+
+    # TODO: Need to figure out how to make this not add the em-dash when autocompleted
+    # URL Name for this person generated from the first and last names
+    # Default: Jon E Froehlich --> jon-froehlich
+
     email = models.EmailField(blank=True, null=True)
     personal_website = models.URLField(blank=True, null=True)
     github = models.URLField(blank=True, null=True)
@@ -163,11 +165,6 @@ class Person(models.Model):
 
         return is_alumni_member
 
-    # Returns the earliest this person was ever a member
-    def get_earliest_member_position(self):
-        # The result of a QuerySet is a QuerySet so you can chain them together...
-        return self.position_set.filter(role=Position.MEMBER).earliest('start_date')
-
     # Returns the latest position for the person
     # TODO: consider renaming this to get_current_position
     # TODO: This assume that postion_set.all() is already ordered by start_date. I don't think this is necessarily true.
@@ -230,6 +227,15 @@ class Person(models.Model):
         dir = os.path.abspath('.')
         # requires the volume mount from docker
         dir = os.path.join('media', 'images', 'StarWarsFiguresFullSquare', 'Rebels')
+        star_wars_dir = os.path.join(dir, get_random_starwars(dir))
+        image_choice = File(open(star_wars_dir, 'rb'))
+        if not self.image:
+            self.image = image_choice
+        if self.pk is None:
+            self.easter_egg = image_choice
+        dir = os.path.abspath('.')
+        #requires the volume mount from docker
+        dir = os.path.join('images', 'StarWarsFiguresFullSquare', 'Rebels')
         star_wars_dir = os.path.join(dir, get_random_starwars(dir))
         image_choice = File(open(star_wars_dir, 'rb'))
         # automatically set url_name field
