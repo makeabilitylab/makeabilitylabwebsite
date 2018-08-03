@@ -154,9 +154,10 @@
                 <!-- Extra conditional added to not display projects with zero publications -->
                 {% if project.get_most_recent_publication %}
                     <div class="col-xs-6 col-md-4 col-lg-3 project-column" style="margin:15px; width: 300px; height: 200px">
-                        <img src="{% thumbnail project.gallery_image "300x180" crop="center" %}">
-                        <a href="{% url 'website:project' project.short_name %}"></a>
-                        <p class="artifact-title">{{ project.name }}</p>
+                        <a href="{% url 'website:project' project.short_name %}">
+                            <p class="artifact-title">{{ project.name }}</p>
+                            <img src="{% thumbnail project.gallery_image "300x180" crop="center" %}">
+                        </a>
                     </div>
                 {% endif %}
             {% endfor %}
