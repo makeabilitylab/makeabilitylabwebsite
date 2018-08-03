@@ -296,7 +296,7 @@
                             <p class="artifact-authors">
                                 <!-- TODO: figure out how to remove vertical space between speakers and subtitle -->
                                 {% for speaker in talk.speakers.all %}
-                                    <a href="{% url 'website:member' speaker.url_name %}">{{ speaker.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
+                                    <a href="{% url 'website:member' speaker.id %}">{{ speaker.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
                                 {% endfor %}
                             </p>
                             <!-- TODO: add in YouTube of talk? -->
