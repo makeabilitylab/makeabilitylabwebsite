@@ -160,7 +160,9 @@
                                 <img style="width:100%; height: auto; position: relative;top: 50%; left: 50%;transform: translate(-50%,-50%);object-fit: cover" src="{% thumbnail project.gallery_image "300x180" crop="center" %}">
                             </div>
                         </a>
-                        <p class="artifact-title">{{ project.name }}</p>
+                        <a href="{% url 'website:project' project.short_name %}">
+                            <p class="artifact-title">{{ project.name }}</p>
+                        </a>
                     </div>
                 {% endif %}
             {% endfor %}
