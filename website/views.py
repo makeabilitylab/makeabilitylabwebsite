@@ -8,14 +8,112 @@ from datetime import date
 import datetime
 from django.utils.timezone import utc
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.http import Http404
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from website.serializers import TalkSerializer, PublicationSerializer
+
+from django.http import Http404
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from website.serializers import TalkSerializer, PublicationSerializer
 
 # The Google Analytics stuff is all broken now. It was originally used to track the popularity
 # of pages, projects, and downloads. Not sure what we should do with it now.
 # from . import googleanalytics
 
 max_banners = 7  # TODO: figure out best way to specify these settings... like, is it good to have them up here?
-filter_all_pubs_prior_to_date = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
+filter_all_pubs_prior_to_date = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed\
 
+class TalkList(APIView):
+    '''
+    List all talks, or create a new talk
+    '''
+    def get(self, request, format = None):
+        talks = Talk.objects.all()
+        serializer = TalkSerializer(talks,many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = TalkSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class TalkDetail(APIView):
+    """
+    Retrieve, update or delete a snippet instance.
+    """
+    def get_object(self, pk):
+        try:
+            return Talk.objects.get(pk=pk)
+        except Talk.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        talk = self.get_object(pk)
+        serializer = TalkSerializer(talk)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        talk = self.get_object(pk)
+        serializer = TalkSerializer(talk, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        talk = self.get_object(pk)
+        talk.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class PubsList(APIView):
+    '''
+    List all talks, or create a new talk
+    '''
+    def get(self, request, format = None):
+        pubs = Publication.objects.all()
+        serializer = PublicationSerializer(pubs,many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = PublicationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PubsDetail(APIView):
+    """
+    Retrieve, update or delete a snippet instance.
+    """
+    def get_object(self, pk):
+        try:
+            return Publication.objects.get(pk=pk)
+        except Publication.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        pub = self.get_object(pk)
+        serializer = PublicationSerializer(pub)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        pub = self.get_object(pk)
+        serializer = PublicationSerializer(pub, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        pub = self.get_object(pk)
+        pub.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 # Every view is passed settings.DEBUG. This is used to insert the appropriate google analytics tracking when in
 # production, and to not include it for development
