@@ -33,7 +33,7 @@ class TalkList(APIView):
     '''
     def get(self, request, format = None):
         talks = Talk.objects.all()
-        serializer = TalkSerializer(talks,many=True)
+        serializer = TalkSerializer(talks,many=True,context={'request': request})
         return Response(serializer.data)
 
     def post(self, request, format=None):
@@ -77,7 +77,7 @@ class PubsList(APIView):
     '''
     def get(self, request, format = None):
         pubs = Publication.objects.all()
-        serializer = PublicationSerializer(pubs,many=True)
+        serializer = PublicationSerializer(pubs,many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request, format=None):
