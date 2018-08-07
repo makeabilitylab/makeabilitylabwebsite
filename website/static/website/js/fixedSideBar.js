@@ -29,21 +29,21 @@
 		    var footer = $(".makelab-footer");
 
 		    // is it below the form?
-		    if (y >= top && y <= $('content').height() - 50) {
+		    if (y >= top && y <= $('#content').height() - 50) {
 		        // if so, set fixed position
 		        sideBar.css('position', 'fixed');
-		        sideBar.css('top', '0');
+		        sideBar.css('top', "0");
 		        sideBar.css('left', parseInt($('#content').css('margin-left')) + "px");
 		    } else {
 		        if (y <= top) {
-		        	sideBar.css('position', 'absolute');
-		        	sideBar.css('top', initOffset);
-		        	sideBar.css('left', 0);
-		        } else {
-		        	sideBar.css('position', 'absolute');
-		        	sideBar.css('top', $('#content').height() - footer.height() - 5);
-		        	sideBar.css('left', 0);
-		        }
+		    		sideBar.css('position', 'absolute');
+		    		sideBar.css ('top', initOffset);
+		    		sideBar.css('left', 0);
+		    	} else {
+		    		sideBar.css('position', 'absolute');
+		    		sideBar.css('top', $('#content').height() - footer.height() - 5) ;
+		    		sideBar.css('left', 0);
+		    	}
 		    }
 		});
 
