@@ -400,8 +400,6 @@ def filter_projects(projects):
             filtered.append(project)
     return filtered
 
-
-
 # Get the page views per page including their first and second level paths
 def get_ind_pageviews(service, profile_id):
     return service.data().ga().get(
