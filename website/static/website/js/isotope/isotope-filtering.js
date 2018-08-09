@@ -39,12 +39,12 @@ function filterByFilteringScheme() {
 function handleFilteringClick(e) {
     // get the text
     var text = $(e.target).attr("name");
-    console.log(text);
+    //console.log(text);
     // check if text is in the filtering container
     if(isTextInContainer(currentIsotopeProperties['filteringKeywordContainer'], text)) {
         // set the filtering scheme, set the grid settings
         filteringScheme = text;
-        console.log("filterscheme" + filteringScheme);
+        //console.log("filterscheme" + filteringScheme);
         $($(currentIsotopeProperties['gridName'])).isotope({
             filter: filterByFilteringScheme,
         });

@@ -49,8 +49,8 @@ function isotopeFilterBarInit(){
             }
         }
     });
-    console.log(filterNames);
-    console.log(filterKeywords);
+    //console.log(filterNames);
+    //console.log(filterKeywords);
 }
 
 function offset(el) {
@@ -76,13 +76,13 @@ function handleFilterBarClick(e)
     var scrollTop = offset($(currentIsotopeProperties['scrollTop'])[0]).top - 100;
     //formula to calculate a smooth scroll time, caps at one second.
     var timeToScroll = 1000 * (-100/(Math.abs(window.scrollY - scrollTop)+ 100) + 1);
-    console.log(scrollTop, timeToScroll);
+    //console.log(scrollTop, timeToScroll);
     // scroll up to "scrollTop"
     $("html, body").animate({scrollTop:scrollTop}, timeToScroll);
 
     //handle the filtering click if it exists
     if(typeof handleFilteringClick !== typeof undefined){
-        console.log("hello");
+        //console.log("hello");
         //wait for the scroll before filtering
         setTimeout(function(){handleFilteringClick(e)}, timeToScroll);
     }
@@ -103,12 +103,12 @@ function handleFilterBarClick(e)
             for(var i = 0; i < filterNames.length; i++) {
                 if(filterNames[i].indexOf(text) !== -1) {
                     filterMatches.push(filterNames[i]);
-                    console.log(filterNames[i]);
+                    //console.log(filterNames[i]);
                 }
             }
             //sort these names so that we can put them in order
             filterMatches = sortFilterNamesByProperty(filterMatches, text);
-            console.log("in filter-bar: ")
+            //console.log("in filter-bar: ")
             //if there are more than 0 filter matches, add the text as a header.
             if(filterMatches.length > 0) {
                 $(currentIsotopeProperties['filteringKeywordContainer']).append("<h1 class='added-filter-keywords'>" + text + "</h1>");
