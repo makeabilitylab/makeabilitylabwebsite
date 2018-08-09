@@ -68,8 +68,8 @@ def generate_and_save_thumbnail_from_pdf(artifact, thumbnail_resolution):
     # because otherwise we would enter an infinite loop given that we save the model again below
     if not artifact.thumbnail or artifact.thumbnail.name is None or \
                     os.path.normpath(os.path.normcase(artifact.thumbnail.path)) != os.path.normpath(os.path.normcase(thumbnail_path)):
-        with Image(filename="{}[0]".format(artifact.pdf_file.path), resolution=300) as img:
-            img.format = 'jpeg'
+        with Image(filename="{}[0]".format(artifact.pdf_file.path), resolution=300, width=300, height=300) as img:
+            img.format = 'JPEG'
             img.background_color = Color('white')
             img.alpha_channel = 'remove'
             img.save(filename=thumbnail_path)

@@ -1,13 +1,44 @@
 from rest_framework import serializers
 from website.models import Person, Publication, Talk, Video, Project, Project_umbrella
+from django.core.files import File
+import os
+import requests
+
+class PersonSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        test_p = Person.objects.filter(first_name=validated_data.get('first_name'), last_name=validated_data.get('last_name'))
+        if len(test_p) > 0:
+            return test_p
+        else:
+            return Person.objects.create(**validated_data)
+
+    class Meta:
+        model = Person
+        fields = '__all__'
+        depth = 10
 
 class PublicationSerializer(serializers.ModelSerializer):
+    authors = PersonSerializer(many=True)
 
     def create(self, validated_data):
         """
         Create and return a new `Publication` instance, given the validated data
         """
-        return Publication.objects.create(**validated_data)
+        authors = validated_data.pop('authors')
+        serializer = PersonSerializer(data=authors, many=True)
+        serializer.is_valid()
+        serializer.save()
+
+        p = Publication.objects.create(**validated_data)
+        for author in authors:
+            person = Person.objects.get(first_name=author['first_name'], last_name=author['last_name'])
+            p.authors.add(person)
+        pdf_url = p.pdf_file.url
+        print(pdf_url)
+        return p
+        #serializer = PersonSerializer(data=authors, many=True)
+        #if serializer.is_valid(raise_exception=True):
+        #    authors = serializer.save(Publication=pub)
 
     def update(self, instance, validated_data):
         """
@@ -44,6 +75,7 @@ class PublicationSerializer(serializers.ModelSerializer):
         instance.award =validated_data.get('award',instance.award)
         instance.save()
         return instance
+
 
     class Meta:
         model = Publication

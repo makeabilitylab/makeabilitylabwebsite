@@ -73,11 +73,11 @@ class TalkDetail(APIView):
 
 class PubsList(APIView):
     '''
-    List all talks, or create a new talk
+    List all pubs, or create a new pubs
     '''
     def get(self, request, format = None):
         pubs = Publication.objects.all()
-        serializer = PublicationSerializer(pubs,many=True, context={'request': request})
+        serializer = PublicationSerializer(pubs,many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
@@ -89,7 +89,7 @@ class PubsList(APIView):
 
 class PubsDetail(APIView):
     """
-    Retrieve, update or delete a snippet instance.
+    Retrieve, update or delete a pub instance.
     """
     def get_object(self, pk):
         try:
