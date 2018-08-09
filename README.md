@@ -11,6 +11,7 @@ This repository contains the Makeability Lab's website, which is written in Djan
 * [Test and Production Servers](#test-and-production-servers)
 * [Deploying Code to UW Servers](#deploying-code-to-uw-servers)
 * [Makeability Lab Data](#makeability-lab-data)
+* [Makeability Lab API](#makeability-lab-api)
 * [Manual Installation](#manual-installation)
 * [Contributing](#contributing)
 * [Troubleshooting](#troubleshooting)
@@ -196,6 +197,9 @@ You can also view `buildlog.text`, `httpd-access.log`, and `httpd-error.log` at 
 
 # Makeability Lab Data
 There are two types of Makeability Lab data: (i) uploaded files like PDFs, PowerPoint files, images, etc. and (ii) data that goes into the database (SQLite in local dev, PostgreSQL on production). Although we have both a test (makeability-test.cs) and a production server (makeability.cs), they are linked to the same backend data for both (i) and (ii).
+
+# Makeability Lab API
+TODO Johnson
 
 ## Uploaded Files
 All data/files uploaded to the Makeability Lab website via the admin interface (e.g., talks, publications) goes into the `/media` folder. Although typically you will not ever need to manually access this folder (except, for example, to view the `debug.log`), you can do so by ssh'ing into recycle.cs.washington.edu and cd to `/cse/web/research/makelab/www`. This files area is being mapped into the `/media` folder. This directory is shared by both https://makeabilitylab-test.cs.washington.edu/ and https://makeabilitylab.cs.washington.edu/.
