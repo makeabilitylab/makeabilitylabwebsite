@@ -110,7 +110,7 @@ git config --global core.autocrlf false
 git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git
 cd .\makeabilitylabwebsite\
 docker build . -t makelab_image
-docker run -ti -v ${pwd}/db:/code/db -v $(pwd)/media:/code/media --entrypoint=bash makelab_image
+docker run -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media --entrypoint=bash makelab_image
 python3 manage.py makemigrations website
 python3 manage.py migrate
 exit
