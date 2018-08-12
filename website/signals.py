@@ -61,15 +61,15 @@ def generate_and_save_thumbnail_from_pdf(artifact, thumbnail_resolution):
 
     pdf_filename = os.path.basename(artifact.pdf_file.path)
     pdf_filename_no_extension = os.path.splitext(pdf_filename)[0]
-    thumbnail_filename = "{}.{}".format(pdf_filename_no_extension, "jpg");
+    thumbnail_filename = "{}.{}".format(pdf_filename_no_extension, "png");
     thumbnail_path = os.path.join(thumbnail_dir, thumbnail_filename)
 
     # check to see if this is a new (or changed) file. This 'if condition' is super necessary
     # because otherwise we would enter an infinite loop given that we save the model again below
     if not artifact.thumbnail or artifact.thumbnail.name is None or \
                     os.path.normpath(os.path.normcase(artifact.thumbnail.path)) != os.path.normpath(os.path.normcase(thumbnail_path)):
-        with Image(filename="{}[0]".format(artifact.pdf_file.path), resolution=300, width=300, height=300) as img:
-            img.format = 'JPEG'
+        with Image(filename="{}[0]".format(artifact.pdf_file.path), resolution=300) as img:
+            img.format = 'png'
             img.background_color = Color('white')
             img.alpha_channel = 'remove'
             img.save(filename=thumbnail_path)

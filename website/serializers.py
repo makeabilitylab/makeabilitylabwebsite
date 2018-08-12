@@ -3,6 +3,8 @@ from website.models import Person, Publication, Talk, Video, Project, Project_um
 from django.core.files import File
 import os
 import requests
+import glob
+import shutil
 
 class PersonSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
@@ -28,13 +30,18 @@ class PublicationSerializer(serializers.ModelSerializer):
         serializer = PersonSerializer(data=authors, many=True)
         serializer.is_valid()
         serializer.save()
-
-        p = Publication.objects.create(**validated_data)
+        pdf_file = validated_data.pop('pdf_file')
+        pdf_name = pdf_file.name
+        pdf_url = os.path.join('media', 'temp', pdf_name)
+        pdf = File(open(pdf_name, 'rb'))
+        p = Publication.objects.create(pdf_file=pdf, **validated_data)
+        pdf.close()
         for author in authors:
             person = Person.objects.get(first_name=author['first_name'], last_name=author['last_name'])
             p.authors.add(person)
-        pdf_url = p.pdf_file.url
-        print(pdf_url)
+        #for f in glob.glob('./media/temp/*.pdf'):
+        #    shutil.move(f, os.path.join('.', 'media', 'publications'))
+
         return p
         #serializer = PersonSerializer(data=authors, many=True)
         #if serializer.is_valid(raise_exception=True):

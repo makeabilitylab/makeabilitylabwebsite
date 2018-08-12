@@ -12,7 +12,7 @@ from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from website.serializers import TalkSerializer, PublicationSerializer
+from website.serializers import *
 
 from django.http import Http404
 from rest_framework.views import APIView
@@ -36,13 +36,6 @@ class TalkList(APIView):
         serializer = TalkSerializer(talks,many=True,context={'request': request})
         return Response(serializer.data)
 
-    def post(self, request, format=None):
-        serializer = TalkSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 class TalkDetail(APIView):
     """
     Retrieve, update or delete a snippet instance.
@@ -58,19 +51,6 @@ class TalkDetail(APIView):
         serializer = TalkSerializer(talk)
         return Response(serializer.data)
 
-    def put(self, request, pk, format=None):
-        talk = self.get_object(pk)
-        serializer = TalkSerializer(talk, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        talk = self.get_object(pk)
-        talk.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
 class PubsList(APIView):
     '''
     List all pubs, or create a new pubs
@@ -79,13 +59,6 @@ class PubsList(APIView):
         pubs = Publication.objects.all()
         serializer = PublicationSerializer(pubs,many=True)
         return Response(serializer.data)
-
-    def post(self, request, format=None):
-        serializer = PublicationSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PubsDetail(APIView):
     """
@@ -102,18 +75,103 @@ class PubsDetail(APIView):
         serializer = PublicationSerializer(pub)
         return Response(serializer.data)
 
-    def put(self, request, pk, format=None):
-        pub = self.get_object(pk)
-        serializer = PublicationSerializer(pub, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class PeopleList(APIView):
+    '''
+    List all talks, or create a new talk
+    '''
+    def get(self, request, format = None):
+        people = Person.objects.all()
+        serializer = PersonSerializer(people, many=True, context={'request': request})
+        return Response(serializer.data)
 
-    def delete(self, request, pk, format=None):
-        pub = self.get_object(pk)
-        pub.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+class PeopleDetail(APIView):
+    """
+    Retrieve, update or delete a snippet instance.
+    """
+    def get_object(self, pk):
+        try:
+            return Person.objects.get(pk=pk)
+        except Person.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        person = self.get_object(pk)
+        serializer = PersonSerializer(person)
+        return Response(serializer.data)
+
+class NewsList(APIView):
+    '''
+    List all talks, or create a new talk
+    '''
+    def get(self, request, format = None):
+        news = News.objects.all()
+        serializer = NewsSerializer(news, many=True, context={'request': request})
+        return Response(serializer.data)
+
+class NewsDetail(APIView):
+    """
+    Retrieve, update or delete a snippet instance.
+    """
+    def get_object(self, pk):
+        try:
+            return News.objects.get(pk=pk)
+        except News.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        news = self.get_object(pk)
+        serializer = NewsSerializer(news)
+        return Response(serializer.data)
+
+class VideoList(APIView):
+    '''
+    List all talks, or create a new talk
+    '''
+    def get(self, request, format = None):
+        videos = Video.objects.all()
+        serializer = VideoSerializer(news, many=True, context={'request': request})
+        return Response(serializer.data)
+
+class VideoDetail(APIView):
+    """
+    Retrieve, update or delete a snippet instance.
+    """
+    def get_object(self, pk):
+        try:
+            return Video.objects.get(pk=pk)
+        except Video.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        video = self.get_object(pk)
+        serializer = VideoSerializer(video)
+        return Response(serializer.data)
+
+class ProjectList(APIView):
+    '''
+    List all talks, or create a new talk
+    '''
+    def get(self, request, format = None):
+        projects = Project.objects.all()
+        serializer = ProjectSerializer(news, many=True, context={'request': request})
+        return Response(serializer.data)
+
+class ProjectDetail(APIView):
+    """
+    Retrieve, update or delete a snippet instance.
+    """
+    def get_object(self, pk):
+        try:
+            return Project.objects.get(pk=pk)
+        except Project.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        project = self.get_object(pk)
+        serializer = ProjectSerializer(news)
+        return Response(serializer.data)
+
+
 
 # Every view is passed settings.DEBUG. This is used to insert the appropriate google analytics tracking when in
 # production, and to not include it for development
