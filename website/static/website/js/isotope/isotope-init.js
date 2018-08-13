@@ -71,7 +71,7 @@ $(window).load(function () {
             }
         }
 
-        console.log(allIsotopeProperties.length);
+        //console.log(allIsotopeProperties.length);
         allIsotopeProperties.push(isotopeProperties);
     });
 
@@ -82,11 +82,11 @@ $(window).load(function () {
             $(item).on('click', function (e) {
                 if (currentIsotopeProperties !== allIsotopeProperties[i]) {
                     currentIsotopeProperties = allIsotopeProperties[i];
-                    console.log("handling click");
+                    //console.log("handling click");
                     init();
                 }
 
-                console.log("finished init, moving to filter bar");
+                //console.log("finished init, moving to filter bar");
                 handleFilterBarClick(e);
             });
         });
@@ -138,7 +138,7 @@ function getLineOfProperty(text, property){
             return dataSplit[i].trim();
         }
     }
-    console.log("returning null");
+    //console.log("returning null");
     return null;
 }
 
@@ -147,7 +147,7 @@ function getIsPropertyAscending(property_container, property){
     var result = false;
     $(property_container + ' a').each(function(){
         if($(this).attr("name") === property){
-            console.log(property);
+            //console.log(property);
             result = $(this).attr("sorting-order").toLowerCase().trim() === "true";
             return false;
         }

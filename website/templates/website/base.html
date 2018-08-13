@@ -75,18 +75,37 @@
         // $("#back-top").hide();
     });
 
+    function parseHashtoAnchor(string){
+        if(!isNaN(parseInt(string))){
+            return string.trim();
+        }
+        string = string.replace(/-/g, " ");
+        string = string.trim();
+        var stringArray = string.split(" ");
+        var returnVal = '';
+        stringArray.forEach(function(element){
+           element = element.charAt(0).toUpperCase() + element.substring(1, element.length);
+           returnVal = returnVal + element + " ";
+        });
+        return returnVal.trim()
+
+    }
+
     // allow for smooth scrolling to anchor links
     $(document).click(function (event) {
-	var clickedElement = event.originalEvent.srcElement;
-        if (clickedElement.className === "scroll" || clickedElement.parentElement.className === "scroll") {
+	var target = event.originalEvent.target;
+        if (target.className === "scroll" || target.parentElement.className === "scroll") {
             //prevent the default action for the click event
             event.preventDefault();
 
-            var element = clickedElement.className === "scroll" ? clickedElement : clickedElement.parentElement;
+            var element = target.className === "scroll" ? target : target.parentElement;
 
             //get the top offset of the target anchor
             var hashName = element.hash.substring(1);
+            hashName = parseHashtoAnchor(hashName);
+            console.log(hashName)
             var target_offset = $('[name=' + hashName + ']').offset();
+            console.log(target_offset)
             var target_top = target_offset.top - 60;
 
             //goto that anchor by setting the body scroll top to anchor top
@@ -440,8 +459,8 @@
                             </ul>
                         </div>
                 </div>
-                
-                <div class="col-xs-3 makelab-footer-col" style="margin-left: 0em; padding-right: 0em;">
+
+                <div class="col-xs-4 col-lg-3 makelab-footer-col" style="margin-left: 0em; padding-right: 0em;">
                     <h1>Recent News</h1>
                     {# To add news dynamically, we need to use a context processor. See our custom process in context_processors.py #}
                     {# See: https://stackoverflow.com/questions/36093221/how-to-put-variable-from-database-into-base-html-template #}
@@ -449,12 +468,12 @@
                     {% for news_item in recent_news %}
                         <div class="row">
                             <a href="{% url 'website:news' news_item.id %}">
-                                <div class="col-xs-4" style="white-space:nowrap;">
-				    {#  Date formats here: https://docs.djangoproject.com/en/1.11/ref/templates/builtins/#std:templatefilter-date #}	
+                                <div class="col-xs-3" style="white-space:nowrap;min-width:115px">
+				    {#  Date formats here: https://docs.djangoproject.com/en/1.11/ref/templates/builtins/#std:templatefilter-date #}
                                     <p>{{ news_item.date|date:"N d, Y" }}</p>
                                 </div>
-                                <div class="col-xs-8">
-                                    <p class= "line-clamp">{{ news_item.title }}</p>
+                                <div style="max-width: 300px; width:100%;">
+                                   <p class= "line-clamp">{{ news_item.title }}</p>
                                 </div>
                             </a>
                         </div>
@@ -467,23 +486,16 @@
                     <ul>
                         {% with request.resolver_match.url_name as url_name %}
 {#                            <li>url_name: {{ url_name  }}</li>#}
-                            <li class="{% if url_name == 'index' %}active{% endif %}"><a href="{% url 'website:index' %}"> &nbsp;> &nbsp; Home</a></li>
+                            <li style="white-space:nowrap;" class="{% if url_name == 'index' %}active{% endif %}"><a href="{% url 'website:index' %}"> &nbsp;> &nbsp; Home</a></li>
     {#                        <li>About Us</li>#}
-                            <li class="{% if url_name == 'people' %}active{% endif %}"><a href="{% url 'website:people' %}">&nbsp;> &nbsp; People</a></li>
-                            <li class="{% if url_name == 'news_listing' %}active{% endif %}"><a href="{% url 'website:news_listing' %}">&nbsp;> &nbsp; News</a></li>
+                            <li style="white-space:nowrap;" class="{% if url_name == 'people' %}active{% endif %}"><a href="{% url 'website:people' %}">&nbsp;> &nbsp; People</a></li>
+                            <li style="white-space:nowrap;" class="{% if url_name == 'news_listing' %}active{% endif %}"><a href="{% url 'website:news_listing' %}">&nbsp;> &nbsp; News</a></li>
     {#                  <li class="{% if url_name == 'projects' %}active{% endif %}"><a href="{% url 'website:projects' %}">&nbsp;> &nbsp; Projects</a></li>#}
-                            <li class="{% if url_name == 'publications' %}active{% endif %}"><a href="{% url 'website:publications' %}">&nbsp;> &nbsp; Publications</a></li>
-                            <li class="{% if url_name == 'talks' %}active{% endif %}"><a href="{% url 'website:talks' %}">&nbsp;> &nbsp; Talks</a></li>
-                            <li class="{% if url_name == 'videos' %}active{% endif %}"><a href="{% url 'website:videos' %}">&nbsp;> &nbsp; Videos</a></li>
+                            <li style="white-space:nowrap;" class="{% if url_name == 'publications' %}active{% endif %}"><a href="{% url 'website:publications' %}">&nbsp;> &nbsp; Publications</a></li>
+                            <li style="white-space:nowrap;" class="{% if url_name == 'talks' %}active{% endif %}"><a href="{% url 'website:talks' %}">&nbsp;> &nbsp; Talks</a></li>
+                            <li style="white-space:nowrap;" class="{% if url_name == 'videos' %}active{% endif %}"><a href="{% url 'website:videos' %}">&nbsp;> &nbsp; Videos</a></li>
                         {% endwith %}
                     </ul>
-                </div>
-                
-                
-
-                
-                <div class="col-xs-3 makelab-footer-col">
-
                 </div>
             </div>
 
