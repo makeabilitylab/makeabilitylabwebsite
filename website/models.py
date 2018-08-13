@@ -2,7 +2,7 @@ from django.db import models
 from image_cropping import ImageRatioField
 from sortedm2m.fields import SortedManyToManyField
 from django.dispatch import receiver
-from django.db.models.signals import pre_delete
+from django.db.models.signals import pre_delete, post_delete
 from datetime import date
 from django.utils import timezone
 from datetime import timedelta
@@ -678,7 +678,7 @@ class Talk(models.Model):
 
     def __str__(self):
         return self.title
-
+'''
 @receiver(models.signals.post_delete, sender=Talk)
 def auto_delete_file_on_delete(sender, instance, **kwargs):
     """
@@ -716,14 +716,15 @@ def auto_delete_file_on_change(sender, instance, **kwargs):
     if not old_file_r == new_file_r:
         if os.path.isfile(old_file_r.path):
             os.remove(old_file_r.path)
+'''
 
 
-@receiver(pre_delete, sender=Talk)
+@receiver(post_delete, sender=Talk)
 def talk_delete(sender, instance, **kwargs):
     if instance.pdf_file:
-        instance.pdf_file.delete(False)
+        instance.pdf_file.delete(True)
     if instance.raw_file:
-        instance.raw_file.delete(False)
+        instance.raw_file.delete(True)
 
 
 class Publication(models.Model):
@@ -841,6 +842,12 @@ class Publication(models.Model):
     def __str__(self):
         return self.title
 
+@receiver(pre_delete, sender=Publication)
+def pub_delete(sender, instance, **kwargs):
+    if instance.pdf_file:
+        instance.pdf_file.delete(True)
+    if instance.thumbnail:
+        instance.thumbnail.delete(True)
 
 @receiver(pre_delete, sender=Publication)
 def publication_delete(sender, instance, **kwards):

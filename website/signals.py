@@ -45,9 +45,10 @@ def talk_post_save(sender, **kwargs):
 
     # get the talk that was just saved and auto-generate a thumbnail
     talk = kwargs['instance']
-    print("Talk '{}' has just been saved with PDF={}, checking to see if we should auto-generate a thumbnail".format(talk.title, talk.pdf_file.path))
-    thumbnail_res = 300
-    generate_and_save_thumbnail_from_pdf(talk, thumbnail_res)
+    if talk.pdf_file:
+        print("Talk '{}' has just been saved with PDF={}, checking to see if we should auto-generate a thumbnail".format(talk.title, talk.pdf_file.path))
+        thumbnail_res = 300
+        generate_and_save_thumbnail_from_pdf(talk, thumbnail_res)
 
 # Assumes that artifact is a models.Model type and has the following fields:
 #  an ImageField called thumbnail
