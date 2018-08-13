@@ -684,9 +684,10 @@ class Talk(models.Model):
                 # if not the first speaker, add in a comma in CSV string
                 list_of_speakers_as_csv += ", "
             list_of_speakers_as_csv += speaker.get_full_name()
-            list_of_speakers_as_csv = False
+            is_first_speaker = False
         return list_of_speakers_as_csv
 
+    get_speakers_as_csv.short_description = 'Speaker List'
 
     def __str__(self):
         return self.title
