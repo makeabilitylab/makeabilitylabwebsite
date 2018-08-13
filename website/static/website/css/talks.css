@@ -28,6 +28,8 @@
 	position:relative;
 	min-height: 300px;
 	float: left;
+	/* added this in to fix the talk alignment temporarily, fixes the bootstrap alignment issues */
+	line-height: 1;
 }
 
 @media (max-width: 768px){

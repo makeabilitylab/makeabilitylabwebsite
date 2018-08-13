@@ -28,6 +28,7 @@
 .citation-links {
     text-align: right;
     margin-bottom: -5px;
+	cursor: pointer;
 }
 
 .publication-list h1 {

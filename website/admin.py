@@ -130,9 +130,12 @@ class TalkAdmin(admin.ModelAdmin):
         if db_field.name == "project_umbrellas":
             kwargs["widget"] = widgets.FilteredSelectMultiple("project umbrellas", is_stacked=False, )
         if db_field.name == "speakers":
-            current_member_and_collab_ids = [person.id for person in Person.objects.all() if person.is_current_member()]
-            filtered_speakers = Person.objects.filter(id__in=current_member_and_collab_ids).order_by('first_name')
-            kwargs["queryset"] = filtered_speakers
+            # Uncomment the following block of code to limit the speakers field in the admin UI only to current lab members
+            # Note: we don't actually want to do this (see https://github.com/jonfroehlich/makeabilitylabwebsite/issues/534)
+            # but keeping it here because code may be useful in the future for other areas of admin interface
+            # current_member_and_collab_ids = [person.id for person in Person.objects.all() if person.is_current_member()]
+            # filtered_speakers = Person.objects.filter(id__in=current_member_and_collab_ids).order_by('first_name')
+            # kwargs["queryset"] = filtered_speakers
             kwargs["widget"] = widgets.FilteredSelectMultiple("speakers", is_stacked=False)
         if db_field.name == "keywords":
             kwargs["widget"] = widgets.FilteredSelectMultiple("keywords", is_stacked=False)
