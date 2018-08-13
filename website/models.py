@@ -311,7 +311,6 @@ class Position(models.Model):
 
     def get_start_date_short(self):
         if self.is_current_member():
-            # TODO return the earliest this person was ever a member
             return self.person.get_earliest_member_position().start_date.strftime('%b %Y')
         else:
             return self.start_date.strftime('%b %Y')
@@ -675,6 +674,20 @@ class Talk(models.Model):
         cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
         return cap_title
 
+    # Gets the list of speakers as a csv string
+    def get_speakers_as_csv(self):
+        # iterate through all of the speakers and return the csv
+        is_first_speaker = True
+        list_of_speakers_as_csv = ""
+        for speaker in self.speakers.all():
+            if is_first_speaker != True:
+                # if not the first speaker, add in a comma in CSV string
+                list_of_speakers_as_csv += ", "
+            list_of_speakers_as_csv += speaker.get_full_name()
+            list_of_speakers_as_csv = False
+        return list_of_speakers_as_csv
+
+
     def __str__(self):
         return self.title
 
@@ -785,6 +798,7 @@ class Publication(models.Model):
     # Returns the title of the publication in capital case
     def get_title(self):
         # Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
+        # TODO looks like we have similar code in class Talk--should make a common utility method for both to reduce code redundancy
         cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
         return cap_title
 
