@@ -2,7 +2,8 @@ from django.db import models
 from image_cropping import ImageRatioField
 from sortedm2m.fields import SortedManyToManyField
 from django.dispatch import receiver
-from django.db.models.signals import pre_delete
+from django.db.models.signals import pre_delete, post_save, m2m_changed
+from django.conf import settings
 from datetime import date
 from django.utils import timezone
 from datetime import timedelta
@@ -13,6 +14,7 @@ import glob
 import re
 from random import choice
 from django.core.files import File
+import shutil
 
 
 # Simple check to seee if a file is an image. Not strictly necessary but included for safety
@@ -637,6 +639,8 @@ class Video(models.Model):
         return self.title
 
 
+
+
 class Talk(models.Model):
     title = models.CharField(max_length=255)
 
@@ -669,6 +673,8 @@ class Talk(models.Model):
 
     # raw_file = models.FileField(upload_to='talks/')
     # print("In talk model!")
+    def get_person(self):
+        return self.speakers.all()[0]
 
     def get_title(self):
         # Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
@@ -678,6 +684,22 @@ class Talk(models.Model):
     def __str__(self):
         return self.title
 
+#@receiver(post_save, sender=Talk)
+def speakerName_Title_Year(sender, instance, action, reverse, **kwargs):
+    if action == 'post_add' and not reverse:
+        print(instance.pdf_file.path) #/code/media/talks/Get_Started_with_Dropbox.pdf
+        initial_path = instance.pdf_file.path
+        print(instance.speakers.all())
+        person = instance.get_person()
+        name = person.last_name
+        year = instance.date.year
+        title = instance.title.replace(' ', '_')
+        instance.pdf_file.name = os.path.join('talks', name + '_' + title + '_' + str(year) + '.pdf')
+        new_path = os.path.join(settings.MEDIA_ROOT, instance.pdf_file.name)
+        os.rename(initial_path, new_path)
+        instance.save()
+
+m2m_changed.connect(speakerName_Title_Year, sender=Talk.speakers.through)
 
 @receiver(pre_delete, sender=Talk)
 def talk_delete(sender, instance, **kwargs):
