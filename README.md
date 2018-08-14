@@ -11,6 +11,7 @@ This repository contains the Makeability Lab's website, which is written in Djan
 * [Test and Production Servers](#test-and-production-servers)
 * [Deploying Code to UW Servers](#deploying-code-to-uw-servers)
 * [Makeability Lab Data](#makeability-lab-data)
+* [Makeability Lab API](#makeability-lab-api)
 * [Manual Installation](#manual-installation)
 * [Contributing](#contributing)
 * [Troubleshooting](#troubleshooting)
@@ -109,7 +110,7 @@ git config --global core.autocrlf false
 git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git
 cd .\makeabilitylabwebsite\
 docker build . -t makelab_image
-docker run -ti -v ${pwd}/db:/code/db -v $(pwd)/media:/code/media --entrypoint=bash makelab_image
+docker run -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media --entrypoint=bash makelab_image
 python3 manage.py makemigrations website
 python3 manage.py migrate
 exit
@@ -149,7 +150,7 @@ NOTE: If you haven't created a superuser yet, you will need to do so through ter
 # Bootstrapping Content
 To support quickly adding content for development, we have two automated tools that download data from Jon’s UMD website. 
 
-1. Go into the Docker shell, run `make shell` (If you're not using Docker, simply run these commands in terminal)
+1. Go into the Docker shell, run `make shell`. If you're on Windows and can't use the Makefile, just type this in instead `docker run -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media --entrypoint=bash`
 2. Now, to import pubs, run `python3 manage.py importpubs`
 3. To import talks, run `python3 manage.py importtalks`
 
@@ -196,6 +197,26 @@ You can also view `buildlog.text`, `httpd-access.log`, and `httpd-error.log` at 
 
 # Makeability Lab Data
 There are two types of Makeability Lab data: (i) uploaded files like PDFs, PowerPoint files, images, etc. and (ii) data that goes into the database (SQLite in local dev, PostgreSQL on production). Although we have both a test (makeability-test.cs) and a production server (makeability.cs), they are linked to the same backend data for both (i) and (ii).
+
+# Makeability Lab API
+### What it does
+A script in the website automatically serializes some models specified in `serializers.py`. The data, in JSON format, is then rendered into an APIView and displayed in a webpage. The entire api framework is housed under the `/api/` url extension. Currently only publications and talks are serialized.
+
+### How to use
+There are two ways to call and retrieve the data:
+1.	List: will return all of the model objects in the data serialized into JSON
+2.	Detail: will return a specific object based on the primary key
+
+##### Publications:
+List: `https://makeabilitylab-test.cs.washington.edu/api/pubs/`
+<br>Detail: `https://makeabilitylab-test.cs.washington.edu/api/pubs/<pk: int>`
+
+##### Talks:
+List: `https://makeabilitylab-test.cs.washington.edu/api/talks/`
+<br>Detail: `https://makeabilitylab-test.cs.washington.edu/api/talks/<pk: int>`
+
+To request the pure json version, append `?format=json` to the end of the url. The data will then be rendered in complete JSON without the apiview.
+
 
 ## Uploaded Files
 All data/files uploaded to the Makeability Lab website via the admin interface (e.g., talks, publications) goes into the `/media` folder. Although typically you will not ever need to manually access this folder (except, for example, to view the `debug.log`), you can do so by ssh'ing into recycle.cs.washington.edu and cd to `/cse/web/research/makelab/www`. This files area is being mapped into the `/media` folder. This directory is shared by both https://makeabilitylab-test.cs.washington.edu/ and https://makeabilitylab.cs.washington.edu/.
