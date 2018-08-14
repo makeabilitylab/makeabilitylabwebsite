@@ -34,14 +34,10 @@ RUN mkdir /code
 # See: https://docs.docker.com/engine/reference/builder/#workdir
 WORKDIR /code
 
-# The ADD instruction copies new files, directories or remote file URLs from <src> and adds them to the 
+# The ADD instruction copies new files, directories or remote file URLs from <src> and adds them to the
 # filesystem of the image at the path <dest>.
 # See: https://docs.docker.com/engine/reference/builder/#add
 ADD requirements.txt /code/
-
-# By copying over requirements first, we make sure that Docker will cache
-# our installed requirements rather than reinstall them on every build
-COPY requirements.txt /code/
 
 # As an fyi: Layering RUN instructions and generating commits conforms to the core concepts 
 # of Docker where commits are cheap and containers can be created from any point in an image’s history, much like source control.
