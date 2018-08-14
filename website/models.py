@@ -725,6 +725,8 @@ def talk_delete(sender, instance, **kwargs):
         instance.pdf_file.delete(True)
     if instance.raw_file:
         instance.raw_file.delete(True)
+    if instance.thumbnail:
+        instance.thumbnail.delete(True)
 
 
 class Publication(models.Model):
@@ -842,19 +844,12 @@ class Publication(models.Model):
     def __str__(self):
         return self.title
 
-@receiver(pre_delete, sender=Publication)
+@receiver(post_delete, sender=Publication)
 def pub_delete(sender, instance, **kwargs):
     if instance.pdf_file:
         instance.pdf_file.delete(True)
     if instance.thumbnail:
         instance.thumbnail.delete(True)
-
-@receiver(pre_delete, sender=Publication)
-def publication_delete(sender, instance, **kwards):
-    if instance.thumbnail:
-        instance.thumbnail.delete(False)
-    if instance.pdf_file:
-        instance.pdf_file.delete(False)
 
 
 class Poster(models.Model):
