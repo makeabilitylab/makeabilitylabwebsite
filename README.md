@@ -150,7 +150,7 @@ NOTE: If you haven't created a superuser yet, you will need to do so through ter
 # Bootstrapping Content
 To support quickly adding content for development, we have two automated tools that download data from Jon’s UMD website. 
 
-1. Go into the Docker shell, run `make shell` (If you're not using Docker, simply run these commands in terminal)
+1. Go into the Docker shell, run `make shell`. If you're on Windows and can't use the Makefile, just type this in instead `docker run -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media --entrypoint=bash`
 2. Now, to import pubs, run `python3 manage.py importpubs`
 3. To import talks, run `python3 manage.py importtalks`
 

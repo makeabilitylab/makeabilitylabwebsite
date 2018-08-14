@@ -4,6 +4,7 @@ from sortedm2m.fields import SortedManyToManyField
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_save, m2m_changed
 from django.conf import settings
+
 from datetime import date
 from django.utils import timezone
 from datetime import timedelta
@@ -313,7 +314,6 @@ class Position(models.Model):
 
     def get_start_date_short(self):
         if self.is_current_member():
-            # TODO return the earliest this person was ever a member
             return self.person.get_earliest_member_position().start_date.strftime('%b %Y')
         else:
             return self.start_date.strftime('%b %Y')
@@ -637,6 +637,7 @@ class Video(models.Model):
 
     def __str__(self):
         return self.title
+# These two auto-delete files from filesystem when they are unneeded:
 
 
 
@@ -681,6 +682,21 @@ class Talk(models.Model):
         cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
         return cap_title
 
+    # Gets the list of speakers as a csv string
+    def get_speakers_as_csv(self):
+        # iterate through all of the speakers and return the csv
+        is_first_speaker = True
+        list_of_speakers_as_csv = ""
+        for speaker in self.speakers.all():
+            if is_first_speaker != True:
+                # if not the first speaker, add in a comma in CSV string
+                list_of_speakers_as_csv += ", "
+            list_of_speakers_as_csv += speaker.get_full_name()
+            is_first_speaker = False
+        return list_of_speakers_as_csv
+
+    get_speakers_as_csv.short_description = 'Speaker List'
+
     def __str__(self):
         return self.title
 
@@ -706,12 +722,14 @@ def update_file_name_talks(sender, instance, action, reverse, **kwargs):
 
 m2m_changed.connect(update_file_name_talks, sender=Talk.speakers.through)
 
-@receiver(pre_delete, sender=Talk)
+@receiver(post_delete, sender=Talk)
 def talk_delete(sender, instance, **kwargs):
     if instance.pdf_file:
-        instance.pdf_file.delete(False)
+        instance.pdf_file.delete(True)
     if instance.raw_file:
-        instance.raw_file.delete(False)
+        instance.raw_file.delete(True)
+    if instance.thumbnail:
+        instance.thumbnail.delete(True)
 
 
 class Publication(models.Model):
@@ -815,6 +833,7 @@ class Publication(models.Model):
     # Returns the title of the publication in capital case
     def get_title(self):
         # Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
+        # TODO looks like we have similar code in class Talk--should make a common utility method for both to reduce code redundancy
         cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
         return cap_title
 
@@ -831,6 +850,7 @@ class Publication(models.Model):
 
     def __str__(self):
         return self.title
+
 
 def update_file_name_publication(sender, instance, action, reverse, **kwargs):
     # Reverse: Indicates which side of the relation is updated (i.e., if it is the forward or reverse relation that is being modified)
@@ -856,7 +876,9 @@ def publication_delete(sender, instance, **kwards):
     if instance.thumbnail:
         instance.thumbnail.delete(False)
     if instance.pdf_file:
-        instance.pdf_file.delete(False)
+        instance.pdf_file.delete(True)
+    if instance.thumbnail:
+        instance.thumbnail.delete(True)
 
 
 class Poster(models.Model):
