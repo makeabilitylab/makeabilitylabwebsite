@@ -678,45 +678,6 @@ class Talk(models.Model):
 
     def __str__(self):
         return self.title
-'''
-@receiver(models.signals.post_delete, sender=Talk)
-def auto_delete_file_on_delete(sender, instance, **kwargs):
-    """
-    Deletes files from filesystem
-    when corresponding `Talk` object is deleted.
-    """
-    if instance.pdf_file:
-        if os.path.isfile(instance.pdf_file.path):
-            os.remove(instance.pdf_file.path)
-    if instance.raw_file:
-        if os.path.isfile(instance.raw_file.path):
-            os.remove(instance.raw_file.path)
-
-@receiver(models.signals.pre_save, sender=Talk)
-def auto_delete_file_on_change(sender, instance, **kwargs):
-    """
-    Deletes old file from filesystem
-    when corresponding `MediaFile` object is updated
-    with new file.
-    """
-    if not instance.pk:
-        return False
-
-    try:
-        old_file = Talk.objects.get(pk=instance.pk).pdf_file
-        old_file_r = Talk.objects.get(pk=instance.pk).raw_file
-    except Talk.DoesNotExist:
-        return False
-
-    new_file = instance.pdf_file
-    new_file_r = instance.raw_file
-    if not old_file == new_file:
-        if os.path.isfile(old_file.path):
-            os.remove(old_file.path)
-    if not old_file_r == new_file_r:
-        if os.path.isfile(old_file_r.path):
-            os.remove(old_file_r.path)
-'''
 
 
 @receiver(post_delete, sender=Talk)
