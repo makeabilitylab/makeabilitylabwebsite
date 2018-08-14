@@ -2,7 +2,7 @@ from django.db import models
 from image_cropping import ImageRatioField
 from sortedm2m.fields import SortedManyToManyField
 from django.dispatch import receiver
-from django.db.models.signals import pre_delete
+from django.db.models.signals import pre_delete, post_delete
 from datetime import date
 from django.utils import timezone
 from datetime import timedelta
@@ -634,6 +634,7 @@ class Video(models.Model):
 
     def __str__(self):
         return self.title
+# These two auto-delete files from filesystem when they are unneeded:
 
 
 class Talk(models.Model):
@@ -693,12 +694,14 @@ class Talk(models.Model):
         return self.title
 
 
-@receiver(pre_delete, sender=Talk)
+@receiver(post_delete, sender=Talk)
 def talk_delete(sender, instance, **kwargs):
     if instance.pdf_file:
-        instance.pdf_file.delete(False)
+        instance.pdf_file.delete(True)
     if instance.raw_file:
-        instance.raw_file.delete(False)
+        instance.raw_file.delete(True)
+    if instance.thumbnail:
+        instance.thumbnail.delete(True)
 
 
 class Publication(models.Model):
@@ -817,13 +820,12 @@ class Publication(models.Model):
     def __str__(self):
         return self.title
 
-
-@receiver(pre_delete, sender=Publication)
-def publication_delete(sender, instance, **kwards):
-    if instance.thumbnail:
-        instance.thumbnail.delete(False)
+@receiver(post_delete, sender=Publication)
+def pub_delete(sender, instance, **kwargs):
     if instance.pdf_file:
-        instance.pdf_file.delete(False)
+        instance.pdf_file.delete(True)
+    if instance.thumbnail:
+        instance.thumbnail.delete(True)
 
 
 class Poster(models.Model):
