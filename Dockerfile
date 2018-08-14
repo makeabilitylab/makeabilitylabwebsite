@@ -34,7 +34,7 @@ RUN mkdir /code
 # See: https://docs.docker.com/engine/reference/builder/#workdir
 WORKDIR /code
 
-# The ADD instruction copies new files, directories or remote file URLs from <src> and adds them to the 
+# The ADD instruction copies new files, directories or remote file URLs from <src> and adds them to the
 # filesystem of the image at the path <dest>.
 # See: https://docs.docker.com/engine/reference/builder/#add
 ADD requirements.txt /code/
