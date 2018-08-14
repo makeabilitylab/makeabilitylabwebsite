@@ -123,8 +123,7 @@ class VideoAdmin(admin.ModelAdmin):
 class TalkAdmin(admin.ModelAdmin):
     # The list display lets us control what is shown in the default talk table at Home > Website > Talk
     # See: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_display
-    # TODO: add speaker to the list_display
-    list_display = ('title', 'get_speakers_as_csv', 'forum_name', 'location')
+    list_display = ('title', 'date', 'get_speakers_as_csv', 'forum_name', 'location')
 
     # Filters speakers only to current members and collaborators and sorts by first name
     # Based on: https://stackoverflow.com/a/17457828
