@@ -2,6 +2,7 @@ from rest_framework import serializers
 from website.models import Person, Publication, Talk, Video, Project, Project_umbrella
 from django.core.files import File
 import os
+from django.conf import settings
 import requests
 import glob
 import shutil
@@ -12,7 +13,8 @@ class PersonSerializer(serializers.ModelSerializer):
         if len(test_p) > 0:
             return test_p
         else:
-            return Person.objects.create(**validated_data)
+            p = Person.objects.create(**validated_data)
+            return p
 
     class Meta:
         model = Person
@@ -32,13 +34,19 @@ class PublicationSerializer(serializers.ModelSerializer):
         serializer.save()
         pdf_file = validated_data.pop('pdf_file')
         pdf_name = pdf_file.name
-        pdf_url = os.path.join('media', 'temp', pdf_name)
+
         pdf = File(open(pdf_name, 'rb'))
         p = Publication.objects.create(pdf_file=pdf, **validated_data)
         pdf.close()
         for author in authors:
             person = Person.objects.get(first_name=author['first_name'], last_name=author['last_name'])
             p.authors.add(person)
+        initial_path = p.pdf_file.path
+        p.pdf_file.name = os.path.join('publications', p.pdf_file.name.split('/')[-1])
+        new_path = os.path.join(settings.MEDIA_ROOT, p.pdf_file.name)
+        shutil.move(initial_path, new_path)
+        p.save()
+        print('HELLO++++++++++++++++++++')
         #for f in glob.glob('./media/temp/*.pdf'):
         #    shutil.move(f, os.path.join('.', 'media', 'publications'))
 
