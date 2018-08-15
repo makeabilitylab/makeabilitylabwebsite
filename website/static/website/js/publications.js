@@ -300,12 +300,17 @@ function formatPublication(pub, filter) {
     publicationData.find(".publication-download-link").attr("href", pub.pdf);
     if (pub.video_url) {
         publicationData.find(".publication-video-link").attr("href", pub.video_url);
-    }
-    else {
+    } else {
         publicationData.find(".publication-video-link-label").css("display", "none");
     }
     // publicationData.find(".publication-citation-link").attr("data-content", createCitationText(pub));
     publicationData.find(".publication-citation-link").citationPopover(pub);
+    
+    if (pub.url != 'None') {
+   		publicationData.find(".publication-doi-link").attr("href", pub.url);
+    } else {
+    	publicationData.find(".publication-doi-link-label").css("display", "none");
+    }
 
 	return publicationData[0].outerHTML;
 }
