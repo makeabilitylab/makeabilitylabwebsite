@@ -791,6 +791,7 @@ class Publication(models.Model):
     WIP = "Work in Progress"
     LATE_BREAKING = "Late Breaking Result"
     OTHER = "Other"
+    PANEL = "Panel"
 
     PUB_VENUE_TYPE_CHOICES = (
         (CONFERENCE, CONFERENCE),
@@ -806,6 +807,7 @@ class Publication(models.Model):
         (WIP, WIP),
         (LATE_BREAKING, LATE_BREAKING),
         (OTHER, OTHER),
+        (PANEL, PANEL)
     )
 
     # TODO: remove null=True from the following three
