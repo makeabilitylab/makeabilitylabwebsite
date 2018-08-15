@@ -20,14 +20,6 @@ urlpatterns = [
     url(r'^api/talks/(?P<pk>[0-9])/$', views.TalkDetail.as_view(), name='api_talk'),
     url(r'^api/pubs/$', views.PubsList.as_view(), name='api_all_pubs'),
     url(r'^api/pubs/(?P<pk>[0-9])/$', views.PubsDetail.as_view(), name='api_pub'),
-    url(r'^api/people/$', views.PeopleList.as_view(), name='api_all_people'),
-    url(r'^api/people/(?P<pk>[0-9])/$', views.PeopleDetail.as_view(), name='api_person'),
-    url(r'^api/news/$', views.NewsList.as_view(), name='api_all_news'),
-    url(r'^api/news/(?P<pk>[0-9])/$', views.NewsDetail.as_view(), name='api_news'),
-    url(r'^api/video/$', views.VideoList.as_view(), name='api_all_video'),
-    url(r'^api/video/(?P<pk>[0-9])/$', views.VideoDetail.as_view(), name='api_video'),
-    url(r'^api/projects/$', views.ProjectList.as_view(), name='api_all_projects'),
-    url(r'^api/projects/(?P<pk>[0-9])/$', views.ProjectDetail.as_view(), name='api_project'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

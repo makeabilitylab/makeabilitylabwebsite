@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from website.models import Person, Publication, Talk, Video, Project, Project_umbrella
+from website.models import Person, Publication, Talk, Video, Project, Project_umbrella, Position
 from django.core.files import File
 import os
 from django.conf import settings
@@ -13,7 +13,26 @@ class PersonSerializer(serializers.ModelSerializer):
         if len(test_p) > 0:
             return test_p
         else:
-            p = Person.objects.create(**validated_data)
+
+            image_file = validated_data.pop('image')
+            easter_egg_file = validated_data.pop('easter_egg')
+            image_path = image_file.name
+            ee_path = easter_egg_file.name
+            image = File(open(image_path, 'rb'))
+            easter_egg = File(open(ee_path, 'rb'))
+            p = Person.objects.create(image=image, easter_egg=easter_egg, **validated_data)
+            image.close()
+            easter_egg.close()
+            initial_path_image = p.image.path
+            initial_path_ee = p.easter_egg.path
+            p.image.name = os.path.join('person', p.image.name.split('/')[-1])
+            new_path_image = os.path.join(settings.MEDIA_ROOT, p.image.name)
+            shutil.move(initial_path_image, new_path_image)
+
+            p.easter_egg.name = os.path.join('person', p.easter_egg.name.split('/')[-1])
+            new_path_ee = os.path.join(settings.MEDIA_ROOT, p.easter_egg.name)
+            shutil.move(initial_path_ee, new_path_ee)
+            p.save()
             return p
 
     class Meta:
@@ -46,7 +65,6 @@ class PublicationSerializer(serializers.ModelSerializer):
         new_path = os.path.join(settings.MEDIA_ROOT, p.pdf_file.name)
         shutil.move(initial_path, new_path)
         p.save()
-        print('HELLO++++++++++++++++++++')
         #for f in glob.glob('./media/temp/*.pdf'):
         #    shutil.move(f, os.path.join('.', 'media', 'publications'))
 
@@ -104,6 +122,42 @@ class PublicationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class TalkSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        speakers = validated_data.pop('speakers')
+        serializer = PersonSerializer(data=speakers, many=True)
+        serializer.is_valid()
+        serializer.save()
+        pdf_file = validated_data.pop('pdf_file')
+        pdf_name = pdf_file.name
+        pdf = File(open(pdf_name, 'rb'))
+
+        raw_file = validated_data.pop('raw_file')
+        if raw_file is not None:
+            raw_name = raw_file.name
+            raw_file = File(open(raw_name, 'rb'))
+
+        p = Talk.objects.create(pdf_file=pdf, raw_file=raw_file, **validated_data)
+        pdf.close()
+
+        for speaker in speakers:
+            person = Person.objects.get(first_name=speaker['first_name'], last_name=speaker['last_name'])
+            p.authors.add(person)
+        initial_path = p.pdf_file.path
+        p.pdf_file.name = os.path.join('talks', p.pdf_file.name.split('/')[-1])
+        new_path = os.path.join(settings.MEDIA_ROOT, p.pdf_file.name)
+        shutil.move(initial_path, new_path)
+
+        if p.raw_file is not None:
+            initial_path_raw = p.raw_file.path
+            p.raw_file.name = os.path.join('talks', p.raw_file.name.split('/')[-1])
+            new_path = os.path.join(settings.MEDIA_ROOT, p.raw_file.name)
+            shutil.move(initial_path, new_path)
+        p.save()
+        # for f in glob.glob('./media/temp/*.pdf'):
+        #    shutil.move(f, os.path.join('.', 'media', 'publications'))
+
+        return p
+
     class Meta:
         model = Talk
         #Many to many fields: projects, project_umbralla, keywords, speakers
