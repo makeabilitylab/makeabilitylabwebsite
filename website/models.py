@@ -2,7 +2,7 @@ from django.db import models
 from image_cropping import ImageRatioField
 from sortedm2m.fields import SortedManyToManyField
 from django.dispatch import receiver
-from django.db.models.signals import pre_delete, post_save, m2m_changed
+from django.db.models.signals import pre_delete, post_save, m2m_changed, post_delete
 from django.conf import settings
 
 from datetime import date
