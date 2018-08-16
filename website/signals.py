@@ -29,10 +29,12 @@ def publication_post_save(sender, **kwargs):
     # http://stackoverflow.com/questions/1308386/programmatically-saving-image-to-django-imagefield
 
     # get the publication that was just saved and auto-generate a thumbnail
+
     pub = kwargs['instance']
-    print("Publication '{}' has just been saved with PDF={}, checking to see if we should auto-generate a thumbnail".format(pub.title, pub.pdf_file.path))
-    thumbnail_res = 300
-    generate_and_save_thumbnail_from_pdf(pub, thumbnail_res)
+    if pub.pdf_file:
+        print("Publication '{}' has just been saved with PDF={}, checking to see if we should auto-generate a thumbnail".format(pub.title, pub.pdf_file.path))
+        thumbnail_res = 300
+        generate_and_save_thumbnail_from_pdf(pub, thumbnail_res)
 
 # Called automatically by Django after Talk is saved using Django's
 # built-in signal dispatch functionality. We use this function to do some
@@ -45,9 +47,10 @@ def talk_post_save(sender, **kwargs):
 
     # get the talk that was just saved and auto-generate a thumbnail
     talk = kwargs['instance']
-    print("Talk '{}' has just been saved with PDF={}, checking to see if we should auto-generate a thumbnail".format(talk.title, talk.pdf_file.path))
-    thumbnail_res = 300
-    generate_and_save_thumbnail_from_pdf(talk, thumbnail_res)
+    if talk.pdf_file:
+        print("Talk '{}' has just been saved with PDF={}, checking to see if we should auto-generate a thumbnail".format(talk.title, talk.pdf_file.path))
+        thumbnail_res = 300
+        generate_and_save_thumbnail_from_pdf(talk, thumbnail_res)
 
 # Assumes that artifact is a models.Model type and has the following fields:
 #  an ImageField called thumbnail

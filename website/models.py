@@ -2,7 +2,9 @@ from django.db import models
 from image_cropping import ImageRatioField
 from sortedm2m.fields import SortedManyToManyField
 from django.dispatch import receiver
-from django.db.models.signals import pre_delete
+from django.db.models.signals import pre_delete, post_save, m2m_changed, post_delete
+from django.conf import settings
+
 from datetime import date
 from django.utils import timezone
 from datetime import timedelta
@@ -13,6 +15,7 @@ import glob
 import re
 from random import choice
 from django.core.files import File
+import shutil
 
 
 # Simple check to seee if a file is an image. Not strictly necessary but included for safety
@@ -311,7 +314,6 @@ class Position(models.Model):
 
     def get_start_date_short(self):
         if self.is_current_member():
-            # TODO return the earliest this person was ever a member
             return self.person.get_earliest_member_position().start_date.strftime('%b %Y')
         else:
             return self.start_date.strftime('%b %Y')
@@ -635,6 +637,9 @@ class Video(models.Model):
 
     def __str__(self):
         return self.title
+# These two auto-delete files from filesystem when they are unneeded:
+
+
 
 
 class Talk(models.Model):
@@ -669,22 +674,62 @@ class Talk(models.Model):
 
     # raw_file = models.FileField(upload_to='talks/')
     # print("In talk model!")
+    def get_person(self):
+        return self.speakers.all()[0]
 
     def get_title(self):
         # Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
         cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
         return cap_title
 
+    # Gets the list of speakers as a csv string
+    def get_speakers_as_csv(self):
+        # iterate through all of the speakers and return the csv
+        is_first_speaker = True
+        list_of_speakers_as_csv = ""
+        for speaker in self.speakers.all():
+            if is_first_speaker != True:
+                # if not the first speaker, add in a comma in CSV string
+                list_of_speakers_as_csv += ", "
+            list_of_speakers_as_csv += speaker.get_full_name()
+            is_first_speaker = False
+        return list_of_speakers_as_csv
+
+    get_speakers_as_csv.short_description = 'Speaker List'
+
     def __str__(self):
         return self.title
 
+#@receiver(post_save, sender=Talk)
+def update_file_name_talks(sender, instance, action, reverse, **kwargs):
+    #Reverse: Indicates which side of the relation is updated (i.e., if it is the forward or reverse relation that is being modified)
+    #Action: A string indicating the type of update that is done on the relation.
+    #post_add: Sent after one or more objects are added to the relation
 
-@receiver(pre_delete, sender=Talk)
+    # from: https://docs.djangoproject.com/en/2.1/ref/signals/
+    if action == 'post_add' and not reverse:
+        initial_path = instance.pdf_file.path
+        person = instance.get_person()
+        name = person.last_name
+        year = instance.date.year
+        title = instance.title.replace(' ', '_')
+
+        #change the pdf_file path to point to the renamed file
+        instance.pdf_file.name = os.path.join('talks', name + '_' + title + '_' + str(year) + '.pdf')
+        new_path = os.path.join(settings.MEDIA_ROOT, instance.pdf_file.name)
+        os.rename(initial_path, new_path)
+        instance.save()
+
+m2m_changed.connect(update_file_name_talks, sender=Talk.speakers.through)
+
+@receiver(post_delete, sender=Talk)
 def talk_delete(sender, instance, **kwargs):
     if instance.pdf_file:
-        instance.pdf_file.delete(False)
+        instance.pdf_file.delete(True)
     if instance.raw_file:
-        instance.raw_file.delete(False)
+        instance.raw_file.delete(True)
+    if instance.thumbnail:
+        instance.thumbnail.delete(True)
 
 
 class Publication(models.Model):
@@ -782,9 +827,13 @@ class Publication(models.Model):
     )
     award = models.CharField(max_length=50, choices=AWARD_CHOICES, blank=True, null=True)
 
+    def get_person(self):
+        return self.authors.all()[0]
+
     # Returns the title of the publication in capital case
     def get_title(self):
         # Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
+        # TODO looks like we have similar code in class Talk--should make a common utility method for both to reduce code redundancy
         cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
         return cap_title
 
@@ -803,12 +852,33 @@ class Publication(models.Model):
         return self.title
 
 
+def update_file_name_publication(sender, instance, action, reverse, **kwargs):
+    # Reverse: Indicates which side of the relation is updated (i.e., if it is the forward or reverse relation that is being modified)
+    # Action: A string indicating the type of update that is done on the relation.
+    # post_add: Sent after one or more objects are added to the relation
+    if action == 'post_add' and not reverse:
+        initial_path = instance.pdf_file.path
+        person = instance.get_person()
+        name = person.last_name
+        year = instance.date.year
+        title = instance.title.replace(' ', '_')
+
+        #change the path of the pdf file to point to the new file name
+        instance.pdf_file.name = os.path.join('publications', name + '_' + title + '_' + str(year) + '.pdf')
+        new_path = os.path.join(settings.MEDIA_ROOT, instance.pdf_file.name)
+        os.rename(initial_path, new_path)
+        instance.save()
+
+m2m_changed.connect(update_file_name_publication , sender=Publication.authors.through)
+
 @receiver(pre_delete, sender=Publication)
 def publication_delete(sender, instance, **kwards):
     if instance.thumbnail:
         instance.thumbnail.delete(False)
     if instance.pdf_file:
-        instance.pdf_file.delete(False)
+        instance.pdf_file.delete(True)
+    if instance.thumbnail:
+        instance.thumbnail.delete(True)
 
 
 class Poster(models.Model):
