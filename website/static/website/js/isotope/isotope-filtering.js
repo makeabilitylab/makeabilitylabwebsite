@@ -12,7 +12,9 @@ var filteringScheme = "none";
 
 // initialization for filtering
 function isotopeFilterInit() {
-    filteringScheme = "none";
+    $($(currentIsotopeProperties['gridName'])).isotope({
+        filter: filterByFilteringScheme,
+    });
 }
 
 // filters by our current scheme
@@ -20,6 +22,7 @@ function filterByFilteringScheme() {
     // "none" is special case, everything else is normal
     if(filteringScheme.toLowerCase() === "none") {
         // filter out only the headers
+        console.log($(this).attr("name"));
         return $(this).attr("name") !== "header";
     }
 
@@ -30,6 +33,7 @@ function filterByFilteringScheme() {
 
     // get filterable data
     var data = getValueOfProperty($(this).find(currentIsotopeProperties['sortFilterDataContainer'])[0].textContent, filteringScheme.split('(')[0]);
+    console.log("filtering data " + data);
 
     // if data is null, then return false, otherwise check if the data is equal to the filteringScheme or if the filtering scheme doesn't contain data.
     return (filteringScheme.indexOf('(') === -1 || (parsePropertyValue(filteringScheme) + "").trim() === (data + "").trim());

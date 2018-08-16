@@ -8,12 +8,12 @@
 
 // the property by which we're sorting
 var sortingScheme = "None";
-var $grid;
 
 // function to initialize sorting
 function isotopeSortInit() {
+    console.log("INITIALIZING SORTING");
     // set the properties of the grid
-    $grid = $(currentIsotopeProperties['gridName']).isotope({
+    $(currentIsotopeProperties['gridName']).isotope({
         // get the sorting data
         getSortData: {
             sorting_scheme: function (itemElem) {
@@ -38,6 +38,7 @@ function sortBySortingScheme (itemElem)
 {
     // get the value of the property that we're sorting by.
     var val = getValueOfProperty($(itemElem).find(currentIsotopeProperties['sortFilterDataContainer'])[0].textContent, sortingScheme);
+    console.log("sortingval: " + val);
     //so that uppercase letters aren't sorted above lowercase ones
     if(typeof val === "string") {
         val = val.toLowerCase();
@@ -86,8 +87,7 @@ function handleSortingClick(e){
     {
         // if it is, then set the sorting scheme and the grid settings
         sortingScheme = text;
-        $grid.isotope('option',
-        {
+        $(currentIsotopeProperties['gridName']).isotope({
             // get the sorting data
             getSortData: {
                 sorting_scheme: function (itemElem) {
@@ -98,16 +98,17 @@ function handleSortingClick(e){
                 }
             },
 
+            // get our current scheme for sorting
             sortAscending: {
                 // check if we need to sort in ascending order or not.
-                sorting_scheme: getIsPropertyAscending(currentIsotopeProperties['sortingKeywordConatiner'], sortingScheme),
+                sorting_scheme: getIsPropertyAscending(currentIsotopeProperties['sortingKeywordContainer'], sortingScheme),
                 date: false
             },
         });
-
+        console.log(getIsPropertyAscending(currentIsotopeProperties['sortingKeywordConatiner'], sortingScheme));
         // update sorting data and sort
-        $grid.isotope('updateSortData').isotope();
-        $grid.isotope({ sortBy : ['sorting_scheme', 'date']});
+        $(currentIsotopeProperties['gridName']).isotope('updateSortData').isotope();
+        $(currentIsotopeProperties['gridName']).isotope({ sortBy : ['sorting_scheme', 'date']});
     }
 }
 

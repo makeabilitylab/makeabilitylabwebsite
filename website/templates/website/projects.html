@@ -19,6 +19,9 @@
     <script src="{% static 'website/js/isotope.pkgd.min.js' %}"></script>
     <script src="{% static 'website/js/fixedSideBar.js' %}"></script>
     <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
+    <script src="{% static 'website/js/isotope/isotope-init.js' %}"></script>
+    <script src="{% static 'website/js/isotope/isotope-filterBar.js' %}"></script>
+    <script src="{% static 'website/js/isotope/isotope-filtering.js' %}"></script>
 {% endblock %}
 
 {% block scripts %}
@@ -77,49 +80,63 @@
 
         <div id="fixed-side-bar" class="hidden-xs">
             <div id="filter-bar">
+                <!-- TODO: possibly add in number of each thing in parantheses -->
+                <!-- TODO: support mouseover filtering so that when you mouseover a selection in left-menu, it auto-filters during hover -->
+                <!-- TODO: support parallax hovering--or zoom-in hovering--over project thumbnail like vanschneider.com. Could also have mouseover details like grantburke.com/design-portfolio -->
+                <!-- TODO: hhook tihs up to isotope https://isotope.metafizzy.co/layout-modes.html for sorting, filtering -->
+                <h1 style="margin-top:0px">AREA</h1>
+                <ul class="filter-list">
+                    <li><a>Accessibility</a></li>
+                    <li><a>Education</a></li>
+                    <li><a>Fabrication</a></li>
+                    <li><a>Health/Wellness</a></li>
+                    <li><a>Smart Cities</a></li>
+                    <li><a>Sustainability</a></li>
+                </ul>
 
+                <h1 style="margin-top:0px">TECHNOLOGY</h1>
+                <ul class="filter-list">
+                    <li><a>Augmented Reality</a></li>
+                    <li><a>Computer Vision</a></li>
+                    <li><a>Custom Hardware</a></li>
+                    <li><a>E-Textiles</a></li>
+                    <li><a>Machine Learning</a></li>
+                    <li><a>Wearables</a></li>
+                </ul>
+                <li><a name="None" style="font-weight:bold">All</a></li>
             </div>
-            <!-- TODO: possibly add in number of each thing in parantheses -->
-            <!-- TODO: support mouseover filtering so that when you mouseover a selection in left-menu, it auto-filters during hover -->
-            <!-- TODO: support parallax hovering--or zoom-in hovering--over project thumbnail like vanschneider.com. Could also have mouseover details like grantburke.com/design-portfolio -->
-            <!-- TODO: hhook tihs up to isotope https://isotope.metafizzy.co/layout-modes.html for sorting, filtering -->
-            <h1 style="margin-top:0px">AREA</h1>
-            <ul class="filter-list">
-                <li>Accessibility</li>
-                <li>Education</li>
-                <li>Fabrication</li>
-                <li>Health/Wellness</li>
-                <li>Smart Cities</li>
-                <li>Sustainability</li>
-            </ul>
-
-            <h1 style="margin-top:0px">TECHNOLOGY</h1>
-            <ul class="filter-list">
-                <li>Augmented Reality</li>
-                <li>Computer Vision</li>
-                <li>Custom Hardware</li>
-                <li>E-Textiles</li>
-                <li>Machine Learning</li>
-                <li>Wearables</li>
-            </ul>
-
             <!-- Tech filter: augmented reality, machine learning, custom hardware, computer vision -->
         </div>
 
+         <!--isotope data -->
+         <div class= "isotope_data_container" id="isotope_data_container" style="display:none">
+            sortFilterContainer(.sortingAndFiltering,str)
+            gridName(.grid,str)
+            filteringKeywordContainer(#filter-bar,str)
+            sideBarContainer(#fixed-side-bar,str)
+            scrollTop(150,int)
+         </div>
+
+
+
         <div id="main-content" class="project-list">
             <!-- TODO: consider listing dates active or keywords underneath each project thumbnail in addition to name -->
-            {% for project in projects %}
-		  <!-- Extra conditional added to not display projects with zero publications -->
-                {% if project.get_most_recent_publication %}
-                    <div class="col-xs-12 col-md-3 project-column">
+            <div class="grid">
+                {% for project in projects %}
+                    <div class="item" style="width:20%;margin:2%;background:white">
                         <a href="{% url 'website:project' project.short_name %}" style="color:black;">
                             <img src="{% thumbnail project.gallery_image 300x180 box=project.cropping crop detail %}" class="img-responsive">
                             <p class="artifact-title">{{ project.name }}</p>
                         </a>
                         <div style="min-height:15px"></div>
+                        <div class="sortingAndFiltering" style="display:none">
+                            {% for keyword in project.keywords.all %}
+                                {{ keyword }}()
+                            {% endfor %}
+                        </div>
                     </div>
-                {% endif %}
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
     </div>
 
