@@ -276,10 +276,10 @@ function formatPublication(pub, filter) {
 		publicationData.find(".publication-acceptance-rate").css("display", "none");
 	}
 
-	if(pub.to_appear) {
-        publicationData.find(".publication-to-appear").css("display", "block");
+	if(pub.to_appear == true) {
+        publicationData.find(".publication-to-appear-text").css("display", "block");
     } else {
-    	publicationData.find(".publication-to-appear").css("display", "none");
+    	publicationData.find(".publication-to-appear-text").css("display", "none");
     }
 
     if(pub.keywords.length > 0)
