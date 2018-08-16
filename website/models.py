@@ -5,7 +5,7 @@ from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_save, m2m_changed, post_delete
 from django.conf import settings
 
-from datetime import date
+from datetime import date, datetime, timedelta
 from django.utils import timezone
 from datetime import timedelta
 import datetime
@@ -846,7 +846,10 @@ class Publication(models.Model):
 
     # Returns true if the publication date happens in the future (e.g., tomorrow or later)
     def to_appear(self):
-        return self.date and self.date > date.today()
+        ret = True
+        if date.today() > self.date:
+            ret = False
+        return ret
 
     def __str__(self):
         return self.title
