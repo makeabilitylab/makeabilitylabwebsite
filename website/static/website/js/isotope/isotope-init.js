@@ -70,22 +70,15 @@ $(window).load(function () {
                 throw "sideBarContainer property could not be found in isotope_data_container! Please add the sideBarContainer property!";
             }
         }
-        // set layout mode to fit rows.
-        $(isotopeProperties['gridName']).isotope({
-            layoutMode: 'fitRows'
-        });
 
         //console.log(allIsotopeProperties.length);
         allIsotopeProperties.push(isotopeProperties);
     });
 
-
-
-
     for(var i = 0; i < allIsotopeProperties.length; i++) (function(i){
         currentIsotopeProperties = allIsotopeProperties[i];
         init();
-        $(currentIsotopeProperties['sideBarContainer'] + ' a').each(function(idx, item){
+        $(currentIsotopeProperties['sideBarContainer']).each(function(idx, item){
             $(item).on('click', function (e) {
                 if (currentIsotopeProperties !== allIsotopeProperties[i]) {
                     currentIsotopeProperties = allIsotopeProperties[i];
@@ -97,21 +90,27 @@ $(window).load(function () {
                 handleFilterBarClick(e);
             });
         });
+        //set layout mode to fit rows
+        $(allIsotopeProperties[i]['gridName']).isotope({
+            layoutMode: 'fitRows'
+        });
     })(i);
+
+
 });
 
 function init(){
     if (typeof isotopeHeaderInit !== typeof undefined) {
         isotopeHeaderInit();
     }
+    if (typeof isotopeFilterBarInit !== typeof undefined) {
+        isotopeFilterBarInit();
+    }
     if (typeof isotopeFilterInit !== typeof undefined) {
         isotopeFilterInit();
     }
     if (typeof isotopeSortInit !== typeof undefined) {
         isotopeSortInit();
-    }
-    if (typeof isotopeFilterBarInit !== typeof undefined) {
-        isotopeFilterBarInit();
     }
 }
 

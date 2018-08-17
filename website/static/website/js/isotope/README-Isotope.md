@@ -9,12 +9,12 @@ For this implementation, these scripts must be included in the HTML:
 This implementation is dependent on isotope, which is why ```isotope.pkgd.min.js``` is required. The ```isotope-init.js``` sets up important JS variables and sets up the isotope grid.
 
 # General HTML requirements
-- There must be a div with the id "isotope_data_container" in the HTML page. In this, you must put all relevant configuration data. 
+- There must be at least one div with the class "isotope_data_container" per isotope grid in the HTML page. In this, you must put all relevant configuration data. 
 (See isotope-init.js for all the data that needs to be inserted here). 
 Data must be in the form ```<Property>(<value>,<valueType>)``` where ```<valueType>``` can be "str", "int", or "float".
 Multiple properties can be inserted in this fashion, e.g.
     ```
-    <div id="isotope_data_container">
+    <div class="isotope_data_container">
         sortFilterContainer(.sortingAndFiltering,str)
         gridName(.grid,str)
         headerClass(h1,str)
