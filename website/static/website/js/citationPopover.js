@@ -21,7 +21,7 @@
 		    });
 		});
 
-		this.attr("data-content", createCitationText(pub));
+		$(this).attr("data-content", createCitationText(pub));
 
 		$(this).updateCitationPopover();
 
@@ -30,7 +30,7 @@
 
 	// combines and formats the citation metadata for display
 	function createCitationText(pub) {
-		var text = "<div class=\"citation-links\"><a id=\"citation-link\" onclick=\"$(this).citationclick()\">Citation</a> | <a id=\"bibtex-link\" onclick=\"$(this).bibtexclick()\">Bibtex</a></div><br/>";
+		var text = "<div class=\"citation-links\"><a id=\"citation-link\" onclick=\"$(this).citationclick()\">Citation</a> | <a id=\"bibtex-link\" onclick=\"$(this).bibtexclick()\" >Bibtex</a></div><br/>";
 	    // authors
 	    text+="<div id=\"citation-text\">";
 		pub.authors.forEach(function(author, index, array) {

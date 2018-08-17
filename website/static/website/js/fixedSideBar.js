@@ -10,8 +10,23 @@
 // 		#mainContent should contain all other content (without the sidebar)
 
 (function($) {
-	var top = 0, initOffset = 0;
+	var top = 0, initOffset = 0, bottom = 0, bottomOffset = 0;
 	var sideBar;
+	var alignedContainer = "";
+
+	function offset(el) {
+		var rect = el.getBoundingClientRect(),
+		scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
+		scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+		return { top: rect.top + scrollTop, left: rect.left + scrollLeft }
+	}
+
+	$.fn.setAlignedContainer = function(_containerToAlign){
+		alignedContainer = _containerToAlign;
+	};
+
+
+
 
 	$.fn.fixedSideBar = function() {
 
@@ -21,13 +36,25 @@
 		// save the current position of the filter bar to use when scrolling
 		top = this.offset().top - parseInt(this.css('margin-top'));
 		initOffset = this.css('top');
+		bottom = $(document).height();
+		bottomOffset = $(document).height() - this.height() - parseInt(this.css('margin-top'));
 
 		// when the window scrolls, need to adjust the position of the filter bar
 		$(window).scroll(function(event) {
+			if(alignedContainer !== "") {
+				 var container_height = $(alignedContainer)[0].scrollHeight;
+                var container_top = offset($(alignedContainer)[0]).top;
+                var sidebar_margin = parseInt(sideBar.css('margin-top'));
+                var sidebar_height = sideBar.height();
+                top = container_top - sidebar_margin;
+                bottom = container_top + container_height - sidebar_height - sidebar_margin - 10;
+                bottomOffset = container_height - sidebar_height - sidebar_margin;
+            }
+
 			// check the vertical position of the scroll
 		    var y = $(this).scrollTop();
 		    var footer = $(".makelab-footer");
-
+      
 		    // is it below the form?
 		    if (y >= top && y <= $('#content').height() - 50) {
 		        // if so, set fixed position
@@ -66,7 +93,7 @@
 
 	$.fn.resizeSideBar = function() {
 		var minHeight = this.height() + 10; // TODO: should probably use something from the css rather than a magic number here
-		var content = $('#main-content');
+		var content = $('#content');
 		content.css('min-height', minHeight + "px");
 
 		if(this.css('position') == "fixed") {
