@@ -144,8 +144,8 @@ def index(request):
     # projects = Project.objects.all()
     # sorted(projects, key=lambda project: student[2])
     projects = Project.objects.all()
-    projects = get_most_recent(projects);
-    projects = filter_no_pubs_projects(projects);
+    projects = get_most_recent(projects)
+    projects = filter_projects(projects)
 
     context = {'people': Person.objects.all(),
                'banners': displayed_banners,
@@ -335,6 +335,7 @@ def projects(request):
     all_banners = Banner.objects.filter(page=Banner.PROJECTS)
     displayed_banners = choose_banners(all_banners)
     projects = Project.objects.all()
+    projects = filter_projects(projects)
     all_proj_len = len(projects)
     filter = request.GET.get('filter')
     if filter != None:
@@ -343,6 +344,7 @@ def projects(request):
     umbrellas = Project_umbrella.objects.all()
     popular_projects = []  # sort_popular_projects(googleanalytics.run(get_ind_pageviews))[:4]
     recent_projects = get_most_recent(Project.objects.order_by('-updated'))[:2]
+
 
     context = {'projects': projects,
                'all_proj_len': all_proj_len,
@@ -491,12 +493,22 @@ def get_most_recent(projects):
 
     return [item['proj'] for item in sorted_list]
 
+#filter out all the projects with thumbnails, publications, and an about object attached
+def filter_projects(projects):
+    filtered = list()
+    for project in projects:
+        if len(project.publication_set.all()) > 0 and project.about and project.gallery_image:
+            filtered.append(project)
+    return filtered
+
+'''
 def filter_no_pubs_projects(projects):
     filtered = []
     for project in projects:
         if len(project.publication_set.all()) > 0:
             filtered.append(project)
     return filtered
+'''
 
 # Get the page views per page including their first and second level paths
 def get_ind_pageviews(service, profile_id):
