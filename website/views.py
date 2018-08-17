@@ -145,6 +145,7 @@ def index(request):
     # sorted(projects, key=lambda project: student[2])
     projects = Project.objects.all()
     projects = get_most_recent(projects);
+    projects = filter_no_pubs_projects(projects);
 
     context = {'people': Person.objects.all(),
                'banners': displayed_banners,
@@ -490,6 +491,12 @@ def get_most_recent(projects):
 
     return [item['proj'] for item in sorted_list]
 
+def filter_no_pubs_projects(projects):
+    filtered = []
+    for project in projects:
+        if len(project.publication_set.all()) > 0:
+            filtered.append(project)
+    return filtered
 
 # Get the page views per page including their first and second level paths
 def get_ind_pageviews(service, profile_id):
