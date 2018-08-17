@@ -679,7 +679,8 @@ class Talk(models.Model):
 
     def get_title(self):
         # Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
-        cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
+        #cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
+        cap_title=self.title
         return cap_title
 
     # Gets the list of speakers as a csv string
