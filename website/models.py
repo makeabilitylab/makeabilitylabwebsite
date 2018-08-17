@@ -5,6 +5,7 @@ from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_delete
 from datetime import date
 from django.utils import timezone
+import string
 from datetime import timedelta
 import datetime
 from website.utils.fileutils import UniquePathAndRename
@@ -634,8 +635,11 @@ class Video(models.Model):
 
     def __str__(self):
         return self.title
-# These two auto-delete files from filesystem when they are unneeded:
 
+#from https://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
+def repl_func(m):
+    """process regular expression match groups for word upper-casing problem"""
+    return m.group(1) + m.group(2).upper()
 
 class Talk(models.Model):
     title = models.CharField(max_length=255)
@@ -672,7 +676,9 @@ class Talk(models.Model):
 
     def get_title(self):
         # Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
-        cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
+
+        cap_title = re.sub("(^|\s)(\S)", repl_func, self.title)
+        #cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
         return cap_title
 
     # Gets the list of speakers as a csv string

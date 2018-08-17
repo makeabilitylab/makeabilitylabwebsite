@@ -65,7 +65,7 @@ def generate_and_save_thumbnail_from_pdf(artifact, thumbnail_resolution):
 
     pdf_filename = os.path.basename(artifact.pdf_file.path)
     pdf_filename_no_extension = os.path.splitext(pdf_filename)[0]
-    thumbnail_filename = "{}.{}".format(pdf_filename_no_extension, "jpg");
+    thumbnail_filename = "{}.{}".format(pdf_filename_no_extension, "png");
     thumbnail_path = os.path.join(thumbnail_dir, thumbnail_filename)
 
     # check to see if this is a new (or changed) file. This 'if condition' is super necessary
@@ -74,7 +74,8 @@ def generate_and_save_thumbnail_from_pdf(artifact, thumbnail_resolution):
             os.path.normpath(os.path.normcase(artifact.thumbnail.path)) != os.path.normpath(
         os.path.normcase(thumbnail_path)):
         with Image(filename="{}[0]".format(artifact.pdf_file.path), resolution=300) as img:
-            img.format = 'jpeg'
+            img.convert('png')
+            #img.format = 'jpeg'
             img.background_color = Color('white')
             img.alpha_channel = 'remove'
             img.save(filename=thumbnail_path)

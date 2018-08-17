@@ -13,19 +13,24 @@ import shutil
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        url = 'https://makeabilitylab-test.cs.washington.edu/api/talks/?format=json'
+        url = 'https://makeabilitylab-test.cs.washington.edu/api/talks/?format'
         response = requests.get(url).content
         stream = BytesIO(response)
         data = JSONParser().parse(stream)
         temp_dir = os.path.abspath('.')
         temp_dir = os.path.join(temp_dir, 'media', 'temp')
+        if not os.path.isdir(temp_dir):
+            os.mkdir(temp_dir)
         temp_dir_image = os.path.abspath('.')
         temp_dir_image = os.path.join('media', 'person')
+        if not os.path.isdir(temp_dir_image):
+            os.mkdir(temp_dir_image)
 
         #raw file, pdf_file
         print('preprocessing data...')
         for item in data:
             #get the url and open up a request stream
+            print('Now processing ' + item['title'])
             url = item['pdf_file']
             if url is not None:
                 title = url.split('/')[-1]
@@ -70,16 +75,13 @@ class Command(BaseCommand):
                     f.write(r_ee.content)
                 object['image'] = File(open(image_file_path, 'rb'))
                 object['easter_egg'] = File(open(ee_file_path, 'rb'))
-
-
             # initialize the serializer with many set to True to deserialize multiple objects
-            serializer = TalkSerializer(data=data, many=True)
+            serializer = TalkSerializer(data=item)
             print('saving data...')
             # must call is_valid on the serializer to verify that the data the serializer has is valid for deserialization
             # This is why the previous conversion from URLs to actual Files was necessary
             serializer.is_valid()
-            print(serializer.errors)
             # save method will be called for every object created by the data in the serializer
             serializer.save()
-            # delete temp
-            shutil.rmtree(temp_dir, ignore_errors=True)
+        # delete temp
+        shutil.rmtree(temp_dir, ignore_errors=True)

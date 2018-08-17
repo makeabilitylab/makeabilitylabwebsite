@@ -27,7 +27,7 @@ class PersonSerializer(serializers.ModelSerializer):
             initial_path_ee = p.easter_egg.path
             p.image.name = os.path.join('person', p.image.name.split('/')[-1])
             new_path_image = os.path.join(settings.MEDIA_ROOT, p.image.name)
-            shutil.move(initial_path_image, new_path_image)
+            shutil.copy(initial_path_image, new_path_image)
 
             p.easter_egg.name = os.path.join('person', p.easter_egg.name.split('/')[-1])
             new_path_ee = os.path.join(settings.MEDIA_ROOT, p.easter_egg.name)
@@ -63,7 +63,7 @@ class PublicationSerializer(serializers.ModelSerializer):
         initial_path = p.pdf_file.path
         p.pdf_file.name = os.path.join('publications', p.pdf_file.name.split('/')[-1])
         new_path = os.path.join(settings.MEDIA_ROOT, p.pdf_file.name)
-        shutil.move(initial_path, new_path)
+        shutil.copy(initial_path, new_path)
         p.save()
         #for f in glob.glob('./media/temp/*.pdf'):
         #    shutil.move(f, os.path.join('.', 'media', 'publications'))
@@ -122,36 +122,46 @@ class PublicationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class TalkSerializer(serializers.ModelSerializer):
+    speakers = PersonSerializer(many=True)
+
     def create(self, validated_data):
         speakers = validated_data.pop('speakers')
         serializer = PersonSerializer(data=speakers, many=True)
         serializer.is_valid()
         serializer.save()
+
         pdf_file = validated_data.pop('pdf_file')
         pdf_name = pdf_file.name
+
         pdf = File(open(pdf_name, 'rb'))
 
         raw_file = validated_data.pop('raw_file')
         if raw_file is not None:
             raw_name = raw_file.name
             raw_file = File(open(raw_name, 'rb'))
+        else:
+            raw_file = None
 
         p = Talk.objects.create(pdf_file=pdf, raw_file=raw_file, **validated_data)
         pdf.close()
+        if p.raw_file:
+            raw_file.close()
 
         for speaker in speakers:
             person = Person.objects.get(first_name=speaker['first_name'], last_name=speaker['last_name'])
-            p.authors.add(person)
+            p.speakers.add(person)
+
         initial_path = p.pdf_file.path
         p.pdf_file.name = os.path.join('talks', p.pdf_file.name.split('/')[-1])
         new_path = os.path.join(settings.MEDIA_ROOT, p.pdf_file.name)
-        shutil.move(initial_path, new_path)
+        shutil.copyfile(initial_path, new_path)
 
-        if p.raw_file is not None:
+        if p.raw_file.name:
             initial_path_raw = p.raw_file.path
             p.raw_file.name = os.path.join('talks', p.raw_file.name.split('/')[-1])
             new_path = os.path.join(settings.MEDIA_ROOT, p.raw_file.name)
-            shutil.move(initial_path, new_path)
+            shutil.copy(initial_path, new_path)
+
         p.save()
         # for f in glob.glob('./media/temp/*.pdf'):
         #    shutil.move(f, os.path.join('.', 'media', 'publications'))
