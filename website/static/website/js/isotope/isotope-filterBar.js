@@ -7,9 +7,10 @@
 var filterKeywords = [];
 var filterNames = [];
 function isotopeFilterBarInit(){
-    // start the sidebar container
-    if(typeof fixedSideBar !== typeof undefined)
+    // start the sidebar container (if fixed side bar exists)
+    if(typeof $(document).fixedSideBar !== "undefined") {
         $(currentIsotopeProperties['sideBarContainer']).fixedSideBar();
+    }
 
     $(currentIsotopeProperties['sideBarContainer'] + ' a').each(function(){
         // set the name attribute to the text of the element if the name attribute doesn't exist.
@@ -27,7 +28,7 @@ function isotopeFilterBarInit(){
         {
             $(this).attr("style", 'cursor: pointer;font-weight:normal;');
         }
-
+        $(this).attr("class", "keyword");
 
         //  put this into filterKeywords
         filterKeywords.push($(this).attr("name"));
@@ -49,8 +50,6 @@ function isotopeFilterBarInit(){
             }
         }
     });
-    //console.log(filterNames);
-    //console.log(filterKeywords);
 }
 
 function offset(el) {
@@ -60,10 +59,15 @@ function offset(el) {
     return { top: rect.top + scrollTop, left: rect.left + scrollLeft }
 }
 // handles the onclick for filter bar
-function handleFilterBarClick(e)
-{
+function handleFilterBarClick(e) {
+    //if it's not a keyword, ignore it.
+    if($(e.target).attr("class") !== "keyword") {
+        return;
+    }
     // get our text
     var text = $(e.target).attr("name");
+
+
 
     //unbold everything
     $(currentIsotopeProperties['sideBarContainer'] + ' a').each(function() {
@@ -73,16 +77,21 @@ function handleFilterBarClick(e)
 
     $(e.target).attr("style", 'cursor: pointer;font-weight:bold;');
 
-    var scrollTop = offset($(currentIsotopeProperties['scrollTop'])[0]).top - 100;
+    var scrollTop;
+    if(typeof currentIsotopeProperties['scrollTop'] === "number"){
+        scrollTop = currentIsotopeProperties['scrollTop'];
+    }
+    else{
+        scrollTop = offset($(currentIsotopeProperties['scrollTop'])[0]).top - 100;
+    }
+
     //formula to calculate a smooth scroll time, caps at one second.
     var timeToScroll = 1000 * (-100/(Math.abs(window.scrollY - scrollTop)+ 100) + 1);
-    //console.log(scrollTop, timeToScroll);
     // scroll up to "scrollTop"
     $("html, body").animate({scrollTop:scrollTop}, timeToScroll);
 
     //handle the filtering click if it exists
     if(typeof handleFilteringClick !== typeof undefined){
-        //console.log("hello");
         //wait for the scroll before filtering
         setTimeout(function(){handleFilteringClick(e)}, timeToScroll);
     }
@@ -103,12 +112,10 @@ function handleFilterBarClick(e)
             for(var i = 0; i < filterNames.length; i++) {
                 if(filterNames[i].indexOf(text) !== -1) {
                     filterMatches.push(filterNames[i]);
-                    //console.log(filterNames[i]);
                 }
             }
             //sort these names so that we can put them in order
             filterMatches = sortFilterNamesByProperty(filterMatches, text);
-            //console.log("in filter-bar: ")
             //if there are more than 0 filter matches, add the text as a header.
             if(filterMatches.length > 0) {
                 $(currentIsotopeProperties['filteringKeywordContainer']).append("<h1 class='added-filter-keywords'>" + text + "</h1>");
@@ -116,12 +123,12 @@ function handleFilterBarClick(e)
 
             //put all of the properties we can filter by
             for(var i = 0; i < filterMatches.length; i++) {
-                     $(currentIsotopeProperties['filteringKeywordContainer']).append("<li class='added-filter-keywords' style='list-style-type:none;cursor:pointer;'><a name='"+ filterMatches[i] +"'>" + parsePropertyValue(filterMatches[i]) + "</a></li>")
+                     $(currentIsotopeProperties['filteringKeywordContainer']).append("<li class='added-filter-keywords' style='list-style-type:none;cursor:pointer;'><a class= 'keyword' name='"+ filterMatches[i] +"'>" + parsePropertyValue(filterMatches[i]) + "</a></li>")
             }
 
             //add 'all' to the bottom if there are more than 0 filter matches
             if(filterMatches.length > 0) {
-                $(currentIsotopeProperties['filteringKeywordContainer']).append("<li class='added-filter-keywords' style='list-style-type:none;cursor:pointer;'><a name='" + text + "'>all</a></li>");
+                $(currentIsotopeProperties['filteringKeywordContainer']).append("<li class='added-filter-keywords' style='list-style-type:none;cursor:pointer;'><a class= 'keyword' name='" + text + "'>all</a></li>");
             }
         }
     }
