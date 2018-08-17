@@ -11,7 +11,7 @@ var sortingScheme = "None";
 
 // function to initialize sorting
 function isotopeSortInit() {
-    console.log("INITIALIZING SORTING");
+    //console.log("INITIALIZING SORTING");
     // set the properties of the grid
     $(currentIsotopeProperties['gridName']).isotope({
         // get the sorting data
@@ -38,7 +38,7 @@ function sortBySortingScheme (itemElem)
 {
     // get the value of the property that we're sorting by.
     var val = getValueOfProperty($(itemElem).find(currentIsotopeProperties['sortFilterDataContainer'])[0].textContent, sortingScheme);
-    console.log("sortingval: " + val);
+    //console.log("sortingval: " + val);
     //so that uppercase letters aren't sorted above lowercase ones
     if(typeof val === "string") {
         val = val.toLowerCase();
@@ -109,7 +109,7 @@ function handleSortingClick(e){
                 date: false
             },
         });
-        console.log(getIsPropertyAscending(currentIsotopeProperties['sortingKeywordConatiner'], sortingScheme));
+        //console.log(getIsPropertyAscending(currentIsotopeProperties['sortingKeywordConatiner'], sortingScheme));
         // update sorting data and sort
         $(currentIsotopeProperties['gridName']).isotope('updateSortData').isotope();
         $(currentIsotopeProperties['gridName']).isotope({ sortBy : ['sorting_scheme', 'date']});

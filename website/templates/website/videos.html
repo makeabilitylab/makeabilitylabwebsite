@@ -17,7 +17,7 @@
 
 {% block external_scripts %}
     <script src="{% static 'website/js/isotope.pkgd.min.js' %}"></script>
-    <script src="{% static 'website/js/fixedSideBar.js' %}"></script>
+    <script src="{% static 'website/js/fixedSideBar.js' %}?version=1"></script>
     <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
 
     <script src="{% static 'website/js/isotope/isotope-filterBar.js' %}"></script>
@@ -71,7 +71,7 @@
             <input class="shortTextbox" id="filter-textbox-backup" placeholder="FILTER" type="text" value="">
         </div>
 
-        <div id="fixed-side-bar" class="hidden-xs">
+        <div id="fixed-side-bar" class="hidden-xs ">
             <div id="keywords-filtering">
                 <div id="keywords-sorting">
                     <h1>Sort By</h1>

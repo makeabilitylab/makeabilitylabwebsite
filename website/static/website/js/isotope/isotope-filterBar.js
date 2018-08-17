@@ -7,10 +7,6 @@
 var filterKeywords = [];
 var filterNames = [];
 function isotopeFilterBarInit(){
-    // start the sidebar container (if fixed side bar exists)
-    if(typeof $(document).fixedSideBar !== "undefined") {
-        $(currentIsotopeProperties['sideBarContainer']).fixedSideBar();
-    }
 
     $(currentIsotopeProperties['sideBarContainer'] + ' a').each(function(){
         // set the name attribute to the text of the element if the name attribute doesn't exist.
@@ -50,6 +46,13 @@ function isotopeFilterBarInit(){
             }
         }
     });
+
+    // start the sidebar container (if fixed side bar exists)
+    if(typeof $(document).fixedSideBar !== "undefined") {
+        $(currentIsotopeProperties['sideBarContainer']).fixedSideBar();
+        $(currentIsotopeProperties['sideBarContainer']).setAlignedContainer(currentIsotopeProperties['gridName']);
+        $(currentIsotopeProperties['sideBarContainer']).resizeSideBar();
+    }
 }
 
 function offset(el) {
@@ -67,15 +70,6 @@ function handleFilterBarClick(e) {
     // get our text
     var text = $(e.target).attr("name");
 
-
-
-    //unbold everything
-    $(currentIsotopeProperties['sideBarContainer'] + ' a').each(function() {
-        // set the style so that we get the cursor
-        $(this).attr("style", 'cursor: pointer;font-weight:normal;');
-    });
-
-    $(e.target).attr("style", 'cursor: pointer;font-weight:bold;');
 
     var scrollTop;
     if(typeof currentIsotopeProperties['scrollTop'] === "number"){
@@ -123,16 +117,28 @@ function handleFilterBarClick(e) {
 
             //put all of the properties we can filter by
             for(var i = 0; i < filterMatches.length; i++) {
-                     $(currentIsotopeProperties['filteringKeywordContainer']).append("<li class='added-filter-keywords' style='list-style-type:none;cursor:pointer;'><a class= 'keyword' name='"+ filterMatches[i] +"'>" + parsePropertyValue(filterMatches[i]) + "</a></li>")
+                $(currentIsotopeProperties['filteringKeywordContainer']).append("<li class='added-filter-keywords' style='list-style-type:none;cursor:pointer;'><a class= 'keyword' name='"+ filterMatches[i] +"'>" + parsePropertyValue(filterMatches[i]) + "</a></li>")
             }
 
             //add 'all' to the bottom if there are more than 0 filter matches
             if(filterMatches.length > 0) {
-                $(currentIsotopeProperties['filteringKeywordContainer']).append("<li class='added-filter-keywords' style='list-style-type:none;cursor:pointer;'><a class= 'keyword' name='" + text + "'>all</a></li>");
+                $(currentIsotopeProperties['filteringKeywordContainer']).append("<li class='added-filter-keywords' style='list-style-type:none;cursor:pointer;'><a class= 'keyword' name='" + text + "'>All</a></li>");
             }
         }
-    }
 
+        if(typeof $(document).fixedSideBar !== "undefined") {
+             $(currentIsotopeProperties['sideBarContainer']).resizeSideBar();
+        }
+    }
+    //handle bolding
+    $(currentIsotopeProperties['sideBarContainer'] + ' a').each(function() {
+        // set the style so that we get the cursor
+        if($(this).attr("name") === text){
+            $(this).attr("style", 'cursor: pointer;font-weight:bold;');
+        }else{
+            $(this).attr("style", 'cursor: pointer;font-weight:normal;');
+        }
+    });
 
 
 
