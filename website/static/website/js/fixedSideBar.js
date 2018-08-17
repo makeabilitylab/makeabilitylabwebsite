@@ -53,27 +53,24 @@
 
 			// check the vertical position of the scroll
 		    var y = $(this).scrollTop();
-
-		    if(bottomOffset - parseInt(initOffset) < 50){
-		    	sideBar.css('position', 'absolute');
-		    	sideBar.css('top', initOffset);
-		    	sideBar.css('left', "0");
-			}
-			else if (y <= top || y >= bottom) {
-		    	// set absolute position
-		        sideBar.css('position', 'absolute');
-		        if(y <= top){
-		        	sideBar.css('top', initOffset);
-                }else{
-		        	sideBar.css('top', bottomOffset);
-                }
-
-		        sideBar.css('left', "0");
-		    } else {
-		        // otherwise, set fixed position
+		    var footer = $(".makelab-footer");
+      
+		    // is it below the form?
+		    if (y >= top && y <= $('#content').height() - 50) {
+		        // if so, set fixed position
 		        sideBar.css('position', 'fixed');
-		        sideBar.css('top', '0');
+		        sideBar.css('top', "0");
 		        sideBar.css('left', parseInt($('#content').css('margin-left')) + "px");
+		    } else {
+		        if (y <= top) {
+		    		sideBar.css('position', 'absolute');
+		    		sideBar.css ('top', initOffset);
+		    		sideBar.css('left', 0);
+		    	} else {
+		    		sideBar.css('position', 'absolute');
+		    		sideBar.css('top', $('#content').height() - footer.height() - 5) ;
+		    		sideBar.css('left', 0);
+		    	}
 		    }
 		});
 
