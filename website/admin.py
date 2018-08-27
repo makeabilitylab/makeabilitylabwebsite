@@ -153,6 +153,7 @@ class ProjectUmbrellaAdmin(admin.ModelAdmin):
         return super(ProjectUmbrellaAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 #from https://stackoverflow.com/questions/9602217/define-an-order-for-manytomanyfield-with-django
+#display items inline
 class PublicationAuthorInline(admin.TabularInline):
     model = PublicationAuthors
     extra = 1

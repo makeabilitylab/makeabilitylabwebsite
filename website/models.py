@@ -738,7 +738,7 @@ def talk_delete(sender, instance, **kwargs):
 
 class Publication(models.Model):
     title = models.CharField(max_length=255)
-    authors = SortedManyToManyField(Person)
+    authors = SortedManyToManyField(Person, through='PublicationAuthors')
     # authorsOrdered = models.ManyToManyField(Person, through='PublicationAuthorThroughModel')
 
     # The PDF is required
@@ -884,6 +884,7 @@ def publication_delete(sender, instance, **kwards):
     if instance.thumbnail:
         instance.thumbnail.delete(True)
 
+#intermediary model that saves the order of authors in a given publication through the use of foreign keys and an integer field
 class PublicationAuthors(models.Model):
     author = models.ForeignKey(Person, on_delete=models.CASCADE)
     publication = models.ForeignKey(Publication, on_delete=models.CASCADE)
