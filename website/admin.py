@@ -155,12 +155,14 @@ class ProjectUmbrellaAdmin(admin.ModelAdmin):
 #from https://stackoverflow.com/questions/9602217/define-an-order-for-manytomanyfield-with-django
 #display items inline
 class PublicationAuthorInline(admin.TabularInline):
-    model = PublicationAuthors
-    extra = 1
+    model = Publication.authors.through
+    verbose_name = "Author"
+    verbose_name_plural = "Author Order"
 
 class PublicationAdmin(admin.ModelAdmin):
+    inlines = (PublicationAuthorInline,)
     fieldsets = [
-        (None,                      {'fields': ['title', 'authors', 'date']}),
+        (None,                      {'fields': ['title', 'date']}),
         ('Files',                   {'fields': ['pdf_file']}),
         ('Pub Venue information',   {'fields': ['pub_venue_type', 'book_title', 'book_title_short', 'geo_location', 'total_papers_submitted', 'total_papers_accepted']}),
         ('Archival Info',           {'fields': ['official_url', 'extended_abstract', 'peer_reviewed', 'award' ]}),
@@ -177,9 +179,8 @@ class PublicationAdmin(admin.ModelAdmin):
 
     list_filter = (PubVenueTypeListFilter, PubVenueListFilter)
 
-    search_fields = ['talk__title']
 
-    inlines = (PublicationAuthorInline,)
+
 
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
         if db_field.name == "authors":
