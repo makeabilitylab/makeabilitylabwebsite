@@ -2,7 +2,7 @@ from django.db import models
 from image_cropping import ImageRatioField
 from sortedm2m.fields import SortedManyToManyField
 from django.dispatch import receiver
-from django.db.models.signals import pre_delete, post_save, m2m_changed
+from django.db.models.signals import pre_delete, post_save, m2m_changed, post_delete
 from django.conf import settings
 
 from datetime import date
@@ -712,7 +712,7 @@ def update_file_name_talks(sender, instance, action, reverse, **kwargs):
         person = instance.get_person()
         name = person.last_name
         year = instance.date.year
-        title = instance.title.replace(' ', '_')
+        title = instance.title.replace(' ', '')
 
         #change the pdf_file path to point to the renamed file
         instance.pdf_file.name = os.path.join('talks', name + '_' + title + '_' + str(year) + '.pdf')
@@ -861,7 +861,7 @@ def update_file_name_publication(sender, instance, action, reverse, **kwargs):
         person = instance.get_person()
         name = person.last_name
         year = instance.date.year
-        title = instance.title.replace(' ', '_')
+        title = instance.title.replace(' ', '')
 
         #change the path of the pdf file to point to the new file name
         instance.pdf_file.name = os.path.join('publications', name + '_' + title + '_' + str(year) + '.pdf')
