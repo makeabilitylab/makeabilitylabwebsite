@@ -738,7 +738,7 @@ def talk_delete(sender, instance, **kwargs):
 
 class Publication(models.Model):
     title = models.CharField(max_length=255)
-    authors = models.ManyToManyField(Person, through='website.PublicationAuthors')
+    authors = SortedManyToManyField(Person)
     # authorsOrdered = models.ManyToManyField(Person, through='PublicationAuthorThroughModel')
 
     # The PDF is required

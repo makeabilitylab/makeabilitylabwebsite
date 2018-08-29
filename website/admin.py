@@ -160,9 +160,8 @@ class PublicationAuthorInline(admin.TabularInline):
     verbose_name_plural = "Author Order"
 
 class PublicationAdmin(admin.ModelAdmin):
-    inlines = (PublicationAuthorInline,)
     fieldsets = [
-        (None,                      {'fields': ['title', 'date']}),
+        (None,                      {'fields': ['title', 'authors', 'date']}),
         ('Files',                   {'fields': ['pdf_file']}),
         ('Pub Venue information',   {'fields': ['pub_venue_type', 'book_title', 'book_title_short', 'geo_location', 'total_papers_submitted', 'total_papers_accepted']}),
         ('Archival Info',           {'fields': ['official_url', 'extended_abstract', 'peer_reviewed', 'award' ]}),
