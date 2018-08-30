@@ -18,6 +18,17 @@ from django.core.files import File
 import shutil
 
 
+#helper function to correctly capitalize a string, specify words to not capitalize in the articles list
+def capitalize_title(s, exceptions):
+    word_list = re.split(' ', s)       # re.split behaves as expected
+    final = [word_list[0].capitalize()]
+    for word in word_list[1:]:
+        final.append(word if word in exceptions else word.capitalize())
+    return " ".join(final)
+
+#Standard list of words to not capitalize in a sentence
+articles = ['a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'from', 'is', 'of', 'on', 'or', 'nor', 'the', 'to', 'up', 'yet']
+
 # Simple check to seee if a file is an image. Not strictly necessary but included for safety
 def isimage(filename):
     """true if the filename's extension is in the content-type lookup"""
@@ -683,7 +694,7 @@ class Talk(models.Model):
     def get_title(self):
         # Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
         #cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
-        cap_title=re.sub("(^|\s)(\S)", repl_func, self.title)
+        cap_title = capitalize_title(self.title, articles)
         return cap_title
 
     # Gets the list of speakers as a csv string
@@ -838,7 +849,7 @@ class Publication(models.Model):
     def get_title(self):
         # Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
         # TODO looks like we have similar code in class Talk--should make a common utility method for both to reduce code redundancy
-        cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
+        cap_title = capitalize_title(self.title, articles)
         return cap_title
 
     # Returns the acceptance rate as a percentage
