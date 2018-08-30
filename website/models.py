@@ -884,20 +884,6 @@ def publication_delete(sender, instance, **kwards):
     if instance.thumbnail:
         instance.thumbnail.delete(True)
 
-#intermediary model that saves the order of authors in a given publication through the use of foreign keys and an integer field
-class PublicationAuthors(models.Model):
-    author = models.ForeignKey(Person, on_delete=models.CASCADE)
-    publication = models.ForeignKey(Publication, on_delete=models.CASCADE)
-    order = models.IntegerField(max_length=255)
-
-    class Meta:
-        ordering = ['order',]
-
-    def __unicode__(self):
-        return self.author.first_name + " " + self.author.last_name + " is an author of " + self.publication.title + (
-                    " in position %d" % self.order)
-
-
 
 
 class Poster(models.Model):
