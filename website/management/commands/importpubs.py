@@ -23,6 +23,8 @@ class Command(BaseCommand):
         data = JSONParser().parse(stream)
         temp_dir = os.path.abspath('.')
         temp_dir = os.path.join(temp_dir, 'media', 'temp')
+        if not os.path.exists(temp_dir):
+            os.makedirs(temp_dir)
         temp_dir_image = os.path.abspath('.')
         temp_dir_image = os.path.join('media', 'person')
 

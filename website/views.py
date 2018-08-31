@@ -18,7 +18,7 @@ from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from website.serializers import TalkSerializer, PublicationSerializer
+from website.serializers import TalkSerializer, PublicationSerializer, PersonSerializer, ProjectSerializer, NewsSerializer, VideoSerializer
 
 # The Google Analytics stuff is all broken now. It was originally used to track the popularity
 # of pages, projects, and downloads. Not sure what we should do with it now.
@@ -75,7 +75,7 @@ class PubsDetail(APIView):
         serializer = PublicationSerializer(pub)
         return Response(serializer.data)
 
-
+sadf
 
 # Every view is passed settings.DEBUG. This is used to insert the appropriate google analytics tracking when in
 # production, and to not include it for development
