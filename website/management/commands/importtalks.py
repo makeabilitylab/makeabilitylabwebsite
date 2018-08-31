@@ -42,10 +42,13 @@ class Command(BaseCommand):
                     f.write(r.content)
                 # open the pdf file and pass it in to the JSON
                 item['pdf_file'] = File(open(os.path.join('.', 'media', 'temp', title), 'rb'))
-
-            r_tb = requests.get(item['thumbnail'], stream=True)
-            title_tb = item['thumbnail'].split('/')[-1]
-            file_path_tb = os.path.join(temp_dir_thumbnails, title_tb)
+            url = item['thumbnail']
+            if url is not None:
+                r_tb = requests.get(url, stream=True)
+                title_tb = url.split('/')[-1]
+                file_path_tb = os.path.join(temp_dir_thumbnails, title_tb)
+                with open(file_path_tb, 'wb') as f:
+                    f.write(r_tb.content)
 
             url = item['raw_file']
             if url is not None:
