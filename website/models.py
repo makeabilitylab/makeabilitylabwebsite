@@ -4,7 +4,7 @@ from sortedm2m.fields import SortedManyToManyField
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_save, m2m_changed, post_delete
 from django.conf import settings
-
+from django.core.exceptions import ValidationError
 from datetime import date, datetime, timedelta
 from django.utils import timezone
 from datetime import timedelta
@@ -419,6 +419,13 @@ class Position(models.Model):
         return self.is_collaborator() and \
                self.start_date < date.today() and \
                self.end_date != None and self.end_date < date.today()
+
+    def is_time_valid(self):
+        return self.start_date < self.end_date
+
+    def clean(self):
+        if not self.is_time_valid():
+            raise ValidationError('The start date must be before the end date')
 
     def __str__(self):
         return "Name={}, Role={}, Title={}".format(self.person.get_full_name(), self.role, self.title)
