@@ -727,7 +727,8 @@ def update_file_name_talks(sender, instance, action, reverse, **kwargs):
         person = instance.get_person()
         name = person.last_name
         year = instance.date.year
-        title = instance.title.replace(' ', '_')
+        title = ''.join(x for x in instance.title.title() if not x.isspace())
+        title = ''.join(e for e in title if e.isalnum())
 
         #change the pdf_file path to point to the renamed file
         instance.pdf_file.name = os.path.join('talks', name + '_' + title + '_' + str(year) + '.pdf')
@@ -876,7 +877,9 @@ def update_file_name_publication(sender, instance, action, reverse, **kwargs):
         person = instance.get_person()
         name = person.last_name
         year = instance.date.year
-        title = instance.title.replace(' ', '_')
+        title = ''.join(x for x in instance.title.title() if not x.isspace())
+        title = ''.join(e for e in title if e.isalnum())
+
 
         #change the path of the pdf file to point to the new file name
         instance.pdf_file.name = os.path.join('publications', name + '_' + title + '_' + str(year) + '.pdf')
@@ -889,7 +892,7 @@ m2m_changed.connect(update_file_name_publication , sender=Publication.authors.th
 @receiver(pre_delete, sender=Publication)
 def publication_delete(sender, instance, **kwards):
     if instance.thumbnail:
-        instance.thumbnail.delete(False)
+        instance.thumbnail.delete(True)
     if instance.pdf_file:
         instance.pdf_file.delete(True)
     if instance.thumbnail:
