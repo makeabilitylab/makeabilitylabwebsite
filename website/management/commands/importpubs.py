@@ -27,6 +27,7 @@ class Command(BaseCommand):
             os.makedirs(temp_dir)
         temp_dir_image = os.path.abspath('.')
         temp_dir_image = os.path.join('media', 'person')
+        temp_dir_thumbnails = os.path.join(temp_dir, 'media', 'temp')
 
 
         print('preprocessing data')
@@ -38,6 +39,12 @@ class Command(BaseCommand):
             file_path = os.path.join(temp_dir, title)
             with open(file_path, 'wb') as f:
                 f.write(r.content)
+
+            r_tb = requests.get(item['thumbnail'], stream=True)
+            title_tb = item['thumbnail'].split('/')[-1]
+            file_path_tb = os.path.join(temp_dir_thumbnails, title_tb)
+            with open(file_path_tb, 'wb') as f:
+                f.write(r_tb.content)
 
             #changing the urls of the file to the file objects by downloading the images via url
             for object in item['authors']:

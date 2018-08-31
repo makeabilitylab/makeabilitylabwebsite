@@ -60,10 +60,17 @@ class PublicationSerializer(serializers.ModelSerializer):
         for author in authors:
             person = Person.objects.get(first_name=author['first_name'], last_name=author['last_name'])
             p.authors.add(person)
+
         initial_path = p.pdf_file.path
         p.pdf_file.name = os.path.join('publications', p.pdf_file.name.split('/')[-1])
         new_path = os.path.join(settings.MEDIA_ROOT, p.pdf_file.name)
         shutil.copy(initial_path, new_path)
+
+        initial_path_tb = p.thumbnail.path
+        p.thumbnail.name = os.path.join('publications', 'images', p.thumbnail.name.split('/')[-1])
+        new_path_tb = os.path.join(settings.MEDIA_ROOT, p.thumbnail.name)
+        shutil.copy(initial_path_tb, new_path_tb)
+        
         p.save()
         #for f in glob.glob('./media/temp/*.pdf'):
         #    shutil.move(f, os.path.join('.', 'media', 'publications'))
