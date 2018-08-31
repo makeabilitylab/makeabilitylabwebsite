@@ -523,7 +523,7 @@ class Project(models.Model):
 
         if len(mostRecentArtifacts) > 0:
             mostRecentArtifacts = sorted(mostRecentArtifacts, key=lambda artifact: artifact[0])
-            return mostRecentArtifacts[0][1]
+            return mostRecentArtifacts[0][1], mostRecentArtifacts[0][1].date
         else:
             return None
 

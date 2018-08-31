@@ -335,7 +335,17 @@ def projects(request):
     all_banners = Banner.objects.filter(page=Banner.PROJECTS)
     displayed_banners = choose_banners(all_banners)
     projects = Project.objects.all()
-    projects = filter_projects(projects)
+    #projects = filter_projects(projects)
+    #store each object and its most recent artifact date
+    sorted_projects = list()
+    for project in projects:
+        item = (project, project.get_most_recent_artifact())
+        sorted_projects.append(item)
+    #sort the artifacts by date
+    sorted_projects = sorted(sorted_projects, key=itemgetter(1), reverse=True)
+
+    ordered_projects, temp = zip(*sorted_projects)
+
     all_proj_len = len(projects)
     filter = request.GET.get('filter')
     if filter != None:
@@ -346,7 +356,7 @@ def projects(request):
     recent_projects = get_most_recent(Project.objects.order_by('-updated'))[:2]
 
 
-    context = {'projects': projects,
+    context = {'projects': ordered_projects,
                'all_proj_len': all_proj_len,
                'banners': displayed_banners,
                'recent': recent_projects,
@@ -484,8 +494,8 @@ def get_most_recent(projects):
         if mostRecentArtifact is not None:
             print(
                 "project '{}' has the most recent artifact of {} updated {} and the check {}".format(item['proj'].name,
-                                                                                                     mostRecentArtifact,
-                                                                                                     mostRecentArtifact.date,
+                                                                                                     mostRecentArtifact[0],
+                                                                                                     mostRecentArtifact[1],
                                                                                                      item['updated']))
         else:
             print("mostRecentArtifact is none")
