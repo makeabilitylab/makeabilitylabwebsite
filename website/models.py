@@ -420,7 +420,7 @@ class Position(models.Model):
                self.start_date < date.today() and \
                self.end_date != None and self.end_date < date.today()
 
-    
+    #automatically called by Django when saving data to validate the data
     def clean(self):
         if not self.start_date < self.end_date:
             raise ValidationError('The start date must be before the end date')
