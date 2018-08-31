@@ -75,7 +75,101 @@ class PubsDetail(APIView):
         serializer = PublicationSerializer(pub)
         return Response(serializer.data)
 
-sadf
+class PersonList(APIView):
+    '''
+    List all talks, or create a new talk
+    '''
+    def get(self, request, format = None):
+        people = Person.objects.all()
+        serializer = PersonSerializer(people,many=True,context={'request': request})
+        return Response(serializer.data)
+
+class PersonDetail(APIView):
+    """
+    Retrieve, update or delete a snippet instance.
+    """
+    def get_object(self, pk):
+        try:
+            return Person.objects.get(pk=pk)
+        except Person.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        person = self.get_object(pk)
+        serializer = PersonSerializer(person)
+        return Response(serializer.data)
+
+class NewsList(APIView):
+    '''
+    List all talks, or create a new talk
+    '''
+    def get(self, request, format = None):
+        news = News.objects.all()
+        serializer = NewsSerializer(news,many=True,context={'request': request})
+        return Response(serializer.data)
+
+class NewsDetail(APIView):
+    """
+    Retrieve, update or delete a snippet instance.
+    """
+    def get_object(self, pk):
+        try:
+            return News.objects.get(pk=pk)
+        except News.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        news = self.get_object(pk)
+        serializer = NewsSerializer(person)
+        return Response(serializer.data)
+
+class VideoList(APIView):
+    '''
+    List all talks, or create a new talk
+    '''
+    def get(self, request, format = None):
+        videos = Video.objects.all()
+        serializer = VideoSerializer(videos,many=True,context={'request': request})
+        return Response(serializer.data)
+
+class VideoDetail(APIView):
+    """
+    Retrieve, update or delete a snippet instance.
+    """
+    def get_object(self, pk):
+        try:
+            return Video.objects.get(pk=pk)
+        except Video.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        video = self.get_object(pk)
+        serializer = VideoSerializer(video)
+        return Response(serializer.data)
+
+class ProjectList(APIView):
+    '''
+    List all talks, or create a new talk
+    '''
+    def get(self, request, format = None):
+        projects = Project.objects.all()
+        serializer = ProjectSerializer(projects,many=True,context={'request': request})
+        return Response(serializer.data)
+
+class ProjectDetail(APIView):
+    """
+    Retrieve, update or delete a snippet instance.
+    """
+    def get_object(self, pk):
+        try:
+            return Project.objects.get(pk=pk)
+        except Project.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        project = self.get_object(pk)
+        serializer = ProjectSerializer(project)
+        return Response(serializer.data)
 
 # Every view is passed settings.DEBUG. This is used to insert the appropriate google analytics tracking when in
 # production, and to not include it for development
@@ -106,7 +200,8 @@ def index(request):
     # projects = Project.objects.all()
     # sorted(projects, key=lambda project: student[2])
     projects = Project.objects.all()
-    projects = get_most_recent(projects);
+    projects = get_most_recent(projects)
+    projects = filter_projects(projects)
 
     context = {'people': Person.objects.all(),
                'banners': displayed_banners,
@@ -296,6 +391,17 @@ def projects(request):
     all_banners = Banner.objects.filter(page=Banner.PROJECTS)
     displayed_banners = choose_banners(all_banners)
     projects = Project.objects.all()
+    #projects = filter_projects(projects)
+    #store each object and its most recent artifact date
+    sorted_projects = list()
+    for project in projects:
+        item = (project, project.get_most_recent_artifact())
+        sorted_projects.append(item)
+    #sort the artifacts by date
+    sorted_projects = sorted(sorted_projects, key=itemgetter(1), reverse=True)
+
+    ordered_projects, temp = zip(*sorted_projects)
+
     all_proj_len = len(projects)
     filter = request.GET.get('filter')
     if filter != None:
@@ -305,7 +411,8 @@ def projects(request):
     popular_projects = []  # sort_popular_projects(googleanalytics.run(get_ind_pageviews))[:4]
     recent_projects = get_most_recent(Project.objects.order_by('-updated'))[:2]
 
-    context = {'projects': projects,
+
+    context = {'projects': ordered_projects,
                'all_proj_len': all_proj_len,
                'banners': displayed_banners,
                'recent': recent_projects,
@@ -443,8 +550,8 @@ def get_most_recent(projects):
         if mostRecentArtifact is not None:
             print(
                 "project '{}' has the most recent artifact of {} updated {} and the check {}".format(item['proj'].name,
-                                                                                                     mostRecentArtifact,
-                                                                                                     mostRecentArtifact.date,
+                                                                                                     mostRecentArtifact[0],
+                                                                                                     mostRecentArtifact[1],
                                                                                                      item['updated']))
         else:
             print("mostRecentArtifact is none")
@@ -452,6 +559,22 @@ def get_most_recent(projects):
 
     return [item['proj'] for item in sorted_list]
 
+#filter out all the projects with thumbnails, publications, and an about object attached
+def filter_projects(projects):
+    filtered = list()
+    for project in projects:
+        if len(project.publication_set.all()) > 0 and project.about and project.gallery_image:
+            filtered.append(project)
+    return filtered
+
+'''
+def filter_no_pubs_projects(projects):
+    filtered = []
+    for project in projects:
+        if len(project.publication_set.all()) > 0:
+            filtered.append(project)
+    return filtered
+'''
 
 # Get the page views per page including their first and second level paths
 def get_ind_pageviews(service, profile_id):

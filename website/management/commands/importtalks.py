@@ -25,6 +25,7 @@ class Command(BaseCommand):
         temp_dir_image = os.path.join('media', 'person')
         if not os.path.isdir(temp_dir_image):
             os.mkdir(temp_dir_image)
+        temp_dir_thumbnails = os.path.join(temp_dir, 'media', 'temp')
 
         #raw file, pdf_file
         print('preprocessing data...')
@@ -41,6 +42,10 @@ class Command(BaseCommand):
                     f.write(r.content)
                 # open the pdf file and pass it in to the JSON
                 item['pdf_file'] = File(open(os.path.join('.', 'media', 'temp', title), 'rb'))
+
+            r_tb = requests.get(item['thumbnail'], stream=True)
+            title_tb = item['thumbnail'].split('/')[-1]
+            file_path_tb = os.path.join(temp_dir_thumbnails, title_tb)
 
             url = item['raw_file']
             if url is not None:
