@@ -420,11 +420,9 @@ class Position(models.Model):
                self.start_date < date.today() and \
                self.end_date != None and self.end_date < date.today()
 
-    def is_time_valid(self):
-        return self.start_date < self.end_date
-
+    
     def clean(self):
-        if not self.is_time_valid():
+        if not self.start_date < self.end_date:
             raise ValidationError('The start date must be before the end date')
 
     def __str__(self):
