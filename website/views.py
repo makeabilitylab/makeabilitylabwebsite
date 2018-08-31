@@ -331,54 +331,20 @@ def website_analytics(request):
     return render(request, 'admin/analytics.html')
 
 
-def mergeSortDates(dates):
-    if len(dates)>1:
-        mid = len(dates)//2
-        lefthalf = dates[:mid]
-        righthalf = dates[mid:]
-
-        mergeSortDates(lefthalf)
-        mergeSortDates(righthalf)
-
-        i=0
-        j=0
-        k=0
-        while i < len(lefthalf) and j < len(righthalf):
-            if lefthalf[i][1] < righthalf[j][1]:
-                dates[k]=lefthalf[i]
-                i=i+1
-            else:
-                dates[k]=righthalf[j]
-                j=j+1
-            k=k+1
-
-        while i < len(lefthalf):
-            dates[k]=lefthalf[i]
-            i=i+1
-        while j < len(righthalf):
-            dates[k] = righthalf[j]
-            j = j + 1
-            k = k + 1
-
 def projects(request):
     all_banners = Banner.objects.filter(page=Banner.PROJECTS)
     displayed_banners = choose_banners(all_banners)
     projects = Project.objects.all()
-    projects = filter_projects(projects)
-
+    #projects = filter_projects(projects)
     #store each object and its most recent artifact date
     sorted_projects = list()
     for project in projects:
         item = (project, project.get_most_recent_publication())
         sorted_projects.append(item)
     #sort the artifacts by date
-    mergeSortDates(sorted_projects)
+    sorted_projects = sorted(sorted_projects, key=itemgetter(1), reverse=True)
 
-    #retrieve the order of the objects and reverse
-    ordered_projects = list()
-    for i in range(len(sorted_projects)):
-        ordered_projects.append(sorted_projects[i][0])
-    ordered_projects.reverse()
+    ordered_projects, temp = zip(*sorted_projects)
 
     all_proj_len = len(projects)
     filter = request.GET.get('filter')
