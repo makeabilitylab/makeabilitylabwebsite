@@ -339,7 +339,7 @@ def projects(request):
     #store each object and its most recent artifact date
     sorted_projects = list()
     for project in projects:
-        item = (project, project.get_most_recent_publication())
+        item = (project, project.get_most_recent_artifact())
         sorted_projects.append(item)
     #sort the artifacts by date
     sorted_projects = sorted(sorted_projects, key=itemgetter(1), reverse=True)
