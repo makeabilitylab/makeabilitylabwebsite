@@ -885,7 +885,6 @@ def publication_delete(sender, instance, **kwards):
         instance.thumbnail.delete(True)
 
 
-
 class Poster(models.Model):
     publication = models.ForeignKey(Publication, blank=True, null=True, on_delete=models.DO_NOTHING)
 
