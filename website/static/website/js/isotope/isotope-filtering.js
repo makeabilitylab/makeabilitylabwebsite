@@ -12,7 +12,9 @@ var filteringScheme = "none";
 
 // initialization for filtering
 function isotopeFilterInit() {
-    filteringScheme = "none";
+    $($(currentIsotopeProperties['gridName'])).isotope({
+        filter: filterByFilteringScheme,
+    });
 }
 
 // filters by our current scheme
@@ -20,19 +22,21 @@ function filterByFilteringScheme() {
     // "none" is special case, everything else is normal
     if(filteringScheme.toLowerCase() === "none") {
         // filter out only the headers
+        //console.log($(this).attr("name"));
         return $(this).attr("name") !== "header";
     }
 
     // check if we have the property, if not return false.
-    if(!hasProperty($(this).find(currentIsotopeProperties['sortFilterDataContainer'])[0].textContent, filteringScheme.split('(')[0])) {
+    if(!hasProperty($(this).find(currentIsotopeProperties['sortFilterDataContainer'])[0].textContent.toLowerCase(), filteringScheme.split('(')[0].toLowerCase())) {
         return false;
     }
 
     // get filterable data
-    var data = getValueOfProperty($(this).find(currentIsotopeProperties['sortFilterDataContainer'])[0].textContent, filteringScheme.split('(')[0]);
+    var data = getValueOfProperty($(this).find(currentIsotopeProperties['sortFilterDataContainer'])[0].textContent.toLowerCase(), filteringScheme.split('(')[0].toLowerCase());
+    //console.log("filtering data " + data);
 
     // if data is null, then return false, otherwise check if the data is equal to the filteringScheme or if the filtering scheme doesn't contain data.
-    return (filteringScheme.indexOf('(') === -1 || (parsePropertyValue(filteringScheme) + "").trim() === (data + "").trim());
+    return (filteringScheme.indexOf('(') === -1 || (parsePropertyValue(filteringScheme) + "").trim().toLowerCase() === (data + "").trim().toLowerCase());
 }
 
 // handles the filter click
