@@ -17,7 +17,7 @@ import shutil
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        url = 'https://makeabilitylab-test.cs.washington.edu/api/pubs/?format=json'
+        url = 'https://makeabilitylab.cs.washington.edu/api/pubs/?format=json'
         response = requests.get(url).content
         stream = BytesIO(response)
         data = JSONParser().parse(stream)
