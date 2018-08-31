@@ -13,7 +13,7 @@ import shutil
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        url = 'https://makeabilitylab-test.cs.washington.edu/api/talks/?format'
+        url = 'https://makeabilitylab.cs.washington.edu/api/talks/?format=json'
         response = requests.get(url).content
         stream = BytesIO(response)
         data = JSONParser().parse(stream)
