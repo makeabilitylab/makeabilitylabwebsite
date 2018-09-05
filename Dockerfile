@@ -56,7 +56,7 @@ ADD . /code/
 ADD media /code/
 
 ##Our local user needs write access to a place
-RUN chown apache /code
+RUN chown -R apache /code
 # RUN chown apache /code/website
 
 # The EXPOSE instruction informs Docker that the container listens on the specified network ports at runtime. 
