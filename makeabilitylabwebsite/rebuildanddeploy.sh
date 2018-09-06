@@ -18,5 +18,10 @@ fi
 
 #finally, instantiate the new container
 cd $1
-/bin/bash < command
+
+if [[ $(hostname -s) = *"test"* ]]; then
+    /bin/bash < command-test
+else
+    /bin/bash < command
+fi
 
