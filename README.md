@@ -191,7 +191,13 @@ The current version number can be viewed [here](https://github.com/jonfroehlich/
 The production server was configured largely by UW CSE's Jason Howe. Note that settings.py reads in a config.ini file to configure a connection to the PostgreSQL database. This config.ini file is *not* in git (for obvious reasons as it contains secret keys and passwords). Thus, Jason has setup a "volume mount" for this file so that the production Docker session can read that file.
 
 ## Debugging the Production Server
-Currently, both makeabilitylab-test.cs.washington.edu and makeabilitylab.cs.washington.edu log to the same file: `/media/debug.log`. To access this, ssh into recycle.cs.washington.edu and cd to `/cse/web/research/makelab/www`. You should see the file there.
+We have logging configured for both makeabilitylab-test.cs.washington.edu and makeabilitylab.cs.washington.edu.
+
+- ssh into `recycle.cs.washington.edu`
+- For the test server, cd to `/cse/web/research/makelab/www-test` and view `debug.log`
+- For the production server, cd to `/cse/web/research/makelab/www` and view `debug.log`
+
+Alternatively, if you have Windows dir mapping setup, you can visit `O:\cse\web\research\makelab`
 
 You can also view `buildlog.text`, `httpd-access.log`, and `httpd-error.log` at https://makeabilitylab-test.cs.washington.edu/logs/ and https://makeabilitylab.cs.washington.edu/logs/.
 
