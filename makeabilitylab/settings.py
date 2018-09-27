@@ -123,6 +123,7 @@ INSTALLED_APPS = [
     'image_cropping',
     'easy_thumbnails',
     'sortedm2m',
+    'sortedm2m_filter_horizontal_widget',
     'rest_framework'
 ]
 

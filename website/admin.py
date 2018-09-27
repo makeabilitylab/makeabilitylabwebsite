@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.admin import widgets
 from .models import Person, Publication, Position, Talk, Project, Poster, Keyword, News, Banner, Video, Project_header, Photo, Project_umbrella, Project_Role, Sponsor
 from website.admin_list_filters import CurrentMemberListFilter, PositionListFilter, PubVenueTypeListFilter, PubVenueListFilter
+from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
 
 from django.http import HttpResponse
 from datetime import datetime
@@ -152,6 +153,13 @@ class ProjectUmbrellaAdmin(admin.ModelAdmin):
             kwargs["widget"] = widgets.FilteredSelectMultiple("keywords", is_stacked=False)
         return super(ProjectUmbrellaAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
+#from https://stackoverflow.com/questions/9602217/define-an-order-for-manytomanyfield-with-django
+#display items inline
+class PublicationAuthorInline(admin.TabularInline):
+    model = Publication.authors.through
+    verbose_name = "Author"
+    verbose_name_plural = "Author Order"
+
 class PublicationAdmin(admin.ModelAdmin):
     fieldsets = [
         (None,                      {'fields': ['title', 'authors', 'date']}),
@@ -171,9 +179,12 @@ class PublicationAdmin(admin.ModelAdmin):
 
     list_filter = (PubVenueTypeListFilter, PubVenueListFilter)
 
+
+
+
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
         if db_field.name == "authors":
-            kwargs["widget"] = widgets.FilteredSelectMultiple("authors", is_stacked=False)
+            kwargs['widget'] = SortedFilteredSelectMultiple()
         elif db_field.name == "projects":
             kwargs["widget"] = widgets.FilteredSelectMultiple("projects", is_stacked=False)
         elif db_field.name == "project_umbrellas":

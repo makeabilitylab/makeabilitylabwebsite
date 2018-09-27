@@ -6,4 +6,4 @@ var h = app.activeDocument.height;
 if(w>h) app.activeDocument.resizeCanvas (w, w, AnchorPosition.MIDDLECENTER);  
 if(w<h) app.activeDocument.resizeCanvas (h, h, AnchorPosition.MIDDLECENTER);  
 //if w==h already square  
-app.preferences.rulerUnits = savedRuler;  
+app.preferences.rulerUnits = savedRuler;
