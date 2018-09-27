@@ -74,7 +74,7 @@ make run
 1. If you don't have Docker yet, you can download it [here](https://store.docker.com/search?type=edition&offering=community). We use the Community Edition. If you previously installed Docker, please navigate to the Docker settings, in the window go to the Reset tab and click "Restore Factory defaults". This will ensure that there will be no conflicts in allocating ports later on.
 
 2. During the install, you will be prompted with a Configuration Dialog that will ask whether to use Windows containers instead of Linux containers. Do not check the box.
-![InstallingDockerWindows_ConfigScreen](https://github.com/jonfroehlich/makeabilitylabwebsite/blob/master/media/readme/InstallingDockerWindows_ConfigScreen_UseWindowsContainersCheckbox.png)
+![InstallingDockerWindows_ConfigScreen](https://github.com/jonfroehlich/makeabilitylabwebsite/blob/master/readme/InstallingDockerWindows_ConfigScreen_UseWindowsContainersCheckbox.png)
 
 3. Goto the Start Menu and open `Docker for Windows.` If it asks you to enable Hyper-V, you should say Yes and restart.
 
@@ -168,7 +168,7 @@ We have two UW servers hosting the ML website: https://makeabilitylab-test.cs.wa
 
 # Deploying Code to UW Servers
 The Makeability Lab website auto-deploys from GitHub to the department's Docker infrastructure using webhooks:
-![webhooks_screenshot](https://github.com/jonfroehlich/makeabilitylabwebsite/blob/master/media/readme/webhooks_screenshot.png "Webhooks Screenshot") When we push code to github, the new code will auto-deploy to makeabilitylab-test. When we are ready to push changes to production, we need to do the following:
+![webhooks_screenshot](https://github.com/jonfroehlich/makeabilitylabwebsite/blob/master/readme/webhooks_screenshot.png "Webhooks Screenshot") When we push code to github, the new code will auto-deploy to makeabilitylab-test. When we are ready to push changes to production, we need to do the following:
 ```
 git tag <my version number>
 git push --tags
