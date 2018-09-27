@@ -173,7 +173,7 @@ The Makeability Lab website auto-deploys from GitHub to the department's Docker 
 git tag <my version number>
 git push --tags
 ```
-This will cause that tag to deploy to production. TODO: how can we verify that the deployment to production was completed? Do we get an email?
+This will cause that tag to deploy to production. To verify that the code has actually been pushed to production, view the `buildlog.txt` [here](https://makeabilitylab.cs.washington.edu/logs/buildlog.txt).
 
 ## Versioning
 We will using semantic versioning when adding tags to push to production. The table below gives instructions for how semantic labeling works. More information is available [here](https://docs.npmjs.com/getting-started/semantic-versioning).
