@@ -178,7 +178,7 @@ This will cause that tag to deploy to production.
 ## Versioning
 We will using semantic versioning when adding tags to push to production. The table below gives instructions for how semantic labeling works. More information is available [here](https://docs.npmjs.com/getting-started/semantic-versioning).
 
-The current version is `0.1.0`, since we are still in development. A history of all pushes to production can be accessed through the 'releases' tag on Github.
+The current version number can be viewed [here](https://github.com/jonfroehlich/makeabilitylabwebsite/releases) along with a history of all previous releases. 
 
 | Code Status    | Stage        | Rule             | Example # |
 | -------------- | ------------ | ---------------- | --------- |
