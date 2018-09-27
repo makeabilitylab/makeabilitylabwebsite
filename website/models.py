@@ -4,7 +4,7 @@ from sortedm2m.fields import SortedManyToManyField
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_save, m2m_changed, post_delete
 from django.conf import settings
-
+from django.core.exceptions import ValidationError
 from datetime import date, datetime, timedelta
 from django.utils import timezone
 from datetime import timedelta
@@ -17,6 +17,17 @@ from random import choice
 from django.core.files import File
 import shutil
 
+
+#helper function to correctly capitalize a string, specify words to not capitalize in the articles list
+def capitalize_title(s, exceptions):
+    word_list = re.split(' ', s)       # re.split behaves as expected
+    final = [word_list[0].capitalize()]
+    for word in word_list[1:]:
+        final.append(word if word in exceptions else word.capitalize())
+    return " ".join(final)
+
+#Standard list of words to not capitalize in a sentence
+articles = ['a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'from', 'is', 'of', 'on', 'or', 'nor', 'the', 'to', 'up', 'yet']
 
 # Simple check to seee if a file is an image. Not strictly necessary but included for safety
 def isimage(filename):
@@ -409,6 +420,11 @@ class Position(models.Model):
                self.start_date < date.today() and \
                self.end_date != None and self.end_date < date.today()
 
+    #automatically called by Django when saving data to validate the data
+    def clean(self):
+        if not self.start_date < self.end_date:
+            raise ValidationError('The start date must be before the end date')
+
     def __str__(self):
         return "Name={}, Role={}, Title={}".format(self.person.get_full_name(), self.role, self.title)
 
@@ -507,7 +523,7 @@ class Project(models.Model):
 
         if len(mostRecentArtifacts) > 0:
             mostRecentArtifacts = sorted(mostRecentArtifacts, key=lambda artifact: artifact[0])
-            return mostRecentArtifacts[0][1]
+            return mostRecentArtifacts[0][1], mostRecentArtifacts[0][1].date
         else:
             return None
 
@@ -683,7 +699,7 @@ class Talk(models.Model):
     def get_title(self):
         # Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
         #cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
-        cap_title=re.sub("(^|\s)(\S)", repl_func, self.title)
+        cap_title = capitalize_title(self.title, articles)
         return cap_title
 
     # Gets the list of speakers as a csv string
@@ -716,7 +732,8 @@ def update_file_name_talks(sender, instance, action, reverse, **kwargs):
         person = instance.get_person()
         name = person.last_name
         year = instance.date.year
-        title = instance.title.replace(' ', '_')
+        title = ''.join(x for x in instance.title.title() if not x.isspace())
+        title = ''.join(e for e in title if e.isalnum())
 
         #change the pdf_file path to point to the renamed file
         instance.pdf_file.name = os.path.join('talks', name + '_' + title + '_' + str(year) + '.pdf')
@@ -838,7 +855,7 @@ class Publication(models.Model):
     def get_title(self):
         # Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
         # TODO looks like we have similar code in class Talk--should make a common utility method for both to reduce code redundancy
-        cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
+        cap_title = capitalize_title(self.title, articles)
         return cap_title
 
     # Returns the acceptance rate as a percentage
@@ -865,7 +882,9 @@ def update_file_name_publication(sender, instance, action, reverse, **kwargs):
         person = instance.get_person()
         name = person.last_name
         year = instance.date.year
-        title = instance.title.replace(' ', '_')
+        title = ''.join(x for x in instance.title.title() if not x.isspace())
+        title = ''.join(e for e in title if e.isalnum())
+
 
         #change the path of the pdf file to point to the new file name
         instance.pdf_file.name = os.path.join('publications', name + '_' + title + '_' + str(year) + '.pdf')
@@ -878,7 +897,7 @@ m2m_changed.connect(update_file_name_publication , sender=Publication.authors.th
 @receiver(pre_delete, sender=Publication)
 def publication_delete(sender, instance, **kwards):
     if instance.thumbnail:
-        instance.thumbnail.delete(False)
+        instance.thumbnail.delete(True)
     if instance.pdf_file:
         instance.pdf_file.delete(True)
     if instance.thumbnail:

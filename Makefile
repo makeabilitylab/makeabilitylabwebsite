@@ -7,13 +7,13 @@
 .PHONY: makemigrations
 .PHONY: build-dev
 .PHONY: build-prod
-IMAGE_NAME=makeability
+IMAGE_NAME=makelab_image
 
 build:
 	docker build . -t $(IMAGE_NAME)
 
 run: build
-	docker run -p 8000:8000 -ti -v database:/code/db -v $$(pwd)/media:/code/media -v $$(pwd)/website:/code/website $(IMAGE_NAME)
+	docker run -p 8000:8000 -ti -v $$(pwd)/db:/code/db -v $$(pwd)/media:/code/media -v $$(pwd)/website:/code/website $(IMAGE_NAME)
 
 gitpull:
 	git pull origin master
@@ -25,19 +25,19 @@ collectstatic:
 	python manage.py collectstatic
 
 makemigrations:
-	python manage.py makemigrations
+	python manage.py makemigrations website
 
 migrate: makemigrations
 	python manage.py migrate
 
 superuser:
-	docker run -ti -v database:/code/db -v $$(pwd)/media:/code/media --entrypoint=python $(IMAGE_NAME) manage.py createsuperuser
+	docker run -ti -v $$(pwd)/db:/code/db -v $$(pwd)/media:/code/media --entrypoint=python $(IMAGE_NAME) manage.py createsuperuser
 
 shell:
-	docker run -ti -v database:/code/db -v $$(pwd)/media:/code/media --entrypoint=bash $(IMAGE_NAME)
+	docker run -ti -v $$(pwd)/db:/code/db -v $$(pwd)/media:/code/media --entrypoint=bash $(IMAGE_NAME)
 
 dbshell:
-	docker run -ti -v database:/code/db -v $$(pwd)/media:/code/media --entrypoint=python $(IMAGE_NAME) manage.py dbshell
+	docker run -ti -v $$(pwd)/db:/code/db -v $$(pwd)/media:/code/media --entrypoint=python $(IMAGE_NAME) manage.py dbshell
 
 build-dev: migrate
 	echo "Your project has been built in a dev environment"

@@ -29,15 +29,15 @@ While the instructions below walk you through a step-by-step process to configur
 
 3. Build the docker images. This can be done by running `make build`, if make is installed. Alternatively, you can run `docker build .` or `docker build . -t <tag>`--the latter allows you to tag your build with a name (we recommend tagging it as `makelab_image` for easy access). This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
 
-4. Open the interactive bash terminal using `docker run -ti --entrypoint=bash <tag>`
+4. Open the interactive bash terminal using `docker run -ti -v $(pwd)/db:/code/db -v $(pwd)/media:/code/media --entrypoint=bash <tag>`
 
 5. Create the local database by running the following commands: `python3 manage.py makemigrations website` and `python3 manage.py migrate`. Type `exit` to leave the interactive terminal.
 
-6. Create the superuser. Run `make superuser` if make is installed, or `docker run -ti -v database:/code/db -v $(pwd)/media:/code/media --entrypoint=python [tag] manage.py createsuperuser`.
+6. Create the superuser. Run `make superuser` if make is installed, or `docker run -ti -v $(pwd)/db:/code/db -v $(pwd)/media:/code/media --entrypoint=python [tag] manage.py createsuperuser`.
 
 7. Rebuild the docker images. Use `make build` or `docker build . [-t] [tag]`
 
-8. Run the local server using Docker. Use `make run` or `docker run -p 8000:8000 -ti -v database:/code/db -v $(pwd)/media:/code/media $(pwd)/website:/code/website [tag]` 
+8. Run the local server using Docker. Use `make run` or `docker run -p 8000:8000 -ti -v $(pwd)/db:/code/db -v $(pwd)/media:/code/media $(pwd)/website:/code/website [tag]` 
 
 9. Open the development server in the web browser. This will be at `localhost:8000`. You should see a skeleton of the website (but no content). To fill this with test content for development purposes, see Bootstrapping Content below.
 
@@ -48,11 +48,11 @@ After running the `docker run` command, you will not need to rebuild or rerun th
 git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git
 cd makeabilitylabwebsite/
 docker build . -t makelab_image
-docker run -ti -v database:/code/db -v $(pwd)/media:/code/media --entrypoint=bash makelab_image
+docker run -ti -v $(pwd)/db:/code/db -v $(pwd)/media:/code/media --entrypoint=bash makelab_image
 python3 manage.py makemigrations website
 python3 manage.py migrate
 exit
-docker run -ti -v database:/code/db -v $(pwd)/media:/code/media --entrypoint=python makelab_image manage.py createsuperuser
+docker run -ti -v $(pwd)/db:/code/db -v $(pwd)/media:/code/media --entrypoint=python makelab_image manage.py createsuperuser
 docker build . -t makelab_image
 docker run -p 8000:8000 -ti -v database:/code/db -v $(pwd)/media:/code/media -v $(pwd)/website:/code/website makelab_image
 ```
@@ -63,8 +63,7 @@ git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git
 cd makeabilitylabwebsite/
 make build
 make shell
-python3 manage.py makemigrations website
-python3 manage.py migrate
+make makemigrations
 exit
 make superuser
 make build
@@ -103,6 +102,7 @@ make run
 11. Open the development server in the web browser. This will be at `localhost:8000`.
 
 After running the `docker run` command, you will not need to rebuild or rerun the Docker container after making changes. However, you will still need to refresh the webpage in order to see new updates. This development server will now persist even when you close down PowerShell. Thus, if you try to run the `docker run -p 8000:8000 -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media -v ${pwd}/website:/code/website [tag]` command again, you will receive the error:  `Error response from daemon: driver failed programming external connectivity on endpoint ecstatic_minsky (69ef6a6c62ca6b54bc81976758f03bf6e0c80362e3a9b7a8890714b4cc57d07f): Bind for 0.0.0.0:8000 failed: port is already allocated.`
+
 ### Sample setup:
 ```
 # navigate to the directory you will be cloning the repository into

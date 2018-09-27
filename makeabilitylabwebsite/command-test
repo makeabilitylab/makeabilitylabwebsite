@@ -1,0 +1,10 @@
+#Simple example docker run command.
+# Note: <port from support> should be replaced with value from support
+# Note: "example-container" should match the "container_name" value in the
+# config.php file
+#
+cd ../
+commandhome=$(pwd)
+docker run -d --name=makeabilitylabwebsite -p 127.0.0.1:8571:8000 --restart=always -v /cse/web/research/makelab/www-test/:/code/media/ -v /cse/web/research/makelab/secret/config-test.ini:/code/config.ini -v $commandhome/static:/code/static makeabilitylabwebsite
+
+
