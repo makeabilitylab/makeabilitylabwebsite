@@ -820,6 +820,7 @@ class Publication(models.Model):
     DEMO = "Demo"
     WIP = "Work in Progress"
     LATE_BREAKING = "Late Breaking Result"
+    PANEL = "Panel"
     OTHER = "Other"
 
     PUB_VENUE_TYPE_CHOICES = (
@@ -835,7 +836,8 @@ class Publication(models.Model):
         (DEMO, DEMO),
         (WIP, WIP),
         (LATE_BREAKING, LATE_BREAKING),
-        (OTHER, OTHER),
+        (PANEL, PANEL),
+        (OTHER, OTHER)
     )
 
     # TODO: remove null=True from the following three
