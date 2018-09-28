@@ -277,7 +277,7 @@ function formatPublication(pub, filter) {
 	}
 
 	if(pub.to_appear == true) {
-        publicationData.find(".publication-to-appear-text").css("display", "block");
+        publicationData.find(".publication-to-appear-text").css("display", "inline");
     } else {
     	publicationData.find(".publication-to-appear-text").css("display", "none");
     }
