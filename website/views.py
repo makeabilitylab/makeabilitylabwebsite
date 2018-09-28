@@ -353,7 +353,7 @@ def people(request):
         'map_status_to_headers': map_status_to_headers,
         'map_header_text_to_header_name':  map_header_text_to_header_name,
         'sorted_titles': sorted_titles,
-        'positions': positions,
+        'positions': Position.objects.all(),
         'banners': displayed_banners,
         'debug': settings.DEBUG
     }
