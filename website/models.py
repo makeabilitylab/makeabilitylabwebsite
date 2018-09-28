@@ -156,15 +156,6 @@ class Person(models.Model):
         else:
             return False
 
-    # Returns True if person is current collaborator of the lab. False otherwise
-    def is_current_collaborator(self):
-        latest_position = self.get_latest_position()
-        if latest_position is not None:
-            # print('Checkpoint 1: ' + str(latest_position.is_current_collaborator()))
-            return latest_position.is_current_collaborator()
-        else:
-            return False
-
     # Returns True if person is an alumni member of the lab. False otherwise
     def is_alumni_member(self):
         is_alumni_member = False
@@ -178,6 +169,24 @@ class Person(models.Model):
                 is_alumni_member = False
 
         return is_alumni_member
+
+    # Returns True if person is current collaborator of the lab. False otherwise
+    def is_current_collaborator(self):
+        latest_position = self.get_latest_position()
+        if latest_position is not None:
+            # print('Checkpoint 1: ' + str(latest_position.is_current_collaborator()))
+            return latest_position.is_current_collaborator()
+        else:
+            return False
+
+    # Returns True if person is a past collaborator of the lab. False otherwise
+    def is_past_collaborator(self):
+        latest_position = self.get_latest_position()
+        if latest_position is not None:
+            return latest_position.is_past_collaborator()
+        else:
+            return False
+
 
     # Returns the earliest this person was ever a member
     def get_earliest_member_position(self):
@@ -408,15 +417,15 @@ class Position(models.Model):
                (self.start_date is not None and self.start_date <= date.today() and \
                 self.end_date is None or (self.end_date is not None and self.end_date >= date.today()))
 
-    # Returns true if member is an alumni member (used to differentiate between future members)
-    def is_alumni_member(self):
-        return self.is_member() and \
-               self.start_date < date.today() and \
-               self.end_date != None and self.end_date < date.today()
-
     # Returns true if collaborator is a past collaborator (used to differentiate between future collaborators)
     def is_past_collaborator(self):
         return self.is_collaborator() and \
+               self.start_date < date.today() and \
+               self.end_date != None and self.end_date < date.today()
+
+    # Returns true if member is an alumni member (used to differentiate between future members)
+    def is_alumni_member(self):
+        return self.is_member() and \
                self.start_date < date.today() and \
                self.end_date != None and self.end_date < date.today()
 

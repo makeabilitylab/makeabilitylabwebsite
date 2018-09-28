@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import widgets
 from .models import Person, Publication, Position, Talk, Project, Poster, Keyword, News, Banner, Video, Project_header, Photo, Project_umbrella, Project_Role, Sponsor
-from website.admin_list_filters import CurrentMemberListFilter, PositionListFilter, PubVenueTypeListFilter, PubVenueListFilter
+from website.admin_list_filters import PositionRoleListFilter, PositionTitleListFilter, PubVenueTypeListFilter, PubVenueListFilter
 from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
 
 from django.http import HttpResponse
@@ -111,7 +111,7 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
     #TODO setup filter here that has diff categories (like active members, past, etc.):
     #https://www.elements.nl/2015/03/16/getting-the-most-out-of-django-admin-filters/
     #related to: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/238
-    list_filter = (CurrentMemberListFilter, PositionListFilter)
+    list_filter = (PositionRoleListFilter, PositionTitleListFilter)
 
 class VideoAdmin(admin.ModelAdmin):
     # The list display lets us control what is shown in the default persons table at Home > Website > Videos
