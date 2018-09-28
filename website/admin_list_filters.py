@@ -2,10 +2,10 @@ from django.contrib import admin
 from website.models import Person, Position, Publication
 from django.utils.translation import ugettext_lazy as _
 
-class CurrentMemberListFilter(admin.SimpleListFilter):
+class PositionRoleListFilter(admin.SimpleListFilter):
 
     """
-    This filter allows admin user to filter by member status. Default is current members
+    This filter allows admin user to filter by position status. Default is current members
     
     See: https://docs.djangoproject.com/en/1.11/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_filter
          https://www.elements.nl/2015/03/16/getting-the-most-out-of-django-admin-filters/
@@ -13,10 +13,10 @@ class CurrentMemberListFilter(admin.SimpleListFilter):
 
     # Human-readable title which will be displayed in the
     # right admin sidebar just above the filter options.
-    title = 'current member status'
+    title = 'Role'
 
     # Parameter for the filter that will be used in the URL query.
-    parameter_name = 'current_member_status'
+    parameter_name = 'position_role'
 
     default_value = None
 
@@ -29,9 +29,12 @@ class CurrentMemberListFilter(admin.SimpleListFilter):
         in the right sidebar.
         """
         return (
-            (None, _('Current')), #default, see https://stackoverflow.com/a/16556771
-            ('Past', _('Past')),
-            ('All', _('All'))
+            (None, _('Current member')), #default, see https://stackoverflow.com/a/16556771
+            ('past_member', _('Past member')),
+            ('current_collaborator', _('Current collaborator')),
+            ('past_collaborator', _('Past collaborator')),
+            ('other', _('Other')),
+            ('all', _('All'))
         )
 
     def choices(self, cl):
@@ -66,9 +69,17 @@ class CurrentMemberListFilter(admin.SimpleListFilter):
                                                                                       type(self.value())))
             if person.is_current_member() is True and self.value() is None:
                 filtered_person_ids.append(person.id)
-            elif person.is_alumni_member() is True and self.value() == "Past":
+            elif person.is_alumni_member() is True and person.is_current_member() is False and self.value() == "past_member":
                 filtered_person_ids.append(person.id)
-            elif self.value() == "All":
+            elif person.is_current_collaborator() is True and self.value() == "current_collaborator":
+                filtered_person_ids.append(person.id)
+            elif person.is_past_collaborator() is True and self.value() == "past_collaborator":
+                filtered_person_ids.append(person.id)
+            elif person.is_current_member() is False and person.is_alumni_member() is False and\
+                    person.is_current_collaborator() is False and person.is_past_collaborator() is False and\
+                    self.value() == "other":
+                filtered_person_ids.append(person.id)
+            elif self.value() == "all":
                 filtered_person_ids.append(person.id)
 
         return queryset.filter(id__in = filtered_person_ids)
@@ -90,9 +101,9 @@ class CurrentMemberListFilter(admin.SimpleListFilter):
         # return str(value)
 
 
-class PositionListFilter(admin.SimpleListFilter):
+class PositionTitleListFilter(admin.SimpleListFilter):
     """
-    This filter allows admin user to filter by a person's position. 
+    This filter allows admin user to filter by a person's title.
 
     See: https://docs.djangoproject.com/en/1.11/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_filter
          https://www.elements.nl/2015/03/16/getting-the-most-out-of-django-admin-filters/
@@ -103,7 +114,7 @@ class PositionListFilter(admin.SimpleListFilter):
     title = 'position'
 
     # Parameter for the filter that will be used in the URL query.
-    parameter_name = 'position'
+    parameter_name = 'position_title'
 
     default_value = None
 
