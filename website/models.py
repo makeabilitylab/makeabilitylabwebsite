@@ -431,7 +431,7 @@ class Position(models.Model):
 
     # Automatically called by Django when saving data to validate the data
     def clean(self):
-        if self.end_date is None and self.start_date > self.end_date:
+        if self.end_date is not None and self.start_date > self.end_date:
             raise ValidationError('The start date must be before the end date')
 
     def __str__(self):
