@@ -257,34 +257,40 @@ def index(request):
 
 
 def people(request):
-    positions = Position.objects.all()
+    persons = Person.objects.all()
     map_status_to_title_to_people = dict()
     map_status_to_headers = dict()
     map_header_text_to_header_name = dict()
     map_status_to_num_people = dict()
 
-    for position in positions:
-        title = position.title
-        if "Professor" in position.title:  # necessary to collapse all prof categories to 1
-            title = "Professor"
+    # because people can have multiple simultaneous positions
+    # this variable helps us track and ensure that a person
+    map_status_to_people = dict()
 
-        member_status_name = ""
-        if position.is_current_member():
-            member_status_name = Position.CURRENT_MEMBER
-        elif position.is_alumni_member():
-            member_status_name = Position.PAST_MEMBER
-        elif position.is_current_collaborator():
-            member_status_name = Position.CURRENT_COLLABORATOR
-        elif position.is_past_collaborator():
-            member_status_name = Position.PAST_COLLABORATOR
+    for person in persons:
+        position = person.get_latest_position()
+        if position is not None:
+            title = position.title
+            if "Professor" in position.title:  # necessary to collapse all prof categories to 1
+                title = "Professor"
 
-        if member_status_name not in map_status_to_title_to_people:
-            map_status_to_title_to_people[member_status_name] = dict()
+            member_status_name = ""
+            if position.is_current_member():
+                member_status_name = Position.CURRENT_MEMBER
+            elif position.is_alumni_member():
+                member_status_name = Position.PAST_MEMBER
+            elif position.is_current_collaborator():
+                member_status_name = Position.CURRENT_COLLABORATOR
+            elif position.is_past_collaborator():
+                member_status_name = Position.PAST_COLLABORATOR
 
-        if title not in map_status_to_title_to_people[member_status_name]:
-            map_status_to_title_to_people[member_status_name][title] = list()
+            if member_status_name not in map_status_to_title_to_people:
+                map_status_to_title_to_people[member_status_name] = dict()
 
-        map_status_to_title_to_people[member_status_name][title].append(position)
+            if title not in map_status_to_title_to_people[member_status_name]:
+                map_status_to_title_to_people[member_status_name][title] = list()
+
+            map_status_to_title_to_people[member_status_name][title].append(position)
 
     for status, map_title_to_people in map_status_to_title_to_people.items():
         for title, people_with_title in map_title_to_people.items():
@@ -313,12 +319,10 @@ def people(request):
         map_status_to_headers[position]["subHeader"] = "None"
         map_status_to_headers[position]["headerText"] = list()
 
-
     # setup headers
     for status, map_title_to_people in map_status_to_title_to_people.items():
         if status not in map_status_to_headers:
             map_status_to_headers[status] = dict()
-
 
         # get the subHeaders, headerTexts, and headerNames
         map_status_to_headers[status]["subHeader"] = ""

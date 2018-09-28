@@ -23,8 +23,7 @@
                     </a>
                     {{ member.get_start_date_short }} - {{ member.get_end_date_short }}<br/>
                     {{ member.title }}<br/>
-                    {% if member.title == 'High School Student' %}
-                    {% else %}
+                    {% if member.title != 'High School Student' %}
                         {{ member.department }}<br/>
                     {% endif %}
                 </div>
