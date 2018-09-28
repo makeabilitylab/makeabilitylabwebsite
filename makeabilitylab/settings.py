@@ -207,7 +207,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'US/Eastern'
+# Change timezone for server: https://stackoverflow.com/questions/29311354/how-to-set-the-timezone-in-django
+TIME_ZONE = 'America/Los_Angeles'
 
 USE_I18N = True
 
