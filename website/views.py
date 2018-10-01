@@ -442,10 +442,13 @@ def projects(request):
     for project in projects:
         item = (project, project.get_most_recent_artifact())
         sorted_projects.append(item)
+
     #sort the artifacts by date
     sorted_projects = sorted(sorted_projects, key=itemgetter(1), reverse=True)
 
-    ordered_projects, temp = zip(*sorted_projects)
+    ordered_projects = []
+    if len(projects) > 0:
+        ordered_projects, temp = zip(*sorted_projects)
 
     all_proj_len = len(projects)
     filter = request.GET.get('filter')
