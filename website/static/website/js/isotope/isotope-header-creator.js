@@ -24,6 +24,11 @@ function isotopeHeaderInit() {
             
             if(headerNames.indexOf(textSplit[i]) === -1) {
                 headerNames.push(textSplit[i]);
+
+                if(data === ""){
+                    data = "Other";
+                }
+
                 //  really long html insertion to properly make header.
                 $(currentIsotopeProperties['gridName']).append(
                     //creating an item wrapper so that the header can be put in the grid

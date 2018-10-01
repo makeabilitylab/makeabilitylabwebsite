@@ -33,6 +33,7 @@ $(window).load(function () {
 	// initialize the filter bar module with the publication data
 	preprocessPublications();
 	$('#fixed-side-bar').fixedSideBar();
+	$('#fixed-side-bar').fixedSideBar('#main-content');
 	$('#filter-bar').filterBar({
 		items: publications, 
 		categories: ["Year", "Pub Type", "Project", "None"],
