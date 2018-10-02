@@ -155,12 +155,14 @@ To support quickly adding content for development, we have two automated tools t
 2. Now, to import pubs, run `python3 manage.py importpubs`
 3. To import talks, run `python3 manage.py importtalks`
 
+Alternate commands:
+1. To import pubs, run `docker run -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media --entrypoint=python makelab_image manage.py importpubs` for Windows and `docker run -ti -v $(pwd)/db:/code/db -v $(pwd)/media:/code/media --entrypoint=python makelab_image manage.py importpubs` for Mac
+2. To import talks, run `docker run -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media --entrypoint=python makelab_image manage.py importtalks` for Windows and `docker run -ti -v $(pwd)/db:/code/db -v $(pwd)/media:/code/media --entrypoint=python makelab_image manage.py importtalks` for Mac
+
 A few notes about this. 
-* All publications/talks are downloaded from cs.umd.edu/~jonf/ so they must already exist on Jon’s site before being added in this way.
+* All publications/talks are downloaded from https://makeabilitylab.cs.washington.edu/ so they must already exist on the official site before being added in this way.
 * Authors added using this method are not assigned a position, and so they won’t appear on the People page until one is manually added. However they will be assigned a star wars image.
-* The publications will not allow for duplication, so any publications with the same title as an existing one are ignored. This is not true for talks.
-* Publications with no PDF are ignored. Talks with no PDF and no slide deck are ignored, however talks with only a slide deck will be converted automatically to PDF’s using unoconv (This takes a long time)
-* Projects which are specified in the bibtex/xml by project, will be created if necessary. Anyone who is an author or speaker will be added to associated projects, and any keywords from the paper will also be assigned to the project. The above is true of assigned project_umbrellas as well.
+* Publications without a thumbnail will be 
 
 Importantly, we will have to revise how we do this bootstrapping because Jon's UMD site is going away and because he no longer wants to maintain his own separate backend from the Makeability Lab website (in other words, the ML website will be the sole source of data thus eliminating the source of the bootstrap content). See Issue https://github.com/jonfroehlich/makeabilitylabwebsite/issues/420.
 
@@ -215,15 +217,277 @@ There are two ways to call and retrieve the data:
 2.	Detail: will return a specific object based on the primary key
 
 ##### Publications:
-List: `https://makeabilitylab-test.cs.washington.edu/api/pubs/`
-<br>Detail: `https://makeabilitylab-test.cs.washington.edu/api/pubs/<pk: int>`
+List: `https://makeabilitylab.cs.washington.edu/api/pubs/`
+<br>Detail: `https://makeabilitylab.cs.washington.edu/api/pubs/<pk: int>`
 
 ##### Talks:
-List: `https://makeabilitylab-test.cs.washington.edu/api/talks/`
-<br>Detail: `https://makeabilitylab-test.cs.washington.edu/api/talks/<pk: int>`
+List: `https://makeabilitylab.cs.washington.edu/api/talks/`
+<br>Detail: `https://makeabilitylab.cs.washington.edu/api/talks/<pk: int>`
 
+##### News:
+List: `https://makeabilitylab.cs.washington.edu/api/news/`
+<br>Detail: `https://makeabilitylab.cs.washington.edu/api/news/<pk: int>`
+
+##### Videos:
+List: `https://makeabilitylab.cs.washington.edu/api/video/`
+<br>Detail: `https://makeabilitylab.cs.washington.edu/api/video/<pk: int>`
+
+##### People:
+List: `https://makeabilitylab.cs.washington.edu/api/people/`
+<br>Detail: `https://makeabilitylab.cs.washington.edu/api/people/<pk: int>`
+
+##### Projects:
+List: `https://makeabilitylab.cs.washington.edu/api/project/`
+<br>Detail: `https://makeabilitylab.cs.washington.edu/api/project/<pk: int>`
+
+
+###### Sample API Calls
 To request the pure json version, append `?format=json` to the end of the url. The data will then be rendered in complete JSON without the apiview.
-
+<br>Sample call to `https://makeabilitylab.cs.washington.edu/api/pubs/` returns the following (below JSON only displays one object in a list of many):
+```
+[
+    {
+        "id": 477,
+        "title": "Evaluating Angular Accuracy of Wrist-based Haptic Directional Guidance for Hand Movement",
+        "pdf_file": "http://makeabilitylab.cs.washington.edu/media/publications/Evaluating_Angular_Accuracy_of_Wrist-based_Haptic_Directional_Guidance_for_Hand_Movement_nIxCCJA.pdf",
+        "book_title": "Proceedings of the International Conference on Graphics Interface",
+        "book_title_short": "Proceedings of GI 2016",
+        "thumbnail": "http://makeabilitylab.cs.washington.edu/media/publications/images/Evaluating_Angular_Accuracy_of_Wrist-based_Haptic_Directional_Guidance_for_Hand_Movement_nIxCCJA.jpg",
+        "date": "2016-05-01",
+        "num_pages": 6,
+        "page_num_start": null,
+        "page_num_end": null,
+        "official_url": null,
+        "geo_location": "Victoria, British Columbia",
+        "series": "GI '16",
+        "isbn": "tbd",
+        "doi": "tbd",
+        "publisher": null,
+        "publisher_address": "New York, NY, USA",
+        "acmid": "tbd",
+        "pub_venue_type": "Conference",
+        "extended_abstract": null,
+        "peer_reviewed": true,
+        "total_papers_submitted": null,
+        "total_papers_accepted": null,
+        "award": null,
+        "video": null,
+        "talk": null,
+        "authors": [
+            {
+                "id": 395,
+                "first_name": "Jonggi",
+                "middle_name": "",
+                "last_name": "Hong",
+                "url_name": "jonggihong",
+                "email": "jonggi.hong@gmail.com",
+                "personal_website": "http://cs.umd.edu/~jghong",
+                "github": "",
+                "twitter": "",
+                "bio": "",
+                "next_position": "",
+                "next_position_url": "",
+                "image": "http://makeabilitylab.cs.washington.edu/media/person/JonggiHong.jpg",
+                "easter_egg": "http://makeabilitylab.cs.washington.edu/media/person/Qui_Gon_Jinn_2014_redesign_XhWAVEz.jpg",
+                "cropping": "35,37,717,720",
+                "easter_egg_crop": "0,0,800,800"
+            },
+            {
+                "id": 351,
+                "first_name": "Lee",
+                "middle_name": null,
+                "last_name": "Stearns",
+                "url_name": "leestearns",
+                "email": "lstearns@umd.edu",
+                "personal_website": "http://www.leestearns.com",
+                "github": null,
+                "twitter": null,
+                "bio": "",
+                "next_position": null,
+                "next_position_url": null,
+                "image": "http://makeabilitylab.cs.washington.edu/media/person/lee_handsight_v1.png",
+                "easter_egg": "http://makeabilitylab.cs.washington.edu/media/person/Chewbacca_2014_T2oHMC4.png",
+                "cropping": "314,0,1395,1082",
+                "easter_egg_crop": "1,1,434,434"
+            },
+            {
+                "id": 396,
+                "first_name": "Tony",
+                "middle_name": "",
+                "last_name": "Cheng",
+                "url_name": "tonycheng",
+                "email": "",
+                "personal_website": "",
+                "github": "",
+                "twitter": "",
+                "bio": "",
+                "next_position": "",
+                "next_position_url": "",
+                "image": "http://makeabilitylab.cs.washington.edu/media/person/09p0311.jpg",
+                "easter_egg": "http://makeabilitylab.cs.washington.edu/media/person/Luke_Skywalker_Hoth_O5MmIZV.png",
+                "cropping": "0,300,2848,3145",
+                "easter_egg_crop": "0,0,219,219"
+            },
+            {
+                "id": 284,
+                "first_name": "Jon",
+                "middle_name": "E.",
+                "last_name": "Froehlich",
+                "url_name": "jonfroehlich",
+                "email": "jonf@cs.uw.edu",
+                "personal_website": "http://www.cs.umd.edu/~jonf/",
+                "github": "https://github.com/jonfroehlich",
+                "twitter": "https://twitter.com/jonfroehlich?ref_src=twsrc%5Etfw",
+                "bio": "I am an Assistant Professor in the Department of Computer Science at the University of Maryland, College Park with an affiliate appointment in the College of Information Studies. I am also a member of the Human-Computer Interaction Laboratory (HCIL), the Institute for Advanced Computer Studies (UMIACS), and the founder of the new HCIL Hackerspace and HCIL research lablet: the Makeability Lab. Research in the Makeability Lab is funded, in part, by a Google Faculty Research Award, a 3M Faculty Award, Nokia, the NSF, and the Department of Defense's Clinical and Rehabilitative Medicine Research Program.",
+                "next_position": "",
+                "next_position_url": "",
+                "image": "http://makeabilitylab.cs.washington.edu/media/person/IMG_9700_cropped2.jpg",
+                "easter_egg": "http://makeabilitylab.cs.washington.edu/media/person/Han2014New.jpg",
+                "cropping": "0,307,2439,2748",
+                "easter_egg_crop": "0,0,400,400"
+            },
+            {
+                "id": 397,
+                "first_name": "David",
+                "middle_name": "",
+                "last_name": "Ross",
+                "url_name": "davidross",
+                "email": "",
+                "personal_website": "",
+                "github": "",
+                "twitter": "",
+                "bio": "",
+                "next_position": "",
+                "next_position_url": "",
+                "image": "http://makeabilitylab.cs.washington.edu/media/person/davidross.jpg",
+                "easter_egg": "http://makeabilitylab.cs.washington.edu/media/person/300px-Ani-helmet_as3dPU0.jpg",
+                "cropping": "0,32,268,299",
+                "easter_egg_crop": "0,0,226,226"
+            },
+            {
+                "id": 278,
+                "first_name": "Leah",
+                "middle_name": null,
+                "last_name": "Findlater",
+                "url_name": "leahfindlater",
+                "email": "leahkf@umd.edu",
+                "personal_website": "https://terpconnect.umd.edu/~leahkf/",
+                "github": null,
+                "twitter": null,
+                "bio": "",
+                "next_position": null,
+                "next_position_url": null,
+                "image": "http://makeabilitylab.cs.washington.edu/media/person/IMG_5190.jpg",
+                "easter_egg": "http://makeabilitylab.cs.washington.edu/media/person/Gold_Leader_9495.png",
+                "cropping": "0,0,220,220",
+                "easter_egg_crop": "0,0,473,473"
+            }
+        ],
+        "projects": [
+            {
+                "id": 2,
+                "name": "HandSight",
+                "short_name": "handsight",
+                "start_date": "2013-01-01",
+                "end_date": null,
+                "gallery_image": "http://makeabilitylab.cs.washington.edu/media/projects/images/IMG_3022.JPG",
+                "cropping": "588,0,4908,3456",
+                "about": "HandSight augments the sense of touch in order to help people with visual impairments more easily access the physical and digital information they encounter throughout their daily lives. It is still in an early stage, but the envisioned system will consist of tiny CMOS cameras and micro-haptic actuators mounted on one or more fingers, computer vision and machine learning algorithms to support fingertip-based sensing, and a smartwatch for processing, power, and speech output. Potential use-cases include reading or exploring the layout of a newspaper article or other physical document, identifying colors and visual textures when getting dressed in the morning, or even performing taps or gestures on the palm or other surfaces to control a mobile phone.",
+                "updated": "2016-08-30",
+                "sponsors": [],
+                "project_umbrellas": [
+                    {
+                        "id": 2,
+                        "name": "Accessibility",
+                        "short_name": "accessibility",
+                        "keywords": []
+                    }
+                ],
+                "keywords": [
+                    {
+                        "id": 334,
+                        "keyword": "wearables"
+                    },
+                    {
+                        "id": 335,
+                        "keyword": "haptics"
+                    },
+                    {
+                        "id": 336,
+                        "keyword": "non-visual directional guidance"
+                    },
+                    {
+                        "id": 337,
+                        "keyword": "handsight"
+                    },
+                    {
+                        "id": 338,
+                        "keyword": "accessibility"
+                    },
+                    {
+                        "id": 360,
+                        "keyword": "computer vision"
+                    },
+                    {
+                        "id": 371,
+                        "keyword": "blind"
+                    },
+                    {
+                        "id": 466,
+                        "keyword": "visual impairments"
+                    },
+                    {
+                        "id": 467,
+                        "keyword": "real-time ocr"
+                    },
+                    {
+                        "id": 468,
+                        "keyword": "blind reading"
+                    },
+                    {
+                        "id": 514,
+                        "keyword": "text reading for blind"
+                    },
+                    {
+                        "id": 540,
+                        "keyword": "finger camera"
+                    },
+                    {
+                        "id": 541,
+                        "keyword": "touch vision"
+                    }
+                ]
+            }
+        ],
+        "project_umbrellas": [
+            {
+                "id": 2,
+                "name": "Accessibility",
+                "short_name": "accessibility",
+                "keywords": []
+            }
+        ],
+        "keywords": [
+            {
+                "id": 334,
+                "keyword": "wearables"
+            },
+            {
+                "id": 335,
+                "keyword": "haptics"
+            },
+            {
+                "id": 336,
+                "keyword": "non-visual directional guidance"
+            },
+            {
+                "id": 337,
+                "keyword": "handsight"
+            }
+        ]
+    },
+    ... ]
+```
 
 ## Uploaded Files
 All data/files uploaded to the Makeability Lab website via the admin interface (e.g., talks, publications) goes into the `/media` folder. Although typically you will not ever need to manually access this folder (except, for example, to view the `debug.log`), you can do so by ssh'ing into recycle.cs.washington.edu and cd to `/cse/web/research/makelab/www`. This files area is being mapped into the `/media` folder. This directory is shared by both https://makeabilitylab-test.cs.washington.edu/ and https://makeabilitylab.cs.washington.edu/.
