@@ -31,6 +31,9 @@ function isotopeSortInit() {
             date: false
         },
     });
+
+    $(currentIsotopeProperties['gridName']).isotope({ sortBy : ['sorting_scheme', 'date']});
+    $(currentIsotopeProperties['gridName']).isotope('updateSortData').isotope();
 }
 
 // sorts based on the 'sorting scheme'
@@ -43,8 +46,18 @@ function sortBySortingScheme (itemElem)
     if(typeof val === "string") {
         val = val.toLowerCase();
     }
+    //special case for 'other'/'no value'
+    if(val === "") {
+        if (getIsPropertyAscending(currentIsotopeProperties['sortingKeywordContainer'], sortingScheme)) {
+            return String.fromCharCode(65535);
+        } else {
+            return String.fromCharCode(0);
+        }
+    }
     return val;
 }
+
+
 
 // sorts based on the date (reverse chronological)
 function sortByDate(itemElem)
@@ -62,18 +75,30 @@ function sortFilterNamesByProperty (filterNames, scheme){
         var valB = parsePropertyValue(b);
 
         //so that uppercase letters aren't sorted above lowercase ones
-        if(typeof valA === "string") {
+        if(typeof valA === "string" && typeof valB === "string") {
             valA = valA.toLowerCase();
-        }
-        if(typeof valB === "string") {
             valB = valB.toLowerCase();
+            return valA.localeCompare(valB);
         }
-
         return valA-valB;
     });
+
     if(!ascending) {
         filterNames = filterNames.reverse();
     }
+
+    var otherIndex = -1;
+    for(var i = 0; i < filterNames.length; i++){
+        if(parsePropertyValue(filterNames[i]) === ""){
+            otherIndex = i;
+        }
+    }
+    if(otherIndex !== -1){
+        var str = filterNames[otherIndex];
+        filterNames.splice(otherIndex, 1);
+        filterNames.push(str);
+    }
+
     return filterNames;
 }
 
@@ -111,8 +136,8 @@ function handleSortingClick(e){
         });
         //console.log(getIsPropertyAscending(currentIsotopeProperties['sortingKeywordConatiner'], sortingScheme));
         // update sorting data and sort
-        $(currentIsotopeProperties['gridName']).isotope('updateSortData').isotope();
         $(currentIsotopeProperties['gridName']).isotope({ sortBy : ['sorting_scheme', 'date']});
+        $(currentIsotopeProperties['gridName']).isotope('updateSortData').isotope();
     }
 }
 

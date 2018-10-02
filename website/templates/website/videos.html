@@ -17,7 +17,7 @@
 
 {% block external_scripts %}
     <script src="{% static 'website/js/isotope.pkgd.min.js' %}"></script>
-    <script src="{% static 'website/js/fixedSideBar.js' %}?version=1"></script>
+    <script src="{% static 'website/js/fixedSideBar.js' %}?version=2"></script>
     <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
 
     <script src="{% static 'website/js/isotope/isotope-filterBar.js' %}"></script>
@@ -99,7 +99,7 @@
         <div class="video-list" id="main-content">
             <div class="grid">
                 {% for video in videos %}
-                    <div class="item" name = "video" style="width:30%; margin:1.5%; background:white">
+                    <div class="item" name = "video" style="width:30%; min-width: 200px; margin:1.5%; background:white">
                         <div class="video-container">
                             <iframe class="video" src="{{video.get_embed}}" frameborder="0" allowfullscreen></iframe>
                         </div>
@@ -113,7 +113,7 @@
                         </p>
 
                         <div class="sortingAndFiltering" style="display:none">Year({{ video.date.year }},int)Project({{video.project.name}},str)</div>
-                        <div class="Date" style="display:none">{{video.date.year}}{{video.date.month}}{{video.date.day}}</div>
+                        <div class="Date" style="display:none">{{ video.date|date:"U" }}</div>
                     </div>
                 {% endfor %}
             </div>

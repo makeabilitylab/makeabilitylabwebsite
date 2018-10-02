@@ -38,9 +38,6 @@ function isotopeFilterBarInit(){
         var textSplit = text.split(')');
         // go through textSplit, only create headers that are unique and not empty
         for(var i = 0; i < textSplit.length; i++) {
-            if(textSplit[i] === "") {
-                continue;
-            }
             if(filterNames.indexOf(textSplit[i]) === -1) {
                 filterNames.push(textSplit[i]);
             }
@@ -105,6 +102,11 @@ function handleFilterBarClick(e) {
             var filterMatches = [];
             for(var i = 0; i < filterNames.length; i++) {
                 if(filterNames[i].indexOf(text) !== -1) {
+                    //if there is no value of the property, ignore.
+                    var propertyVal = parsePropertyValue(filterNames[i]);
+                    if(typeof propertyVal === typeof null){
+                        continue;
+                    }
                     filterMatches.push(filterNames[i]);
                 }
             }
@@ -117,7 +119,11 @@ function handleFilterBarClick(e) {
 
             //put all of the properties we can filter by
             for(var i = 0; i < filterMatches.length; i++) {
-                $(currentIsotopeProperties['filteringKeywordContainer']).append("<li class='added-filter-keywords' style='list-style-type:none;cursor:pointer;'><a class= 'keyword' name='"+ filterMatches[i] +"'>" + parsePropertyValue(filterMatches[i]) + "</a></li>")
+                var propertyVal = parsePropertyValue(filterMatches[i]);
+                if(propertyVal === ""){
+                    propertyVal = "Other";
+                }
+                $(currentIsotopeProperties['filteringKeywordContainer']).append("<li class='added-filter-keywords' style='list-style-type:none;cursor:pointer;'><a class= 'keyword' name='"+ filterMatches[i] +"'>" + propertyVal + "</a></li>")
             }
 
             //add 'all' to the bottom if there are more than 0 filter matches
@@ -139,8 +145,4 @@ function handleFilterBarClick(e) {
             $(this).attr("style", 'cursor: pointer;font-weight:normal;');
         }
     });
-
-
-
-
 }

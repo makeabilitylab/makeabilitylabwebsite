@@ -49,6 +49,7 @@ $(window).load(function () {
 	// initialize the filter bar module with the talk data
 	preprocessTalks();
 	$('#fixed-side-bar').fixedSideBar();
+	$('#fixed-side-bar').fixedSideBar('#main-content');
 	$('#filter-bar').filterBar({
 		items: talks, 
 		categories: ["Year", "Project", "None"],
