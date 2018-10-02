@@ -18,6 +18,7 @@ var pubTypeCodes = {
 	"Workshop": "W",
     "Poster": "P",
     "Demo": "Dm",
+	"Doctoral Consortium": "DC",
     "Work in Progress": "WiP",
     "Late Breaking Result": "LBR",
     "Other": "O"
