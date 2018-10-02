@@ -832,6 +832,7 @@ class Publication(models.Model):
     JOURNAL = "Journal"
     BOOK_CHAPTER = "Book Chapter"
     BOOK = "Book"
+    DOCTORAL_CONSORTIUM = "Doctoral Consortium"
     MS_THESIS = "MS Thesis"
     PHD_DISSERTATION = "PhD Dissertation"
     WORKSHOP = "Workshop"
@@ -848,6 +849,7 @@ class Publication(models.Model):
         (JOURNAL, JOURNAL),
         (BOOK_CHAPTER, BOOK_CHAPTER),
         (BOOK, BOOK),
+        (DOCTORAL_CONSORTIUM, DOCTORAL_CONSORTIUM),
         (MS_THESIS, MS_THESIS),
         (PHD_DISSERTATION, PHD_DISSERTATION),
         (WORKSHOP, WORKSHOP),
