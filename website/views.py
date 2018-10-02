@@ -423,8 +423,11 @@ def videos(request):
     displayed_banners = choose_banners(all_banners)
     filter = request.GET.get('filter', None)
     groupby = request.GET.get('groupby', "No-Group")
-    context = {'videos': Video.objects.filter(date__range=["2012-01-01", date.today()]), 'banners': displayed_banners,
-               'filter': filter, 'groupby': groupby, 'debug': settings.DEBUG}
+    context = {'videos': Video.objects.filter(date__range=["2012-01-01", date.today()]).order_by('-date'),
+               'banners': displayed_banners,
+               'filter': filter,
+               'groupby': groupby,
+               'debug': settings.DEBUG}
     return render(request, 'website/videos.html', context)
 
 
