@@ -29,6 +29,15 @@ def capitalize_title(s, exceptions):
 #Standard list of words to not capitalize in a sentence
 articles = ['a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'from', 'is', 'of', 'on', 'or', 'nor', 'the', 'to', 'up', 'yet']
 
+# Special character mappings
+special_chars = {
+    'ã': 'a', 'à': 'a', 'â': 'a',
+    'é': 'e', 'è': 'e', 'ê': 'e',
+    'ñ': 'n', 'ń': 'n',
+    'ö': 'o', 'ô': 'o',
+    'û': 'u', 'ü': 'u', 'ù': 'u'
+}
+
 # Simple check to seee if a file is an image. Not strictly necessary but included for safety
 def isimage(filename):
     """true if the filename's extension is in the content-type lookup"""
@@ -258,7 +267,17 @@ class Person(models.Model):
         star_wars_dir = os.path.join(dir, get_random_starwars(dir))
         image_choice = File(open(star_wars_dir, 'rb'))
         # automatically set url_name field
-        self.url_name = (self.first_name + self.last_name).lower().replace(' ', '')
+
+        # Substitute any common special characters. I haven't found a better automatic way to do
+        # this, so we are manually mapping 'common' special characters.
+        url_name_cleaned = (self.first_name + self.last_name).lower()
+        for c in url_name_cleaned:
+            if bool(re.search('[^a-zA-Z]', c)) and c in special_chars:
+                url_name_cleaned = url_name_cleaned.replace(c, special_chars.get(c))
+
+        # Finally, clean remaining characters (EX: dashes, periods).
+        url_name_cleaned = re.sub('[^a-zA-Z]', '', url_name_cleaned)
+        self.url_name = url_name_cleaned
 
         if not self.image:
             self.image = image_choice

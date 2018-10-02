@@ -56,8 +56,7 @@ ADD . /code/
 ADD media /code/
 
 ##Our local user needs write access to a website and static files
-RUN chown -R apache /code/website
-
+RUN chown -R apache /code/
 
 # The EXPOSE instruction informs Docker that the container listens on the specified network ports at runtime. 
 # You can specify whether the port listens on TCP or UDP, and the default is TCP if the protocol is not specified.
