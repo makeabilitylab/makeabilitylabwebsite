@@ -253,7 +253,15 @@ function formatPublication(pub, filter) {
 		authors.append(authorData);
 	});
 
-	publicationData.find(".publication-venue").html(addHighlight(pub.venue, filter));
+
+	var pubVenue = pub.venue;
+	if(pub.extended_abstract === true){
+		if(pubVenue.toLowerCase().indexOf("extended") < 0){
+			pubVenue = "Extended Abstract " + pubVenue;
+		}
+	}
+
+	publicationData.find(".publication-venue").html(addHighlight(pubVenue, filter));
 
     if (pub.award) {
         console.log(pub.title);

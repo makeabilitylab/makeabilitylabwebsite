@@ -61,6 +61,7 @@
             "book_title": "{{ pub.book_title }}",
             "url": "{{ pub.official_url }}",
             "doi": "{{ pub.doi }}",
+            "extended_abstract": {% if pub.extended_abstract %}true{% else %}false{% endif %},
             "publisher": "{{ pub.publisher }}",
             "publisher_address": "{{ pub.publisher_address }}",
             "isbn": "{{ pub.isbn }}",
