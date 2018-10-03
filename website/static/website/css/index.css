@@ -123,6 +123,10 @@ Just playing around wit hover effects
     /*text-align: center;*/
 }
 
+.pub-to-appear-text{
+    font-style: italic;
+}
+
 .pub-thumbnail-image-float-left {
 	border: 1px solid #dddddd;
 	width:25%;
