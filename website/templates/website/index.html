@@ -293,7 +293,8 @@
                         <div class="talk-text">
                             <!-- TODO: href the talk title as well -->
                             <span class="artifact-title line-clamp">{{ talk.title }}</span>
-                            <p class="artifact-venue">{{ talk.forum_name }}</p>
+                            {{ talk.date }} | <span class="artifact-venue line-clamp-one-line">{{ talk.forum_name }}</span>
+                            {% if talk.location %}<p class="artifact-venue line-clamp-one-line">{{ talk.location }}</p>{% endif %}
                             <p class="artifact-authors">
                                 <!-- TODO: figure out how to remove vertical space between speakers and subtitle -->
                                 {% for speaker in talk.speakers.all %}
