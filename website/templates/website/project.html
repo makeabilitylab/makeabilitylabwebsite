@@ -269,40 +269,15 @@
         </div>
         <div class="row row-adjust-margins">
             {% if talks %}
-            <h3 class="news-type-label"><b>Recent Talks</b></h3>
+                <h3 class="news-type-label"><b>Recent Talks</b></h3>
             {% endif %}
             <div class="col-xs-12 no-margin">
-            <div class="row no-margin">
-                <!-- Create a div for each talk passed in -->
-                {% include "snippets/display_talks_snippet.html" %}
-{#                {% for talk in talks %}#}
-{#                <div class="col-ts-12 col-xs-6 col-sm-6 col-md-4 col-lg-3 talk-template-landing landing-talk-fix">#}
-{#                    <div class="talk-info">#}
-{#                        <div class="talk-thumbnail">#}
-{#                        <a href="../../media/{{talk.pdf_file}}" class="talk-thumbnail-link">#}
-{#                            <img src="{% thumbnail talk.thumbnail 420x0 detail %}" class="talk-thumbnail-image img-responsive talk-image-fix"/>#}
-{#                        </a>#}
-{#                        </div>#}
-{#                        <p class="talk-title line-clamp">#}
-{#                        {{talk.title}}#}
-{#                        </p>#}
-{#                        <p class="talk-speakers">#}
-{#                        {% for speaker in talk.speakers.all %}#}
-{#                        {% if forloop.last %}#}
-{#                        <span class="talk-speaker"><a href="{% url 'website:member' speaker.get_url_name %}">{{speaker.get_full_name}}</a></span>#}
-{#                        {% else %}#}
-{#                        <span class="talk-speaker"><a href="{% url 'website:member' speaker.get_url_name %}">{{speaker.get_full_name}}</a>,&nbsp;</span>#}
-{#                        {% endif %}#}
-{#                        {% endfor %}#}
-{#                        </p>#}
-{#                        <p class="talk-stats">#}
-{#                        <span class="talk-date">{{talk.date}}</span>#}
-{#                        <span class="talk-location">{{talk.location}}</span>#}
-{#                        </p>#}
-{#                    </div>#}
-{#                </div>#}
-{#                {% endfor %}#}
-            </div>
+                <div class="row no-margin">
+                    <!-- Create a div for each talk passed in -->
+                    {% for talk in talks %}
+                        {% include "snippets/display_talk_snippet.html" %}
+                    {% endfor %}
+                </div>
             </div>
         </div>
         <div class="row row-adjust-margins">
