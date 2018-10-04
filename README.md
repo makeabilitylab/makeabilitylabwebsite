@@ -118,6 +118,23 @@ docker run -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media --entrypoint=py
 docker build . -t makelab_image
 docker run -p 8000:8000 -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media -v ${pwd}/website:/code/website makelab_image
 ```
+
+### Sample setup (using make)
+To use `make` in PowerShell, download gnuwin22 make from http://gnuwin32.sourceforge.net/packages/make.htm. Note that unlike on the Mac, some make commands have a postfix of a 'w' because their commands are slightly different in the makefile.
+
+```
+git config --global core.autocrlf false
+git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git
+cd makeabilitylabwebsite
+make build
+make shellw
+make makemigrations
+exit
+make superuserw
+make build
+make runw
+```
+
 ### Manual Installation (In the event that Docker fails to run)
 Proceed to the manual installation instructions [here](https://docs.google.com/document/d/1LJPSSZA0kLzUX34pq4TgYP406bGH_1JhBtFLEPax7a8/edit?usp=sharing)
 
