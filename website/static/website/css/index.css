@@ -149,17 +149,6 @@ Just playing around wit hover effects
     min-height:100px;
 }
 
-.pub-download-links {
-    font-size: 7pt;
-    color: gray;
-    margin: 0;
-    margin-left: 107px;
-    margin-right: 20px;
-    bottom: 0;
-    position: absolute;
-    border-top: 1px solid #dddddd;
-}
-
 .talk2-thumbnail{
     /*width:250px;*/
 }
