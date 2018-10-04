@@ -17,15 +17,17 @@
         <div class="talk-text">
             <!-- TODO: href the talk title as well -->
             <a href="../../media/{{ talk.pdf_file }}" target="_blank"><span class="artifact-title line-clamp">{{ talk.title }}</span></a>
-            <p class="artifact-venue line-clamp-one-line" style="font-size: 13px; margin-bottom: 0px;">
+            <p class="artifact-venue line-clamp-one-line" style="margin-bottom: 0px;">
                 <!-- TODO: figure out how to remove vertical space between speakers and subtitle -->
-                {{ talk.date }}
+                {{ talk.date }} | {{ talk.forum_name }}
+            </p>
+            {% if talk.location %}<p class="artifact-venue line-clamp-one-line">{{ talk.location }}</p>{% endif %}
+
+            <p class="artifact-authors">
                 {% for speaker in talk.speakers.all %}
-                    <a href="{% url 'website:member' speaker.url_name %}" style="color:#464D59">| {{ speaker.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
+                    <a href="{% url 'website:member' speaker.url_name %}" style="color:#464D59">{{ speaker.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
                 {% endfor %}
             </p>
-            <span class="artifact-venue line-clamp-one-line" style="font-size: 11px; color: #7F7F7F">{{ talk.forum_name }}</span>
-            {% if talk.location %}<p class="artifact-venue line-clamp-one-line" style="font-size: 11px; color: #7F7F7F">{{ talk.location }}</p>{% endif %}
 
             <p class="pub-download-links" style="margin: 0px; margin-top: 2px; bottom:auto">
                 <a href="../../media/{{ talk.pdf_file }}">PDF</a>
