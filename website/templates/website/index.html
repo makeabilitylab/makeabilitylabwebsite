@@ -212,8 +212,11 @@
                         <p class="artifact-links">
                             <a href="{{video.video_url}}">YouTube</a>
                             {% if video.publication %}
-                            | <a href="../../media/{{video.publication.pdf_file}}">Paper</a>
+                                | <a href="../../media/{{video.publication.pdf_file}}">Paper</a>
                             {% endif %}
+                            {% if video.project %}
+                                | <a href="{% url 'website:project' project.short_name %}">project.name</a>
+                            {% endfor %}
                         </p>
                     </div>
                 </div>
@@ -264,6 +267,9 @@
                             {% if pub.official_url %}<a href="{{ pub.official_url }}">| doi</a>{% endif %}
                             {% if pub.talk.pdf_file %}<a href="../../media/{{ pub.talk.pdf_file }}">| Talk</a>{% endif %}
                             <span class="citation-link">| <a data-toggle="popover" data-html="true" data-trigger="manual" tabindex="0" title="Citation" data-content="Empty Citation" class="publication-citation-link">Citation</a></span>
+                            {% for project in pub.projects_set.all %}
+                                | <a href="{% url 'website:project' project.short_name %}">project.name</a>
+                            {% endfor %}
                         </p>
                     {% endif %}
                 </div>
