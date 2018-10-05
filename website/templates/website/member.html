@@ -165,29 +165,10 @@
 		{% if publications %}
 		<div class="row">
 		    <h3 class="news-type-label"><b>Publications</b></h3>
-		    
 		    <div class="col-xs-12 col-md-10">
-			<!-- Create a publication div for each publication passed in -->
-			{% for pub in publications %}
-			<div class="row publication-template">
-			    <div class="publication-thumbnail">
-				<a href="../../media/{{pub.pdf_file}}" class="publication-thumbnail-link">
-				    <img src="{% thumbnail pub.thumbnail 300x0 detail %}" class="publication-thumbnail-image img-responsive">
-				</a>
-			    </div>
-			    <div class="publication-info">
-				<p class="publication-title">{{pub.title}}</p>
-				<p class="publication-authors">
-				    {% for author in pub.authors.all %}
-				    <span class="publication-author"><a href="{% url 'website:member' author.url_name %}">{{author.get_full_name}}</a>&nbsp;</span>
-				    {% endfor %}
-				</p>
-				<p class="publication-stats">
-				    <span class="publication-venue">{{pub.book_title_short}}</span>
-				</p>
-			    </div>
-			</div>
-			{% endfor %}
+                {% for pub in publications %}
+                    {% include "snippets/display_pub_snippet.html" %}
+                {% endfor %}
 		    </div>
 		</div>
 		{% endif %}

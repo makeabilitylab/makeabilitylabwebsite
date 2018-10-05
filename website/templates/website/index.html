@@ -232,47 +232,7 @@
         <h1 class="section-header">Recent Papers</h1>
         <div class="section">
             {% for pub in publications|slice:"6" %}
-                <div class="col-xs-12 col-md-4 pub-column" style="margin-bottom: 20px;">
-                    <!-- TODO: add in best paper icon, etc. -->
-                    <div class="pub-thumbnail" style="float: left; margin-right: 7px;">
-                        <a href="../../media/{{ pub.pdf_file }}" class="pub-thumbnail-link">
-                            <img src="{% thumbnail pub.thumbnail 300x0 detail %}" class="pub-thumbnail-image2 img-responsive" style="max-width: 100px;">
-                        </a>
-                    </div>
-
-                    <a href="../../media/{{ pub.pdf_file }}">
-                        <span class="artifact-title line-clamp" style="margin-top: 0px;">{{ pub.title }}</span>
-                    </a>
-                    <p class="artifact-venue line-clamp-one-line">
-                        {{ pub.book_title_short }}
-                        {% if pub.to_appear %}
-                            <span class="pub-to-appear-text">To Appear</span>
-                        {% endif %}
-                        <span class="publication-award">| <span class="publication-award-text">{{ pub.award }}</span> <span class="publication-award-icon"><i class=\"fa fa-trophy\" aria-hidden="true"></i></span></span>
-                    </p>
-                    <p class="artifact-authors line-clamp3">
-                        {% for author in pub.authors.all %}
-                            <a href="{% url 'website:member' author.url_name %}">{{author.get_full_name}}</a>{% if not forloop.last %},{% endif %}
-                        {% endfor %}
-                    </p>
-
-                    <!-- TODO: fix this so only shows up on mouse over of the pub-column div and that the border only shows on top of this info-->
-                    <!-- TODO: fix so border-top only covers text area and not overlaps with pub -->
-                    <!-- TODO: add to appear if paper is not out yet. -->
-                    <!-- We only show the download bar if there is a paper to download. And, thankfully, this if condition checks that
-                         pub.pdf_file exists, is not empty, and is not a false boolean value. See https://docs.djangoproject.com/en/1.9/ref/templates/builtins/#if-->
-                    {% if pub.pdf_file %}
-                        <p class="pub-download-links">
-                            <a href="../../media/{{ pub.pdf_file }}">PDF</a>
-                            {% if pub.official_url %}<a href="{{ pub.official_url }}">| doi</a>{% endif %}
-                            {% if pub.talk.pdf_file %}<a href="../../media/{{ pub.talk.pdf_file }}">| Talk</a>{% endif %}
-                            <span class="citation-link">| <a data-toggle="popover" data-html="true" data-trigger="manual" tabindex="0" title="Citation" data-content="Empty Citation" class="publication-citation-link">Citation</a></span>
-                            {% for project in pub.projects_set.all %}
-                                | <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>
-                            {% endfor %}
-                        </p>
-                    {% endif %}
-                </div>
+                {% include "snippets/display_pub_snippet.html" with orientation="horizontal"%}
             {% endfor %}
             <div class="col-xs-12 see-all-artifacts">
                 <a href="{% url 'website:publications' %}">See All Papers ></a>
