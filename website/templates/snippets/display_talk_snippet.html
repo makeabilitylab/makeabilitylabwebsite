@@ -37,7 +37,7 @@
                     | <a href="../../media/{{ pub.pdf_file }}">Paper</a>
                 {% endfor %}
                 {% for project in talk.projects_set.all %}
-                    | <a href="{% url 'website:project' project.short_name %}">project.name</a>
+                    | <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>
                 {% endfor %}
             </p>
             <!-- TODO: add in YouTube of talk? -->
