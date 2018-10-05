@@ -36,7 +36,7 @@
                 {% for pub in talk.publication_set.all %}
                     | <a href="../../media/{{ pub.pdf_file }}">Paper</a>
                 {% endfor %}
-                {% for project in talk.projects_set.all %}
+                {% for project in talk.projects.all %}
                     | <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>
                 {% endfor %}
             </p>

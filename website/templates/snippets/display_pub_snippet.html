@@ -26,8 +26,7 @@
         </p>
         <p class="artifact-authors line-clamp3">
             {% for author in pub.authors.all %}
-                <a href="{% url 'website:member' author.url_name %}">{{ author.get_full_name }}</a>
-                {% if not forloop.last %}, {% endif %}
+                <a href="{% url 'website:member' author.url_name %}">{{ author.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </p>
 
@@ -42,7 +41,7 @@
                                                  tabindex="0"
                                                  title="Citation" data-content="Empty Citation"
                                                  class="publication-citation-link">Citation</a></span>
-                {% for project in pub.projects_set.all %}
+                {% for project in pub.projects.all %}
                     | <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>
                 {% endfor %}
             </p>
@@ -103,7 +102,7 @@
                                                      tabindex="0"
                                                      title="Citation" data-content="Empty Citation"
                                                      class="publication-citation-link">Citation</a></span>
-                    {% for project in pub.projects_set.all %}
+                    {% for project in pub.projects.all %}
                         | <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>
                     {% endfor %}
                 </p>
