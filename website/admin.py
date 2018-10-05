@@ -3,18 +3,15 @@ from django.contrib.admin import widgets
 from .models import Person, Publication, Position, Talk, Project, Poster, Keyword, News, Banner, Video, Project_header, Photo, Project_umbrella, Project_Role, Sponsor
 from website.admin_list_filters import PositionRoleListFilter, PositionTitleListFilter, PubVenueTypeListFilter, PubVenueListFilter
 from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
+import django
 
 from django.http import HttpResponse
 from datetime import datetime
 from django.template import loader
 from django.template import RequestContext
-
 from django.shortcuts import redirect
-
 from django import forms
-
 import urllib
-
 import bibtexparser
 
 from image_cropping import ImageCroppingMixin
@@ -268,3 +265,6 @@ admin.site.register(Video, VideoAdmin)
 admin.site.register(Photo, PhotoAdmin)
 admin.site.register(Project_umbrella, ProjectUmbrellaAdmin)
 admin.site.register(Sponsor)
+
+# For modifying more on the front admin landing page, see https://medium.com/django-musings/customizing-the-django-admin-site-b82c7d325510
+admin.site.index_title = "Makeability Lab Admin. Django version: " + django.get_version()
