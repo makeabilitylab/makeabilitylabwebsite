@@ -216,8 +216,9 @@ We have logging configured for both makeabilitylab-test.cs.washington.edu and ma
 - ssh into `recycle.cs.washington.edu`
 - For the test server, cd to `/cse/web/research/makelab/www-test` and view `debug.log`
 - For the production server, cd to `/cse/web/research/makelab/www` and view `debug.log`
+- Alternatively, if you have Windows dir mapping setup, you can visit `O:\cse\web\research\makelab`
 
-Alternatively, if you have Windows dir mapping setup, you can visit `O:\cse\web\research\makelab`
+Because the log files are so large, use the `tail` command to view the end of the log file. For example, `tail -n 100 debug.log` will display the last 100 lines in the log file. You can also dump this to a new file: `tail -n 100 debug.log > last100lines.log`
 
 You can also view `buildlog.text`, `httpd-access.log`, and `httpd-error.log` at https://makeabilitylab-test.cs.washington.edu/logs/ and https://makeabilitylab.cs.washington.edu/logs/.
 
