@@ -92,8 +92,8 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': '/code/media/debug.log',
-            'maxBytes': 1024*1024*10, # 10 MB
-            'backupCount': 5,
+            # 'maxBytes': 1024*1024*10, # 10 MB
+            # 'backupCount': 5,
             'formatter': 'verbose', # can switch between verbose and simple
         },
     },
