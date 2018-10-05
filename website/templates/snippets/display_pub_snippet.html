@@ -27,8 +27,7 @@
         <p class="artifact-authors line-clamp3">
             {% for author in pub.authors.all %}
                 <a href="{% url 'website:member' author.url_name %}">{{ author.get_full_name }}</a>
-                {% if not forloop.last %}
-                    ,{% endif %}
+                {% if not forloop.last %}, {% endif %}
             {% endfor %}
         </p>
 
@@ -61,8 +60,8 @@
             <p class="publication-title">{{ pub.title }}</p>
             <p class="publication-authors">
                 {% for author in pub.authors.all %}
-                    <span class="publication-author"><a
-                            href="{% url 'website:member' author.get_url_name %}">{{ author.get_full_name }}</a>&nbsp;</span>
+                    <a href="{% url 'website:member' author.url_name %}">{{ author.get_full_name }}</a>
+                    {% if not forloop.last %}, {% endif %}
                 {% endfor %}
             </p>
             <p class="publication-stats">
@@ -95,17 +94,32 @@
                 {% endfor %}
 			    </span></span>
             </p>
-            <div class="publication-download">
-                Download: <a href="../../media/{{ pub.pdf_file }}" class="publication-download-link">[pdf]</a>
-                <span class="publication-video-link-label">|
-                    {% if pub.video %}
-                        Video: <a href="{{ pub.video.video_url }}" class="publication-video-link">[youtube]</a>
-                        </span> |
-                    {% endif %}
-                Export <a data-toggle="popover" data-html="true" data-trigger="manual" tabindex="0"
-                          title="Citation" data-content="Empty Citation"
-                          class="publication-citation-link">[Citation]</a>
-            </div>
+{#            <div class="publication-download">#}
+{#                Download: <a href="../../media/{{ pub.pdf_file }}" class="publication-download-link">[pdf]</a>#}
+{#                <span class="publication-video-link-label">|#}
+{#                    {% if pub.video %}#}
+{#                        Video: <a href="{{ pub.video.video_url }}" class="publication-video-link">[youtube]</a>#}
+{#                        </span> |#}
+{#                    {% endif %}#}
+{#                Export <a data-toggle="popover" data-html="true" data-trigger="manual" tabindex="0"#}
+{#                          title="Citation" data-content="Empty Citation"#}
+{#                          class="publication-citation-link">[Citation]</a>#}
+{#            </div>#}
+
+            {% if pub.pdf_file %}
+                <p class="pub-download-links">
+                    <a href="../../media/{{ pub.pdf_file }}">PDF</a>
+                    {% if pub.official_url %}<a href="{{ pub.official_url }}">| doi</a>{% endif %}
+                    {% if pub.talk.pdf_file %}<a href="../../media/{{ pub.talk.pdf_file }}">| Talk</a>{% endif %}
+                    <span class="citation-link">| <a data-toggle="popover" data-html="true" data-trigger="manual"
+                                                     tabindex="0"
+                                                     title="Citation" data-content="Empty Citation"
+                                                     class="publication-citation-link">Citation</a></span>
+                    {% for project in pub.projects_set.all %}
+                        | <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>
+                    {% endfor %}
+                </p>
+            {% endif %}
         </div>
     </div>
 {% endif %}
