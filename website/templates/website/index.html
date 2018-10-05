@@ -278,7 +278,7 @@
     <div id="makelab-recent-talks" class="container-fluid makelab-content-container">
         <h1 class="section-header">Recent Talks</h1>
         <div class="section">
-            {% for talk in talks|slice:"8" %} <!-- Switch slice to '4' to just display 4 talks -->
+            {% for talk in talks|slice:"8" %} {# Switch slice to '4' to just display 4 talks  #}
                 {% include "snippets/display_talk_snippet.html" %}
             {% endfor %}
             <div class="col-xs-12 see-all-artifacts">

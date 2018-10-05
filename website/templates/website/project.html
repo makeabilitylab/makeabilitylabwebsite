@@ -271,12 +271,11 @@
             {% if talks %}
                 <h3 class="news-type-label"><b>Recent Talks</b></h3>
             {% endif %}
-            <div class="col-xs-12 no-margin">
-                <div class="row no-margin">
-                    {% for talk in talks %}
-                        {% include "snippets/display_talk_snippet.html" %}
-                    {% endfor %}
-                </div>
+
+            {% for talk in talks %}
+                {% include "snippets/display_talk_snippet.html" %}
+            {% endfor %}
+
             </div>
         </div>
         <div class="row row-adjust-margins">
