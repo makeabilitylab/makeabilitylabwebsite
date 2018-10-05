@@ -348,7 +348,7 @@ class Position(models.Model):
     CURRENT_COLLABORATOR = "Current Collaborator"
     PAST_COLLABORATOR = "Past Collaborator"
 
-    department = models.CharField(max_length=50, blank=True, default="Computer Science & Engineering")
+    department = models.CharField(max_length=50, blank=True, default="Computer Science")
     school = models.CharField(max_length=60, default="University of Washington")
 
     def get_start_date_short(self):
