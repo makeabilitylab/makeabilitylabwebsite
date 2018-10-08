@@ -266,7 +266,7 @@
                                 {{member.pi_member}} |
                             {% endif %}
 
-                            {% with member.person.position_set.all|first as position %}
+                            {% with member.person.position_set.all|last as position %} {# show most recent title #}
                                     {{ position.title }}
                                 {% if position.is_high_school %}
 

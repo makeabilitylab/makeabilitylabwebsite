@@ -263,10 +263,6 @@ def people(request):
     map_header_text_to_header_name = dict()
     map_status_to_num_people = dict()
 
-    # because people can have multiple simultaneous positions
-    # this variable helps us track and ensure that a person
-    map_status_to_people = dict()
-
     for person in persons:
         position = person.get_latest_position()
         if position is not None:
@@ -361,11 +357,6 @@ def people(request):
 
 
 def member(request, member_id):
-    # try:
-    #     person = Person.objects.get(pk=member_id)
-    # except Person.DoesNotExist:
-    #     raise Http404("Person does not exist")
-    # return render(request, 'website/member.html', {'person': person})
     news_items_num = 5  # Defines the number of news items that will be selected
     all_banners = Banner.objects.filter(page=Banner.PEOPLE)
     displayed_banners = choose_banners(all_banners)
@@ -479,6 +470,7 @@ def project(request, project_name):
     project = get_object_or_404(Project, short_name__iexact=project_name)
     all_banners = project.banner_set.all()
     displayed_banners = choose_banners(all_banners)
+
     project_members = project.project_role_set.order_by('start_date')
     current_members = []  # = project_members.filter(is_active=True) # can't use is_active in filter because it's a function
     alumni_members = []  # = project_members.filter(is_active=False).order_by('end_date')
