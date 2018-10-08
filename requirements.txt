@@ -1,6 +1,6 @@
 # Run `pip3 install -r requirements.txt` to install dependencies
 
-django==2.1.2
+django==2.0.8
 djangorestframework
 beautifulsoup4
 wand==0.4.4
