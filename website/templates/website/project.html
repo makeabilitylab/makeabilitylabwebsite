@@ -243,30 +243,30 @@
         </div>
 
         {# TODO: Still need to add back in sorting by position possibly#}
-        {% for project_member_header_str, project_members in project_members_dict.items %}
+        {% for project_member_header_str, project_roles in project_roles_dict.items %}
             <div class="row row-eq-height row-adjust-margins people-row">
-                {% ifequal project_members|length 0 %}
+                {% ifequal project_roles|length 0 %}
                 {% else %}
                     <h3 class="news-type-label">{{ project_member_header_str }}</h3>
                 {% endifequal %}
-                {% for member in project_members %}
+                {% for project_role in project_roles %}
                     <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-                        <a href="{% url 'website:member' member.person.get_url_name %}">
+                        <a href="{% url 'website:member' project_role.person.get_url_name %}">
                             <div class="easter-egg-col">
-                                <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
+                                <img src="{% thumbnail project_role.person.image 245x245 box=project_role.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
                                     <div class="overlay-easter-egg">
-                                        <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
+                                        <img src="{% thumbnail project_role.person.easter_egg 245x245 box=project_role.person.easter_egg_crop crop detail %}" class="img-responsive">
                                     </div>
                             </div>
                         </a>
                         <div class="item-info">
-                            <a href="{% url 'website:member' member.person.get_url_name %}"><h5>{{ member.person.get_full_name }}</h5></a>
-                            {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-                            {% if member.pi_member %}
-                                {{member.pi_member}} |
+                            <a href="{% url 'website:member' project_role.person.get_url_name %}"><h5>{{ project_role.person.get_full_name }}</h5></a>
+                            {{project_role.get_start_date_short}} - {{project_role.get_end_date_short}}<br/>
+                            {% if project_role.pi_member %}
+                                {{project_role.pi_member}} |
                             {% endif %}
 
-                            {% with member.person.position_set.all|first as position %}
+                            {% with project_role.person.position_set.all|first as position %}
                                     {{ position.title }}
                                 {% if position.is_high_school %}
 

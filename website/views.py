@@ -479,35 +479,37 @@ def project(request, project_name):
     project = get_object_or_404(Project, short_name__iexact=project_name)
     all_banners = project.banner_set.all()
     displayed_banners = choose_banners(all_banners)
-    project_members = project.project_role_set.order_by('start_date')
-    current_members = []  # = project_members.filter(is_active=True) # can't use is_active in filter because it's a function
-    alumni_members = []  # = project_members.filter(is_active=False).order_by('end_date')
 
-    for member in project_members:
-        if member.is_active():
-            current_members.append(member)
+    # A Project_Role object has a person, role (open text field), start_date, end_date
+    project_roles = project.project_role_set.order_by('start_date')
+    project_roles_current = []  # = project_members.filter(is_active=True) # can't use is_active in filter because it's a function
+    project_roles_past = []  # = project_members.filter(is_active=False).order_by('end_date')
+
+    for project_role in project_roles:
+        if project_role.is_active():
+            project_roles_current.append(project_role)
         else:
-            if member.is_past():
-                alumni_members.append(member)
+            if project_role.is_past():
+                project_roles_past.append(project_role)
 
     # TODO: sort current members by PI, Co-PI first, then start date (oldest start date first), then role (e.g., professors, then grad, then undergrad),
     # TODO: sorty alumni members by PI, CO-PI first, then date date (most recent end date first), then role
-    alumni_members = sorted(alumni_members, key=attrgetter('end_date'), reverse=True)
+    project_roles_past = sorted(project_roles_past, key=attrgetter('end_date'), reverse=True)
 
     publications = project.publication_set.order_by('-date')
     videos = project.video_set.order_by('-date')
     talks = project.talk_set.order_by('-date')
     news = project.news_set.order_by('-date')
     photos = project.photo_set.all()
-    project_members_dict = {
-        'Current Project Members': current_members,
-        'Past Project Members': alumni_members
+    project_roles_dict = {
+        'Current Project Members': project_roles_current,
+        'Past Project Members': project_roles_past
     }
 
     context = {'banners': displayed_banners,
                'project': project,
-               'project_members': project_members,
-               'project_members_dict': project_members_dict,
+               'project_roles': project_roles,
+               'project_roles_dict': project_roles_dict,
                'publications': publications,
                'talks': talks,
                'videos': videos,
