@@ -263,9 +263,6 @@ def people(request):
     map_header_text_to_header_name = dict()
     map_status_to_num_people = dict()
 
-    # because people can have multiple simultaneous positions
-    # this variable helps us track and ensure that a person
-    map_status_to_people = dict()
 
     for person in persons:
         position = person.get_latest_position()
@@ -506,10 +503,54 @@ def project(request, project_name):
         'Past Project Members': project_roles_past
     }
 
+    map_status_to_title_to_project_role = dict()
+
+    for project_role in project_roles:
+        person = project_role.person
+
+        position = person.get_latest_position()
+        if position is not None:
+            title = position.title
+            if "Professor" in position.title:  # necessary to collapse all prof categories to 1
+                title = "Professor"
+
+            member_status_name = ""
+            if project_role.is_active():
+                member_status_name = Position.CURRENT_MEMBER
+            else:
+                member_status_name = Position.PAST_MEMBER
+
+            if member_status_name not in map_status_to_title_to_project_role:
+                map_status_to_title_to_project_role[member_status_name] = dict()
+
+            if title not in map_status_to_title_to_project_role[member_status_name]:
+                map_status_to_title_to_project_role[member_status_name][title] = list()
+
+            map_status_to_title_to_project_role[member_status_name][title].append(project_role)
+
+    for status, map_title_to_project_role in map_status_to_title_to_project_role.items():
+        for title, project_role_with_title in map_title_to_project_role.items():
+            if "Current" in status:
+                # sort current members and collaborators by start date first (so
+                # people who started earliest are shown first)
+                project_role_with_title.sort(key=operator.attrgetter('start_date'))
+            else:
+                # sort past members and collaborators reverse chronologically by end date (so people
+                # who ended most recently are shown first)
+                project_role_with_title.sort(key=operator.attrgetter('end_date'), reverse=True)
+
+    sorted_titles = ("Professor", Position.RESEARCH_SCIENTIST, Position.POST_DOC, Position.SOFTWARE_DEVELOPER,
+                     Position.PHD_STUDENT, Position.MS_STUDENT, Position.UGRAD, Position.HIGH_SCHOOL)
+
+    map_status_to_title_to_people = map_status_to_title_to_project_role
+
     context = {'banners': displayed_banners,
                'project': project,
                'project_roles': project_roles,
                'project_roles_dict': project_roles_dict,
+               'map_status_to_title_to_people': map_status_to_title_to_people,
+               'map_status_to_title_to_project_role': map_status_to_title_to_project_role,
+               'sorted_titles': sorted_titles,
                'publications': publications,
                'talks': talks,
                'videos': videos,
