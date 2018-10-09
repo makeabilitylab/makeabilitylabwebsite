@@ -536,6 +536,8 @@ def project(request, project_name):
                 # who ended most recently are shown first)
                 project_role_with_title.sort(key=operator.attrgetter('end_date'), reverse=True)
 
+    # TODO: While we likely want current members sorted by titles, I think it makes the most sense
+    # to sort previous members by most recent first (and ignore title)... but I'm not sure
     sorted_titles = ("Professor", Position.RESEARCH_SCIENTIST, Position.POST_DOC, Position.SOFTWARE_DEVELOPER,
                      Position.PHD_STUDENT, Position.MS_STUDENT, Position.UGRAD, Position.HIGH_SCHOOL)
 
