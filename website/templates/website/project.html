@@ -242,44 +242,12 @@
             {% endfor %}
         </div>
 
-        {# TODO: Still need to add back in sorting by position possibly#}
-        {% for project_member_header_str, project_members in project_members_dict.items %}
-            <div class="row row-eq-height row-adjust-margins people-row">
-                {% ifequal project_members|length 0 %}
-                {% else %}
-                    <h3 class="news-type-label">{{ project_member_header_str }}</h3>
-                {% endifequal %}
-                {% for member in project_members %}
-                    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col">
-                        <a href="{% url 'website:member' member.person.get_url_name %}">
-                            <div class="easter-egg-col">
-                                <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}" class="img-responsive main-image"/>
-                                    <div class="overlay-easter-egg">
-                                        <img src="{% thumbnail member.person.easter_egg 245x245 box=member.person.easter_egg_crop crop detail %}" class="img-responsive">
-                                    </div>
-                            </div>
-                        </a>
-                        <div class="item-info">
-                            <a href="{% url 'website:member' member.person.get_url_name %}"><h5>{{ member.person.get_full_name }}</h5></a>
-                            {{member.get_start_date_short}} - {{member.get_end_date_short}}<br/>
-                            {% if member.pi_member %}
-                                {{member.pi_member}} |
-                            {% endif %}
+        <h3 class="news-type-label">Current Project Members</h3>
+        {% include "snippets/display_people_snippet.html" with member_status="Current Member" %}
 
-                            {% with member.person.position_set.all|last as position %} {# show most recent title #}
-                                    {{ position.title }}
-                                {% if position.is_high_school %}
-
-                                {% else %}
-                                    <br/>{{ position.department }}
-                                {% endif %}
-                                <br/>{{ position.school }}
-                            {% endwith %}
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endfor %}
+        {# TODO: put this in and if block to only show past members if there are any! #}
+        <h3 class="news-type-label">Past Project Members</h3>
+        {% include "snippets/display_people_snippet.html" with member_status="Past Member" %}
     </div>
 </div>
 {% endblock %}

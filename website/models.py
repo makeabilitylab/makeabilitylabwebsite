@@ -98,6 +98,26 @@ class Person(models.Model):
 
     get_current_title.short_description = "Title"
 
+    # Return current title
+    def get_current_department(self):
+        latest_position = self.get_latest_position()
+        if latest_position is not None:
+            return latest_position.department
+        else:
+            return None
+
+    get_current_title.short_description = "Department"
+
+    # Return current title
+    def get_current_school(self):
+        latest_position = self.get_latest_position()
+        if latest_position is not None:
+            return latest_position.school
+        else:
+            return None
+
+    get_current_title.short_description = "School"
+
     # Returns current role
     def get_current_role(self):
         latest_position = self.get_latest_position()

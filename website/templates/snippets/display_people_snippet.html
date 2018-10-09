@@ -25,17 +25,19 @@
                         <h5>{{ member.person.get_full_name }}</h5>
                     </a>
                     {{ member.get_start_date_short }} - {{ member.get_end_date_short }}<br/>
-                    {{ member.title }}<br/>
-                    {% if member.title != 'High School Student' %}
-                        {{ member.department }}<br/>
+
+                    {{ member.person.get_current_title }}<br/>
+                    {% if member.person.get_current_title != 'High School Student' %}
+                        {{ member.person.get_current_department }}<br/>
                     {% endif %}
+                    {{ member.person.get_current_school }}<br/>
                 </div>
                 <div class="sortingAndFiltering" style="display:none">
                     <!-- special case for professors since each type of prof does not get their own category -->
-                    {% if  "Professor" in member|title %}
+                    {% if  "Professor" in member.person.get_current_title %}
                         Professor()
                     {% else %}
-                        {{ member.title }}()
+                        {{ member.person.get_current_title }}()
                     {% endif %}
                 </div>
             </div>
