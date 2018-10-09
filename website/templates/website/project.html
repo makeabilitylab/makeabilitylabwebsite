@@ -242,12 +242,14 @@
             {% endfor %}
         </div>
 
-        <h3 class="news-type-label">Current Project Members</h3>
-        {% include "snippets/display_people_snippet.html" with member_status="Current Member" %}
+        <div class="row row-adjust-margins">
+            <h3 class="news-type-label">Current Project Members</h3>
+            {% include "snippets/display_people_snippet.html" with member_status="Current Member" %}
 
-        {# TODO: put this in and if block to only show past members if there are any! #}
-        <h3 class="news-type-label">Past Project Members</h3>
-        {% include "snippets/display_people_snippet.html" with member_status="Past Member" %}
+            {# TODO: put this in and if block to only show past members if there are any! #}
+            <h3 class="news-type-label">Past Project Members</h3>
+            {% include "snippets/display_people_snippet.html" with member_status="Past Member" %}
+        </div>
     </div>
 </div>
 {% endblock %}

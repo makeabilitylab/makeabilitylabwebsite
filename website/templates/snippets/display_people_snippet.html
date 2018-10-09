@@ -6,6 +6,7 @@
 {% load cropping %}
 {% load ml_tags %}
 
+{# TODO: should really rename member object to being a position object, since that's what it is #}
 {% for title in sorted_titles %}
     {% if map_status_to_title_to_people|get_item:member_status and map_status_to_title_to_people|get_item:member_status|get_item:title %}
         {% for member in map_status_to_title_to_people|get_item:member_status|get_item:title %}
