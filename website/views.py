@@ -263,7 +263,6 @@ def people(request):
     map_header_text_to_header_name = dict()
     map_status_to_num_people = dict()
 
-
     for person in persons:
         position = person.get_latest_position()
         if position is not None:
@@ -358,11 +357,6 @@ def people(request):
 
 
 def member(request, member_id):
-    # try:
-    #     person = Person.objects.get(pk=member_id)
-    # except Person.DoesNotExist:
-    #     raise Http404("Person does not exist")
-    # return render(request, 'website/member.html', {'person': person})
     news_items_num = 5  # Defines the number of news items that will be selected
     all_banners = Banner.objects.filter(page=Banner.PEOPLE)
     displayed_banners = choose_banners(all_banners)
