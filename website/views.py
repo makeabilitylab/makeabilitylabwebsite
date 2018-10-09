@@ -473,6 +473,8 @@ def project(request, project_name):
 
     # A Project_Role object has a person, role (open text field), start_date, end_date
     project_roles = project.project_role_set.order_by('start_date')
+
+    ### EVERYTHING BELOW HERE TO NEXT COMMENT CAN LIKELY BE DELETED
     project_roles_current = []  # = project_members.filter(is_active=True) # can't use is_active in filter because it's a function
     project_roles_past = []  # = project_members.filter(is_active=False).order_by('end_date')
 
@@ -496,6 +498,7 @@ def project(request, project_name):
         'Current Project Members': project_roles_current,
         'Past Project Members': project_roles_past
     }
+    ### EVERYTHING ABOVE HERE TO PREVIOUS COMMENT CAN LIKELY BE DELETED
 
     map_status_to_title_to_project_role = dict()
 
