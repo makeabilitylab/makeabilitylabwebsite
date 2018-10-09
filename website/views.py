@@ -471,34 +471,25 @@ def project(request, project_name):
     all_banners = project.banner_set.all()
     displayed_banners = choose_banners(all_banners)
 
-    # A Project_Role object has a person, role (open text field), start_date, end_date
-    project_roles = project.project_role_set.order_by('start_date')
-
-    ### EVERYTHING BELOW HERE TO NEXT COMMENT CAN LIKELY BE DELETED
-    project_roles_current = []  # = project_members.filter(is_active=True) # can't use is_active in filter because it's a function
-    project_roles_past = []  # = project_members.filter(is_active=False).order_by('end_date')
-
-    for project_role in project_roles:
-        if project_role.is_active():
-            project_roles_current.append(project_role)
-        else:
-            if project_role.is_past():
-                project_roles_past.append(project_role)
-
-    # TODO: sort current members by PI, Co-PI first, then start date (oldest start date first), then role (e.g., professors, then grad, then undergrad),
-    # TODO: sorty alumni members by PI, CO-PI first, then date date (most recent end date first), then role
-    project_roles_past = sorted(project_roles_past, key=attrgetter('end_date'), reverse=True)
-
     publications = project.publication_set.order_by('-date')
     videos = project.video_set.order_by('-date')
     talks = project.talk_set.order_by('-date')
     news = project.news_set.order_by('-date')
     photos = project.photo_set.all()
-    project_roles_dict = {
-        'Current Project Members': project_roles_current,
-        'Past Project Members': project_roles_past
-    }
-    ### EVERYTHING ABOVE HERE TO PREVIOUS COMMENT CAN LIKELY BE DELETED
+
+    # A Project_Role object has a person, role (open text field), start_date, end_date
+    project_roles = project.project_role_set.order_by('start_date')
+
+    project_roles_current = []
+    project_roles_past = []
+
+    for project_role in project_roles:
+        if project_role.is_active():
+            project_roles_current.append(project_role)
+        else:
+            project_roles_past.append(project_role)
+
+    project_roles_past = sorted(project_roles_past, key=attrgetter('end_date'), reverse=True)
 
     map_status_to_title_to_project_role = dict()
 
@@ -544,9 +535,10 @@ def project(request, project_name):
     context = {'banners': displayed_banners,
                'project': project,
                'project_roles': project_roles,
-               'project_roles_dict': project_roles_dict,
-               'map_status_to_title_to_people': map_status_to_title_to_people,
+               'project_roles_current': project_roles_current,
+               'project_roles_past': project_roles_past,
                'map_status_to_title_to_project_role': map_status_to_title_to_project_role,
+               'map_status_to_title_to_people': map_status_to_title_to_people,
                'sorted_titles': sorted_titles,
                'publications': publications,
                'talks': talks,

@@ -8,19 +8,23 @@
 {% load ml_tags %}
 
 {% block stylesheets %}
-<link rel="stylesheet" href="{% static 'website/css/project.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/video.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/talks.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/index.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/news.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/project.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/video.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/talks.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/news.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}">
 {% endblock %}
 
 {% block external_scripts %}
-<!-- <script src="{% static 'website/js/peopleHeightFix.js' %}"></script> -->
-<script src="{% static 'website/js/utils.js' %}"></script>
-<script src="{% static 'website/js/indproject.js' %}"></script>
+    <!-- <script src="{% static 'website/js/peopleHeightFix.js' %}"></script> -->
+    <script src="{% static 'website/js/utils.js' %}"></script>
+    <script src="{% static 'website/js/indproject.js' %}"></script>
+{#    <script src="{% static 'website/js/isotope/isotope-init.js' %}?version=3"></script>#}
+{#    <script src="{% static 'website/js/isotope/isotope-filterBar.js' %}?version=2"></script>#}
+{#    <script src="{% static 'website/js/isotope/isotope-filtering.js' %}"></script>#}
+{#    <script src="{% static 'website/js/isotope.pkgd.min.js' %}"></script>#}
 {% endblock %}
 
 
@@ -242,14 +246,46 @@
             {% endfor %}
         </div>
 
-        <div class="row row-adjust-margins">
-            <h3 class="news-type-label">Current Project Members</h3>
-            {% include "snippets/display_people_snippet.html" with member_status="Current Member" %}
+{# TODO: at some point, figure out how to get isotope added in here #}
+{#        <div class="isotope_data">#}
+{#            <div class= "isotope_data_container" id="isotope_data_container_current_members" style="display:none">#}
+{#                sortFilterContainer(.sortingAndFiltering,str)#}
+{#                gridName(.grid_current_members,str)#}
+{#                filteringKeywordContainer(#filter_keywords_current_members, str)#}
+{#                sideBarContainer(#filterBar_Current_Members,str)#}
+{#                scrollTop(.currentteam,str)#}
+{#            </div>#}
+{#            <div class= "isotope_data_container" id="isotope_data_container_past_members" style="display:none">#}
+{#                sortFilterContainer(.sortingAndFiltering,str)#}
+{#                gridName(.grid_past_members,str)#}
+{#                filteringKeywordContainer(#filterKeywords_past_members, str)#}
+{#                sideBarContainer(#filterBar_Alumni,str)#}
+{#                scrollTop(.alumni,str)#}
+{#            </div>#}
+{#        </div>#}
 
-            {# TODO: put this in and if block to only show past members if there are any! #}
-            <h3 class="news-type-label">Past Project Members</h3>
-            {% include "snippets/display_people_snippet.html" with member_status="Past Member" %}
+        <div class="row row-eq-height row-adjust-margins people-row">
+            <h3 class="news-type-label">Current Project Members</h3>
+            <div class="grid_current_members">
+                {% include "snippets/display_people_snippet.html" with member_status="Current Member" %}
+            </div>
         </div>
+
+        {% if project_roles_past %}
+            <div class="row row-eq-height row-adjust-margins people-row">
+                {# TODO: put this in and if block to only show past members if there are any! #}
+                <h3 class="news-type-label">Past Project Members</h3>
+                <div class="grid_current_members">
+{#                    {% include "snippets/display_people_snippet.html" with member_status="Past Member" %}#}
+                    {% for member in project_roles_past %}
+                        {% include "snippets/display_person_snippet.html" %}
+                    {% endfor %}
+                </div>
+            </div>
+
+
+
+        {% endif %}
     </div>
 </div>
 {% endblock %}
