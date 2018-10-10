@@ -76,6 +76,7 @@ else:
 ## DEBUG LOGGING FOR CSE SUPPORT SETUP
 # TODO: this seems to work fine on Docker but breaks localhost dev (without docker)
 # See: https://docs.djangoproject.com/en/2.0/topics/logging/
+# https://lincolnloop.com/blog/django-logging-right-way/
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -92,13 +93,18 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': '/code/media/debug.log',
-            # 'maxBytes': 1024*1024*10, # 10 MB
-            # 'backupCount': 5,
-            'formatter': 'verbose', # can switch between verbose and simple
+            'maxBytes': 1024*1024*10,  # 10 MB
+            'backupCount': 5,
+            'formatter': 'verbose',  # can switch between verbose and simple
         },
     },
     'loggers': {
         'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'makeabilitylab': {
             'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': True,
