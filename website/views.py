@@ -427,46 +427,88 @@ def website_analytics(request):
 
 
 def projects(request):
+    """
+    Creates the render context for the project gallery page.
+    :param request:
+    :return:
+    """
     all_banners = Banner.objects.filter(page=Banner.PROJECTS)
     displayed_banners = choose_banners(all_banners)
     projects = Project.objects.all()
-    #projects = filter_projects(projects)
-    #store each object and its most recent artifact date
-    sorted_projects = list()
-    for project in projects:
-        item = (project, project.get_most_recent_artifact())
-        sorted_projects.append(item)
 
-    #sort the artifacts by date
-    sorted_projects = sorted(sorted_projects, key=itemgetter(1), reverse=True)
-
-    ordered_projects = []
-    if len(projects) > 0:
-        ordered_projects, temp = zip(*sorted_projects)
-
-    all_proj_len = len(projects)
-    filter = request.GET.get('filter')
-    if filter != None:
-        filter_umbrella = Project_umbrella.objects.get(short_name=filter)
-        projects = filter_umbrella.project_set.all()
-    umbrellas = Project_umbrella.objects.all()
-    popular_projects = []  # sort_popular_projects(googleanalytics.run(get_ind_pageviews))[:4]
-    recent_projects = get_most_recent(Project.objects.order_by('-updated'))[:2]
-
+    ordered_projects = get_most_recent(projects)
 
     context = {'projects': ordered_projects,
-               'all_proj_len': all_proj_len,
                'banners': displayed_banners,
-               'recent': recent_projects,
-               'popular': popular_projects,
-               'umbrellas': umbrellas,
                'filter': filter,
                'debug': settings.DEBUG}
     return render(request, 'website/projects.html', context)
 
+## Helper functions for views ##
+def get_most_recent(projects):
+    print(projects)
+    sorted_projects = list()
+    for project in projects:
 
-# This is the view for individual projects, rather than the overall projects page
+        # most_recent_artifact is a tuple of date, artifact
+        most_recent_artifact = project.get_most_recent_artifact()
+        print("The most recent artifact: ", most_recent_artifact)
+        if most_recent_artifact != None:
+            project_date_tuple = (project, most_recent_artifact[0])
+            sorted_projects.append(project_date_tuple)
+
+    # sort the artifacts by date
+    sorted_projects = sorted(sorted_projects, key=itemgetter(1), reverse=True)
+
+    for project_tuple in sorted_projects:
+        print("Project: " + str(project_tuple[0]) + " Most recent modification date: ")
+
+    ordered_projects = []
+    if len(sorted_projects) > 0:
+        ordered_projects, temp = zip(*sorted_projects)
+
+    return ordered_projects
+
+    # updated = []
+    # print(projects)
+    # for project in projects:
+    #     # Adding more times to the time array will allow you to add additional fields in the future
+    #     times = []
+    #     if project.updated != None:
+    #         times.append(project.updated)
+    #     if len(project.publication_set.all()) > 0:
+    #         times.append(project.publication_set.order_by('-date')[0].date)
+    #     if len(project.talk_set.all()) > 0:
+    #         times.append(project.talk_set.order_by('-date')[0].date)
+    #     if len(project.video_set.all()) > 0:
+    #         times.append(project.video_set.order_by('-date')[0].date)
+    #     times.sort()
+    #     updated.append({'proj': project, 'updated': times[0]})
+    #
+    # sorted_list = sorted(updated, key=lambda k: k['updated'], reverse=True)
+    #
+    # # DEBUG
+    # for item in sorted_list:
+    #     mostRecentArtifact = item['proj'].get_most_recent_artifact();
+    #     if mostRecentArtifact is not None:
+    #         print(
+    #             "project '{}' has the most recent artifact of {} updated {} and the check {}".format(item['proj'].name,
+    #                                                                                                  mostRecentArtifact[0],
+    #                                                                                                  mostRecentArtifact[1],
+    #                                                                                                  item['updated']))
+    #     else:
+    #         print("mostRecentArtifact is none")
+    # # END DEBUG
+    #
+    # return [item['proj'] for item in sorted_list]
+
 def project(request, project_name):
+    """
+    This is the view for *individual* project pages rather than the project page gallery
+    :param request:
+    :param project_name:
+    :return:
+    """
     project = get_object_or_404(Project, short_name__iexact=project_name)
     all_banners = project.banner_set.all()
     displayed_banners = choose_banners(all_banners)
@@ -616,41 +658,6 @@ def news(request, news_id):
                'debug': settings.DEBUG}
     return render(request, 'website/news.html', context)
 
-
-## Helper functions for views ##
-def get_most_recent(projects):
-    updated = []
-    print(projects)
-    for project in projects:
-        # Adding more times to the time array will allow you to add additional fields in the future
-        times = []
-        if project.updated != None:
-            times.append(project.updated)
-        if len(project.publication_set.all()) > 0:
-            times.append(project.publication_set.order_by('-date')[0].date)
-        if len(project.talk_set.all()) > 0:
-            times.append(project.talk_set.order_by('-date')[0].date)
-        if len(project.video_set.all()) > 0:
-            times.append(project.video_set.order_by('-date')[0].date)
-        times.sort()
-        updated.append({'proj': project, 'updated': times[0]})
-
-    sorted_list = sorted(updated, key=lambda k: k['updated'], reverse=True)
-
-    # DEBUG
-    for item in sorted_list:
-        mostRecentArtifact = item['proj'].get_most_recent_artifact();
-        if mostRecentArtifact is not None:
-            print(
-                "project '{}' has the most recent artifact of {} updated {} and the check {}".format(item['proj'].name,
-                                                                                                     mostRecentArtifact[0],
-                                                                                                     mostRecentArtifact[1],
-                                                                                                     item['updated']))
-        else:
-            print("mostRecentArtifact is none")
-    # END DEBUG
-
-    return [item['proj'] for item in sorted_list]
 
 #filter out all the projects with thumbnails, publications, and an about object attached
 def filter_projects(projects):

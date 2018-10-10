@@ -557,21 +557,27 @@ class Project(models.Model):
             return None
 
     def get_most_recent_artifact(self):
+        """
+        Returns the most recent artifact (publication, talk, or vide) as tuple of (artifact, date)
+        :return: the most recent artifact, a tuple of (artifact, date)
+        """
         mostRecentArtifacts = []
 
         if self.publication_set.exists():
             mostRecentPub = self.publication_set.order_by('-date')[0]
             mostRecentArtifacts.append((mostRecentPub.date, mostRecentPub))
+
         if self.talk_set.exists():
             mostRecentTalk = self.talk_set.order_by('-date')[0]
             mostRecentArtifacts.append((mostRecentTalk.date, mostRecentTalk))
+
         if self.video_set.exists():
             mostRecentVideo = self.video_set.order_by('-date')[0]
             mostRecentArtifacts.append((mostRecentVideo.date, mostRecentVideo))
 
         if len(mostRecentArtifacts) > 0:
-            mostRecentArtifacts = sorted(mostRecentArtifacts, key=lambda artifact: artifact[0])
-            return mostRecentArtifacts[0][1], mostRecentArtifacts[0][1].date
+            mostRecentArtifacts = sorted(mostRecentArtifacts, key=lambda artifact: artifact[0], reverse=True)
+            return mostRecentArtifacts[0][0], mostRecentArtifacts[0][1]
         else:
             return None
 
