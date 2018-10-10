@@ -450,7 +450,7 @@ def get_most_recent(projects):
     sorted_projects = list()
     for project in projects:
 
-        # most_recent_artifact is a tuple of date, artifact
+        # most_recent_artifact is a tuple of (date, artifact)
         most_recent_artifact = project.get_most_recent_artifact()
         print("The most recent artifact: ", most_recent_artifact)
         if most_recent_artifact != None:
@@ -461,7 +461,7 @@ def get_most_recent(projects):
     sorted_projects = sorted(sorted_projects, key=itemgetter(1), reverse=True)
 
     for project_tuple in sorted_projects:
-        print("Project: " + str(project_tuple[0]) + " Most recent modification date: ")
+        print("Project: " + str(project_tuple[0]) + " Most recent modification date: " + str(project_tuple[1]))
 
     ordered_projects = []
     if len(sorted_projects) > 0:
