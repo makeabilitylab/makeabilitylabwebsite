@@ -92,16 +92,6 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'makeabilitylab': {
-            'handlers': ['file', 'console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'makeabilitylabwebsite': {
-            'handlers': ['file', 'console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
         'website': {
             'handlers': ['file', 'console'],
             'level': 'DEBUG',
