@@ -18,10 +18,11 @@
     <script src="{% static 'website/js/isotope/isotope-init.js' %}?version=3"></script>
     <script src="{% static 'website/js/isotope/isotope-filterBar.js' %}?version=2"></script>
     <script src="{% static 'website/js/isotope/isotope-filtering.js' %}"></script>
-    <script src="{% static '/website/js/isotope.pkgd.min.js' %}"></script>
+    <script src="{% static 'website/js/isotope.pkgd.min.js' %}"></script>
 {% endblock %}
 
 {% block maincarousel %}
+    {# TODO: Can't we move the carousel up into base.html or at least turn it into a snippet? #}
     <div id="mainCarousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="10000"
          data-pause="false">
         <div class="page-title shadow-left">
@@ -42,8 +43,8 @@
                     {% endif %}
                     <div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})"
                          aria-label="{{ banner.alt_text }}" title="{{ banner.alt_text }}"></div>
-                    <!-- <div class="overlay">
-			     <div class="container carousel-container">
+                            <!-- <div class="overlay">
+			                <div class="container carousel-container">
                              <div class="carousel-caption carousel-caption-right">
                              {% autoescape off %} {# enable HTML tags #}
                              <div class="carousel-caption-title">
@@ -121,7 +122,6 @@
 
         <div class="content" style="width:100%">
             <h1 class= "currentteam" name="currentteam" style="margin-top:0">Current Team</h1>
-            {# TODO: Shiven, this h4 subheader is what we will want to change into isotope filter #}
             <div id="filterBar_Current_Members" style="margin-bottom: 7px">
                 <div id="filterKeywords_Current_Members">
                     {% for headerText in map_status_to_headers|get_item:"Current Member"|get_item:"headerText" %}
@@ -131,6 +131,7 @@
                 </div>
             </div>
         </div>
+
         {# We use reusable templates here to cut down on code redundancy #}
         {# See: https://docs.djangoproject.com/en/dev/ref/templates/builtins/#include #}
         <div class = "grid_current_members">
@@ -148,6 +149,7 @@
                 </div>
             </div>
         </div>
+
         <div class = "grid_alumni">
             {% include "snippets/display_people_snippet.html" with member_status="Past Member" %}
         </div>
