@@ -399,7 +399,7 @@ def talks(request):
     displayed_banners = choose_banners(all_banners)
     filter = request.GET.get('filter', None)
     groupby = request.GET.get('groupby', "No-Group")
-    context = {'talks': Talk.objects.filter(date__gte=filter_all_pubs_prior_to_date),
+    context = {'talks': Talk.objects.filter(date__gte=filter_all_pubs_prior_to_date).order_by('-date'),
                'banners': displayed_banners,
                'filter': filter,
                'groupby': groupby,
