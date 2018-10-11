@@ -47,38 +47,21 @@ if config.has_option('Django', 'ALLOWED_HOSTS'):
 else:
     ALLOWED_HOSTS = []
 
-# Added to try and log problems to file to debug talk upload issue: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/184
-# For Log settings examples, see:
-# 1. https://docs.djangoproject.com/en/1.11/topics/logging/#examples
-# 2. https://gist.github.com/palewire/1740398#file-settings-py
 
-# TODO: I had to comment this out because I couldn't get it to work on the production server
-# perhaps due to file write permissions on the log. I need to investigate further.
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'file': {
-#             'level': 'DEBUG',
-#             'class': 'logging.FileHandler',
-#             'filename': os.path.join(BASE_DIR, 'makeabilitylab_django.log'),
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['file'],
-#             'level': 'DEBUG',
-#             'propagate': True,
-#         },
-#     },
-# }
-
-## DEBUG LOGGING FOR CSE SUPPORT SETUP
 # TODO: this seems to work fine on Docker but breaks localhost dev (without docker)
 # See: https://docs.djangoproject.com/en/2.0/topics/logging/
+# https://lincolnloop.com/blog/django-logging-right-way/
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
     'formatters': {
         'verbose': {
             'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
@@ -92,16 +75,27 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': '/code/media/debug.log',
-            # 'maxBytes': 1024*1024*10, # 10 MB
-            # 'backupCount': 5,
-            'formatter': 'verbose', # can switch between verbose and simple
+            'maxBytes': 1024*1024*10,  # 10 MB
+            'backupCount': 5,
+            'formatter': 'verbose',  # can switch between verbose and simple
+        },
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['file'],
+            'handlers': ['file', 'console'],
             'level': 'DEBUG',
             'propagate': True,
+        },
+        'website': {
+            'handlers': ['file', 'console'],
+            'level': 'DEBUG',
+            'propagate': False,
         },
     },
 }
@@ -158,9 +152,6 @@ TEMPLATES = [
         },
     },
 ]
-
-#WSGI_APPLICATION = 'makeabilitylab.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases

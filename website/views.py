@@ -8,6 +8,9 @@ from datetime import date
 import datetime
 from django.utils.timezone import utc
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+import logging
+
+
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -20,12 +23,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from website.serializers import TalkSerializer, PublicationSerializer, PersonSerializer, ProjectSerializer, VideoSerializer, NewsSerializer
 
-# The Google Analytics stuff is all broken now. It was originally used to track the popularity
-# of pages, projects, and downloads. Not sure what we should do with it now.
-# from . import googleanalytics
-
 max_banners = 7  # TODO: figure out best way to specify these settings... like, is it good to have them up here?
 filter_all_pubs_prior_to_date = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed\
+
+_logger = logging.getLogger(__name__)
 
 class TalkList(APIView):
     '''
@@ -211,9 +212,6 @@ class ProjectDetail(APIView):
         project = self.get_object(pk)
         serializer = ProjectSerializer(project)
         return Response(serializer.data)
-
-# Every view is passed settings.DEBUG. This is used to insert the appropriate google analytics tracking when in
-# production, and to not include it for development
 
 def index(request):
     news_items_num = 7  # Defines the number of news items that will be selected
@@ -452,16 +450,17 @@ def get_most_recent(projects):
 
         # most_recent_artifact is a tuple of (date, artifact)
         most_recent_artifact = project.get_most_recent_artifact()
-        print("The most recent artifact: ", most_recent_artifact)
+        _logger.debug("The most recent artifact: ", str(most_recent_artifact))
         if most_recent_artifact != None:
             project_date_tuple = (project, most_recent_artifact[0])
             sorted_projects.append(project_date_tuple)
 
     # sort the artifacts by date
     sorted_projects = sorted(sorted_projects, key=itemgetter(1), reverse=True)
-
+    _logger.warning("Hello!")
+    print(__name__)
     for project_tuple in sorted_projects:
-        print("Project: " + str(project_tuple[0]) + " Most recent modification date: " + str(project_tuple[1]))
+        _logger.debug("Project: " + str(project_tuple[0]) + " Most recent modification date: " + str(project_tuple[1]))
 
     ordered_projects = []
     if len(sorted_projects) > 0:
