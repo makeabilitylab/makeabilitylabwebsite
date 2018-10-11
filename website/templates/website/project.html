@@ -264,12 +264,14 @@
 {#            </div>#}
 {#        </div>#}
 
-        <div class="row row-eq-height row-adjust-margins people-row">
-            <h3 class="news-type-label">Current Project Members</h3>
-            <div class="grid_current_members">
-                {% include "snippets/display_people_snippet.html" with member_status="Current Member" %}
+        {% if project_roles_current %}
+            <div class="row row-eq-height row-adjust-margins people-row">
+                <h3 class="news-type-label">Current Project Members</h3>
+                <div class="grid_current_members">
+                    {% include "snippets/display_people_snippet.html" with member_status="Current Member" %}
+                </div>
             </div>
-        </div>
+        {% endif %}
 
         {% if project_roles_past %}
             <div class="row row-eq-height row-adjust-margins people-row">
@@ -282,9 +284,6 @@
                     {% endfor %}
                 </div>
             </div>
-
-
-
         {% endif %}
     </div>
 </div>
