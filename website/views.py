@@ -24,7 +24,7 @@ from rest_framework import status
 from website.serializers import TalkSerializer, PublicationSerializer, PersonSerializer, ProjectSerializer, VideoSerializer, NewsSerializer
 
 max_banners = 7  # TODO: figure out best way to specify these settings... like, is it good to have them up here?
-filter_all_pubs_prior_to_date = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed\
+filter_all_pubs_prior_to_date = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 
 _logger = logging.getLogger(__name__)
 
