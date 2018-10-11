@@ -120,57 +120,64 @@
             </ol>
         </div>
 
-        <div class="content" style="width:100%">
-            <h1 class= "currentteam" name="currentteam" style="margin-top:0">Current Team</h1>
-            <div id="filterBar_Current_Members" style="margin-bottom: 7px">
-                <div id="filterKeywords_Current_Members">
-                    {% include "snippets/display_people_header_snippet.html" with member_status="Current Member" %}
+        {% if map_status_to_headers|get_item:"Current Member"|get_item:"headerText"|length > 0 %}
+            <div class="content" style="width:100%">
+                <h1 class= "currentteam" name="currentteam" style="margin-top:0">Current Team</h1>
+                <div id="filterBar_Current_Members" style="margin-bottom: 7px">
+                    <div id="filterKeywords_Current_Members">
+                        {% include "snippets/display_people_header_snippet.html" with member_status="Current Member" %}
+                    </div>
                 </div>
             </div>
-        </div>
 
-        {# We use reusable templates here to cut down on code redundancy #}
-        {# See: https://docs.djangoproject.com/en/dev/ref/templates/builtins/#include #}
-        <div class = "grid_current_members">
-            {% include "snippets/display_people_snippet.html" with member_status="Current Member" %}
-        </div>
+            <div class = "grid_current_members">
+                {% include "snippets/display_people_snippet.html" with member_status="Current Member" %}
+            </div>
+        {% endif %}
 
-        <div class="content" style="width:100%">
-            <h1 class= "alumni" name="alumni">Alumni</h1>
-            <div id="filterBar_Alumni" style="margin-bottom: 7px">
-                <div id="filterKeywords_Alumni">
-                    {% include "snippets/display_people_header_snippet.html" with member_status="Past Member" %}
+        {% if map_status_to_headers|get_item:"Past Member"|get_item:"headerText"|length > 0 %}
+            <div class="content" style="width:100%">
+                <h1 class= "alumni" name="alumni">Alumni</h1>
+                <div id="filterBar_Alumni" style="margin-bottom: 7px">
+                    <div id="filterKeywords_Alumni">
+                        {% include "snippets/display_people_header_snippet.html" with member_status="Past Member" %}
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class = "grid_alumni">
-            {% include "snippets/display_people_snippet.html" with member_status="Past Member" %}
-        </div>
+            <div class = "grid_alumni">
+                {% include "snippets/display_people_snippet.html" with member_status="Past Member" %}
+            </div>
+        {% endif %}
 
-        <div class="content" style="width:100%">
-            <h1 class= "collaborators" name="collaborators">Current Collaborators</h1>
-            <div id="filterBar_Collaborators" style="margin-bottom: 7px">
-                <div id="filterKeywords_Collaborators">
-                    {% include "snippets/display_people_header_snippet.html" with member_status="Current Collaborator" %}
+        {% if map_status_to_headers|get_item:"Current Collaborator"|get_item:"headerText"|length > 0 %}
+            <div class="content" style="width:100%">
+                <h1 class= "collaborators" name="collaborators">Current Collaborators</h1>
+                <div id="filterBar_Collaborators" style="margin-bottom: 7px">
+                    <div id="filterKeywords_Collaborators">
+                        {% include "snippets/display_people_header_snippet.html" with member_status="Current Collaborator" %}
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class = "grid_collaborators" style="width:100%">
-             {% include "snippets/display_people_snippet.html" with member_status="Current Collaborator" %}
-        </div>
+            <div class = "grid_collaborators" style="width:100%">
+                 {% include "snippets/display_people_snippet.html" with member_status="Current Collaborator" %}
+            </div>
+        {% endif %}
 
-        <div class="content" style="width:100%">
-            <h1 class= "pastcollaborators" name="pastcollaborators">Past Collaborators</h1>
-            <div id="filterBar_Past_Collaborators" style="margin-bottom: 7px">
-                <div id="filterKeywords_Past_Collaborators">
-                    {% include "snippets/display_people_header_snippet.html" with member_status="Past Collaborator" %}
+        {% if map_status_to_headers|get_item:"Past Collaborator"|get_item:"headerText"|length > 0 %}
+            <div class="content" style="width:100%">
+                <h1 class= "pastcollaborators" name="pastcollaborators">Past Collaborators</h1>
+                <div id="filterBar_Past_Collaborators" style="margin-bottom: 7px">
+                    <div id="filterKeywords_Past_Collaborators">
+                        {% include "snippets/display_people_header_snippet.html" with member_status="Past Collaborator" %}
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class = "grid_past_collaborators">
-            {% include "snippets/display_people_snippet.html" with member_status="Past Collaborator" %}
-        </div>
+            <div class = "grid_past_collaborators">
+                {% include "snippets/display_people_snippet.html" with member_status="Past Collaborator" %}
+            </div>
+        {% endif %}
+
     </div>
 {% endblock %}
