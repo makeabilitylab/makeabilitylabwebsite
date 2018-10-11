@@ -1,0 +1,12 @@
+{# This is a reusable template for displaying people headers #}
+{# See: https://docs.djangoproject.com/en/dev/ref/templates/builtins/#include #}
+
+{% load staticfiles %}
+{% load thumbnail %}
+{% load cropping %}
+{% load ml_tags %}
+
+<a name="None" style="font-weight:bold;">All ({{ map_status_to_num_people|get_item:member_status }}), </a>
+{% for headerText in map_status_to_headers|get_item:member_status|get_item:"headerText" %}
+    <a name= "{{map_header_text_to_header_name|get_item:headerText }}">{{headerText}}</a>{% if not forloop.last %}, {% endif %}
+{% endfor %}
