@@ -11,71 +11,13 @@
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{% static 'website/css/talks.css' %}">
-    <link rel="stylesheet" href="{% static 'website/css/fixed_side_bar.css' %}">
     <link rel="stylesheet" href="{% static 'website/css/jquery-ui.min.css' %}">
     <link rel="stylesheet" href="{% static 'website/css/jquery-ui.theme.min.css' %}">
     <link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}">
 {% endblock %}
 
 {% block external_scripts %}
-    <script src="{% static 'website/js/isotope.pkgd.min.js' %}"></script>
-    <script src="{% static 'website/js/fixedSideBar.js' %}"></script>
-    <script src="{% static 'website/js/filterBar.js' %}"></script>
-    <script src="{% static 'website/js/talks.js' %}"></script>
     <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
-{% endblock %}
-
-{% block scripts %}
-	var talks = [
-		{% for talk in talks %}
-		{
-			"id": "A.###",
-			"title": "{{talk.get_title}}",
-			"speakers": [
-				{% for speaker in talk.speakers.all %}
-				{
-					"name": "{{speaker.get_full_name}}",
-					"first_name": "{{speaker.first_name}}",
-					"middle_name": "{{speaker.middle_name}}",
-					"last_name": "{{speaker.last_name}}",
-					"link": "{% url 'website:member' speaker.get_url_name %}"
-				},
-				{% endfor %}
-			],
-			"date": new Date("{{talk.date}}"),
-			"pdf": "{{ talk.pdf_file }}",
-            "pptx": "{{ talk.raw_file }}",
-            "video": "{{ talk.video_url }}",
-            "slideshare": "{{ talk.slideshare_url }}",
-			"thumbnail": "{% thumbnail talk.thumbnail 420x0 detail %}",
-			"location": "{{talk.location}}",
-			"talk_type": "{{talk.talk_venue_type}}",
-			{% if talk.award %}"award": "{{ talk.award }}",{% endif %}
-			{% if talk.total_papers_accepted and pub.total_papers_submitted %}
-			"total_papers_accepted": {{talk.total_papers_accepted}},
-			"total_papers_submitted": {{talk.total_papers_submitted}},
-			{% endif %}
-			{% if talk.page_num_start %} "start_page": {{talk.page_num_start}},{% endif %}
-			{% if talk.page_num_end %} "end_page": {{talk.page_num_end}},{% endif %}
-			{% if talk.num_pages %} "num_pages": {{talk.num_pages}},{% endif %}
-			"to_appear": {% if talk.to_appear %}true{% else %}false{% endif %},
-			"keywords": [
-				{% for keyword in talk.keywords.all %}
-					"{{keyword.keyword}}",
-				{% endfor %}
-			],
-			"projects": [
-				{% for project in talk.projects.all %}
-					"{{project.short_name}}",
-				{% endfor %}
-			]
-		},
-		{% endfor %}
-	];
-
-    initialFilter = "{{ filter }}";
-    initialGroupBy = "{{ groupby }}";
-
 {% endblock %}
 
 {% block maincarousel %}
@@ -113,52 +55,9 @@
 {% endblock %}
 
 {% block content %}
-    <div id="content" class="container">
-        <div class="visible-xs">
-            <br/>
-            <input class="shortTextbox" id="filter-textbox-backup" placeholder="FILTER" type="text" value="">
-        </div>
-        <div id="fixed-side-bar" class="hidden-xs">
-            <div id="filter-bar">
-            </div>
-        </div>
-        <div class="talk-list" id="main-content">
-
-            <!-- TODO: Update this so that it matches the new landing page stuff (i.e., fix thumbnails, etc.) -->
-            Loading content... (Please make sure JavaScript is enabled)
-            <h1 class="group-template row" name="Group Name"></h1>
-            <div class="talk-template col-ts-12 col-xs-6 col-sm-6 col-md-4 col-lg-3">
-            	<div class="talk-info">
-                    <div class="talk-thumbnail artifact-thumbnail-hover">
-                        <a href="link" class="talk-thumbnail-link">
-                            <img src="" class="talk-thumbnail-image img-responsive"/>
-                        </a>
-                        <div class="artifact-overlay">
-                            <div class="artifact-overlay-content">
-                                <a href="link" class="talk-pdf-link" target="_blank">PDF</a>
-                                <a href="link" class="talk-pptx-link">PPTX</a>
-                                <a href="link" class="talk-slideshare-link">Slideshare</a>
-                                <a href="link" class="talk-video-link">Video</a>
-                            </div>
-                        </div>
-                    </div>
-                    <p class="talk-title line-clamp">Paper Title</p>
-                    <p class="talk-speakers">
-        				<span class="talk-speaker"><a href="link">Speaker Name</a>,&nbsp;</span>
-                        <span class="talk-speaker-last"><a href="link">Speaker Name</a></span>
-        			</p>
-                    <p class="talk-stats">
-        				<span class="talk-date">Talk Date</span> | 
-                    	<span class="talk-location">Talk Location</span>
-    	    		</p>
-        			<!-- <div class="talk-download">
-                		<a href="link" class="talk-pdf-link">PDF</a>
-                    	<span class="decor_pptx"> | </span><a href="link" class="talk-pptx-link">PPTX</a>
-                    	<span class="decor_slideshare"> | </span><a href="link" class="talk-slideshare-link">Slideshare</a>
-                    	<span class="decor_video"> | </span><a href="link" class="talk-video-link">Video</a>
-                    </div> -->
-                </div>
-            </div>
-        </div>
+    <div id="content" class="container" style="margin-top: 50px">
+        {% for talk in talks %}
+            {% include "snippets/display_talk_snippet.html" %}
+        {% endfor %}
     </div>
 {% endblock %}
