@@ -53,7 +53,6 @@ RUN pip install -r requirements.txt
 
 # Add the current directory to /code/
 ADD . /code/
-ADD media /code/
 
 ##Our local user needs write access to a website and static files
 RUN chown -R apache /code/
