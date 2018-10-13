@@ -239,8 +239,10 @@ def index(request):
     # projects = Project.objects.all()
     # sorted(projects, key=lambda project: student[2])
     projects = Project.objects.all()
-    projects = get_most_recent(projects)
-    projects = filter_projects(projects)
+    projects = sort_projects_by_most_recent_artifact(projects, settings.DEBUG)
+
+    if not settings.DEBUG:
+        projects = filter_projects(projects)
 
     context = {'people': Person.objects.all(),
                'banners': displayed_banners,
@@ -434,7 +436,9 @@ def projects(request):
     displayed_banners = choose_banners(all_banners)
     projects = Project.objects.all()
 
-    ordered_projects = get_most_recent(projects)
+    # if we are in debug mode, we include all projects even if they have no artifacts
+    # as long as they have a start date
+    ordered_projects = sort_projects_by_most_recent_artifact(projects, settings.DEBUG)
 
     context = {'projects': ordered_projects,
                'banners': displayed_banners,
@@ -443,7 +447,7 @@ def projects(request):
     return render(request, 'website/projects.html', context)
 
 ## Helper functions for views ##
-def get_most_recent(projects):
+def sort_projects_by_most_recent_artifact(projects, include_projects_with_no_artifacts=False):
     print(projects)
     sorted_projects = list()
     for project in projects:
@@ -454,6 +458,8 @@ def get_most_recent(projects):
         if most_recent_artifact != None:
             project_date_tuple = (project, most_recent_artifact[0])
             sorted_projects.append(project_date_tuple)
+        elif include_projects_with_no_artifacts and project.start_date is not None:
+            sorted_projects.append((project, project.start_date))
 
     # sort the artifacts by date
     sorted_projects = sorted(sorted_projects, key=itemgetter(1), reverse=True)
@@ -650,8 +656,12 @@ def news(request, news_id):
     return render(request, 'website/news.html', context)
 
 
-#filter out all the projects with thumbnails, publications, and an about object attached
 def filter_projects(projects):
+    '''
+    Filters out projects that don't have thumbnails, publications, an about information
+    :param projects:
+    :return:
+    '''
     filtered = list()
     for project in projects:
         if len(project.publication_set.all()) > 0 and project.about and project.gallery_image:

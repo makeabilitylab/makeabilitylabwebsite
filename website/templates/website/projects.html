@@ -58,6 +58,7 @@
                 <!-- TODO: hhook tihs up to isotope https://isotope.metafizzy.co/layout-modes.html for sorting, filtering -->
                 <h1 style="margin-top:0px">AREA</h1>
                 <ul class="filter-list">
+                    <li><a name="None" style="font-weight:bold">All Areas</a></li>
                     <li><a>Accessibility</a></li>
                     <li><a>Education</a></li>
                     <li><a>Fabrication</a></li>
@@ -66,16 +67,16 @@
                     <li><a>Sustainability</a></li>
                 </ul>
 
-                <h1 style="margin-top:0px">TECHNOLOGY</h1>
-                <ul class="filter-list">
-                    <li><a>Augmented Reality</a></li>
-                    <li><a>Computer Vision</a></li>
-                    <li><a>Custom Hardware</a></li>
-                    <li><a>E-Textiles</a></li>
-                    <li><a>Machine Learning</a></li>
-                    <li><a>Wearables</a></li>
-                </ul>
-                <li><a name="None" style="font-weight:bold">All</a></li>
+{#                <h1 style="margin-top:0px">TECHNOLOGY</h1>#}
+{#                <ul class="filter-list">#}
+{#                    <li><a>Augmented Reality</a></li>#}
+{#                    <li><a>Computer Vision</a></li>#}
+{#                    <li><a>Custom Hardware</a></li>#}
+{#                    <li><a>E-Textiles</a></li>#}
+{#                    <li><a>Machine Learning</a></li>#}
+{#                    <li><a>Wearables</a></li>#}
+{#                </ul>#}
+
             </div>
             <!-- Tech filter: augmented reality, machine learning, custom hardware, computer vision -->
         </div>
@@ -96,7 +97,7 @@
             <!-- TODO: consider listing dates active or keywords underneath each project thumbnail in addition to name -->
             <div class="grid">
                 {% for project in projects %}
-                    <div class="item" style="width:20%; min-width: 150px; margin:2%;background:white">
+                    <div class="item" style="height: 180px; margin-left: 2px; background:white">
                         <a href="{% url 'website:project' project.short_name %}" style="color:black;">
                             <img src="{% thumbnail project.gallery_image 300x180 box=project.cropping crop detail %}" class="img-responsive">
                             <p class="artifact-title">{{ project.name }}</p>
