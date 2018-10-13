@@ -2,29 +2,20 @@
 
 {% extends "website/base.html" %}
 
-{% block pagetitle %}Videos{% endblock %}
+{% block pagetitle %}Makeability Lab Videos{% endblock %}
 
 {% load staticfiles %}
 {% load cropping %}
+{% load ml_tags %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{% static 'website/css/video.css' %}">
-    <link rel="stylesheet" href="{% static 'website/css/fixed_side_bar.css' %}">
     <link rel="stylesheet" href="{% static 'website/css/jquery-ui.min.css' %}">
     <link rel="stylesheet" href="{% static 'website/css/jquery-ui.theme.min.css' %}">
     <link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}">
 {% endblock %}
 
 {% block external_scripts %}
-    <script src="{% static 'website/js/isotope.pkgd.min.js' %}"></script>
-    <script src="{% static 'website/js/fixedSideBar.js' %}?version=2"></script>
     <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
-
-    <script src="{% static 'website/js/isotope/isotope-filterBar.js' %}"></script>
-    <script src="{% static 'website/js/isotope/isotope-init.js' %}"></script>
-    <script src="{% static 'website/js/isotope/isotope-header-creator.js' %}"></script>
-    <script src="{% static 'website/js/isotope/isotope-filtering.js' %}"></script>
-    <script src="{% static 'website/js/isotope/isotope-sorting.js' %}"></script>
 {% endblock %}
 
 {% block maincarousel %}
@@ -32,59 +23,11 @@
 {% endblock %}
 
 {% block content %}
-    <div id="content" class="container">
-
-        <div class="visible-xs">
-            <br/>
-            <input class="shortTextbox" id="filter-textbox-backup" placeholder="FILTER" type="text" value="">
-        </div>
-
-        <div id="fixed-side-bar" class="hidden-xs ">
-            <div id="keywords-filtering">
-                <div id="keywords-sorting">
-                    <h1>Sort By</h1>
-                    <ul style="list-style-type: none">
-                        <li><a sorting-order="false">Year</a></li>
-                        <li><a sorting-order="true">Project</a></li>
-                        <li><a style="font-weight:bold" sorting-order="false">None</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div class = "isotope_data_container" style="display:none">
-            sortFilterContainer(.sortingAndFiltering,str)
-            gridName(.grid,str)
-            headerClass(h1,str)
-            headerStyle(margin: 0; background: white;,str)
-            filteringKeywordContainer(#keywords-filtering,str)
-            sortingKeywordContainer(#keywords-sorting,str)
-            sideBarContainer(#fixed-side-bar,str)
-            scrollTop(100,int)
-        </div>
-
-        <!-- display without javascript -->
-        <div class="video-list" id="main-content">
-            <div class="grid">
-                {% for video in videos %}
-                    <div class="item" name = "video" style="width:30%; min-width: 200px; margin:1.5%; background:white">
-                        <div class="video-container">
-                            <iframe class="video" src="{{video.get_embed}}" frameborder="0" allowfullscreen></iframe>
-                        </div>
-                        <p class="video-title line-clamp">{{video.title}}</p>
-                        <p class="video-location line-clamp-one-line">{{video.caption}} </p>
-                        <p class="video-links">
-                            <a href="{{video.video_url}}">YouTube</a>
-                            {% if video.publication %}
-                            | <a href="../../media/{{video.publication.pdf_file}}">Paper</a>
-                            {% endif %}
-                        </p>
-
-                        <div class="sortingAndFiltering" style="display:none">Year({{ video.date.year }},int)Project({{video.project.name}},str)</div>
-                        <div class="Date" style="display:none">{{ video.date|date:"U" }}</div>
-                    </div>
-                {% endfor %}
-            </div>
+    <div id="makelab-videos" class="container-fluid makelab-content-container">
+        <div class="section" style="margin-top: 50px;">
+            {% for video in videos %}
+                {% include "snippets/display_video_snippet.html" %}
+            {% endfor %}
         </div>
     </div>
 {% endblock %}

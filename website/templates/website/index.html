@@ -156,7 +156,6 @@
                 {% include "snippets/display_project_snippet.html" %}
             {% endfor %}
             <div class="row justify-content-end">
-                <!-- TODO fix the right alignment -->
                 <div class="col-xs-12 see-all-artifacts">
                     <div class="col-xs-12" style="display:none"></div>
                     <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 see-all-artifacts pull-right">
@@ -186,31 +185,12 @@
 {#        </div>#}
 {#    </div>#}
 
-    <!-- TODO: the ../../media directory should be a variable and not a constant -->
     <div id="makelab-recent-videos" class="container-fluid makelab-content-container">
         <h1 class="section-header">Recent Videos</h1>
         <div class="section">
-            <!-- TODO: Consider adding age of video into display somehow -->
             {#  Slice limits to a number of elements in list; see https://stackoverflow.com/a/3907661 #}
             {% for video in videos|slice:"3" %}
-                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4 video-column">
-                    <div class="video">
-                        <!-- TODO: fix this on mobile; has weird aspect ratio because of fixed height -->
-                        <iframe class="youtube-player" src="{{video.get_embed}}" frameborder="0" allowfullscreen></iframe>
-
-                        <p class="artifact-title line-clamp" style="margin-top: 0px;">{{video.title}}</p>
-    {#                    <p class="video-location line-clamp-one-line">{{video.caption}} </p>#}
-                        <p class="artifact-links">
-                            <a href="{{video.video_url}}">YouTube</a>
-                            {% if video.publication %}
-                                | <a href="../../media/{{video.publication.pdf_file}}">Paper</a>
-                            {% endif %}
-                            {% if video.project %}
-                                | <a href="{% url 'website:project' video.project.short_name %}">{{ video.project.name  }}</a>
-                            {% endif %}
-                        </p>
-                    </div>
-                </div>
+                {% include "snippets/display_video_snippet.html" %}
             {% endfor %}
             <div class="col-xs-12 see-all-artifacts">
                 <a href="{% url 'website:videos' %}">See All Videos ></a>
