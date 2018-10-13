@@ -9,7 +9,6 @@
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{% static 'website/css/project.css' %}">
-    <link rel="stylesheet" href="{% static 'website/css/video.css' %}">
     <link rel="stylesheet" href="{% static 'website/css/talks.css' %}">
     <link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
     <link rel="stylesheet" href="{% static 'website/css/index.css' %}">
@@ -159,21 +158,23 @@
             <h3 class="news-type-lable"><b>Recent Videos</b></h3>
             {% endif %}
             {% for video in videos %}
-            <div class="col-xs-12 col-md-6 video-column">
-            <div class="video-container">
-                <iframe class="video" src="{{video.get_embed}}" frameborder="0" allowfullscreen></iframe>
-            </div>
-            <p class="video-title">{{video.title}}</p>
-            {% if video.caption %}
-            <p class="video-location">{{video.caption}} </p>
-            {% endif %}
-            <p class="video-links">
-                <a href="{{video.video_url}}">YouTube</a>
-                {% if video.publication %}
-                | <a href="../../media/{{video.publication.pdf_file}}">Paper</a>
-                {% endif %}
-            </p>
-            </div>
+                {#  update this to be two across rather than three for project page #}
+                {% include "snippets/display_video_snippet.html" %}
+{#            <div class="col-xs-12 col-md-6 video-column">#}
+{#            <div class="video-container">#}
+{#                <iframe class="video" src="{{video.get_embed}}" frameborder="0" allowfullscreen></iframe>#}
+{#            </div>#}
+{#            <p class="video-title">{{video.title}}</p>#}
+{#            {% if video.caption %}#}
+{#            <p class="video-location">{{video.caption}} </p>#}
+{#            {% endif %}#}
+{#            <p class="video-links">#}
+{#                <a href="{{video.video_url}}">YouTube</a>#}
+{#                {% if video.publication %}#}
+{#                | <a href="../../media/{{video.publication.pdf_file}}">Paper</a>#}
+{#                {% endif %}#}
+{#            </p>#}
+{#            </div>#}
             {% endfor %}
         </div>
         <div class="row row-adjust-margins">
