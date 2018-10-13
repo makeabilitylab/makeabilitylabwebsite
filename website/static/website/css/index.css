@@ -45,15 +45,6 @@ research-area-icon-label{
     font-weight: 700;
 }
 
-.makelab-content-container{
-    /*margin-left: 40px;*/
-    /*margin-right: 40px;*/
-    max-width: 1400px;
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-}
-
 .no-margin {
     margin-left: 0;
     margin-right: 0;

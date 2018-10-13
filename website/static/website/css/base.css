@@ -69,6 +69,15 @@ h5 {
 	background-color: yellow;
 }
 
+.makelab-content-container{
+    /*margin-left: 40px;*/
+    /*margin-right: 40px;*/
+    max-width: 1400px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 /* Custom navbar for filters */
 /* TODO: what is this doing here? Why is navbar stuff in here and not grayscale.css? Discuss with Lee */
 .breadcrumb {
