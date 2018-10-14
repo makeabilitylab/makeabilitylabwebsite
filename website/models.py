@@ -1062,7 +1062,7 @@ class Banner(models.Model):
         (PUBLICATIONS, "Publications"),
         (TALKS, "Talks"),
         (PROJECTS, "Projects"),
-        (INDPROJECT, "Ind_Project")
+        (INDPROJECT, "Ind_Project"),
         (VIDEOS, "Videos")
     )
     page = models.CharField(max_length=50, choices=PAGE_CHOICES, default=FRONTPAGE)
