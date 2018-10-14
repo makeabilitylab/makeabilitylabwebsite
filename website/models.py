@@ -561,7 +561,7 @@ class Project(models.Model):
         Returns true if project has at least one artifact (pub, talk, or video)
         :return:
         '''
-        return get_most_recent_artifact(self) is not None
+        return self.get_most_recent_artifact() is not None
 
     def get_most_recent_artifact(self):
         """
