@@ -556,9 +556,16 @@ class Project(models.Model):
         else:
             return None
 
+    def has_artifact(self):
+        '''
+        Returns true if project has at least one artifact (pub, talk, or video)
+        :return:
+        '''
+        return get_most_recent_artifact(self) is not None
+
     def get_most_recent_artifact(self):
         """
-        Returns the most recent artifact (publication, talk, or vide) as tuple of (artifact, date)
+        Returns the most recent artifact (publication, talk, or video) as tuple of (artifact, date)
         :return: the most recent artifact, a tuple of (artifact, date)
         """
         mostRecentArtifacts = []

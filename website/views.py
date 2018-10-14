@@ -242,7 +242,7 @@ def index(request):
     projects = sort_projects_by_most_recent_artifact(projects, settings.DEBUG)
 
     if not settings.DEBUG:
-        projects = filter_projects(projects)
+        projects = filter_incomplete_projects(projects)
 
     context = {'people': Person.objects.all(),
                'banners': displayed_banners,
@@ -435,6 +435,10 @@ def projects(request):
     all_banners = Banner.objects.filter(page=Banner.PROJECTS)
     displayed_banners = choose_banners(all_banners)
     projects = Project.objects.all()
+
+    # Only show projects that have a thumbnail, description, and a publication
+    if not settings.DEBUG:
+        projects = filter_incomplete_projects(projects)
 
     # if we are in debug mode, we include all projects even if they have no artifacts
     # as long as they have a start date
@@ -656,7 +660,7 @@ def news(request, news_id):
     return render(request, 'website/news.html', context)
 
 
-def filter_projects(projects):
+def filter_incomplete_projects(projects):
     '''
     Filters out projects that don't have thumbnails, publications, an about information
     :param projects:
@@ -664,7 +668,7 @@ def filter_projects(projects):
     '''
     filtered = list()
     for project in projects:
-        if len(project.publication_set.all()) > 0 and project.about and project.gallery_image:
+        if project.has_artifact() and project.about and project.gallery_image:
             filtered.append(project)
     return filtered
 
