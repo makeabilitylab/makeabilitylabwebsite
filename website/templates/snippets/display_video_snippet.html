@@ -7,6 +7,8 @@
 {% load ml_tags %}
 
 <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4 video-column">
+    {# TODO: Jon was just working on fixing this for project.html and videos.html. For former, need to #}
+    {# TODO: show two across rather than three. For latter, need to fix display--see display talk snippet #}
     <div class="video">
         {# TODO: fix this on mobile; has weird aspect ratio because of fixed height  #}
         <iframe class="youtube-player" src="{{ video.get_embed }}" frameborder="0" allowfullscreen></iframe>
