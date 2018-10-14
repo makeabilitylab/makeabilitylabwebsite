@@ -1054,6 +1054,7 @@ class Banner(models.Model):
     PROJECTS = "PROJECTS"
     INDPROJECT = "INDPROJECT"
     NEWSLISTING = "NEWSLISTING"
+    VIDEOS = "VIDEOS"
     PAGE_CHOICES = (
         (FRONTPAGE, "Front Page"),
         (NEWSLISTING, "News Listings"),
@@ -1062,8 +1063,9 @@ class Banner(models.Model):
         (TALKS, "Talks"),
         (PROJECTS, "Projects"),
         (INDPROJECT, "Ind_Project")
+        (VIDEOS, "Videos")
     )
-    page = models.CharField(max_length=50, choices=PAGE_CHOICES, default="FRONTPAGE")
+    page = models.CharField(max_length=50, choices=PAGE_CHOICES, default=FRONTPAGE)
     image = models.ImageField(blank=True, upload_to=UniquePathAndRename("banner", True), max_length=255)
     # This field is only needed if the banner has been assigned to a specific project. The field is used by project_ind to select project specific banners so we don't have to add each project to the PAGE_CHOICES dictionary.
     project = models.ForeignKey(Project, blank=True, null=True, on_delete=models.CASCADE)
