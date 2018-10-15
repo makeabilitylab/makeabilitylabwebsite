@@ -531,6 +531,9 @@ def project(request, project_name):
     # A Project_Role object has a person, role (open text field), start_date, end_date
     project_roles = project.project_role_set.order_by('start_date')
 
+    # Sort project roles by start date and then title (e.g., professors first) and then last name
+    project_roles = sorted(project_roles, key=lambda pr: (pr.start_date, pr.get_pi_status_index(), pr.person.get_current_title_index(), pr.person.last_name))
+
     project_roles_current = []
     project_roles_past = []
 
@@ -600,7 +603,6 @@ def project(request, project_name):
                'debug': settings.DEBUG}
 
     return render(request, 'website/project.html', context)
-
 
 def news_listing(request):
     all_banners = Banner.objects.filter(page=Banner.FRONTPAGE)

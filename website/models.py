@@ -640,6 +640,12 @@ class Project_Role(models.Model):
         (CoPI, "Co-PI")
     )
 
+    PI_MEMBER_MAPPING = {
+        PI: 0,
+        CoPI: 1,
+        "Other": 2
+    }
+
     pi_member = models.CharField(max_length=50, blank=True, null=True, choices=PIMEMBER_CHOICES, default=None)
 
     def get_start_date_short(self):
@@ -655,6 +661,12 @@ class Project_Role(models.Model):
             return "{}".format(self.start_date.year)
         else:
             return "{}-{}".format(self.start_date.year, self.end_date.year)
+
+    def get_pi_status_index(self):
+        if self.pi_member is not None and self.pi_member in self.PI_MEMBER_MAPPING:
+            return self.PI_MEMBER_MAPPING[self.pi_member]
+        else:
+            return self.PI_MEMBER_MAPPING["Other"]
 
     def is_active(self):
         return self.start_date is not None and self.start_date <= date.today() and \
