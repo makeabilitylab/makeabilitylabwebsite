@@ -35,7 +35,8 @@
         </span>
         <span class="line-clamp-one-line">{{ member.person.get_current_school }}</span><br/>
 
-        {% if member.person.project_role_set.all %}
+        {# TODO: Currently excluding me from this as I have so many projects and the clamping isn't working correctly #}
+        {% if member.person.project_role_set.all and member.person.last_name != "Froehlich" %}
             <span class="pub-download-links line-clamp-one-line" style="position: static; margin:3px 0px 0px 0px; display: inline-block;">
                 {% for project in member.person.get_projects|slice:"3" %}
                     <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>{% if not forloop.last %} | {% endif %}
