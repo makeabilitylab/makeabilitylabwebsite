@@ -15,7 +15,7 @@
 {#            <div class="overlay-title">{{ request.path|title|slice:"1:"|slice:":-1" }}</div>#}
             <div class="overlay-title">
                 {% if page_title %}
-                    {{ page_title }}</div>
+                    {{ page_title }}
                 {% else %}
                     {{ request.path|get_url_page|title }}
                 {% endif %}
