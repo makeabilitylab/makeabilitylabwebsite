@@ -286,15 +286,15 @@ class Person(models.Model):
 
     def get_projects(self):
         """
-        Gets a list of all the projects this person is involved in ordered by most recent start date first
-        :return: a list of all the projects this person is involved in ordered by most recent start date first
+        Gets a set of all the projects this person is involved in ordered by most recent start date first
+        :return: a set of all the projects this person is involved in ordered by most recent start date first
         """
         project_roles = self.project_role_set.order_by('-start_date')
 
         # For more on this style of list iteration (called list comprehension)
         # See: https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions
         #      https://www.python.org/dev/peps/pep-0202/
-        projects = [project_role.project for project_role in project_roles]
+        projects = set([project_role.project for project_role in project_roles])
         return projects
 
     def __str__(self):
