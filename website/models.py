@@ -98,6 +98,13 @@ class Person(models.Model):
 
     get_current_title.short_description = "Title"
 
+    def get_current_title_index(self):
+        latest_position = self.get_latest_position()
+        if latest_position is not None:
+            return latest_position.get_title_index()
+        else:
+            return None
+
     # Return current title
     def get_current_department(self):
         latest_position = self.get_latest_position()
@@ -363,6 +370,20 @@ class Position(models.Model):
     )
     title = models.CharField(max_length=50, choices=TITLE_CHOICES)
 
+    TITLE_ORDER_MAPPING = {
+        FULL_PROF: 0,
+        ASSOCIATE_PROF: 1,
+        ASSISTANT_PROF: 2,
+        POST_DOC: 3,
+        RESEARCH_SCIENTIST: 4,
+        PHD_STUDENT: 5,
+        MS_STUDENT: 6,
+        SOFTWARE_DEVELOPER: 6,
+        UGRAD: 7,
+        HIGH_SCHOOL: 8,
+        UNKNOWN: 9
+    }
+
     CURRENT_MEMBER = "Current Member"
     PAST_MEMBER = "Past Member"
     CURRENT_COLLABORATOR = "Current Collaborator"
@@ -405,6 +426,12 @@ class Position(models.Model):
             return abbrv[:abbrv.__len__() - 1]
         else:
             return "".join(e[0] for e in self.department.split(" "))
+
+    def get_title_index(self):
+        if self.title in self.TITLE_ORDER_MAPPING:
+            return self.TITLE_ORDER_MAPPING[self.title]
+        else:
+            return self.TITLE_ORDER_MAPPING[self.UNKNOWN]
 
     # Returns a timedelta object of total time in this position
     def get_time_in_this_position(self):

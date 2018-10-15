@@ -26,11 +26,13 @@
         </a>
         {{ member.get_start_date_short }} - {{ member.get_end_date_short }}<br/>
 
-        {{ member.person.get_current_title }}<br/>
-        {% if member.person.get_current_title != 'High School Student' %}
-            {{ member.person.get_current_department }}<br/>
-        {% endif %}
-        {{ member.person.get_current_school }}<br/>
+        <span class="line-clamp-one-line">{{ member.person.get_current_title }}</span><br/>
+        <span class="line-clamp-one-line">
+            {% if member.person.get_current_title != 'High School Student' %}
+                {{ member.person.get_current_department }}<br/>
+            {% endif %}
+        </span>
+        <span class="line-clamp-one-line">{{ member.person.get_current_school }}</span><br/>
     </div>
     <div class="sortingAndFiltering" style="display:none">
         <!-- special case for professors since each type of prof does not get their own category -->
