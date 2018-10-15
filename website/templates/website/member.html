@@ -1,6 +1,6 @@
 {% extends 'website/base.html' %}
 
-{% block pagetitle %}{{ person.get_full_name }}{% endblock %}
+{% block pagetitle %}{{ page_title }}{% endblock %}
 
 {% load staticfiles %}
 {% load thumbnail %}
@@ -117,28 +117,41 @@
 		</div>
 		{% endif %}
 	    </div>
-	    <div class="col-xs-12 col-md-10 col-md-pull-2 landing-content">
-		{% if publications %}
-		<div class="row">
-		    <h3 class="news-type-label"><b>Publications</b></h3>
-		    <div class="col-xs-12 col-md-10">
-                {% for pub in publications %}
-                    {% include "snippets/display_pub_snippet.html" %}
+
+        <div id="makelab-recent-projects" class="container-fluid makelab-content-container">
+            {% if project_roles %}
+                <h3 class="news-type-label" style="margin-top:25px"><b>Projects</b></h3>
+                {% for project_role in project_roles %}
+                    {% include "snippets/display_project_snippet.html" with project=project_role.project %}
                 {% endfor %}
-		    </div>
-		</div>
-		{% endif %}
-		{% if talks %}
-            <div class="row">
-                <h3 class="news-type-label"><b>Talks</b></h3>
+
+            {% endif %}
+        </div>
+        <div id="makelab-recent-projects" class="container-fluid makelab-content-container">
+            {% if publications %}
                 <div class="row">
-                {% for talk in talks %}
-                    {% include "snippets/display_talk_snippet.html" %}
-                {% endfor %}
+                    <h3 class="news-type-label"><b>Publications</b></h3>
+                    <div class="col-xs-12 col-md-10">
+                        {% for pub in publications %}
+                            {% include "snippets/display_pub_snippet.html" %}
+                        {% endfor %}
+                    </div>
                 </div>
-            </div>
-		{% endif %}
-	    </div>
+            {% endif %}
+        </div>
+
+        <div id="makelab-recent-projects" class="container-fluid makelab-content-container">
+            {% if talks %}
+                <div class="row">
+                    <h3 class="news-type-label"><b>Talks</b></h3>
+                    <div class="row">
+                        {% for talk in talks %}
+                            {% include "snippets/display_talk_snippet.html" %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
 	</div>
     </div>
 </div>

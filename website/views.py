@@ -369,12 +369,16 @@ def member(request, member_id):
     news = person.news_set.order_by('-date')[:news_items_num]
     publications = person.publication_set.order_by('-date')
     talks = person.talk_set.order_by('-date')
+    project_roles = person.project_role_set.order_by('start_date')
+
     context = {'person': person,
                'news': news,
                'talks': talks,
                'publications': publications,
+               'project_roles': project_roles,
                'banners': displayed_banners,
-               'debug': settings.DEBUG}
+               'debug': settings.DEBUG,
+               'page_title': person.get_full_name()}
     return render(request, 'website/member.html', context)
 
 

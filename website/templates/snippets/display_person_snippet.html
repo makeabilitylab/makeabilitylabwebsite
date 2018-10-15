@@ -33,6 +33,9 @@
             {% endif %}
         </span>
         <span class="line-clamp-one-line">{{ member.person.get_current_school }}</span><br/>
+
+        {# TODO: add in ordered project set and clamp to one line #}
+{#        <span class="line-clamp-one-line">{{ member.person.project_role_set.all }}</span><br/>#}
     </div>
     <div class="sortingAndFiltering" style="display:none">
         <!-- special case for professors since each type of prof does not get their own category -->

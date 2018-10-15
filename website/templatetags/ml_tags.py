@@ -1,5 +1,7 @@
 # Read more about custom tags and filters here: https://docs.djangoproject.com/en/dev/howto/custom-template-tags/#writing-custom-template-filters
 from django import template
+from django.template.defaultfilters import stringfilter
+
 from django.template.defaulttags import register
 
 register = template.Library()
@@ -8,6 +10,11 @@ register = template.Library()
 @register.filter
 def get_item(dictionary, key):
     return dictionary.get(key)
+
+@register.filter
+@stringfilter
+def get_url_page(url):
+    return url.split('/')[-2]
 
 @register.filter(name='jsdate')
 def jsdate(d):
