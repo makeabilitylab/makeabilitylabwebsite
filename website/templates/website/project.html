@@ -20,10 +20,6 @@
     <!-- <script src="{% static 'website/js/peopleHeightFix.js' %}"></script> -->
     <script src="{% static 'website/js/utils.js' %}"></script>
     <script src="{% static 'website/js/indproject.js' %}"></script>
-{#    <script src="{% static 'website/js/isotope/isotope-init.js' %}?version=3"></script>#}
-{#    <script src="{% static 'website/js/isotope/isotope-filterBar.js' %}?version=2"></script>#}
-{#    <script src="{% static 'website/js/isotope/isotope-filtering.js' %}"></script>#}
-{#    <script src="{% static 'website/js/isotope.pkgd.min.js' %}"></script>#}
 {% endblock %}
 
 
@@ -158,23 +154,7 @@
             <h3 class="news-type-lable"><b>Recent Videos</b></h3>
             {% endif %}
             {% for video in videos %}
-                {#  update this to be two across rather than three for project page #}
                 {% include "snippets/display_video_snippet.html" %}
-{#            <div class="col-xs-12 col-md-6 video-column">#}
-{#            <div class="video-container">#}
-{#                <iframe class="video" src="{{video.get_embed}}" frameborder="0" allowfullscreen></iframe>#}
-{#            </div>#}
-{#            <p class="video-title">{{video.title}}</p>#}
-{#            {% if video.caption %}#}
-{#            <p class="video-location">{{video.caption}} </p>#}
-{#            {% endif %}#}
-{#            <p class="video-links">#}
-{#                <a href="{{video.video_url}}">YouTube</a>#}
-{#                {% if video.publication %}#}
-{#                | <a href="../../media/{{video.publication.pdf_file}}">Paper</a>#}
-{#                {% endif %}#}
-{#            </p>#}
-{#            </div>#}
             {% endfor %}
         </div>
         <div class="row row-adjust-margins">
@@ -202,43 +182,42 @@
             {% endfor %}
         </div>
 
-{# TODO: at some point, figure out how to get isotope added in here #}
-{#        <div class="isotope_data">#}
-{#            <div class= "isotope_data_container" id="isotope_data_container_current_members" style="display:none">#}
-{#                sortFilterContainer(.sortingAndFiltering,str)#}
-{#                gridName(.grid_current_members,str)#}
-{#                filteringKeywordContainer(#filter_keywords_current_members, str)#}
-{#                sideBarContainer(#filterBar_Current_Members,str)#}
-{#                scrollTop(.currentteam,str)#}
-{#            </div>#}
-{#            <div class= "isotope_data_container" id="isotope_data_container_past_members" style="display:none">#}
-{#                sortFilterContainer(.sortingAndFiltering,str)#}
-{#                gridName(.grid_past_members,str)#}
-{#                filteringKeywordContainer(#filterKeywords_past_members, str)#}
-{#                sideBarContainer(#filterBar_Alumni,str)#}
-{#                scrollTop(.alumni,str)#}
-{#            </div>#}
-{#        </div>#}
-
-        {% if project_roles_current %}
+        {# Check to see if a project has ended. If so, just list all project members. If the project is #}
+        {# active then split members into current and past #}
+        {% if project.has_ended %}
             <div class="row row-eq-height row-adjust-margins people-row">
-                <h3 class="news-type-label">Current Project Members</h3>
-                <div class="grid_current_members">
-                    {% include "snippets/display_people_snippet.html" with member_status="Current Member" %}
-                </div>
-            </div>
-        {% endif %}
-
-        {% if project_roles_past %}
-            <div class="row row-eq-height row-adjust-margins people-row">
-                <h3 class="news-type-label">Past Project Members</h3>
-                <div class="grid_current_members">
-{#                    {% include "snippets/display_people_snippet.html" with member_status="Past Member" %}#}
-                    {% for member in project_roles_past %}
+                <h3 class="news-type-label">Project Members</h3>
+                <div class="grid_members">
+                    {% for member in project_roles %}
                         {% include "snippets/display_person_snippet.html" %}
                     {% endfor %}
                 </div>
             </div>
+        {% else %}
+            {% if project_roles_current %}
+                <div class="row row-eq-height row-adjust-margins people-row">
+                    {# Check to see if there are past project members, if so, change the header slightly #}
+                    {% if project_roles_past %}
+                        <h3 class="news-type-label">Current Project Members</h3>
+                    {%  else %}
+                        <h3 class="news-type-label">Project Members</h3>
+                    {% endif %}
+                    <div class="grid_current_members">
+                        {% include "snippets/display_people_snippet.html" with member_status="Current Member" %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if project_roles_past %}
+                <div class="row row-eq-height row-adjust-margins people-row">
+                    <h3 class="news-type-label">Past Project Members</h3>
+                    <div class="grid_past_members">
+                        {% for member in project_roles_past %}
+                            {% include "snippets/display_person_snippet.html" %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
         {% endif %}
     </div>
 </div>

@@ -553,11 +553,10 @@ def project(request, project_name):
             if "Professor" in position.title:  # necessary to collapse all prof categories to 1
                 title = "Professor"
 
-            member_status_name = ""
+            # check for current status on project
+            member_status_name = Position.PAST_MEMBER
             if project_role.is_active():
                 member_status_name = Position.CURRENT_MEMBER
-            else:
-                member_status_name = Position.PAST_MEMBER
 
             if member_status_name not in map_status_to_title_to_project_role:
                 map_status_to_title_to_project_role[member_status_name] = dict()
@@ -579,7 +578,7 @@ def project(request, project_name):
                 project_role_with_title.sort(key=operator.attrgetter('end_date'), reverse=True)
 
     # TODO: While we likely want current members sorted by titles, I think it makes the most sense
-    # to sort previous members by most recent first (and ignore title)... but I'm not sure
+    # TODO: to sort previous members by most recent first (and ignore title)... but I'm not sure
     sorted_titles = ("Professor", Position.RESEARCH_SCIENTIST, Position.POST_DOC, Position.SOFTWARE_DEVELOPER,
                      Position.PHD_STUDENT, Position.MS_STUDENT, Position.UGRAD, Position.HIGH_SCHOOL)
 

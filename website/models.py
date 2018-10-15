@@ -557,11 +557,18 @@ class Project(models.Model):
             return None
 
     def has_artifact(self):
-        '''
+        """
         Returns true if project has at least one artifact (pub, talk, or video)
         :return:
-        '''
+        """
         return self.get_most_recent_artifact() is not None
+
+    def has_ended(self):
+        """
+        Returns true if the project has ended
+        :return:
+        """
+        return self.end_date is not None and self.end_date < date.today()
 
     def get_most_recent_artifact(self):
         """
