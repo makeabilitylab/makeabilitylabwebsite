@@ -19,140 +19,147 @@
 {% endblock %}
 
 {% block content %}
-<div id="content" class="container content-container" data-spy="scroll">
-    <div id="header" class="container">
-	<div class="row" id="about-header">
-	    <div class="col-sm-6 col-md-3 hidden-xs">
-		<div class="easter-egg-col">
-		    <img src="{% thumbnail person.image 245x245 box=person.cropping crop detail upscale %}" class="img-responsive"/>
-		    <div class="overlay-easter-egg">
-			<img src="{% thumbnail person.easter_egg 245x245 box=person.easter_egg_crop crop detail upscale %}" class="img-responsive">
-		    </div>
-		</div>
-	    </div>
-	    <div class="col-xs-4 col-sm-6 col-md-3">
-		<h3 class="news-type-label">{{person.get_full_name}}</h3>
-		{% with person.get_latest_position as position %}
-		{% if position %}
-		{{position.title}}
-		{% if position.is_high_school %}
-		{% else %}
-		, {{position.get_department_abbreviated}}
-		{% endif %}
-		<br/>
-		{{position.school}}<br/>
-		{% endif %}
-		{% endwith %}
-		{% if person.email %}
-		<a href="mailto:{{person.email}}">
-		    <img src="{% static 'website/img/email.png' %}" class="header-icon">
-		    <span class="header-link">email</span><br/>
-		</a>
-		{% endif %}
-		{% if person.personal_website %}
-		<a href="{{person.personal_website}}">
-		    <img src="{% static 'website/img/link.png' %}" class="header-icon">
-		    <span class="header-link">website</span><br/>
-		</a>
-		{% endif %}
-		{% if person.github %}
-		<a href="{{person.github}}">
-		    <img src="{% static 'website/img/github.png' %}" class="header-icon">
-		    <span class="header-link">github</span><br/>
-		</a>
-		{% endif %}
-		{% if person.twitter %}
-		<a href="{{person.twitter}}">
-		    <img src="{% static 'website/img/twitter.png' %}" class="header-icon">
-		    <span class="header-link">twitter</span><br/>
-		</a>
-		{% endif %}
-	    </div>
-	    <div class="col-xs-8 col-sm-12 col-md-6 about-person">
-		{{person.bio}}
-	    </div>
-	</div>
-    </div>
-    <div id="main-content" class="container">
-	<div class="row">
-	    <div class="col-xs-12 col-md-2 col-md-push-10 newstwitter-bar">
-		{% if news %}
-		<!-- Create a row for the well which will contain news from our feeds -->
-		<div class="row">
-		    <h3 class="news-type-label">Recent News</h3>
-		    <div class="well news-well">
-			{% for item in news %}
-			<!-- Create a row for each news item which has been passed in -->
-			<div class="row news_header">
-			    <!-- TODO link to the full news item -->
-			    <a href="">
-				<!-- Use the items image if it exists, otherwise use the default icon -->
-				{% if item.image %}
-				<img src="{% thumbnail item.image 250x250 box=item.cropping crop detail %}" class="news_image" height="50" width="50" alt="{{item.alt_text}}">
-				{% else %}
-				<img src="{% static 'website/img/news_icon.png' %}" class="news_image" height="50" width="50">			
-				{% endif %}
-			    </a>
-			    <div class="news_info">
-				<!-- https://css-tricks.com/line-clampin/ This seems to be a good way to do multi line wrapping, also referenced in relevant news.css file -->
-				<div class="news_title line-clamp">
-				    <!-- TODO link to the full news item -->
-				    <a href="{% url 'website:news' item.id %}">
-					<p>{{item.title}}</p>
-				    </a>
-				</div>
-				<p class="news_date">{{item.short_date}} | <a href="{% url 'website:member' item.author.url_name %}">{{item.author.first_name}}</a></p><!--</p><p class="news_date">{{item.author}}</p>-->
-			    </div>
-			</div>
-			<div class="row news_body">
-			    <!-- Truncation now uses a set number of lines which can be modified in news.css content-clamp class by changing -webkit-line-clamp -->
-			    <div class="news_content content-clamp">
-				{% autoescape off %}
-				<p>{{item.content}}</p>
-				{% endautoescape %}
-			    </div>
-			</div>
-			{% endfor %}
-		    </div>
-		</div>
-		{% endif %}
-	    </div>
-
-        <div id="makelab-recent-projects" class="container-fluid makelab-content-container">
-            {% if project_roles %}
-                <h3 class="news-type-label" style="margin-top:25px"><b>Projects</b></h3>
-                {% for project_role in project_roles %}
-                    {% include "snippets/display_project_snippet.html" with project=project_role.project %}
-                {% endfor %}
-
-            {% endif %}
-        </div>
-        <div id="makelab-recent-projects" class="container-fluid makelab-content-container">
-            {% if publications %}
-                <div class="row">
-                    <h3 class="news-type-label"><b>Publications</b></h3>
-                    <div class="col-xs-12 col-md-10">
-                        {% for pub in publications %}
-                            {% include "snippets/display_pub_snippet.html" %}
-                        {% endfor %}
+    <div id="content" class="container content-container" data-spy="scroll">
+        <div id="header" class="container">
+            <div class="row" id="about-header">
+                <div class="col-sm-6 col-md-3 hidden-xs">
+                    <div class="easter-egg-col">
+                        <img src="{% thumbnail person.image 245x245 box=person.cropping crop detail upscale %}"
+                             class="img-responsive"/>
+                        <div class="overlay-easter-egg">
+                            <img src="{% thumbnail person.easter_egg 245x245 box=person.easter_egg_crop crop detail upscale %}"
+                                 class="img-responsive">
+                        </div>
                     </div>
                 </div>
-            {% endif %}
-        </div>
-
-        <div id="makelab-recent-projects" class="container-fluid makelab-content-container">
-            {% if talks %}
-                <div class="row">
-                    <h3 class="news-type-label"><b>Talks</b></h3>
-                    <div class="row">
-                        {% for talk in talks %}
-                            {% include "snippets/display_talk_snippet.html" %}
-                        {% endfor %}
-                    </div>
+                <div class="col-xs-4 col-sm-6 col-md-3">
+                    <h3 class="news-type-label">{{ person.get_full_name }}</h3>
+                    {% with person.get_latest_position as position %}
+                        {% if position %}
+                            {{ position.title }}
+                            {% if position.is_high_school %}
+                            {% else %}
+                                , {{ position.get_department_abbreviated }}
+                            {% endif %}
+                            <br/>
+                            {{ position.school }}<br/>
+                        {% endif %}
+                    {% endwith %}
+                    {% if person.email %}
+                        <a href="mailto:{{ person.email }}">
+                            <img src="{% static 'website/img/email.png' %}" class="header-icon">
+                            <span class="header-link">email</span><br/>
+                        </a>
+                    {% endif %}
+                    {% if person.personal_website %}
+                        <a href="{{ person.personal_website }}">
+                            <img src="{% static 'website/img/link.png' %}" class="header-icon">
+                            <span class="header-link">website</span><br/>
+                        </a>
+                    {% endif %}
+                    {% if person.github %}
+                        <a href="{{ person.github }}">
+                            <img src="{% static 'website/img/github.png' %}" class="header-icon">
+                            <span class="header-link">github</span><br/>
+                        </a>
+                    {% endif %}
+                    {% if person.twitter %}
+                        <a href="{{ person.twitter }}">
+                            <img src="{% static 'website/img/twitter.png' %}" class="header-icon">
+                            <span class="header-link">twitter</span><br/>
+                        </a>
+                    {% endif %}
                 </div>
-            {% endif %}
+                <div class="col-xs-8 col-sm-12 col-md-6 about-person">
+                    {{ person.bio }}
+                </div>
+            </div>
         </div>
-	</div>
+        <div id="main-content" class="container">
+            <div class="row">
+                <div class="col-xs-12 col-md-2 col-md-push-10 newstwitter-bar">
+                    {% if news %}
+                        <!-- Create a row for the well which will contain news from our feeds -->
+                        <div class="row">
+                            <h3 class="news-type-label">Recent News</h3>
+                            <div class="well news-well">
+                                {% for item in news %}
+                                    <!-- Create a row for each news item which has been passed in -->
+                                    <div class="row news_header">
+                                        <!-- TODO link to the full news item -->
+                                        <a href="">
+                                            <!-- Use the items image if it exists, otherwise use the default icon -->
+                                            {% if item.image %}
+                                                <img src="{% thumbnail item.image 250x250 box=item.cropping crop detail %}"
+                                                     class="news_image" height="50" width="50"
+                                                     alt="{{ item.alt_text }}">
+                                            {% else %}
+                                                <img src="{% static 'website/img/news_icon.png' %}" class="news_image"
+                                                     height="50" width="50">
+                                            {% endif %}
+                                        </a>
+                                        <div class="news_info">
+                                            <!-- https://css-tricks.com/line-clampin/ This seems to be a good way to do multi line wrapping, also referenced in relevant news.css file -->
+                                            <div class="news_title line-clamp">
+                                                <!-- TODO link to the full news item -->
+                                                <a href="{% url 'website:news' item.id %}">
+                                                    <p>{{ item.title }}</p>
+                                                </a>
+                                            </div>
+                                            <p class="news_date">{{ item.short_date }} | <a
+                                                    href="{% url 'website:member' item.author.url_name %}">{{ item.author.first_name }}</a>
+                                            </p><!--</p><p class="news_date">{{item.author}}</p>-->
+                                        </div>
+                                    </div>
+                                    <div class="row news_body">
+                                        <!-- Truncation now uses a set number of lines which can be modified in news.css content-clamp class by changing -webkit-line-clamp -->
+                                        <div class="news_content content-clamp">
+                                            {% autoescape off %}
+                                                <p>{{ item.content }}</p>
+                                            {% endautoescape %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div id="makelab-recent-projects" class="container-fluid makelab-content-container">
+                    {% if project_roles %}
+                        <h3 class="news-type-label" style="margin-top:25px"><b>Projects</b></h3>
+                        {% for project_role in project_roles %}
+                            {% include "snippets/display_project_snippet.html" with project=project_role.project %}
+                        {% endfor %}
+
+                    {% endif %}
+                </div>
+                <div id="makelab-recent-projects" class="container-fluid makelab-content-container">
+                    {% if publications %}
+                        <div class="row">
+                            <h3 class="news-type-label"><b>Publications</b></h3>
+                            <div class="col-xs-12 col-md-10">
+                                {% for pub in publications %}
+                                    {% include "snippets/display_pub_snippet.html" %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div id="makelab-recent-projects" class="container-fluid makelab-content-container">
+                    {% if talks %}
+                        <div class="row">
+                            <h3 class="news-type-label"><b>Talks</b></h3>
+                            <div class="row">
+                                {% for talk in talks %}
+                                    {% include "snippets/display_talk_snippet.html" %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 {% endblock %}
