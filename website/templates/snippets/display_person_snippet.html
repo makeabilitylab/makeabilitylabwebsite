@@ -24,18 +24,25 @@
         <a href="{% url 'website:member' member.person.url_name %}">
             <h5>{{ member.person.get_full_name }}</h5>
         </a>
-        {{ member.get_start_date_short }} - {{ member.get_end_date_short }}<br/>
+        {{ member.get_start_date_short }} - {{ member.get_end_date_short }}
 
         <span class="line-clamp-one-line">{{ member.person.get_current_title }}</span><br/>
+
         <span class="line-clamp-one-line">
             {% if member.person.get_current_title != 'High School Student' %}
                 {{ member.person.get_current_department }}<br/>
             {% endif %}
         </span>
         <span class="line-clamp-one-line">{{ member.person.get_current_school }}</span><br/>
+    
+        {% if member.person.project_role_set.all %}
+            <span class="pub-download-links line-clamp-one-line" style="position: static; margin:3px 0px 0px 0px; display: inline-block;">
+                {% for project in member.person.get_projects %}
+                    <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>{% if not forloop.last %} | {% endif %}
+                {% endfor %}
 
-        {# TODO: add in ordered project set and clamp to one line #}
-{#        <span class="line-clamp-one-line">{{ member.person.project_role_set.all }}</span><br/>#}
+            </span><br/>
+        {% endif %}
     </div>
     <div class="sortingAndFiltering" style="display:none">
         <!-- special case for professors since each type of prof does not get their own category -->

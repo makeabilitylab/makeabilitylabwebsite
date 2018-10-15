@@ -123,7 +123,7 @@ class Person(models.Model):
         else:
             return None
 
-    get_current_title.short_description = "School"
+    get_current_school.short_description = "School"
 
     # Returns current role
     def get_current_role(self):
@@ -215,39 +215,33 @@ class Person(models.Model):
         else:
             return False
 
-    # Returns True if person is a past collaborator of the lab. False otherwise
     def is_past_collaborator(self):
+        """
+        Gets whether a person is a past collaborator or not.
+        :return: True if person is a past collaborator of the lab. False otherwise
+        """
         latest_position = self.get_latest_position()
         if latest_position is not None:
             return latest_position.is_past_collaborator()
         else:
             return False
 
-
-    # Returns the earliest this person was ever a member
     def get_earliest_member_position(self):
+        """
+        Gets the earliest Position for this person
+        :return: the earliest Position for this person
+        """
         # The result of a QuerySet is a QuerySet so you can chain them together...
         return self.position_set.filter(role=Position.MEMBER).earliest('start_date')
 
-    # Returns the latest position for the person
-    # TODO: consider renaming this to get_current_position
-    # TODO: This assume that postion_set.all() is already ordered by start_date. I don't think this is necessarily true.
     def get_latest_position(self):
-        # print(self.position_set.exists())
+        """
+        Gets the latest Position for the person or None if none exists
+        :return: latest Position for the person or None if none exists
+        """
         if self.position_set.exists() is False:
-            # print("The person '{}' has no position set".format(self.get_full_name()))
             return None
         else:
-            # print("self.position_set is not None")
-
-            # The Person model can access its positions because of the foreign key relationship
-            # See: https://docs.djangoproject.com/en/1.11/topics/db/queries/#related-objects
-            # print("Printing all positions for " + self.get_full_name())
-            # for position in self.position_set.all():
-            # print(position.start_date)
-
-            # print("The latest position for " + self.get_full_name())
-            # print(self.position_set.latest('start_date'))
             return self.position_set.latest('start_date')
 
     # Returns the start date of current position. Used in Admin Interface. See PersonAdmin in admin.py
@@ -258,7 +252,7 @@ class Person(models.Model):
         else:
             return None
 
-    get_start_date.short_description = "Start Date"
+    get_start_date.short_description = "Start Date"  # This short description is used in the admin interface
 
     # Returns the end date of current position. Used in Admin Interface. See PersonAdmin in admin.py
     def get_end_date(self):
@@ -268,21 +262,40 @@ class Person(models.Model):
         else:
             return None
 
-    get_end_date.short_description = "End Date"
+    get_end_date.short_description = "End Date"  # This short description is used in the admin interface
 
-    # Returns the full name
-    def get_full_name(self, includeMiddle=True):
-        if self.middle_name and includeMiddle:
+    def get_full_name(self, include_middle=True):
+        """
+        Gets this person's full name as a string
+        :param include_middle: If true, includes the middle name. Defaults to True.
+        :return: the person's full name as a string
+        """
+        if self.middle_name and include_middle:
             return u"{0} {1} {2}".format(self.first_name, self.middle_name, self.last_name)
         else:
             return u"{0} {1}".format(self.first_name, self.last_name)
 
     get_full_name.short_description = "Full Name"
 
-    # Returns the URL name for this person
-    # Format: firstlast
     def get_url_name(self):
+        """
+        Gets the URL name for this person. Format: firstlast
+        :return: the URL name for this person. Format: firstlast
+        """
         return self.url_name
+
+    def get_projects(self):
+        """
+        Gets a list of all the projects this person is involved in ordered by most recent start date first
+        :return: a list of all the projects this person is involved in ordered by most recent start date first
+        """
+        project_roles = self.project_role_set.order_by('-start_date')
+
+        # For more on this style of list iteration (called list comprehension)
+        # See: https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions
+        #      https://www.python.org/dev/peps/pep-0202/
+        projects = [project_role.project for project_role in project_roles]
+        return projects
 
     def __str__(self):
         return self.get_full_name()
