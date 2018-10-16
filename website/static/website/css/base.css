@@ -84,6 +84,10 @@ h5 {
     /*height: auto;*/
 }
 
+.no-margin {
+    margin: 0px;
+}
+
 /* Custom navbar for filters */
 /* TODO: what is this doing here? Why is navbar stuff in here and not grayscale.css? Discuss with Lee */
 .breadcrumb {

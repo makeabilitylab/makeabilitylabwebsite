@@ -24,25 +24,25 @@
         <a href="{% url 'website:member' member.person.url_name %}">
             <h5>{{ member.person.get_full_name }}</h5>
         </a>
-        {{ member.get_start_date_short }} - {{ member.get_end_date_short }}<br/>
+        <p class="no-margin">{{ member.get_start_date_short }} - {{ member.get_end_date_short }}</p>
 
-        <span class="line-clamp-one-line">{{ member.person.get_current_title }}</span><br/>
+        <p class="line-clamp-one-line no-margin">{{ member.person.get_current_title }}</p>
 
-        <span class="line-clamp-one-line">
+        <p class="line-clamp-one-line no-margin">
             {% if member.person.get_current_title != 'High School Student' %}
-                {{ member.person.get_current_department }}<br/>
+                {{ member.person.get_current_department }}
             {% endif %}
-        </span>
-        <span class="line-clamp-one-line">{{ member.person.get_current_school }}</span><br/>
+        </p>
+        <p class="line-clamp-one-line no-margin">{{ member.person.get_current_school }}</p>
 
         {# TODO: Currently excluding me from this as I have so many projects and the clamping isn't working correctly #}
         {% if member.person.project_role_set.all and member.person.last_name != "Froehlich" %}
-            <span class="pub-download-links line-clamp-one-line" style="position: static; margin:3px 0px 0px 0px; display: inline-block;">
+            <p class="pub-download-links line-clamp-one-line no-margin" style="position: static; margin:3px 0px 0px 0px; display: inline-block;">
                 {% for project in member.person.get_projects|slice:"3" %}
                     <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>{% if not forloop.last %} | {% endif %}
                 {% endfor %}
 
-            </span><br/>
+            </p><br/>
         {% endif %}
     </div>
     <div class="sortingAndFiltering" style="display:none">
