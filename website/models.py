@@ -610,10 +610,81 @@ class Project(models.Model):
         """
         return self.end_date is not None and self.end_date < date.today()
 
+    def get_most_recent_artifact_date(self):
+        """
+        Returns the most recent artifact date (if one exists); otherwise None
+        :return: the most recent artifact date (if one exists); otherwise None
+        """
+        most_recent_artifact_tuple = self.get_most_recent_artifact()
+        if most_recent_artifact_tuple is not None:
+            return most_recent_artifact_tuple[0]
+        else:
+            return None
+
+    get_most_recent_artifact_date.short_description = "Most Recent Artifact Date"
+
+    def get_most_recent_artifact_type(self):
+        """
+        Returns either "Publication", "Talk", or "Video" or None
+        :return: either "Publication", "Talk", or "Video" or None
+        """
+        most_recent_artifact_tuple = self.get_most_recent_artifact()
+        if most_recent_artifact_tuple is not None:
+            most_recent_artifact = most_recent_artifact_tuple[1]
+            if type(most_recent_artifact) is Publication:
+                return "Publication"
+            elif type(most_recent_artifact) is Talk:
+                return "Talk"
+            elif type(most_recent_artifact) is Video:
+                return "Video"
+        else:
+            return None
+
+    get_most_recent_artifact_type.short_description = "Most Recent Artifact Type"
+
+    def get_publication_count(self):
+        """
+        Returns the number of publications associated with this project
+        :return: the number of publications associated with this project
+        """
+        return self.publication_set.count()
+
+    get_publication_count.short_description = "Pubs"
+
+    def get_video_count(self):
+        """
+        Returns the number of videos associated with this project
+        :return: the number of videos associated with this project
+        """
+        return self.video_set.count()
+
+    get_video_count.short_description = "Videos"
+
+    def get_talk_count(self):
+        """
+        Returns the number of talks associated with this project
+        :return: the number of talks associated with this project
+        """
+        return self.talk_set.count()
+
+    get_talk_count.short_description = "Talks"
+
+    def get_people_count(self):
+        project_roles = self.project_role_set.order_by('-start_date')
+
+        # For more on this style of list iteration (called list comprehension)
+        # See: https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions
+        #      https://www.python.org/dev/peps/pep-0202/
+        projects = set([project_role.person for project_role in project_roles])
+        return len(projects)
+
+    get_people_count.short_description = "People"
+
+
     def get_most_recent_artifact(self):
         """
-        Returns the most recent artifact (publication, talk, or video) as tuple of (artifact, date)
-        :return: the most recent artifact, a tuple of (artifact, date)
+        Returns the most recent artifact (publication, talk, or video) as tuple of (date, artifact)
+        :return: the most recent artifact, a tuple of (date, artifact)
         """
         mostRecentArtifacts = []
 
@@ -634,6 +705,9 @@ class Project(models.Model):
             return mostRecentArtifacts[0][0], mostRecentArtifacts[0][1]
         else:
             return None
+
+    get_most_recent_artifact.short_description = "Most Recent Artifact"
+
 
     def __str__(self):
         return self.name

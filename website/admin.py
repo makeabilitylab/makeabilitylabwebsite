@@ -86,6 +86,13 @@ class PhotoAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
 class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
     inlines = [ProjectHeaderInline]
+
+    # The list display lets us control what is shown in the Project table at Home > Website > Project
+    # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
+    list_display = ('name', 'start_date', 'end_date', 'has_ended', 'get_people_count',
+                    'get_most_recent_artifact_date', 'get_most_recent_artifact_type',
+                    'get_publication_count', 'get_video_count', 'get_talk_count')
+
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
         if db_field.name == "sponsors":
             kwargs["widget"] = widgets.FilteredSelectMultiple("sponsors", is_stacked=False)
