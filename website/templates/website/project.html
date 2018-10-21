@@ -105,39 +105,40 @@
 	    {% endif %}
 	</div>
 	<div class="col-md-10 col-md-pull-2 project-intro-content">
-	    <div class="row about-row">
-		<h3 class="news-type-label">About</h3>
-		<p class="project-about">
-		    <div style="float: right">
-			<div class="header-visual">
-			    {% if project.project_header_set.all|length > 0 %}
-			    {% with project.project_header_set.all|first as header %}
-			    {% autoescape off %}
-			    {{header.get_visual}}
-			    {% endautoescape %}
-			    <br/>
-			    <span class="header-visual-title">{{header.title}}</span><br/>
-			    {% if header.caption %}
-			    <span class="header-visual-caption">{{header.caption}}</span>
-			    {% endif %}
-			    {% endwith %}
-			    {% else %}
-			    {% with project.video_set.all|first as first_video %}
-			    <iframe class="video-about" src="{{first_video.get_embed}}" frameborder="0" allowfullscreen></iframe><br/>
-			    <span class="header-visual-title">{{first_video.title}}</span><br/>
-			    {% if first_video.caption %}
-			    <span class="header-visual-caption">{{first_video.caption}}</span>
-			    {% endif %}
-			    {% endwith %}
-			    {% endif %}
-			    
-			</div>
-		    </div>
-		    {% autoescape off %}
-		    {{project.about}}
-		    {% endautoescape %}
-		</p>
-	    </div>
+        <div class="row about-row">
+            <h3 class="news-type-label">About</h3>
+            <p class="project-about">
+            <div style="float: right">
+                <div class="header-visual">
+                    {% if project.project_header_set.all|length > 0 %}
+                        {% with project.project_header_set.all|first as header %}
+                            {% autoescape off %}
+                                {{ header.get_visual }}
+                            {% endautoescape %}
+
+                            <p style="font-weight: bold; margin:0px;">{{ header.title }}</p>
+                            {% if header.caption %}
+                               <p style="font-size: smaller;"> {{ header.caption }}</p>
+                            {% endif %}
+                        {% endwith %}
+                    {% else %}
+                        {% with project.video_set.all|first as first_video %}
+                            <iframe class="video-about" src="{{ first_video.get_embed }}" frameborder="0"
+                                    allowfullscreen></iframe><br/>
+                            <span class="header-visual-title">{{ first_video.title }}</span><br/>
+                            {% if first_video.caption %}
+                                <span class="header-visual-caption">{{ first_video.caption }}</span>
+                            {% endif %}
+                        {% endwith %}
+                    {% endif %}
+
+                </div>
+            </div>
+            {% autoescape off %}
+                {{ project.about }}
+            {% endautoescape %}
+            </p>
+        </div>
 	    <div class="row">
 		{% if publications %}
 		<h3 class="news-type-label">Publications</h3>
