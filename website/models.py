@@ -1071,11 +1071,13 @@ class Publication(models.Model):
     BEST_PAPER_AWARD = "Best Paper Award"
     HONORABLE_MENTION = "Honorable Mention"
     BEST_PAPER_NOMINATION = "Best Paper Nominee"
+    TEN_YEAR_IMPACT_AWARD = "10-Year Impact Award"
 
     AWARD_CHOICES = (
         (BEST_PAPER_AWARD, BEST_PAPER_AWARD),
         (HONORABLE_MENTION, HONORABLE_MENTION),
-        (BEST_PAPER_NOMINATION, BEST_PAPER_NOMINATION)
+        (BEST_PAPER_NOMINATION, BEST_PAPER_NOMINATION),
+        (TEN_YEAR_IMPACT_AWARD, TEN_YEAR_IMPACT_AWARD)
     )
     award = models.CharField(max_length=50, choices=AWARD_CHOICES, blank=True, null=True)
 
