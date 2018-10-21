@@ -670,16 +670,49 @@ class Project(models.Model):
     get_talk_count.short_description = "Talks"
 
     def get_people_count(self):
+        """
+        Returns the number of people involved in the project
+        :return:
+        """
         project_roles = self.project_role_set.order_by('-start_date')
 
         # For more on this style of list iteration (called list comprehension)
         # See: https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions
         #      https://www.python.org/dev/peps/pep-0202/
-        projects = set([project_role.person for project_role in project_roles])
-        return len(projects)
+        people = set([project_role.person for project_role in project_roles])
+        return len(people)
 
     get_people_count.short_description = "People"
 
+    def get_current_member_count(self):
+        """
+        Returns the number of current members
+        :return:
+        """
+        project_roles = self.project_role_set.order_by('-start_date')
+        current_member_cnt = 0
+        for project_role in project_roles:
+            if project_role.is_active():
+                current_member_cnt = current_member_cnt + 1
+        return current_member_cnt
+
+    get_current_member_count.short_description = "Current Members"
+
+    def get_past_member_count(self):
+        """
+        Returns the number of current members
+        :return:
+        """
+
+        # TODO: could likely turn all of this code into a single query?
+        project_roles = self.project_role_set.order_by('-start_date')
+        past_member_cnt = 0
+        for project_role in project_roles:
+            if project_role.is_active():
+                past_member_cnt = past_member_cnt + 1
+        return past_member_cnt
+
+    get_past_member_count.short_description = "Past Members"
 
     def get_most_recent_artifact(self):
         """

@@ -90,6 +90,7 @@ class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
     # The list display lets us control what is shown in the Project table at Home > Website > Project
     # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
     list_display = ('name', 'start_date', 'end_date', 'has_ended', 'get_people_count',
+                    'get_current_member_count', 'get_past_member_count',
                     'get_most_recent_artifact_date', 'get_most_recent_artifact_type',
                     'get_publication_count', 'get_video_count', 'get_talk_count')
 
