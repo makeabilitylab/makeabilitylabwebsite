@@ -65,7 +65,7 @@
 	text-overflow: ellipsis;
 	padding-top: 5px;
 	margin-bottom: 0px;
-	float: right;
+	padding-left: 3px;
 	max-width: 535px;
 }
 
