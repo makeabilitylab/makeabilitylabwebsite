@@ -30,7 +30,7 @@
 
             <p class="pub-download-links line-clamp-one-line" style="margin: 0px; margin-top: 2px; bottom:auto">
                 <a href="../../media/{{ talk.pdf_file }}">PDF</a>
-                {% if talk.raw_file %}| <a href="../../media/{{ talk.pdf_file }}">PPTX</a>{% endif %}
+                {% if talk.raw_file %}| <a href="../../media/{{ talk.raw_file }}">PPTX</a>{% endif %}
                 {% if talk.slideshare_url %}| <a href="{{ talk.slideshare_url }}">SlideShare</a>{% endif %}
                 {% for pub in talk.publication_set.all %}
                     | <a href="../../media/{{ pub.pdf_file }}">Paper</a>
