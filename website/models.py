@@ -1082,7 +1082,23 @@ class Publication(models.Model):
     award = models.CharField(max_length=50, choices=AWARD_CHOICES, blank=True, null=True)
 
     def get_person(self):
+        """
+        Returns the first author
+        :return:
+        """
         return self.authors.all()[0]
+
+    def is_extended_abstract(self):
+        """
+        Returns True if this publication is an extended abstract
+        :return: True if this publication is an extended abstract
+        """
+        return (self.extended_abstract or
+                self.pub_venue_type == self.POSTER or
+                self.pub_venue_type == self.DEMO or
+                self.pub_venue_type == self.WIP or
+                self.pub_venue_type == self.DOCTORAL_CONSORTIUM)
+
 
     # Returns the title of the publication in capital case
     def get_title(self):

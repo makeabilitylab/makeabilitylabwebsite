@@ -64,7 +64,11 @@
             </p>
             <p class="publication-stats">
                 <span class="publication-venue">
-                    {{ pub.book_title_short }}
+                    {% if pub.is_extended_abstract and "Poster" not in pub.book_title_short and "Extended" not in pub.book_title_short %}
+                        Extended Abstract {{ pub.book_title_short }}
+                    {% else %}
+                        {{ pub.book_title_short }}
+                    {% endif %}
                     {% if pub.to_appear %}
                         <span class="publication-to-appear-text">To Appear</span>
                     {% endif %}
