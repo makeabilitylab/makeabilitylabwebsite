@@ -422,15 +422,15 @@
                 <div class="col-xs-1">
 
                 </div>
-                <div class="col-xs-2 makelab-footer-col" style="margin-bottom: 5em;">
+                <div class="col-xs-2 makelab-footer-col"">
                   
                     <a href="{% url 'website:index' %}">
                         <img src="{% static 'website/img/logos/makelab_logo_white_with_text_400x342.png' %}"
-                             class="img-responsive"/>
+                             class="img-responsive footer-logo"/>
                     </a>
                   </div>
                     
-                    <div class="col-xs-2 makelab-footer-col" style="margin-bottom: 3em;">
+                    <div class="col-xs-2 makelab-footer-col">
                         <p style="margin-top:0px">
                             We design, build, and evaluate interactive tools and techniques to address pressing societal
                             challenges in accessibility, sustainability, education, and beyond.
@@ -438,8 +438,7 @@
                       
                         <!-- TODO: change these to icons and link them -->
                         <!--{#                        Twitter | Email#}-->
-
-                        <div class="makelab-footer-connect-links">
+						<div class="makelab-footer-connect-links">
 
                         <!-- TODO: Vertically center text with icon. Currently text does not appear perfectly vertically centered with icon -->
                         <!--<h1>Connect</h1>-->
@@ -465,8 +464,9 @@
                                     </a>
                                 </li>
                             </ul>
-                        </div>
-                </div>
+						</div>
+                      
+					</div>
 
                 <div class="col-xs-4 col-lg-3 makelab-footer-col" style="margin-left: 0em; padding-right: 0em;">
                     <h1>Recent News</h1>
@@ -504,6 +504,33 @@
                             <li style="white-space:nowrap;" class="{% if url_name == 'videos' %}active{% endif %}"><a href="{% url 'website:videos' %}">&nbsp;> &nbsp; Videos</a></li>
                         {% endwith %}
                     </ul>
+                    <div class="makelab-footer-connect-links-mobile">
+
+                        <!-- TODO: Vertically center text with icon. Currently text does not appear perfectly vertically centered with icon -->
+                        <!--<h1>Connect</h1>-->
+
+                            <ul>
+                                <li>
+                                    <a href="https://twitter.com/makeabilitylab">
+                                        <!--<img src="{% static 'website/img/logos/twitter_logo_white.png' %}" class="makelab-footer-connect-logo"/>-->
+                                        <i class="fa fa-2x fa-twitter w3-hover-opacity"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="mailto:jonf@cs.uw.edu">
+                                        <!--<img src="{% static 'website/img/logos/email_logo_white.png' %}" class="makelab-footer-connect-logo"/> Email-->
+                                        <i class="fa fa-2x fa-envelope w3-hover-opacity"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://github.com/jonfroehlich/makeabilitylabwebsite">
+                                        <!--<img src="{% static 'website/img/logos/github_logo_white.png' %}" class="makelab-footer-connect-logo"/> Github -->
+
+                                        <i class="fa fa-2x fa-github-square w3-hover-black"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                    </div>
                 </div>
             </div>
 
