@@ -118,7 +118,7 @@ h5 {
     min-height: 30px;
 }
 
- @media screen and (max-width: 767px) {
+@media screen and (max-width: 767px) {
       .navbar-nav {
          float: left !important;
       }
@@ -490,9 +490,18 @@ h5 {
 
 .makelab-footer-col{
 	margin-top: 20px;
-	margin-bottom: 20px;
+	margin-bottom: 50px;
 	margin-right: 20px;
 	margin-left: 20px;
+	width: 21%;
+}
+
+.makelab-footer-recent-news{
+	width: 26%;
+}
+
+.makelab-footer-links{
+	width: 10%;
 }
 
 .makelab-footer-col h1{
@@ -552,9 +561,89 @@ h5 {
 	text-decoration: none;
 }
 
+
+.makelab-footer-logo{
+	max-width: 180px;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.makelab-footer-connect-links-mobile{
+	display: none;
+}
+
+/** RESPONSIVE FOOTER FOR TABLET *******/
+/** Author: Dhruv Jain ****************/
+/** Date: Nov 9, 2018 *****************/
+@media screen and (max-width: 1040px) {  
+		.makelab-footer-col {
+			width: 28%;
+		}
+		.makelab-footer-recent-news {
+			display: none;
+		}
+}
+/*** RESPONSIVE FOOTER FOR TABLET ENDS **/
+
+/** RESPONSIVE FOOTER FOR BETW. PHONE-TABLET *******/
+/** Author: Dhruv Jain ****************/
+/** Date: Nov 9, 2018 *****************/
+@media screen and (max-width: 770px) {
+		.makelab-footer-col {
+			width: 35%;
+		}  
+		.makelab-footer-links{
+			display: none;
+		}
+}
+/*** RESPONSIVE FOOTER FOR BETW. PHONE-TABLET ENDS **/
+
+/** RESPONSIVE FOOTER FOR PHONE *******/
+/** Author: Dhruv Jain ****************/
+/** Date: Nov 7, 2018 *****************/
+@media screen and (max-width: 550px) { 
+		.makelab-footer-links{
+			display: initial;
+		}
+        .makelab-footer-col {
+			width: 75%;
+			float: left;
+			margin-bottom: 0.5em;
+		}
+		.makelab-footer-recent-news {
+			display: none;
+		}
+		.makelab-footer-connect-links{
+			display: none;
+		}
+		.makelab-footer-logo{
+			float: left;
+			width: 100%;
+			max-width: 180px;
+		}
+		
+		.makelab-footer-connect-links-mobile{
+			display: initial;
+		}
+		.makelab-footer-connect-links-mobile ul{
+			list-style-type: none;
+			margin-top: 2em;
+			padding: 10px 0;
+		}
+		.makelab-footer-connect-links-mobile li {
+			display: inline;
+			margin-right: 10px;
+		}
+		.makelab-footer-connect-links-mobile a{
+			text-decoration: none;
+		}
+}
+/*** RESPONSIVE FOOTER FOR PHONE ENDS **/
+
+
 /**************************************/
 /************ LINE CLAMPING ***********/
-
 /* TODO: change this to line-clamp1 for one line clamping */
 .line-clamp-one-line {
     text-overflow: ellipsis;
