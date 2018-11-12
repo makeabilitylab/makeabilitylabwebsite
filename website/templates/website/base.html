@@ -419,31 +419,22 @@
 
         <div class="makelab-footer">
             <div class="row makelab-footer-row">
-                <div class="col-xs-1">
-
-                </div>
-                <div class="col-xs-2 makelab-footer-col"">
-                  
+               
+                <div class="col-xs-2 makelab-footer-col">
                     <a href="{% url 'website:index' %}">
                         <img src="{% static 'website/img/logos/makelab_logo_white_with_text_400x342.png' %}"
-                             class="img-responsive footer-logo"/>
+                             class="img-responsive makelab-footer-logo"/>
                     </a>
                   </div>
                     
-                    <div class="col-xs-2 makelab-footer-col">
-                        <p style="margin-top:0px">
-                            We design, build, and evaluate interactive tools and techniques to address pressing societal
-                            challenges in accessibility, sustainability, education, and beyond.
-                        </p>
+				<div class="col-xs-2 makelab-footer-col">
+                    <p style="margin-top:0px">
+                       We design, build, and evaluate interactive tools and techniques to address pressing societal
+                        challenges in accessibility, sustainability, education, and beyond.
+                    </p>
                       
-                        <!-- TODO: change these to icons and link them -->
-                        <!--{#                        Twitter | Email#}-->
-						<div class="makelab-footer-connect-links">
-
-                        <!-- TODO: Vertically center text with icon. Currently text does not appear perfectly vertically centered with icon -->
-                        <!--<h1>Connect</h1>-->
-
-                            <ul>
+					<div class="makelab-footer-connect-links">
+						<ul>
                                 <li>
                                     <a href="https://twitter.com/makeabilitylab">
                                         <!--<img src="{% static 'website/img/logos/twitter_logo_white.png' %}" class="makelab-footer-connect-logo"/>-->
@@ -463,12 +454,11 @@
                                         <i class="fa fa-2x fa-github-square w3-hover-black"></i>
                                     </a>
                                 </li>
-                            </ul>
-						</div>
-                      
-					</div>
+						</ul>
+					</div>      
+				</div>
 
-                <div class="col-xs-2 col-lg-3 makelab-footer-col recent-news">
+                <div class="col-xs-2 makelab-footer-col makelab-footer-recent-news">
                     <h1>Recent News</h1>
                     {# To add news dynamically, we need to use a context processor. See our custom process in context_processors.py #}
                     {# See: https://stackoverflow.com/questions/36093221/how-to-put-variable-from-database-into-base-html-template #}
@@ -486,7 +476,6 @@
                             </a>
                         </div>
                     {% endfor %}
-
                 </div>
 
                 <div class="col-xs-2 makelab-footer-col makelab-footer-links">

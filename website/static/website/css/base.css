@@ -493,6 +493,15 @@ h5 {
 	margin-bottom: 50px;
 	margin-right: 20px;
 	margin-left: 20px;
+	width: 21%;
+}
+
+.makelab-footer-recent-news{
+	width: 26%;
+}
+
+.makelab-footer-links{
+	width: 10%;
 }
 
 .makelab-footer-col h1{
@@ -553,29 +562,65 @@ h5 {
 }
 
 
+.makelab-footer-logo{
+	max-width: 180px;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+
 .makelab-footer-connect-links-mobile{
 	display: none;
 }
 
+/** RESPONSIVE FOOTER FOR TABLET *******/
+/** Author: Dhruv Jain ****************/
+/** Date: Nov 9, 2018 *****************/
+@media screen and (max-width: 1040px) {  
+		.makelab-footer-col {
+			width: 28%;
+		}
+		.makelab-footer-recent-news {
+			display: none;
+		}
+}
+/*** RESPONSIVE FOOTER FOR TABLET ENDS **/
+
+/** RESPONSIVE FOOTER FOR BETW. PHONE-TABLET *******/
+/** Author: Dhruv Jain ****************/
+/** Date: Nov 9, 2018 *****************/
+@media screen and (max-width: 770px) {
+		.makelab-footer-col {
+			width: 35%;
+		}  
+		.makelab-footer-links{
+			display: none;
+		}
+}
+/*** RESPONSIVE FOOTER FOR BETW. PHONE-TABLET ENDS **/
+
 /** RESPONSIVE FOOTER FOR PHONE *******/
 /** Author: Dhruv Jain ****************/
 /** Date: Nov 7, 2018 *****************/
-@media screen and (max-width: 720px) {  
+@media screen and (max-width: 550px) { 
+		.makelab-footer-links{
+			display: initial;
+		}
         .makelab-footer-col {
-			width: 80%;
+			width: 75%;
 			float: left;
 			margin-bottom: 0.5em;
 		}
-		.recent-news {
+		.makelab-footer-recent-news {
 			display: none;
 		}
 		.makelab-footer-connect-links{
 			display: none;
 		}
-		.footer-logo{
-			width: 60%;
-			margin-left: -2.35em;
-			margin-top: -1.9em;
+		.makelab-footer-logo{
+			float: left;
+			width: 100%;
+			max-width: 180px;
 		}
 		
 		.makelab-footer-connect-links-mobile{
@@ -595,19 +640,6 @@ h5 {
 		}
 }
 /*** RESPONSIVE FOOTER FOR PHONE ENDS **/
-
-/** RESPONSIVE FOOTER FOR TABLET *******/
-/** Author: Dhruv Jain ****************/
-/** Date: Nov 9, 2018 *****************/
-@media screen and (min-width: 721px) and (max-width: 930px) {  
-		.makelab-footer-col {
-			width: 25%;
-		}
-		.recent-news {
-			display: none;
-		}
-}
-/*** RESPONSIVE FOOTER FOR TABLET ENDS **/
 
 
 /**************************************/
