@@ -14,8 +14,8 @@
             {#  | title is built into Django, how handy! see: https://stackoverflow.com/questions/14268342/make-the-first-letter-uppercase-inside-a-django-template #}
 {#            <div class="overlay-title">{{ request.path|title|slice:"1:"|slice:":-1" }}</div>#}
             <div class="overlay-title">
-                {% if page_title %}
-                    {{ page_title }}
+                {% if news.title %}
+                    {{ news.title }}
                 {% else %}
                     {{ request.path|get_url_page|title }}
                 {% endif %}
