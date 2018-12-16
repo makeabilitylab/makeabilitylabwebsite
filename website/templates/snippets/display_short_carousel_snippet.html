@@ -16,6 +16,8 @@
             <div class="overlay-title">
                 {% if news.title %}
                     {{ news.title }}
+                {% elif page_title %}
+                    {{ page_title }}
                 {% else %}
                     {{ request.path|get_url_page|title }}
                 {% endif %}
