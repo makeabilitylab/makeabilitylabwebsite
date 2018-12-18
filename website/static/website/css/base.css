@@ -140,11 +140,11 @@ h5 {
 	border-radius: 0 !important;
 }
 
-.easter-egg-col:hover .overlay-easter-egg {
-    opacity: 1;
+.easter-egg-show {
+    opacity: 1!important;
 }
 
-.easter-egg-col:hover .main-image {
+.easter-egg-hide {
     opacity: 0;
 }
 
