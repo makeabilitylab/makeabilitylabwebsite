@@ -27,44 +27,44 @@
 <div id="content" class="container content-container" data-spy="scroll">
     <div class="row row-adjust-margins" id="sidebar-level">
 	<div class="col-md-2 col-md-push-10">
-	    <div class="row">
-		<h3 class="news-type-label">Quick Info</h3>
-		<p class="quick-info">
-            {% if project.start_date %}
-                <b>Project Date</b>
-                {{project.start_date}} - {% if project.end_date %}{{project.end_date}}{% else %}Present{% endif %}
-                <br>
-            {% endif %}
-            {% with project.get_pi as pi %}
-                {% if pi %}
-                    <b>PIs: </b>
-                    <a href="{% url 'website:member' pi.get_url_name %}">{{pi.get_full_name}}</a> (PI)<br/>
+        <div class="row">
+            <h3 class="news-type-label">Quick Info</h3>
+            <p class="quick-info">
+                {% if project.start_date %}
+                    <b>Project Date</b>
+                    {{project.start_date}} - {% if project.end_date %}{{project.end_date}}{% else %}Present{% endif %}
+                    <br>
                 {% endif %}
-            {% endwith %}
-            {% for copi in project.get_co_pis %}
-                <a href="{% url 'website:member' copi.get_url_name %}">{{copi.get_full_name}}</a> (Co-PI)<br/>
-            {% endfor %}
-            {% if project.sponsors.all %}
-                <b>Sponsors: </b>
-                {% for sponsor in project.sponsors.all %}
-                    <a href="{{sponsor.url}}">
-                        <img src="{{sponsor.icon}}" class="sponsor-icon">
-                        <span class="sponsor-name">{{sponsor.name}}</span>
-                    </a>
-                {% endfor %}
-                <br>
-            {% endif %}
-            {% if project.keywords.all %}
-                <b>Keywords: </b>
-                {% for keyword in project.keywords.all %}
-                    {% if forloop.last %}
-                        {{keyword.keyword}}
-                    {% else %}
-                        {{keyword.keyword}},
+                {% with project.get_pi as pi %}
+                    {% if pi %}
+                        <b>PIs: </b>
+                        <a href="{% url 'website:member' pi.get_url_name %}">{{pi.get_full_name}}</a> (PI)<br/>
                     {% endif %}
+                {% endwith %}
+                {% for copi in project.get_co_pis %}
+                    <a href="{% url 'website:member' copi.get_url_name %}">{{copi.get_full_name}}</a> (Co-PI)<br/>
                 {% endfor %}
-            {% endif %}
-        </p>
+                {% if project.sponsors.all %}
+                    <b>Sponsors: </b>
+                    {% for sponsor in project.sponsors.all %}
+                        <a href="{{sponsor.url}}">
+                            <img src="{{sponsor.icon}}" class="sponsor-icon">
+                            <span class="sponsor-name">{{sponsor.name}}</span>
+                        </a>
+                    {% endfor %}
+                    <br>
+                {% endif %}
+                {% if project.keywords.all %}
+                    <b>Keywords: </b>
+                    {% for keyword in project.keywords.all %}
+                        {% if forloop.last %}
+                            {{keyword.keyword}}
+                        {% else %}
+                            {{keyword.keyword}},
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </p>
 	    </div>
 	    {% if news %}
 	    <!-- Create a row for the well which will contain news from our feeds -->
