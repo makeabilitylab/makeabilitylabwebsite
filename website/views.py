@@ -20,8 +20,7 @@ from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from website.serializers import TalkSerializer, PublicationSerializer, PersonSerializer, ProjectSerializer, \
-    VideoSerializer, NewsSerializer
+from website.serializers import TalkSerializer, PublicationSerializer, PersonSerializer, ProjectSerializer, VideoSerializer, NewsSerializer
 
 max_banners = 7  # TODO: figure out best way to specify these settings... like, is it good to have them up here?
 filter_all_pubs_prior_to_date = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
@@ -562,8 +561,7 @@ def project(request, project_name):
     project_roles = project.project_role_set.order_by('start_date')
 
     # Sort project roles by start date and then title (e.g., professors first) and then last name
-    project_roles = sorted(project_roles, key=lambda pr: (
-    pr.start_date, pr.get_pi_status_index(), pr.person.get_current_title_index(), pr.person.last_name))
+    project_roles = sorted(project_roles, key=lambda pr: (pr.start_date, pr.get_pi_status_index(), pr.person.get_current_title_index(), pr.person.last_name))
 
     project_roles_current = []
     project_roles_past = []
