@@ -136,6 +136,14 @@ h5 {
     
 }
 
+.navbar-white {
+	background-color: white;
+}
+
+.navbar-white .lab-text, .navbar-white a {
+	color: black;
+}
+
 .well {
 	border-radius: 0 !important;
 }
@@ -144,12 +152,13 @@ h5 {
     opacity: 1;
 }
 
-.easter-egg-col:hover .main-image {
+.easter-egg-col:hover > img {
     opacity: 0;
 }
 
 .easter-egg-col {
     position: relative;
+	margin-bottom: 18px;
 }
 
 .overlay-easter-egg {
