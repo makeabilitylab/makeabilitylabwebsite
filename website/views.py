@@ -15,13 +15,13 @@ from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from website.serializers import TalkSerializer, PublicationSerializer
+from website.serializers import *
 
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from website.serializers import TalkSerializer, PublicationSerializer, PersonSerializer, ProjectSerializer, VideoSerializer, NewsSerializer
+from website.serializers import TalkSerializer, PublicationSerializer, PersonSerializer, ProjectSerializer, NewsSerializer, VideoSerializer
 
 max_banners = 7  # TODO: figure out best way to specify these settings... like, is it good to have them up here?
 filter_all_pubs_prior_to_date = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
@@ -36,13 +36,6 @@ class TalkList(APIView):
         talks = Talk.objects.all()
         serializer = TalkSerializer(talks,many=True,context={'request': request})
         return Response(serializer.data)
-
-    def post(self, request, format=None):
-        serializer = TalkSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class TalkDetail(APIView):
     """
@@ -59,38 +52,18 @@ class TalkDetail(APIView):
         serializer = TalkSerializer(talk)
         return Response(serializer.data)
 
-    def put(self, request, pk, format=None):
-        talk = self.get_object(pk)
-        serializer = TalkSerializer(talk, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        talk = self.get_object(pk)
-        talk.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
 class PubsList(APIView):
     '''
-    List all talks, or create a new talk
+    List all pubs, or create a new pubs
     '''
     def get(self, request, format = None):
         pubs = Publication.objects.all()
-        serializer = PublicationSerializer(pubs,many=True, context={'request': request})
+        serializer = PublicationSerializer(pubs,many=True)
         return Response(serializer.data)
-
-    def post(self, request, format=None):
-        serializer = PublicationSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PubsDetail(APIView):
     """
-    Retrieve, update or delete a snippet instance.
+    Retrieve, update or delete a pub instance.
     """
     def get_object(self, pk):
         try:
@@ -102,20 +75,6 @@ class PubsDetail(APIView):
         pub = self.get_object(pk)
         serializer = PublicationSerializer(pub)
         return Response(serializer.data)
-
-    def put(self, request, pk, format=None):
-        pub = self.get_object(pk)
-        serializer = PublicationSerializer(pub, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        pub = self.get_object(pk)
-        pub.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
 
 class PersonList(APIView):
     '''

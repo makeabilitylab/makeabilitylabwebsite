@@ -986,7 +986,7 @@ class Publication(models.Model):
     # authorsOrdered = models.ManyToManyField(Person, through='PublicationAuthorThroughModel')
 
     # The PDF is required
-    pdf_file = models.FileField(upload_to='publications/', null=False, default=None, max_length=255)
+    pdf_file = models.FileField(upload_to='publications', null=False, default=None, max_length=255)
 
     book_title = models.CharField(max_length=255, null=True)
     book_title.help_text = "This is the long-form proceedings title. For example, for UIST, this would be 'Proceedings of the 27th Annual ACM Symposium on User " \
