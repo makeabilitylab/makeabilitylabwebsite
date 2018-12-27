@@ -47,10 +47,15 @@
 		    <b>Sponsors: </b>
 		    {% endifequal %}
 		    {% for sponsor in project.sponsors.all %}
-		    <a href="{{sponsor.url}}">
-			<img src="{{sponsor.icon}}" class="sponsor-icon">
-			<span class="sponsor-name">{{sponsor.name}}</span>
-		    </a>
+                {%  if sponsor.url %}
+                    <a href="{{sponsor.url}}" target="_blank">
+                        <img src="{{sponsor.icon}}" class="sponsor-icon">
+                        <span class="sponsor-name">{{sponsor.name}}</span>
+                    </a>
+                {% else %}
+                    <img src="{{sponsor.icon}}" class="sponsor-icon">
+                    <span class="sponsor-name">{{sponsor.name}}</span>
+                {% endif %}
 		    {% endfor %}
 		    <br/>
 		    <b>Keywords: </b>
