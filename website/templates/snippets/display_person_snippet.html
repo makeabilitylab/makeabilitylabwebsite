@@ -22,7 +22,7 @@
     </a>
     <div class="item-info" style="background:white">
         <a href="{% url 'website:member' member.person.url_name %}">
-            <h5>{{ member.person.get_full_name }}</h5>
+            <h5 class="easter-egg-name">{{ member.person.get_full_name }}</h5>
         </a>
         <p class="no-margin">{{ member.get_start_date_short }} - {{ member.get_end_date_short }}</p>
 
