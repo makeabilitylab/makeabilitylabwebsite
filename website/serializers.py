@@ -7,6 +7,21 @@ import requests
 import glob
 import shutil
 
+class ProjectSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        test_p = Project.objects.filter(name=validated_data.get('name'))
+        if len(test_p) > 0:
+            return test_p
+        else:
+            p = Project.objects.creat(**validated_data)
+            p.save()
+            return p
+    class Meta:
+        model = Project
+        fields = '__all__'
+        depth = 10
+
+
 class PersonSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         test_p = Person.objects.filter(first_name=validated_data.get('first_name'), last_name=validated_data.get('last_name'))
@@ -31,7 +46,7 @@ class PersonSerializer(serializers.ModelSerializer):
 
             p.easter_egg.name = os.path.join('person', p.easter_egg.name.split('/')[-1])
             new_path_ee = os.path.join(settings.MEDIA_ROOT, p.easter_egg.name)
-            shutil.move(initial_path_ee, new_path_ee)
+            shutil.copy(initial_path_ee, new_path_ee)
             p.save()
             return p
 
@@ -40,6 +55,28 @@ class PersonSerializer(serializers.ModelSerializer):
         fields = '__all__'
         depth = 10
 
+
+
+class VideoSerializer(serializers.ModelSerializer):
+    project = ProjectSerializer()
+    def create(self, validated_data):
+        test_v = Video.objects.filter(video_url=validated_data.get('video_url'))
+        if len(test_v) > 0:
+            return test_v
+        else:
+            project = validated_data.pop('projects')
+            serializer = ProjectSerializer(data=project)
+            serializer.is_valid()
+            serializer.save()
+
+            p = Project.objects.get(name=project['name'])
+            v = Video.objects.create(project=p, **validated_data)
+            v.save()
+            return v
+    class Meta:
+        model = Video
+        fields = '__all__'
+        depth = 10
 '''
 https://stackoverflow.com/questions/38366605/exclude-a-field-from-django-rest-framework-serializer
 to exclude a field from serialization, use the exclude feature
@@ -63,11 +100,31 @@ class PublicationSerializer(serializers.ModelSerializer):
         serializer = PersonSerializer(data=authors, many=True)
         serializer.is_valid()
         serializer.save()
+
+        #video = validated_data.pop('video')
+        #serializer = VideoSerializer(data=video)
+        #serializer.is_valide()
+        #serializer.save()
+
         pdf_file = validated_data.pop('pdf_file')
         pdf_name = pdf_file.name
 
+        #thumbnail_file = validated_data.pop('thumbnail')
+        #thumbnail_name = thumbnail_file.name
+
         pdf = File(open(pdf_name, 'rb'))
-        p = Publication.objects.create(pdf_file=pdf, **validated_data)
+        #thumbnail = File(open(thumbnail_name,'rb'))
+
+        thumbnail_name = pdf_name.split('/')[-1].split('.')[0]
+        thumbnail_dir = os.path.join('media', 'temp', 'thumbnails')
+        thumbnail_path = ''
+        for file in os.listdir(thumbnail_dir):
+            if thumbnail_name in file:
+                thumbnail_path = os.path.join(thumbnail_dir, file)
+        thumbnail = File(open(thumbnail_path, 'rb'))
+
+        #v = Video.objects.get(video_url=video['video_url'])
+        p = Publication.objects.create(pdf_file=pdf, thumbnail=thumbnail, **validated_data)
         pdf.close()
         for author in authors:
             person = Person.objects.get(first_name=author['first_name'], last_name=author['last_name'])
@@ -76,12 +133,18 @@ class PublicationSerializer(serializers.ModelSerializer):
         initial_path = p.pdf_file.path
         p.pdf_file.name = os.path.join('publications', p.pdf_file.name.split('/')[-1])
         new_path = os.path.join(settings.MEDIA_ROOT, p.pdf_file.name)
-        shutil.copy(initial_path, new_path)
+        try:
+            shutil.copy(initial_path, new_path)
+        except shutil.Error:
+            pass
 
         initial_path_tb = p.thumbnail.path
         p.thumbnail.name = os.path.join('publications', 'images', p.thumbnail.name.split('/')[-1])
         new_path_tb = os.path.join(settings.MEDIA_ROOT, p.thumbnail.name)
-        shutil.copy(initial_path_tb, new_path_tb)
+        try:
+            shutil.copy(initial_path_tb, new_path_tb)
+        except shutil.Error:
+            pass
         
         p.save()
         #for f in glob.glob('./media/temp/*.pdf'):
@@ -102,6 +165,7 @@ class PublicationSerializer(serializers.ModelSerializer):
         instance.pdf_file =validated_data.get('pdf_file',instance.pdf_file)
         instance.book_title =validated_data.get('book_title',instance.book_title)
         instance.book_title_short =validated_data.get('book_title_short',instance.book_title_short)
+        instance.thumbnail=validated_data.get('thumbnail', instance.thumbnail)
         instance.date =validated_data.get('date',instance.date)
         instance.num_pages =validated_data.get('num_pages',instance.num_pages)
         instance.projects =validated_data.get('projects',instance.projects)
@@ -197,18 +261,6 @@ class TalkSerializer(serializers.ModelSerializer):
         depth = 10
 
 
-class ProjectSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Project
-        fields = '__all__'
-        depth = 10
-
-class VideoSerializer(serializers.ModelSerializer):
-    project = ProjectSerializer()
-    class Meta:
-        model = Video
-        fields = '__all__'
-        depth = 10
 
 class NewsSerializer(serializers.ModelSerializer):
     author = PersonSerializer()

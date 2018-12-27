@@ -17,15 +17,20 @@ class Command(BaseCommand):
         response = requests.get(url).content
         stream = BytesIO(response)
         data = JSONParser().parse(stream)
+
         temp_dir = os.path.abspath('.')
         temp_dir = os.path.join(temp_dir, 'media', 'temp')
-        if not os.path.isdir(temp_dir):
-            os.mkdir(temp_dir)
+
+        # Make a set of temp folders to store media files for import
+        if not os.path.exists(temp_dir):
+            os.makedirs(temp_dir)
         temp_dir_image = os.path.abspath('.')
         temp_dir_image = os.path.join('media', 'person')
-        if not os.path.isdir(temp_dir_image):
-            os.mkdir(temp_dir_image)
-        temp_dir_thumbnails = os.path.join(temp_dir, 'media', 'temp')
+        if not os.path.exists(temp_dir_image):
+            os.makedirs(temp_dir_image)
+        temp_dir_thumbnails = os.path.join(temp_dir, 'thumbnails')
+        if not os.path.exists(temp_dir_thumbnails):
+            os.makedirs(temp_dir_thumbnails)
 
         #raw file, pdf_file
         print('preprocessing data...')

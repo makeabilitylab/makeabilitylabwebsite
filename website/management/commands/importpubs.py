@@ -23,23 +23,35 @@ class Command(BaseCommand):
         data = JSONParser().parse(stream)
         temp_dir = os.path.abspath('.')
         temp_dir = os.path.join(temp_dir, 'media', 'temp')
+
+        #Make a set of temp folders to store media files for import
         if not os.path.exists(temp_dir):
             os.makedirs(temp_dir)
         temp_dir_image = os.path.abspath('.')
         temp_dir_image = os.path.join('media', 'person')
-        temp_dir_thumbnails = os.path.join(temp_dir, 'media', 'temp')
+        if not os.path.exists(temp_dir_image):
+            os.makedirs(temp_dir_image)
+        temp_dir_thumbnails = os.path.join(temp_dir, 'thumbnails')
+        if not os.path.exists(temp_dir_thumbnails):
+            os.makedirs(temp_dir_thumbnails)
 
 
         print('preprocessing data')
         for item in data:
+            #fetch the url of the binary file
             url = item['pdf_file']
+            #obtain the title from the last part of the url
             title = url.split('/')[-1]
             print(title)
+            #define a request object for that url
             r = requests.get(url, stream=True)
+            #create a file path for the file locally
             file_path = os.path.join(temp_dir, title)
+            #write to that file path and download the file
             with open(file_path, 'wb') as f:
                 f.write(r.content)
 
+            #repeat process for all binary files
             r_tb = requests.get(item['thumbnail'], stream=True)
             title_tb = item['thumbnail'].split('/')[-1]
             file_path_tb = os.path.join(temp_dir_thumbnails, title_tb)
@@ -71,6 +83,7 @@ class Command(BaseCommand):
                 object['easter_egg'] = File(open(ee_file_path, 'rb'))
             #open the pdf file and pass it in to the JSON
             item['pdf_file'] = File(open(os.path.join('.', 'media', 'temp', title), 'rb'))
+            item['thumbnail'] = File(open(os.path.join('.', 'media', 'temp', 'thumbnails', title_tb), 'rb'))
         #initialize the serializer with many set to True to deserialize multiple objects
         serializer = PublicationSerializer(data=data, many=True)
         print('saving data...')
@@ -80,7 +93,8 @@ class Command(BaseCommand):
         #save method will be called for every object created by the data in the serializer
         serializer.save()
         #delete temp
-        shutil.rmtree(temp_dir)
+        shutil.rmtree(temp_dir, ignore_errors=True)
+        print('finished.')
 
 
 

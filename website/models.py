@@ -303,9 +303,11 @@ class Person(models.Model):
     def save(self, *args, **kwargs):
         dir = os.path.abspath('.')
         # requires the volume mount from docker
-        dir = os.path.join('media', 'images', 'StarWarsFiguresFullSquare', 'Rebels')
-        star_wars_dir = os.path.join(dir, get_random_starwars(dir))
-        image_choice = File(open(star_wars_dir, 'rb'))
+        image_choice = self.easter_egg
+        if image_choice is None:
+            dir = os.path.join('media', 'images', 'StarWarsFiguresFullSquare', 'Rebels')
+            star_wars_dir = os.path.join(dir, get_random_starwars(dir))
+            image_choice = File(open(star_wars_dir, 'rb'))
         # automatically set url_name field
 
         # Substitute any common special characters. I haven't found a better automatic way to do

@@ -50,7 +50,7 @@
             ],
             "date": {{ pub.date|jsdate }},
             "pdf": "../../media/{{ pub.pdf_file }}",
-            "video_url": "{{ pub.video.video_url }}",
+            "video_url": {% if pub.video.video_url is not none %}"{{ pub.video.video_url }}"{% else %}null{% endif %},
             "thumbnail": "{% thumbnail pub.thumbnail 300x0 detail %}",
             "venue": "{{ pub.book_title_short }}",
             "pub_type": "{{ pub.pub_venue_type }}",
