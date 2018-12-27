@@ -37,46 +37,46 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xs-4 col-sm-6 col-md-3">
-                    <h3 class="news-type-label">{{ person.get_full_name }}</h3>
+                <div class="col-sm-12 col-md-8">
+                    <h3 class="member-title">{{ person.get_full_name }}</h3>
                     {% with person.get_latest_position as position %}
                         {% if position %}
-                            {{ position.title }}
-                            {% if position.is_high_school %}
-                            {% else %}
-                                , {{ position.get_department_abbreviated }}
-                            {% endif %}
+                            <p class="person-title-text">
+                                {{ position.title }}
+                                {% if position.is_high_school %}
+                                {% else %}
+                                    , {{ position.get_department_abbreviated }}
+                                {% endif %}
                             <br/>
-                            {{ position.school }}<br/>
+                                {{ position.school }}
+                            </p>
                         {% endif %}
                     {% endwith %}
-                    {% if person.email %}
-                        <a href="mailto:{{ person.email }}">
-                            <img src="{% static 'website/img/email.png' %}" class="header-icon">
-                            <span class="header-link">email</span><br/>
-                        </a>
-                    {% endif %}
-                    {% if person.personal_website %}
-                        <a href="{{ person.personal_website }}">
-                            <img src="{% static 'website/img/link.png' %}" class="header-icon">
-                            <span class="header-link">website</span><br/>
-                        </a>
-                    {% endif %}
-                    {% if person.github %}
-                        <a href="{{ person.github }}">
-                            <img src="{% static 'website/img/github.png' %}" class="header-icon">
-                            <span class="header-link">github</span><br/>
-                        </a>
-                    {% endif %}
-                    {% if person.twitter %}
-                        <a href="{{ person.twitter }}">
-                            <img src="{% static 'website/img/twitter.png' %}" class="header-icon">
-                            <span class="header-link">twitter</span><br/>
-                        </a>
-                    {% endif %}
-                </div>
-                <div class="col-xs-8 col-sm-12 col-md-6 about-person">
-                    {{ person.bio }}
+                    <div class="icon-housing">
+                        {% if person.email %}
+                            <a href="mailto:{{ person.email }}">
+                                <img src="{% static 'website/img/email.png' %}" class="header-icon">
+                            </a>
+                        {% endif %}
+                        {% if person.personal_website %}
+                            <a href="{{ person.personal_website }}" target="_blank">
+                                <img src="{% static 'website/img/link.png' %}" class="header-icon">
+                            </a>
+                        {% endif %}
+                        {% if person.github %}
+                            <a href="{{ person.github }}" target="_blank">
+                                <img src="{% static 'website/img/github.png' %}" class="header-icon">
+                            </a>
+                        {% endif %}
+                        {% if person.twitter %}
+                            <a href="{{ person.twitter }}" target="_blank">
+                                <img src="{% static 'website/img/twitter.png' %}" class="header-icon">
+                            </a>
+                        {% endif %}
+                    </div>
+                    <p class="person-bio-text">
+                        {{ person.bio }}
+                    </p>
                 </div>
             </div>
         </div>
