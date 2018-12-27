@@ -43,7 +43,7 @@
     outline: 0;
 }
 
-.navbar-custom a {
+.navbar-custom a, .navbar-custom .nav li.active a:hover, .navbar-toggle {
     color: #fff;
 }
 
@@ -76,12 +76,12 @@
     font-family: roboto-bold;
 }
 
-.navbar-custom .nav li.active a:hover {
-    color: #fff;
+.navbar-white .navbar-brand img {
+    content:url("/static/website/img/logos/makelab_logo_black_no_text_100x67.png");
 }
 
-.navbar-toggle {
-    color: #fff;
+.navbar-white .navbar-toggle {
+    color: black;
 }
 
 @media(min-width:768px) {
@@ -107,5 +107,13 @@
     .navbar-nav>li>a {
         padding-top: 10px;
         padding-bottom: 10px;
+    }
+
+    .navbar-white.top-nav-collapse .lab-text, .navbar-white.top-nav-collapse a {
+        color: white;
+    }
+
+    .navbar-white.top-nav-collapse .navbar-brand img {
+        content:url("/static/website/img/logos/makelab_logo_white_no_text_100x67.png");
     }
 }

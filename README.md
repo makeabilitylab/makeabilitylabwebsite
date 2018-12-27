@@ -7,6 +7,7 @@ This repository contains the Makeability Lab's website, which is written in Djan
 * [Dev Prereqs](#dev-prereqs)
 * [Docker Installation (Mac)](#docker-installation-mac)
 * [Docker Installation (Windows)](#docker-installation-windows)
+* [Adding Content Manually](#adding-content-manually)
 * [Bootstrapping Content](#bootstrapping-content)
 * [Test and Production Servers](#test-and-production-servers)
 * [Deploying Code to UW Servers](#deploying-code-to-uw-servers)
@@ -165,6 +166,19 @@ NOTE: If you haven't created a superuser yet, you will need to do so through ter
 5. Click the `+` button again. Under Host path, click the `...` button. Select the media directory. Select the Container path to be `/code/media`. (Windows users may need to switch the Container path to `\code\media`).
 6. Right click on `pycharm-web-container`. Click 'Start container' to run and 'Stop container' to stop the local server. (The attached consoles isn't interactive, so ctrl+c doesn't work here)
 
+# Adding Content Manually
+Content must be added manually until the bootstrapping code is fixed.
+
+NOTE: If you haven't created a superuser yet, you will need to do so through terminal. Refer to Step 6 in the Docker Installation for more information.
+
+1. Once the website is running on your local machine, go to `localhost:8000/admin` in your browser. This will take you to the Django admin interface.
+2. Login using the credentials of the superuser created in the previous step.
+3. Once logged in, you will see two main headers. Listed under the "WEBSITE" header, there will be a number of folders relating to the various types of content that make up the Makeability website.
+4. Chose the folder corresponding to the content you wish to upload. Inside the folder, in the upper right of the screen, there will be an ADD button.
+5. Follow what information is needed to create that content for the website in your local development environment.
+
+TIP: Save time by only adding the content needed to fix the issue you are working on.
+
 # Bootstrapping Content
 To support quickly adding content for development, we have two automated tools that download data from Jon’s UMD website. 
 
@@ -179,7 +193,10 @@ Alternate commands:
 A few notes about this. 
 * All publications/talks are downloaded from https://makeabilitylab.cs.washington.edu/ so they must already exist on the official site before being added in this way.
 * Authors added using this method are not assigned a position, and so they won’t appear on the People page until one is manually added. However they will be assigned a star wars image.
-* Publications without a thumbnail will be 
+* The publications will not allow for duplication, so any publications with the same title as an existing one are ignored. This is not true for talks.
+* Publications with no PDF are ignored. Talks with no PDF and no slide deck are ignored, however talks with only a slide deck will be converted automatically to PDF’s using unoconv (This takes a long time)
+* Projects which are specified in the bibtex/xml by project, will be created if necessary. Anyone who is an author or speaker will be added to associated projects, and any keywords from the paper will also be assigned to the project. The above is true of assigned project_umbrellas as well.
+ 
 
 Importantly, we will have to revise how we do this bootstrapping because Jon's UMD site is going away and because he no longer wants to maintain his own separate backend from the Makeability Lab website (in other words, the ML website will be the sole source of data thus eliminating the source of the bootstrap content). See Issue https://github.com/jonfroehlich/makeabilitylabwebsite/issues/420.
 

@@ -47,10 +47,15 @@
 		    <b>Sponsors: </b>
 		    {% endifequal %}
 		    {% for sponsor in project.sponsors.all %}
-		    <a href="{{sponsor.url}}">
-			<img src="{{sponsor.icon}}" class="sponsor-icon">
-			<span class="sponsor-name">{{sponsor.name}}</span>
-		    </a>
+                {%  if sponsor.url %}
+                    <a href="{{sponsor.url}}" target="_blank">
+                        <img src="{{sponsor.icon}}" class="sponsor-icon">
+                        <span class="sponsor-name">{{sponsor.name}}</span>
+                    </a>
+                {% else %}
+                    <img src="{{sponsor.icon}}" class="sponsor-icon">
+                    <span class="sponsor-name">{{sponsor.name}}</span>
+                {% endif %}
 		    {% endfor %}
 		    <br/>
 		    <b>Keywords: </b>
@@ -152,7 +157,7 @@
     <div class="row no-margin" id="below-sidebar">
         <div class="row row-adjust-margins">
             {% if videos %}
-            <h3 class="news-type-lable"><b>Recent Videos</b></h3>
+            <h3 class="news-type-lable">Recent Videos</h3>
             {% endif %}
             {% for video in videos %}
                 {% include "snippets/display_video_snippet.html" %}
@@ -160,7 +165,7 @@
         </div>
         <div class="row row-adjust-margins">
             {% if talks %}
-                <h3 class="news-type-label"><b>Talks</b></h3>
+                <h3 class="news-type-label">Talks</h3>
             {% endif %}
 
             {% for talk in talks %}

@@ -10,7 +10,6 @@ from django.utils.timezone import utc
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import logging
 
-
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -28,13 +27,15 @@ filter_all_pubs_prior_to_date = datetime.date(2012, 1, 1)  # Date Makeability La
 
 _logger = logging.getLogger(__name__)
 
+
 class TalkList(APIView):
     '''
     List all talks, or create a new talk
     '''
-    def get(self, request, format = None):
+
+    def get(self, request, format=None):
         talks = Talk.objects.all()
-        serializer = TalkSerializer(talks,many=True,context={'request': request})
+        serializer = TalkSerializer(talks, many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request, format=None):
@@ -44,10 +45,12 @@ class TalkList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class TalkDetail(APIView):
     """
     Retrieve, update or delete a snippet instance.
     """
+
     def get_object(self, pk):
         try:
             return Talk.objects.get(pk=pk)
@@ -72,13 +75,15 @@ class TalkDetail(APIView):
         talk.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 class PubsList(APIView):
     '''
     List all talks, or create a new talk
     '''
-    def get(self, request, format = None):
+
+    def get(self, request, format=None):
         pubs = Publication.objects.all()
-        serializer = PublicationSerializer(pubs,many=True, context={'request': request})
+        serializer = PublicationSerializer(pubs, many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request, format=None):
@@ -88,10 +93,12 @@ class PubsList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class PubsDetail(APIView):
     """
     Retrieve, update or delete a snippet instance.
     """
+
     def get_object(self, pk):
         try:
             return Publication.objects.get(pk=pk)
@@ -121,15 +128,18 @@ class PersonList(APIView):
     '''
     List all talks, or create a new talk
     '''
-    def get(self, request, format = None):
+
+    def get(self, request, format=None):
         people = Person.objects.all()
-        serializer = PersonSerializer(people,many=True,context={'request': request})
+        serializer = PersonSerializer(people, many=True, context={'request': request})
         return Response(serializer.data)
+
 
 class PersonDetail(APIView):
     """
     Retrieve, update or delete a snippet instance.
     """
+
     def get_object(self, pk):
         try:
             return Person.objects.get(pk=pk)
@@ -141,19 +151,23 @@ class PersonDetail(APIView):
         serializer = PersonSerializer(person)
         return Response(serializer.data)
 
+
 class NewsList(APIView):
     '''
     List all talks, or create a new talk
     '''
-    def get(self, request, format = None):
+
+    def get(self, request, format=None):
         news = News.objects.all()
-        serializer = NewsSerializer(news,many=True,context={'request': request})
+        serializer = NewsSerializer(news, many=True, context={'request': request})
         return Response(serializer.data)
+
 
 class NewsDetail(APIView):
     """
     Retrieve, update or delete a snippet instance.
     """
+
     def get_object(self, pk):
         try:
             return News.objects.get(pk=pk)
@@ -165,19 +179,23 @@ class NewsDetail(APIView):
         serializer = NewsSerializer(person)
         return Response(serializer.data)
 
+
 class VideoList(APIView):
     '''
     List all talks, or create a new talk
     '''
-    def get(self, request, format = None):
+
+    def get(self, request, format=None):
         videos = Video.objects.all()
-        serializer = VideoSerializer(videos,many=True,context={'request': request})
+        serializer = VideoSerializer(videos, many=True, context={'request': request})
         return Response(serializer.data)
+
 
 class VideoDetail(APIView):
     """
     Retrieve, update or delete a snippet instance.
     """
+
     def get_object(self, pk):
         try:
             return Video.objects.get(pk=pk)
@@ -189,19 +207,23 @@ class VideoDetail(APIView):
         serializer = VideoSerializer(video)
         return Response(serializer.data)
 
+
 class ProjectList(APIView):
     '''
     List all talks, or create a new talk
     '''
-    def get(self, request, format = None):
+
+    def get(self, request, format=None):
         projects = Project.objects.all()
-        serializer = ProjectSerializer(projects,many=True,context={'request': request})
+        serializer = ProjectSerializer(projects, many=True, context={'request': request})
         return Response(serializer.data)
+
 
 class ProjectDetail(APIView):
     """
     Retrieve, update or delete a snippet instance.
     """
+
     def get_object(self, pk):
         try:
             return Project.objects.get(pk=pk)
@@ -212,6 +234,7 @@ class ProjectDetail(APIView):
         project = self.get_object(pk)
         serializer = ProjectSerializer(project)
         return Response(serializer.data)
+
 
 def index(request):
     news_items_num = 7  # Defines the number of news items that will be selected
@@ -347,7 +370,7 @@ def people(request):
         'map_status_to_title_to_people': map_status_to_title_to_people,
         'map_status_to_num_people': map_status_to_num_people,
         'map_status_to_headers': map_status_to_headers,
-        'map_header_text_to_header_name':  map_header_text_to_header_name,
+        'map_header_text_to_header_name': map_header_text_to_header_name,
         'sorted_titles': sorted_titles,
         'positions': Position.objects.all(),
         'banners': displayed_banners,
@@ -454,6 +477,7 @@ def projects(request):
                'debug': settings.DEBUG}
     return render(request, 'website/projects.html', context)
 
+
 ## Helper functions for views ##
 def sort_projects_by_most_recent_artifact(projects, include_projects_with_no_artifacts=False):
     print(projects)
@@ -514,6 +538,7 @@ def sort_projects_by_most_recent_artifact(projects, include_projects_with_no_art
     # # END DEBUG
     #
     # return [item['proj'] for item in sorted_list]
+
 
 def project(request, project_name):
     """
@@ -608,6 +633,7 @@ def project(request, project_name):
 
     return render(request, 'website/project.html', context)
 
+
 def news_listing(request):
     all_banners = Banner.objects.filter(page=Banner.FRONTPAGE)
     displayed_banners = choose_banners(all_banners)
@@ -677,6 +703,7 @@ def filter_incomplete_projects(projects):
             filtered.append(project)
     return filtered
 
+
 '''
 def filter_no_pubs_projects(projects):
     filtered = []
@@ -685,6 +712,7 @@ def filter_no_pubs_projects(projects):
             filtered.append(project)
     return filtered
 '''
+
 
 # Get the page views per page including their first and second level paths
 def get_ind_pageviews(service, profile_id):
@@ -779,3 +807,11 @@ def choose_banners(banners):
             selected_banners.append(banner)
 
     return selected_banners
+
+
+def faq(request):
+    all_banners = Banner.objects.filter(page=Banner.PEOPLE)
+    displayed_banners = choose_banners(all_banners)
+    context = {'banners': displayed_banners,
+               'debug': settings.DEBUG}
+    return render(request, "website/faq.html", context)
