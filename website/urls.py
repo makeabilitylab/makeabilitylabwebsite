@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^api/video/(?P<pk>[0-9])/$', views.VideoDetail.as_view(), name='api_video'),
     url(r'^api/project/$', views.ProjectList.as_view(), name='api_all_projects'),
     url(r'^api/project/(?P<pk>[0-9])/$', views.ProjectDetail.as_view(), name='api_project'),
+    url(r'^faq/$', views.faq, name='faq'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
