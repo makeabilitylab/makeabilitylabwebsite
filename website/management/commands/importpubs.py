@@ -94,6 +94,9 @@ class Command(BaseCommand):
         serializer.save()
         #delete temp
         shutil.rmtree(temp_dir, ignore_errors=True)
+        os.rmdir(temp_dir_thumbnails)
+        os.rmdir(temp_dir)
+        os.rmdir()
         print('finished.')
 
 
