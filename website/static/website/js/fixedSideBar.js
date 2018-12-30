@@ -88,10 +88,6 @@
 		    		sideBar.css('position', 'absolute');
 		    		sideBar.css ('top', initOffset);
 		    		sideBar.css('left', 0);
-		    	} else {
-		    		sideBar.css('position', 'absolute');
-		    		sideBar.css('top', bottomOffset) ;
-		    		sideBar.css('left', 0);
 		    	}
 		    }
 	}

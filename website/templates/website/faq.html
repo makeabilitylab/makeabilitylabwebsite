@@ -1,0 +1,274 @@
+{% extends "website/base.html" %}
+
+{% block pagetitle %}FAQ{% endblock %}
+
+{% load staticfiles %}
+{% load thumbnail %}
+{% load cropping %}
+{% load ml_tags %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{% static 'website/css/faq.css' %}">
+{% endblock %}
+
+{% block external_scripts %}
+    <script src="{% static '/website/js/faq.js' %}"></script>
+{% endblock %}
+
+{% block maincarousel %}
+    {% include "snippets/display_short_carousel_snippet.html" %}
+{% endblock %}
+
+{% block content %}
+    <div class="container faq">
+        <div class="row">
+            <div class="col-md-3">
+                <div id="faq-panel" class="panel panel-default">
+                    <div class="panel-heading">
+                        FAQ
+                    </div>
+                    <div class="panel-body">
+                        <ul id="questions-list">
+                            <div class="panel-grouping">
+                                <li class="topic">
+                                    <a>Getting A PHD In HCI At UMD</a>
+                                    <span class="plusminus">+</span>
+                                </li>
+                                <div id="phd-subtopics" class="subtopics">
+                                    <li>
+                                        <a href="#what-is-the-umd-hcim-(hci-masters)-program?">
+                                            What is the UMD HCIM (HCI masters) program?
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#i'm-considering-hci-at-umd-as-a-graduate-student,-should-i-apply-to-cs-or-the-ischool?">
+                                            I'm considering HCI at UMD as a graduate student, should I apply to cs or the iSchool?
+                                        </a>
+                                    </li>
+                                </div>
+                            </div>
+                            <div class="panel-grouping">
+                                <li class="topic">
+                                    <a>Undergraduate Research</a>
+                                    <span class="plusminus">+</span>
+                                </li>
+                                <div id="undergrad-subtopics" class="subtopics">
+                                    <li>
+                                        <a href="#should-i-get-a-ms-degree-before-applying-for-a-phd?">
+                                            Should I get a ms degree before applying for a PhD?
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#i-looked-through-the-cs-grad-course-catalog,-and-i-didn't-see-a-lot-of-hci-courses...">
+                                            I looked through the cs grad course catalog, and I didn't see a lot of HCI courses...
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#what-are-the-cs-grad-course-requirements?">
+                                            What are the cs grad course requirements?
+                                        </a>
+                                    </li>
+                                </div>
+                            </div>
+                            <div class="panel-grouping">
+                                <li class="topic">
+                                    <a>MISC</a>
+                                    <span class="plusminus">+</span>
+                                </li>
+                                <div id="phd-subtopics" class="subtopics">
+                                    <li>
+                                        <a href="#how-can-i-get-involved-in-the-hcil?">
+                                            How can I get involved in the HCIL?
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#i-sent-you-an-email-and-you-did-not-respond,-what's-the-deal?!">
+                                            I sent you an email and you did not respond, what's the deal?!
+                                        </a>
+                                    </li>
+                                </div>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9 main-content">
+                <div class="topic-items topic-items-active" id="getting-a-phd-in-hci-at-umd">
+                    <h2>Getting A PHD In HCI At UMD</h2>
+                    <div class="faq-item" id="what-is-the-umd-hcim-(hci-masters)-program?">
+                        <h2 class="question">
+                            what is the umd hcim (hci masters) program?
+                        </h2>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <p>
+                                    The interdisciplinary Master of Science in Human-Computer Interaction (HCIM) program is
+                                    offered through the iSchool (College of Information Studies) and not the Computer
+                                    Science department. The HCIM has two objectives: (i) to prepare students to become HCI
+                                    leaders in industry and government and/or (ii) to prepare students to be successful in
+                                    HCI-related PhD programs. Thus, HCIM enrollees can choose either a capstone project
+                                    (aimed more at the former) or the MS thesis track (aimed more at the latter). As a CS
+                                    professor, I am not involved in organizing or directing the HCIM; however, HCIM students
+                                    can take my courses (e.g., CMSC838). Note: to be clear, you do not need a MS degree
+                                    (or an HCIM degree) to enroll in the CS PhD program. The HCIM and CS degrees are
+                                    completely independent.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="faq-item" id="i'm-considering-hci-at-umd-as-a-graduate-student,-should-i-apply-to-cs-or-the-ischool?">
+                        <h2 class="question">
+                            I'M CONSIDERING HCI AT UMD AS A GRADUATE STUDENT, SHOULD I APPLY
+                            TO CS OR THE ISCHOOL?
+                        </h2>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <p>
+                                    This is a good question. The answer, really, is that it depends on your
+                                    skills/background and on your future goals. If you are considering them both, I
+                                    suggest applying to both. More info below.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="topic-items topic-items-active" id="undergraduate-research">
+                    <h2>Undergraduate Research</h2>
+                    <div class="faq-item" id="should-i-get-a-ms-degree-before-applying-for-a-phd?">
+                        <h2 class="question">
+                            SHOULD I GET A MS DEGREE BEFORE APPLYING FOR A PHD?
+                        </h2>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <p>
+                                    This is completely up to you. It's not necessary. You may want to apply to MS programs
+                                    first to get a taste of research and to help decide if you want to pursue a
+                                    research-oriented career and get a PhD. This is what I did. I enrolled at the University
+                                    of California, Irvine as an MS student and worked with Professor Paul Dourish before
+                                    applying to PhD programs and eventually attending the University of Washington. Note:
+                                    most MS programs are professionally oriented rather than research oriented. So, be sure
+                                    to investigate each program closely. No matter what university you attend, if you have
+                                    ambitions to earn your doctorate, the most important thing is the kind of research you
+                                    do during your MS, your research productivity during that time, and who you work with
+                                    (e.g., your MS advisor).
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="faq-item" id="i-looked-through-the-cs-grad-course-catalog,-and-i-didn't-see-a-lot-of-hci-courses...">
+                        <h2 class="question">
+                            I LOOKED THROUGH THE CS GRAD COURSE CATALOG, AND I DIDN'T SEE A LOT OF HCI COURSES...
+                        </h2>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <p>
+                                    A keen observation! I recently received the following email from a potential grad
+                                    student interested in our CS grad program:
+                                </p>
+                                <blockquote>
+                                    The list of courses states that "you must take 7 600-800 level courses spread over at
+                                    least 5 areas, with no more than 3 in any one area". So, considering this rule, there
+                                    is just one course available in the group "Software Engineering/Programming
+                                    Languages/HCI" that is from the HCI area, which is CMSC734 - Information Visualization.
+                                </blockquote>
+                                <p>
+                                    Yes, this is currently true. Is it a bug or is it a feature? Let's discuss. :) First, a
+                                    bit of context: I arrived in January 2012 so my new grad course, CMSC838f 'Tangible
+                                    Interactive Computing' (e.g., Fall 2012 offering), is not yet a qualifying course. I
+                                    plan to make it one in the future. You can also take CMSC434 'Intro to HCI' and use this
+                                    towards your MS coursework requirement (though not your PhD, see above).
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="faq-item" id="what-are-the-cs-grad-course-requirements?">
+                        <h2 class="question">
+                            WHAT ARE THE CS GRAD COURSE REQUIREMENTS?
+                        </h2>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <p>
+                                    For an MS degree, you must complete at least 30 credit hours of approved course work
+                                    with a B average. At least 21 credits must be in computer science. Most classes are 3
+                                    credits, so this results in ~10 courses. For more info, see the official MS Degree
+                                    Requirements page. Note: I generally prefer that all graduate students working with me
+                                    take (or audit) CMSC434 "Intro to HCI" (e.g., Spring 2012 offering, Spring 2013 offering,
+                                    Fall 2013 offering, Fall 2014 offering) unless they have previously taken an intro HCI
+                                    course. CMSC434 can be counted towards an MS but 400 level classes do not count towards
+                                    the PhD.
+                                </p>
+                                <p>
+                                    For a PhD degree, you must take seven 600-800 level courses spread over at least five
+                                    breadth areas, with no more than three in any one area. You must obtain at least five
+                                    A's and two B's. Why? Because rather than have a one-day or two-day long qualifying exam
+                                    at the end of the coursework requirement (like some other universities), we give
+                                    "qualifying exams" at the end of each semester for the content you learned in that
+                                    course. The University of Washington had a similar approach when I was there as a
+                                    graduate student. The goal is to provide all of our graduate students with a strong
+                                    understanding of many of the core disciplines in CS. This can be truly beneficial,
+                                    see below. In addition, to the seven 600-800 courses, you must take two additional
+                                    3-credit 600-800 level courses, which can be in CS or in some other discipline
+                                    (e.g., psychology, sociology, environmental science). This simply requires advisor
+                                    approval. For more info, see the official PhD Degree Requirements page.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="topic-items topic-items-active" id="misc">
+                    <h2>MISC</h2>
+                    <div class="faq-item" id="how-can-i-get-involved-in-the-hcil?">
+                        <h2 class="question">
+                            HOW CAN I GET INVOLVED IN THE HCIL?
+                        </h2>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <p>
+                                    If you're a student (undergraduate or graduate), faculty member, or research
+                                    scientist at the University of Maryland and interested in HCI, we'd love to have you
+                                    join our HCIL community. The HCIL stands for the Human-Computer Interaction Lab and
+                                    is one of the longest running academic laboratories dedicated to HCI in the world.
+                                    Started in 1983 by Ben Shneiderman, the HCIL has grown to include faculty, students,
+                                    and staff from a diverse set of disciplines intersecting with HCI from CS and the
+                                    iSchool to design and psychology.
+                                </p>
+                                <p>
+                                    If you'd like to become more involved, consider joining our HCIL mailing list,
+                                    attending our Thursday "Brown Bag Lunches" from 12:30-1:30 in the lab, or even
+                                    joining our "HCIL Play" mailing list for fun activities that HCIL members
+                                    participate in (e.g., going to movies, concerts, or trips downtown to DC). For
+                                    example, students recently organized a DC cherry blossom cruise.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="faq-item" id="i-sent-you-an-email-and-you-did-not-respond,-what's-the-deal?!">
+                        <h2 class="question">
+                            I SENT YOU AN EMAIL AND YOU DID NOT RESPOND, WHAT'S THE DEAL?!
+                        </h2>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <p>
+                                    My apologies! I thank you for your email--I look forward to talking with you! I
+                                    really try to respond to nearly every email I receive. However, sometimes my
+                                    responses are delayed (by multiple days) or sometimes I simply miss your email.
+                                </p>
+                                <p>
+                                    If you don't hear from me within two days, please don't hesitate to send me a
+                                    follow-up email (or even two) that contains your original email plus a "ping" note
+                                    or something similar (so that I realize this is an additional attempt to contact me).
+                                    I know this is less than ideal (and, perhaps, even sounds a bit pretentious) but I
+                                    have recently crossed the email inbox threshold where I am literally drowning in
+                                    email. According to my March 2013 GMail Meter statistics, I receive between 140-280
+                                    emails a day (avg=~160). I've found that it's not possible for me to process all of
+                                    these emails and get my other work done each day. Hence, I suggest simply pinging me
+                                    again with a friendly follow-up if I don't respond to your original message. :)
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
