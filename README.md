@@ -26,7 +26,7 @@ While the instructions below walk you through a step-by-step process to configur
 # Docker Installation (Mac)
 1. If you don't have Docker yet, you can download it [here](https://store.docker.com/search?type=edition&offering=community). We use the Community Edition. Open up the application. Run `docker version` to make sure that it is running. 
   
-2. Clone this repository using `git clone` and navigate to the project home directory using the `cd` command.
+2. Clone this repository using `git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git` and navigate to the project home directory using the `cd` command.
 
 3. Build the docker images. This can be done by running `make build`, if make is installed. Alternatively, you can run `docker build .` or `docker build . -t <tag>`--the latter allows you to tag your build with a name (we recommend tagging it as `makelab_image` for easy access). This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
 
