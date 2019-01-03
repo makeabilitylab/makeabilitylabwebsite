@@ -11,11 +11,9 @@
         for (let i = 0; i < panelTopics.length; i++) {
             panelTopics[i].querySelector(".topic").onclick = function() {
                 let plusMinus = panelTopics[i].querySelector("span");
-                if (plusMinus !== "-") {
-                    let nameID = panelTopics[i].querySelector(".topic a").innerText.toLowerCase().split(" ").join("-");
-                    closeAllPanelTopics(panelTopics, nameID);
-                    openSelectedTopic(panelTopics[i], plusMinus, nameID);
-                }
+                let nameID = panelTopics[i].querySelector(".topic a").innerText.toLowerCase().split(" ").join("-");
+                closeAllPanelTopics(panelTopics);
+                openSelectedTopic(panelTopics[i], plusMinus, nameID);
             };
         }
 
@@ -28,9 +26,11 @@
     function closeAllPanelTopics(panelTopics) {
         for (let i = 0; i < panelTopics.length; i++) {
             let nameID = panelTopics[i].querySelector(".topic a").innerText.toLowerCase().split(" ").join("-");
-            panelTopics[i].querySelector("span").innerText = "+";
             panelTopics[i].querySelector(".subtopics").classList.remove("subtopics-active");
-            document.getElementById(nameID).classList.remove("topic-items-active");
+            if (nameID !== "view-all-questions") {
+                panelTopics[i].querySelector("span").innerText = "+";
+                document.getElementById(nameID).classList.remove("topic-items-active");
+            }
         }
     }
 
@@ -41,8 +41,15 @@
      * @param {String} nameID - the id of FAQ topic selected
      */
     function openSelectedTopic(topic, plusMinus, nameID) {
-        plusMinus.innerText = "-";
-        topic.querySelector(".subtopics").classList.add("subtopics-active");
-        document.getElementById(nameID).classList.add("topic-items-active");
+        if (nameID === "view-all-questions") {
+            let questions = document.querySelectorAll(".topic-items");
+            for (let i = 0; i < questions.length; i++) {
+                questions[i].classList.add("topic-items-active");
+            }
+        } else {
+            plusMinus.innerText = "-";
+            topic.querySelector(".subtopics").classList.add("subtopics-active");
+            document.getElementById(nameID).classList.add("topic-items-active");
+        }
     }
 })();
