@@ -11,6 +11,10 @@
     overflow: hidden;
 }
 
+.easter-egg-col {
+    margin-bottom: 18px;
+}
+
 .header-icon {
     height: 25px;
     width: 25px;
