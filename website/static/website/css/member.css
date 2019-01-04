@@ -11,6 +11,14 @@
     overflow: hidden;
 }
 
+.easter-egg-col:hover > img {
+    opacity: 0;
+}
+
+.easter-egg-col:hover .overlay-easter-egg {
+    opacity: 1;
+}
+
 .header-icon {
     height: 25px;
     width: 25px;
