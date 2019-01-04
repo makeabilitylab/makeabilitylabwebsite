@@ -11,6 +11,10 @@
     overflow: hidden;
 }
 
+.easter-egg-col {
+    margin-bottom: 18px;
+}
+  
 .easter-egg-col:hover > img {
     opacity: 0;
 }
