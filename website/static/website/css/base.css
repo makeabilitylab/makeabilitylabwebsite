@@ -342,6 +342,10 @@ h5 {
 	color: black;
 }
 
+.talk-column .pub-download-links {
+	opacity: 0;
+}
+
 .pub-download-links {
     font-size: 7pt;
     color: gray;
