@@ -7,6 +7,7 @@ This repository contains the Makeability Lab's website, which is written in Djan
 * [Dev Prereqs](#dev-prereqs)
 * [Docker Installation (Mac)](#docker-installation-mac)
 * [Docker Installation (Windows)](#docker-installation-windows)
+* [PyCharm IDE](#pycharm)
 * [Adding Content Manually](#adding-content-manually)
 * [Bootstrapping Content](#bootstrapping-content)
 * [Test and Production Servers](#test-and-production-servers)
@@ -139,10 +140,10 @@ make runw
 ### Manual Installation (In the event that Docker fails to run)
 Proceed to the manual installation instructions [here](https://docs.google.com/document/d/1LJPSSZA0kLzUX34pq4TgYP406bGH_1JhBtFLEPax7a8/edit?usp=sharing)
 
-## PyCharm
+# PyCharm
 We recommend using PyCharm as an IDE. You can use PyCharm regardless of whether you setup PyCharm to run directly with Docker or to run the website server. (Note: Jon uses PyCharm for dev but not with Docker integration or to run the website server).
 
-### Configuring PyCharm to run with Docker (optional)
+## Configuring PyCharm to run with Docker (optional)
 Note that in order to configure PyCharm with Docker, you must have the professional version. Students can get this for free at: https://www.jetbrains.com/student/. 
 
 1. You must first configure Docker. Right click on Docker->Settings and then enable daemon on tcp://localhost:2375 [link](https://intellij-support.jetbrains.com/hc/en-us/community/posts/207465185-Pycharm-Docker-and-connection-refused)
@@ -156,7 +157,7 @@ Note that in order to configure PyCharm with Docker, you must have the professio
 8. Click on the Gear button to the right of the Project Interpreter. Select the `Add...` button.
 9. Open the Docker option. The Image Name should be `pycharm:latest`. Click `OK` to finish.
 
-### Configuring PyCharm to run the website server (optional)
+## Configuring PyCharm to run the website server (optional)
 You may choose to use either the Terminal or PyCharm to run the website server. The benefit of running the website server via PyCharm is that you can set breakpoints and use the IDE for debugging. (Note: Jon has never done this--I just run the website server from terminal).
 
 NOTE: If you haven't created a superuser yet, you will need to do so through terminal. Refer to Step 6 in the Docker Installation for more information.
