@@ -35,7 +35,7 @@
 	    text+="<div id=\"citation-text\">";
 		pub.authors.forEach(function(author, index, array) {
 			text += author.last_name + ", " + author.first_name.substring(0,1) + ". ";
-			if(author.middle_name && author.middle_name.length > 0)
+			if(author.middle_name.toLowerCase() !== "none" && author.middle_name.length > 0)
 				text += author.middle_name.substring(0,1) + ". ";
 			text = text.substring(0, text.length-1) + ", "; // trim last space, add comma
 		});
@@ -64,7 +64,11 @@
 	    text+="@inproceedings{"+pub.authors[0].last_name+pub.series.split(" ")[0]+",<br/>";
 	    text+=" author = {";
 	    pub.authors.forEach(function(author, index, array){
-		text+=author.last_name+", "+author.first_name+" "+author.middle_name;
+		text+=author.last_name+", "+author.first_name;
+		if (author.middle_name.toLowerCase() !== "none") {
+			console.log("yes");
+			text += " " + author.middle_name;
+		}
 		if (index != array.length-1){
 		    text+=" and ";
 		}
