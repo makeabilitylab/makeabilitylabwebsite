@@ -42,7 +42,7 @@
                 {
                 "name": "{{ author.get_full_name }}",
                 "first_name": "{{ author.first_name }}",
-                "middle_name": "{{ author.middle_name }}",
+                "middle_name": "{% if author.middle_name %}{{ author.middle_name }}{% endif %}",
                 "last_name": "{{ author.last_name }}",
                 "link": "{% url 'website:member' author.get_url_name %}"
                 },
