@@ -61,13 +61,20 @@
 		}
 	    text+="</div>";
 	    text+="<div id=\"bibtex-text\" style=\"display: none\">";
-	    text+="@inproceedings{"+pub.authors[0].last_name+pub.series.split(" ")[0]+",<br/>";
+	    text+="@inproceedings{"+pub.authors[0].last_name;
+	    if (pub.series && pub.series!="None") {
+	    	text+=pub.series.split(" ")[0];
+		}
+	    text+=",<br/>";
 	    text+=" author = {";
 	    pub.authors.forEach(function(author, index, array){
-		text+=author.last_name+", "+author.first_name+" "+author.middle_name;
-		if (index != array.length-1){
-		    text+=" and ";
-		}
+			text+=author.last_name+", "+author.first_name;
+			if (author.middle_name) {
+				text+=" "+author.middle_name;
+			}
+			if (index != array.length-1){
+				text+=" and ";
+			}
 	    });
 	    text+="},<br/>";
 	    text+=" title = {"+pub.title+"},<br/>";
