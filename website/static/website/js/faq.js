@@ -1,6 +1,7 @@
 
 // When the page loads, all FAQs and responses will be shown and all topics in the menu bar will NOT be expanded. When
 // the user clicks on a topic in the menu bar, it will expand and at the same time close any other topics that are open.
+// If the user clicks the same topic again, the side panel menu will collapse, but stay on the same topic of questions.
 // Page will automatically show and hide the FAQs and responses for a certain topic depending on if it is selected or not.
 
 "use strict";
@@ -12,24 +13,29 @@
             panelTopics[i].querySelector(".topic").onclick = function() {
                 let plusMinus = panelTopics[i].querySelector("span");
                 let nameID = panelTopics[i].querySelector(".topic a").innerText.toLowerCase().split(" ").join("-");
-                closeAllPanelTopics(panelTopics);
-                openSelectedTopic(panelTopics[i], plusMinus, nameID);
+                let openedTopic = (plusMinus && plusMinus.innerText !== "-" || nameID === "view-all-questions");
+                closeAllPanelTopics(panelTopics, openedTopic);
+                if (openedTopic) {
+                    openSelectedTopic(panelTopics[i], plusMinus, nameID);
+                }
             };
         }
-
     };
 
     /**
      * Closes all expanded panels in the menu bar and hides all FAQ's and responses.
      * @param {object} panelTopics - list of all the panel topics on FAQ page
+     * @param {boolean} topicItemsActive - true/false if the side panel is already expanded
      */
-    function closeAllPanelTopics(panelTopics) {
+    function closeAllPanelTopics(panelTopics, topicItemsActive) {
         for (let i = 0; i < panelTopics.length; i++) {
             let nameID = panelTopics[i].querySelector(".topic a").innerText.toLowerCase().split(" ").join("-");
             panelTopics[i].querySelector(".subtopics").classList.remove("subtopics-active");
             if (nameID !== "view-all-questions") {
                 panelTopics[i].querySelector("span").innerText = "+";
-                document.getElementById(nameID).classList.remove("topic-items-active");
+                if (topicItemsActive) {
+                    document.getElementById(nameID).classList.remove("topic-items-active");
+                }
             }
         }
     }
