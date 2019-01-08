@@ -747,6 +747,12 @@ h5 {
     float: left;
 }
 
+@media (max-width: 550px) {
+	.talk-column .pub-download-links {
+		opacity: 1;
+	}
+}
+
 @media (min-width: 768px) {
     .col-sm-5ths {
         width: 20%;
