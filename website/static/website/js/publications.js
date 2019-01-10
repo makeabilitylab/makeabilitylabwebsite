@@ -240,6 +240,7 @@ function formatPublication(pub, filter) {
 	publicationData.find(".publication-id").html(pub.id);
 	publicationData.find(".publication-thumbnail-link").attr("href", pub.pdf);
 	publicationData.find(".publication-thumbnail-image").attr("src", pub.thumbnail);
+	publicationData.find(".publication-title-link").attr("href", pub.pdf);
 	publicationData.find(".artifact-title").html(addHighlight(pub.title));
 
 	var authors = publicationData.find(".publication-authors");
