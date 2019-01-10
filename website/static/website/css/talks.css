@@ -167,7 +167,3 @@
 .talk-citation-link {
 	cursor:pointer;
 }
-
-.talk-column:hover .pub-download-links {
-	opacity: 1;
-}
