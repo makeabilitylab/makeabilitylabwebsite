@@ -69,9 +69,13 @@
 }
 
 @media (max-width: 374px){
-    .publication-thumbnail, .publication-award-banner, .quick-info, .recent-news {
+    .publication-thumbnail {
 		display: none;
     }
+
+	.publication-award-banner {
+		display: none;
+	}
 }
 
 @media (min-width: 375px){
