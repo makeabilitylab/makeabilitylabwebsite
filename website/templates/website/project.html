@@ -27,7 +27,7 @@
 <div id="content" class="container content-container" data-spy="scroll">
     <div class="row row-adjust-margins" id="sidebar-level">
 	<div class="col-md-2 col-md-push-10">
-        <div class="row">
+        <div class="row quick-info">
             <h3 class="news-type-label">Quick Info</h3>
             <p class="quick-info">
                 {% if project.start_date %}
@@ -73,7 +73,7 @@
 	    </div>
 	    {% if news %}
 	    <!-- Create a row for the well which will contain news from our feeds -->
-	    <div class="row">
+	    <div class="row recent-news">
 		<h3 class="news-type-label">Recent News</h3>
 		<div class="well news-well">
 		    {% for item in news %}
