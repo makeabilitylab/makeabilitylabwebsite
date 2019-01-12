@@ -1,0 +1,183 @@
+/* TODO: Cleanup the CSS in this file and start using artifact-title, artifact-venue, etc. from base.css */
+/* TODO: update--cleanup in progress. Note that any change here may impact publications.js and filterBar.js */
+@media only screen and (max-width: 600px){
+	.citation-link{
+		display: none;
+	}
+}
+
+
+@media (max-width: 768px){
+    .publication-list {
+	margin-top: 25px;
+    }
+}
+
+@media (min-width: 769px){
+    .publication-list {
+	padding-left: 145px; /* should be greater than the filter-bar width */
+	margin-top: 25px;
+    }
+}
+
+/* TODO: do we need this .navbar? Need to investigate */
+.navbar {
+    width: 100%;
+}
+
+.citation-links {
+    text-align: right;
+    margin-bottom: -5px;
+	cursor: pointer;
+}
+
+.publication-list h1 {
+	color: #7F7F7F;
+	font-size: 24px;
+	border-bottom: 1px solid #A6A6A6;
+	margin: 5px 0px 3px 0px;
+	padding-bottom: 1px;
+}
+
+.publication-template {
+	padding-top:10px;
+	padding-bottom:10px;
+	font-size: 14px;
+	position:relative;
+	min-height: 170px;
+}
+
+.publication-template p {
+	margin:0;
+	padding:0;
+}
+
+.publication-thumbnail-image {
+	border: 1px solid #dddddd;
+	width:100%;
+	max-width:135px;
+	margin:auto;
+}
+
+.publication-info {
+	padding-bottom:20px; /* height of the downloads bar */
+	display:table-cell;
+	vertical-align: top;
+	width: 100%;
+	position: relative;
+
+}
+
+@media (max-width: 374px){
+    .publication-thumbnail {
+		display: none;
+    }
+
+    .publication-award-banner {
+		display: none;
+    }
+}
+
+@media (min-width: 375px){
+    .publication-thumbnail {
+		width:120px;
+		min-width:120px;
+		display:table-cell;
+		vertical-align: top;
+		padding-right:10px;
+		position: relative;
+		top: 0px;
+		left: 0px;
+		z-index: 10;
+    }
+
+    .publication-award-banner {
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		height: 40px;
+		width: 40px;
+		z-index: 20;
+    }
+}
+
+
+@media (max-width: 768px){
+   .publication-id {
+		font-size: 10px;
+		color: #7F7F7F;
+		min-width: 40px;
+		display: table-cell;
+		vertical-align: top;
+		text-align: left;
+		padding-right: 10px;
+   }
+}
+
+@media (min-width: 769px){
+    .publication-id {
+		font-size: 10px;
+		color: #7F7F7F;
+		min-width: 40px;
+		display: table-cell;
+		vertical-align: top;
+		text-align: right;
+		padding-right: 10px;
+    }
+}
+
+.artifact-title {
+	color: #464D59;
+	/*font-size: 16px;*/
+	font-weight: 500;
+	word-wrap: break-word;
+	text-overflow: ellipsis;
+}
+
+.publication-stats {
+	color: #7F7F7F;
+}
+
+.publication-award-text, .publication-award-icon {
+	color:#c25059;
+}
+
+.publication-acceptance-rate {
+	font-style: bold;
+}
+
+.publication-to-appear-text {
+	font-style: italic;
+}
+
+.publication-keywords {
+	font-size: 11px;
+	color: #7F7F7F;
+	word-break: break-all;
+}
+
+.publication-keyword {
+    word-wrap: break-word;
+}
+
+.publication-download {
+	position: absolute;
+	font-size: 12px;
+	border-top: 1px solid #dddddd;
+	width:100%;
+	height: 20px;
+	bottom:0;
+	right:0px;
+	margin-left:5px;
+}
+
+.publication-citation-link {
+	cursor:pointer;
+}
+
+.award-icon {
+    borders: none;
+    width: 20px;
+    height: auto;
+    align: left;
+}
