@@ -85,7 +85,7 @@
     color: black;
 }
 
-@media(min-width:768px) {
+@media(min-width:789px) {
     .navbar-custom {
         /*padding: 5px 0;*/
         /*padding-bottom: 10px;*/
