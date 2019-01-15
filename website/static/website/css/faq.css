@@ -28,6 +28,13 @@ html {
   scroll-behavior: smooth;
 }
 
+.permalink-icon {
+    height: 18px;
+    opacity: 0;
+    -webkit-transition: opacity 200ms ease-in-out;
+    transition: opacity 200ms ease-in-out;
+}
+
 .plusminus {
     float: right;
     font-size: 18px;
@@ -35,6 +42,10 @@ html {
 
 .question {
     font-size: 25px;
+}
+
+.question:hover .permalink-icon {
+    opacity: 1;
 }
 
 .subtopics {
