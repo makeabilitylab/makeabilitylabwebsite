@@ -419,15 +419,18 @@ class Position(models.Model):
         department_keywords_normal = ["building science", "architecture", "bioengineering"]
         department_keywords_map = ["BuildSci", "Arch", "BIOE"]
         abbrv = ""
-        if "computer science" in self.department.lower():
-            abbrv += 'CS,'
-        elif "computer science" in self.department.lower() and "engineering" in self.department.lower():
+        if "computer science" in self.department.lower() and "engineering" in self.department.lower():
             abbrv += 'CSE,'
+        elif "computer science" in self.department.lower():
+            abbrv += 'CS,'
         elif 'computer engineering' in self.department.lower():
             abbrv += 'CprE,'
 
         if "information" in self.department.lower() or "ischool" in self.department.lower():
             abbrv += 'iSchool,'
+
+        if "hcde" in self.department.lower() or "human centered design" in self.department.lower() and "engineering" in self.department.lower():
+            abbrv += 'HCDE,'
 
         for keyword in department_keywords_normal:
             counter = 0
