@@ -193,7 +193,7 @@
 
         {# Check to see if a project has ended. If so, just list all project members. If the project is #}
         {# active then split members into current and past #}
-        {% if project.has_ended %}
+        {% if project.has_ended and project_roles %}
             <div class="row row-eq-height row-adjust-margins people-row">
                 <h3 class="news-type-label">Project Members</h3>
                 <div class="grid_members">
