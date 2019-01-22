@@ -54,10 +54,17 @@
     transition: background .3s ease-in-out;
 }
 
-.navbar-custom .nav li a:hover {
+.navbar-custom .nav li a:hover, .navbar-white .nav li a:hover {
     outline: 0;
-    color: rgba(255,255,255,.8);
     background-color: transparent;
+}
+
+.navbar-custom .nav li a:hover {
+    color: rgba(255,255,255,.8);
+}
+
+.navbar-white .nav li a:hover {
+    color: rgba(0,0,0,.6);
 }
 
 .navbar-custom .nav li a:focus,
@@ -103,6 +110,10 @@
         padding: 0;
         border-bottom: 1px solid rgba(255,255,255,.3);
         background: #000;
+    }
+
+    .navbar-white.top-nav-collapse li a:hover {
+        color: rgba(255,255,255,.8);
     }
 
     .navbar-nav>li>a {
