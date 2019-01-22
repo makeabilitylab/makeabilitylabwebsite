@@ -38,11 +38,13 @@
     display: flex;
 }
 
-.individual-project-listing {
-    padding-top: 10px;
-    margin-bottom: 20px;
+#makelab-recent-projects .individual-project-listing {
     padding-left: 0;
     padding-right: 30px;
+}
+
+#makelab-recent-projects .news-type-label {
+    margin-bottom: 10px;
 }
 
 .member-title {

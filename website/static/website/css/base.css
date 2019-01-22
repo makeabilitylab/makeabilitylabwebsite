@@ -88,6 +88,10 @@ h5 {
     margin: 0px;
 }
 
+.individual-project-listing {
+    margin-bottom: 20px;
+}
+
 /* Custom navbar for filters */
 /* TODO: what is this doing here? Why is navbar stuff in here and not grayscale.css? Discuss with Lee */
 .breadcrumb {
