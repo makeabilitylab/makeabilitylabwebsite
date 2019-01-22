@@ -34,7 +34,7 @@ h4 {
 }
 
 h5 {
-	font-size: large;
+	font-size: 1.2em;
 	font-weight: bold;
 	margin:0;
 	padding:0;
@@ -158,6 +158,12 @@ h5 {
 
 .easter-egg-col {
     position: relative;
+}
+
+.easter-egg-name {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .overlay-easter-egg {
