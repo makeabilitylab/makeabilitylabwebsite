@@ -118,6 +118,8 @@ INSTALLED_APPS = [
     'image_cropping',
     'easy_thumbnails',
     'sortedm2m',
+    'ckeditor',
+    'ckeditor_uploader',
     'sortedm2m_filter_horizontal_widget',
     'rest_framework'
 ]
@@ -221,6 +223,11 @@ MEDIA_URL = '/media/'
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+#ckeditor
+CKEDITOR_UPLOAD_PATH = "uploads/"
+CKEDITOR_FILENAME_GENERATOR = 'makeabilitylab.utils.get_filename'
+CKEDITOR_IMAGE_BACKEND = 'pillow'
 
 # Thumbnail processing
 # LS: from https://github.com/jonasundderwolf/django-image-cropping

@@ -16,6 +16,7 @@ import re
 from random import choice
 from django.core.files import File
 import shutil
+from ckeditor_uploader.fields import RichTextUploadingField
 
 
 #helper function to correctly capitalize a string, specify words to not capitalize in the articles list
@@ -1193,7 +1194,7 @@ class News(models.Model):
     # date = models.DateTimeField(default=timezone.now)
     date = models.DateField(default=date.today)  # check this line, might be diff
     author = models.ForeignKey(Person, null=True, on_delete=models.SET_NULL)
-    content = models.TextField()
+    content = RichTextUploadingField()
     # Following the scheme of above thumbnails in other models
     image = models.ImageField(blank=True, upload_to=UniquePathAndRename("news", True), max_length=255)
     image.help_text = 'You must select "Save and continue editing" at the bottom of the page after uploading a new image for cropping. Please note that since we are using a responsive design with fixed height banners, your selected image may appear differently on various screens.'

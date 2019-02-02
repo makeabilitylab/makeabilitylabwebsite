@@ -16,3 +16,4 @@ pyOpenSSL
 requests
 psycopg2
 django-sortedm2m-filter-horizontal-widget
+django-ckeditor
