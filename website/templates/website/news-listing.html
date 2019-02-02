@@ -8,6 +8,7 @@
 {% load staticfiles %}
 {% load thumbnail %}
 {% load cropping %}
+{% load ml_tags %}
 
 {% block stylesheets %}
 
@@ -79,7 +80,7 @@
                             <span class="news-listing-author-last">{{ n.short_date }}</span>
                     </p>
                     <p class="news-listing-content">
-                        <span class="line-clamp">{{ n.content | safe}}</span>
+                        <span class="line-clamp">{{ n.content | removehtmltags }}</span>
                         <a href="{% url 'website:news' news_id=n.id %}">[read more]</a>
                     </p>
                 </div>

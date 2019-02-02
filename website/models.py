@@ -1194,7 +1194,7 @@ class News(models.Model):
     # date = models.DateTimeField(default=timezone.now)
     date = models.DateField(default=date.today)  # check this line, might be diff
     author = models.ForeignKey(Person, null=True, on_delete=models.SET_NULL)
-    content = RichTextUploadingField()
+    content = RichTextUploadingField(config_name='default')
     # Following the scheme of above thumbnails in other models
     image = models.ImageField(blank=True, upload_to=UniquePathAndRename("news", True), max_length=255)
     image.help_text = 'You must select "Save and continue editing" at the bottom of the page after uploading a new image for cropping. Please note that since we are using a responsive design with fixed height banners, your selected image may appear differently on various screens.'
@@ -1302,3 +1302,7 @@ class Banner(models.Model):
 def banner_delete(sender, instance, **kwargs):
     if instance.image:
         instance.image.delete(False)
+
+# Returns file name for CKEditor image uploads
+def get_filename(filename):
+    return filename.upper()
