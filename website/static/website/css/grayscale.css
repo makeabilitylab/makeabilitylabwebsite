@@ -3,129 +3,128 @@
  * The code below is based on the Grayscale Bootstrap Theme (http://startbootstrap.com)
  * Only the navbar styles were preserved and even then some of these styles have been modified
  */
+
 .navbar-custom {
-    margin-bottom: 0;
-    border-bottom: 1px solid rgba(255,255,255,.3);
-    text-transform: uppercase;
-    font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
-    background-color: #000;
-    min-height: 44px;
+  margin-bottom: 0;
+  border-bottom: 1px solid rgba(255,255,255,.3);
+  text-transform: uppercase;
+  font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  background-color: #000;
+  min-height: 44px;
 }
 
-.navbar-custom .lab-text{
-    display: inline;
-    vertical-align: text-top;
+.navbar-custom .lab-text {
+  display: inline;
+  vertical-align: text-top;
 }
 
 .navbar-custom .navbar-brand>img {
-    display: inline;
+  display: inline;
 }
 
 .navbar-custom .navbar-brand {
-    font-weight: 700;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-left: 15px;
-    height: auto;
+  font-weight: 700;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 15px;
+  height: auto;
 }
 
 .navbar-custom .navbar-brand:focus {
-    outline: 0;
+  outline: 0;
 }
 
 .navbar-custom .navbar-brand .navbar-toggle {
-    padding: 4px 6px;
-    font-size: 16px;
-    color: #fff;
+  padding: 4px 6px;
+  font-size: 16px;
+  color: #fff;
 }
 
-.navbar-custom .navbar-brand .navbar-toggle:focus,
-.navbar-custom .navbar-brand .navbar-toggle:active {
-    outline: 0;
+.navbar-custom .navbar-brand .navbar-toggle:focus,.navbar-custom .navbar-brand .navbar-toggle:active {
+  outline: 0;
 }
 
-.navbar-custom a, .navbar-custom .nav li.active a:hover, .navbar-toggle {
-    color: #fff;
+.navbar-custom a,.navbar-custom .nav li.active a:hover,.navbar-toggle {
+  color: #fff;
 }
 
 .navbar-custom .nav li a {
-    -webkit-transition: background .3s ease-in-out;
-    -moz-transition: background .3s ease-in-out;
-    transition: background .3s ease-in-out;
+  -webkit-transition: background .3s ease-in-out;
+  -moz-transition: background .3s ease-in-out;
+  transition: background .3s ease-in-out;
 }
 
-.navbar-custom .nav li a:hover, .navbar-white .nav li a:hover {
-    outline: 0;
-    background-color: transparent;
+.navbar-custom .nav li a:hover,.navbar-white .nav li a:hover {
+  outline: 0;
+  background-color: transparent;
 }
 
 .navbar-custom .nav li a:hover {
-    color: rgba(255,255,255,.8);
+  color: rgba(255,255,255,.8);
 }
 
 .navbar-white .nav li a:hover {
-    color: rgba(0,0,0,.6);
+  color: rgba(0,0,0,.6);
 }
 
-.navbar-custom .nav li a:focus,
-.navbar-custom .nav li a:active {
-    outline: 0;
-    background-color: transparent;
+.navbar-custom .nav li a:focus,.navbar-custom .nav li a:active {
+  outline: 0;
+  background-color: transparent;
 }
 
 .navbar-custom .nav li.active {
-    outline: 0;
+  outline: 0;
 }
 
 .navbar-custom .nav li.active a {
-    /*background-color: rgba(255,255,255,.3);*/
-    font-weight: bold;
-    /*font-family: helvetica-neue-lt-bold;*/
-    font-family: roboto-bold;
+  /*background-color: rgba(255,255,255,.3);*/
+  font-weight: bold;
+  /*font-family: helvetica-neue-lt-bold;*/
+  font-family: roboto-bold;
 }
 
 .navbar-white .navbar-brand img {
-    content:url("/static/website/img/logos/makelab_logo_black_no_text_100x67.png");
+  content: url("/static/website/img/logos/makelab_logo_black_no_text_100x67.png");
 }
 
 .navbar-white .navbar-toggle {
-    color: black;
+  color: black;
 }
 
-@media(min-width:789px) {
-    .navbar-custom {
-        /*padding: 5px 0;*/
-        /*padding-bottom: 10px;*/
-        border-bottom: 0;
-        letter-spacing: 1px;
-        /*background: 0 0;*/
-        /*background: linear-gradient(180deg, rgba(0,0,0,0.8), rgba(0,0,0,0.5) 60%, rgba(0,0,0,0));*/
-        background: rgba(0,0,0,0.6);
-        -webkit-transition: background .5s ease-in-out,padding .5s ease-in-out;
-        -moz-transition: background .5s ease-in-out,padding .5s ease-in-out;
-        transition: background .5s ease-in-out,padding .5s ease-in-out;
-    }
+@media (min-width:789px) {
+  .navbar-custom {
+    /*padding: 5px 0;*/
+    /*padding-bottom: 10px;*/
+    border-bottom: 0;
+    letter-spacing: 1px;
+    /*background: 0 0;*/
+    /*background: linear-gradient(180deg, rgba(0,0,0,0.8), rgba(0,0,0,0.5) 60%, rgba(0,0,0,0));*/
+    background: rgba(0,0,0,0.6);
+    -webkit-transition: background .5s ease-in-out,padding .5s ease-in-out;
+    -moz-transition: background .5s ease-in-out,padding .5s ease-in-out;
+    transition: background .5s ease-in-out,padding .5s ease-in-out;
+  }
 
-    .navbar-custom.top-nav-collapse {
-        padding: 0;
-        border-bottom: 1px solid rgba(255,255,255,.3);
-        background: #000;
-    }
+  .navbar-custom.top-nav-collapse {
+    padding: 0;
+    border-bottom: 1px solid rgba(255,255,255,.3);
+    background: #000;
+  }
 
-    .navbar-white.top-nav-collapse li a:hover {
-        color: rgba(255,255,255,.8);
-    }
+  .navbar-white.top-nav-collapse li a:hover {
+    color: rgba(255,255,255,.8);
+  }
 
-    .navbar-nav>li>a {
-        padding-top: 10px;
-        padding-bottom: 10px;
-    }
+  .navbar-nav>li>a {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
 
-    .navbar-white.top-nav-collapse .lab-text, .navbar-white.top-nav-collapse a {
-        color: white;
-    }
+  .navbar-white.top-nav-collapse .lab-text,  .navbar-white.top-nav-collapse a {
+    color: white;
+  }
 
-    .navbar-white.top-nav-collapse .navbar-brand img {
-        content:url("/static/website/img/logos/makelab_logo_white_no_text_100x67.png");
-    }
+  .navbar-white.top-nav-collapse .navbar-brand img {
+    content: url("/static/website/img/logos/makelab_logo_white_no_text_100x67.png");
+  }
 }
