@@ -13,15 +13,15 @@
         <div class="container carousel-container">
             {#  | title is built into Django, how handy! see: https://stackoverflow.com/questions/14268342/make-the-first-letter-uppercase-inside-a-django-template #}
 {#            <div class="overlay-title">{{ request.path|title|slice:"1:"|slice:":-1" }}</div>#}
+            {% if not news.title %}
             <div class="overlay-title">
-                {% if news.title %}
-                    {{ news.title }}
-                {% elif page_title %}
+                {% if page_title %}
                     {{ page_title }}
                 {% else %}
                     {{ request.path|get_url_page|title }}
                 {% endif %}
             </div>
+            {% endif %}
         </div>
     </div>
     <!-- Wrapper for slides -->
