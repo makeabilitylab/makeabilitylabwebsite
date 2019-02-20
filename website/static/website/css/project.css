@@ -70,9 +70,9 @@
 }
 
 .header-visual-caption {
+    font-size: smaller;
     margin-top: 0px;
     color: #7F7F7F;
-    float: right;
     max-width: 535px;
 }
 
