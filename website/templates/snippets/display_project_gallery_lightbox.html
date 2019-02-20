@@ -4,19 +4,18 @@
 {% load ml_tags %}
 
 
-<div class="js-lightbox">
-    <span class="close cursor js-close-btn">&times;</span>
+<div class="lightbox is-hidden">
+    <span class="lightbox-close-btn js-lightbox-close-btn">&times;</span>
     <div class="lightbox-content">
         {% for image in photos %}
-            <div class="myslides">
-                <img src="{% thumbnail image.picture 750x500 box=image.cropping crop detail %}" alt="{{image.alt_text}}">
+            <div class="myslides" id="lightbox-slide{{ forloop.counter }}">
+                <img src="{% thumbnail image.picture 4000x4000 box=image.cropping crop detail %}" alt="{{image.alt_text}}">
+                <div class="caption-container">
+                    <p id="caption">{{image.caption}}</p>
+                </div>
             </div>
         {% endfor %}
-        <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
-        <a class="next" onclick="plusSlides(1)">&#10095;</a>
-
-        <div class="caption-container">
-            <p id="caption"></p>
-        </div>
+        <a class="prev">&#10094;</a>
+        <a class="next">&#10095;</a>
     </div>
 </div>

@@ -182,7 +182,7 @@
         <div class="row row-adjust-margins">
             <h3 class="news-type-label">Photo Gallery</h3>
             {% for image in photos %}
-            <div class="col-md-4 project-gallery-col">
+            <div class="col-md-4 project-gallery-col" id="slide{{ forloop.counter }}">
             <img src="{% thumbnail image.picture 368x245 box=image.cropping crop detail %}" alt="{{image.alt_text}}" class="project-gallery">
             <div class="overlay-image">
                 <div class="image-gallery-caption">{{image.caption}}</div>
