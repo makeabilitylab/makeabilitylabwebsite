@@ -34,6 +34,7 @@
             if (nameID !== "view-all-questions") {
                 panelTopics[i].querySelector("span").innerText = "+";
                 if (topicItemsActive) {
+                    console.log(nameID)
                     document.getElementById(nameID).classList.remove("topic-items-active");
                 }
             }
