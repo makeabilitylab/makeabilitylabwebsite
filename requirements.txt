@@ -1,13 +1,13 @@
 # Run `pip3 install -r requirements.txt` to install dependencies
 
-django==2.0.8
+django==2.1.7
 djangorestframework
 beautifulsoup4
 wand==0.4.4
 bibtexparser==1.0.1
 Pillow==5.2.0
 django-extensions==2.0.7
-django-image-cropping==1.1.0
+django-image-cropping==1.2.0
 django-sortedm2m==1.5.0
 easy_thumbnails==2.5
 xmltodict==0.11.0
