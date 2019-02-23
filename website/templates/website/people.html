@@ -35,19 +35,19 @@
             sideBarContainer(#filterBar_Current_Members,str)
             scrollTop(.currentteam,str)
         </div>
-        <div class= "isotope_data_container" id="isotope_data_container_alumni" style="display:none">
-            sortFilterContainer(.sortingAndFiltering,str)
-            gridName(.grid_alumni,str)
-            filteringKeywordContainer(#filterKeywords_Alumni,str)
-            sideBarContainer(#filterBar_Alumni,str)
-            scrollTop(.alumni,str)
-        </div>
         <div class= "isotope_data_container" id="isotope_data_container_collaborators" style="display:none">
             sortFilterContainer(.sortingAndFiltering,str)
             gridName(.grid_collaborators,str)
             filteringKeywordContainer(#filterKeywords_Collaborators,str)
             sideBarContainer(#filterBar_Collaborators,str)
             scrollTop(.collaborators,str)
+        </div>
+        <div class= "isotope_data_container" id="isotope_data_container_alumni" style="display:none">
+            sortFilterContainer(.sortingAndFiltering,str)
+            gridName(.grid_alumni,str)
+            filteringKeywordContainer(#filterKeywords_Alumni,str)
+            sideBarContainer(#filterBar_Alumni,str)
+            scrollTop(.alumni,str)
         </div>
         <div class= "isotope_data_container" id="isotope_data_container_past_collaborators" style="display:none">
             sortFilterContainer(.sortingAndFiltering,str)
@@ -88,6 +88,20 @@
             </div>
         {% endif %}
 
+        {% if map_status_to_headers|get_item:"Current Collaborator"|get_item:"headerText"|length > 0 %}
+            <div class="content" style="width:100%">
+                <h1 class= "collaborators" name="collaborators">Current Collaborators</h1>
+                <div id="filterBar_Collaborators" style="margin-bottom: 7px">
+                    <div id="filterKeywords_Collaborators">
+                        {% include "snippets/display_people_header_snippet.html" with member_status="Current Collaborator" %}
+                    </div>
+                </div>
+            </div>
+            <div class = "grid_collaborators" style="width:100%">
+                 {% include "snippets/display_people_snippet.html" with member_status="Current Collaborator" %}
+            </div>
+        {% endif %}
+
         {% if map_status_to_headers|get_item:"Past Member"|get_item:"headerText"|length > 0 %}
             <div class="content" style="width:100%">
                 <h1 class= "alumni" name="alumni">Alumni</h1>
@@ -100,20 +114,6 @@
 
             <div class = "grid_alumni">
                 {% include "snippets/display_people_snippet.html" with member_status="Past Member" %}
-            </div>
-        {% endif %}
-
-        {% if map_status_to_headers|get_item:"Current Collaborator"|get_item:"headerText"|length > 0 %}
-            <div class="content" style="width:100%">
-                <h1 class= "collaborators" name="collaborators">Current Collaborators</h1>
-                <div id="filterBar_Collaborators" style="margin-bottom: 7px">
-                    <div id="filterKeywords_Collaborators">
-                        {% include "snippets/display_people_header_snippet.html" with member_status="Current Collaborator" %}
-                    </div>
-                </div>
-            </div>
-            <div class = "grid_collaborators" style="width:100%">
-                 {% include "snippets/display_people_snippet.html" with member_status="Current Collaborator" %}
             </div>
         {% endif %}
 
