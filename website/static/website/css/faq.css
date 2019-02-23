@@ -1,27 +1,27 @@
 .faq {
-    margin-top: 20px;
+  margin-top: 20px;
 }
 
 .faq-questions-list {
-    padding: 0;
-    list-style-type: none;
-    margin: 0;
+  padding: 0;
+  list-style-type: none;
+  margin: 0;
 }
 
 .faq-questions-list li {
-    padding: 10px 0;
-    border-bottom: 1px solid #ddd;
+  padding: 10px 0;
+  border-bottom: 1px solid #ddd;
 }
 
-.faq-item:before, .topic-items-active {
-    display: block!important;
+.faq-item:before,.topic-items-active {
+  display: block!important;
 }
 
 .faq-item:before {
-    content: " ";
-    height: 44px;
-    margin-top: -44px;
-    visibility: hidden;
+  content: " ";
+  height: 44px;
+  margin-top: -44px;
+  visibility: hidden;
 }
 
 .faq-blockquote {
@@ -33,39 +33,39 @@ html {
 }
 
 .permalink-icon {
-    height: 18px;
-    opacity: 0;
-    -webkit-transition: opacity 200ms ease-in-out;
-    transition: opacity 200ms ease-in-out;
+  height: 18px;
+  opacity: 0;
+  -webkit-transition: opacity 200ms ease-in-out;
+  transition: opacity 200ms ease-in-out;
 }
 
 .plusminus {
-    float: right;
-    font-size: 18px;
+  float: right;
+  font-size: 18px;
 }
 
 .question {
-    font-size: 25px;
+  font-size: 25px;
 }
 
 .question:hover .permalink-icon {
-    opacity: 1;
+  opacity: 1;
 }
 
 .subtopics {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height .5s ease-out, padding .5s ease-out;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .5s ease-out, padding .5s ease-out;
 }
 
 .subtopics-active {
-    max-height: 480px!important;
+  max-height: 480px!important;
 }
 
-.topic, .plusminus {
-    cursor: pointer;
+.topic,.plusminus {
+  cursor: pointer;
 }
 
 .topic-items {
-    display: none;
+  display: none;
 }
