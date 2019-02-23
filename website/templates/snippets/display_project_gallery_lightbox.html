@@ -8,10 +8,10 @@
     <span class="lightbox-close-btn js-lightbox-close-btn">&times;</span>
     <div class="lightbox-content">
         {% for image in photos %}
-            <div class="myslides" id="lightbox-slide{{ forloop.counter }}">
+            <div class="lightbox-slides" id="lightbox-slide{{ forloop.counter }}">
                 <img src="{% thumbnail image.picture 4000x4000 box=image.cropping crop detail %}" alt="{{image.alt_text}}">
-                <div class="caption-container">
-                    <p id="caption">{{image.caption}}</p>
+                <div class="lightbox-caption">
+                    <p>{{image.caption}}</p>
                 </div>
             </div>
         {% endfor %}

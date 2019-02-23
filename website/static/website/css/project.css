@@ -57,7 +57,7 @@
 }
 
 .header-visual-title {
-    font-family: adelle-regular;
+  font-family: adelle-regular;
 	font-weight: bold;
 	color: #464D59;
 	font-size: 15px;
@@ -130,7 +130,6 @@
 	display: none;
 }
 
-/* The Modal (background) */
 .lightbox {
   position: fixed;
   z-index: 1;
@@ -143,7 +142,13 @@
   background-color: black;
 }
 
-/* Modal Content */
+.lightbox-caption {
+  text-align: center;
+  background-color: black;
+  padding: 2px 16px;
+  color: white;
+}
+
 .lightbox-content {
   position: relative;
   background-color: #000000;
@@ -153,7 +158,6 @@
   max-width: 950px;
 }
 
-/* The Close Button */
 .lightbox-close-btn {
   color: white;
   position: absolute;
@@ -164,7 +168,16 @@
   font-weight: bold;
 }
 
-/* Next & previous buttons */
+.lightbox-slides {
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.lightbox-slides img {
+  width: 100%;
+  max-width: 950px;
+}
+
 .prev,
 .next {
   cursor: pointer;
@@ -182,14 +195,6 @@
   -webkit-user-select: none;
 }
 
-.caption-container {
-  text-align: center;
-  background-color: black;
-  padding: 2px 16px;
-  color: white;
-}
-
-/* Position the "next button" to the right */
 .next {
   right: 0;
   border-radius: 3px 0 0 3px;
@@ -198,14 +203,5 @@
 .prev:hover,
 .next:hover {
   background-color: rgba(0, 0, 0, 0.8);
-}
-
-.myslides {
-  overflow: hidden;
-  max-height: 85vh;
-}
-
-.myslides img {
-  width: 100%;
-  max-width: 950px;
+  color: #ffffff;
 }
