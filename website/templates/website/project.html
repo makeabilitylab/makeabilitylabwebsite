@@ -126,7 +126,7 @@
 
                             <p style="font-weight: bold; margin:0px;">{{ header.title }}</p>
                             {% if header.caption %}
-                               <p style="font-size: smaller;"> {{ header.caption }}</p>
+                               <p class="header-visual-caption"> {{ header.caption }}</p>
                             {% endif %}
                         {% endwith %}
                     {% else %}
@@ -185,7 +185,7 @@
             <div class="col-md-4 project-gallery-col">
             <img src="{% thumbnail image.picture 368x245 box=image.cropping crop detail %}" alt="{{image.alt_text}}" class="project-gallery">
             <div class="overlay-image">
-                <p class="image-gallery-caption">{{image.caption}}</p>
+                <div class="image-gallery-caption">{{image.caption}}</div>
             </div>
             </div>
             {% endfor %}
