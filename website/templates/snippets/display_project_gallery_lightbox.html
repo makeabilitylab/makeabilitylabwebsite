@@ -9,7 +9,7 @@
     <div class="lightbox-content">
         {% for image in photos %}
             <div class="lightbox-slides" id="lightbox-slide{{ forloop.counter }}">
-                <img src="{% thumbnail image.picture 1000x0 detail %}" alt="{{image.alt_text}}">
+                <img src="{% thumbnail image.picture 368x245 box=image.cropping crop detail %}" alt="{{image.alt_text}}">
                 <div class="lightbox-caption">
                     <p>{{image.caption}}</p>
                 </div>
