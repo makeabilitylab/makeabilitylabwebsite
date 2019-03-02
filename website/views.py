@@ -635,7 +635,7 @@ def project(request, project_name):
 
 
 def news_listing(request):
-    all_banners = Banner.objects.filter(page=Banner.FRONTPAGE)
+    all_banners = Banner.objects.filter(page=Banner.NEWSLISTING)
     displayed_banners = choose_banners(all_banners)
     filter = request.GET.get('filter', None)
     groupby = request.GET.get('groupby', "No-Group")
