@@ -135,7 +135,7 @@
 
     {% block navbar %}
         <!-- Navigation -->
-        <nav class="navbar navbar-custom {% with request.resolver_match.url_name as url_name %}{% if url_name == 'member' %}navbar-white{% endif %}{% endwith %} navbar-fixed-top"
+        <nav class="navbar navbar-custom {% with request.resolver_match.url_name as url_name %}{% if url_name == 'member' or url_name == 'news' %}navbar-white{% endif %}{% endwith %} navbar-fixed-top"
              role="navigation" >
             <div class="container-fluid" style="width:100%; max-width:1170px; margin:auto">
                 <div class = "row">
