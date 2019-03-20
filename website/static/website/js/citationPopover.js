@@ -55,11 +55,11 @@
 			if(pub.num_pages) {
 				text += pub.num_pages + " pages.";
 			}
-			text += " <i>To Appear</i>.";
+			text += " <i>To Appear</i>. ";
 		} else if(pub.start_page && pub.end_page) {
-			text += pub.start_page + "&ndash;" + pub.end_page + ".";
+			text += pub.start_page + "&ndash;" + pub.end_page + ". ";
 		}
-		if (pub.url !== "None") {
+		if (pub.url && pub.url!="None" && pub.url!="tbd") {
    			text += "DOI: <a href='" + pub.url + "'>" + pub.url + "</a>";
     	}
 	    text+="</div>";
