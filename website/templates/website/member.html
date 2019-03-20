@@ -116,7 +116,7 @@
                                         <!-- Truncation now uses a set number of lines which can be modified in news.css content-clamp class by changing -webkit-line-clamp -->
                                         <div class="news_content content-clamp">
                                             {% autoescape off %}
-                                                <p>{{ item.content }}</p>
+                                                <p>{{ item.content | removehtmltags }}</p>
                                             {% endautoescape %}
                                         </div>
                                     </div>
