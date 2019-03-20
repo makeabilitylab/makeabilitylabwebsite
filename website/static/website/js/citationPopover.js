@@ -59,7 +59,7 @@
 		} else if(pub.start_page && pub.end_page) {
 			text += pub.start_page + "&ndash;" + pub.end_page + ". ";
 		}
-		if (pub.url !== "None" && pub.url !== "") {
+		if (pub.url && pub.url!="None" && pub.url!="tbd") {
    			text += "DOI: <a href='" + pub.url + "'>" + pub.url + "</a>";
     	}
 	    text+="</div>";
