@@ -17,6 +17,10 @@
   overflow: hidden;
 }
 
+.news-well {
+  padding: 17px;
+}
+
 .news-well p {
   margin: 0;
 }
@@ -30,8 +34,6 @@
 .news-column {
   padding-left: 10px;
 }
-
-
 
 .content-clamp {
   position: relative;
