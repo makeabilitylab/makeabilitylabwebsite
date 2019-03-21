@@ -21,119 +21,119 @@
 
 {% block content %}
 <div class="container content-container">
-    <div>
-        <div class="col-xs-12 col-md-10 big-news-main-content">
-            <div class="row">
-            <div class="col-sm-4 hideden-xs big-news-picture">
-                {% if news.image %}
-                <img src="{% thumbnail news.image 250x250 box=news.cropping crop detail %}" class="big-news-image" height="250" width="250" alt="{{news.alt_text}}">
-                {% else %}
-                <img src="{% static 'website/img/news_icon.png' %}" class="big-news-image" height="250" width="250">
-                {% endif %}
-            </div>
-            <div class="col-xs-12 col-sm-7">
-                <h1 class="big-news-title">{{news.title}}</h1>
-                <br/>
-                <span class="big-news-author"><a href="{% url 'website:member' news.author.get_url_name %}">{{news.author.get_full_name}}</a></span>
-                <br/>
-                <span class="big-news-published">Published {{news.short_date}}</span>
-                <br/>
-                {% for project in news.project.all %}
-                <span class="big-news-project"><a href="{% url 'website:project' project.short_name %}">{{project.name}}</a></span>
-                <br/>
-                {% endfor %}
-            </div>
-            </div>
-            <div class="big-news-content">
-            {% autoescape off %}
-            <p>{{news.content}}</p>
-            {% endautoescape %}
-            </div>
-        </div>
-        <div class="col-xs-12 col-md-2">
-            <!-- This is the authors news -->
-            {% if author_news %}
-            <!-- Create a row for the well which will contain news from our feeds -->
-            <div class="row">
-            <h3 class="news-type-label">Recent News from <a href="{% url 'website:member' news.author.get_url_name %}">{{news.author.first_name}}</a></h3>
-            <div class="well news-well">
-                {% for item in author_news %}
-                <!-- Create a row for each news item which has been passed in -->
-                <div class="row news_header">
-                <!-- TODO link to the full news item -->
-                <a href="">
-                    <!-- Use the items image if it exists, otherwise use the default icon -->
-                    {% if item.image %}
-                    <img src="{% thumbnail item.image 250x250 box=item.cropping crop detail %}" class="news_image" height="50" width="50" alt="{{item.alt_text}}">
-                    {% else %}
-                    <img src="{% static 'website/img/news_icon.png' %}" class="news_image" height="50" width="50">
-                    {% endif %}
-                </a>
-                <div class="news_info">
-                    <!-- https://css-tricks.com/line-clampin/ This seems to be a good way to do multi line wrapping, also referenced in relevant news.css file -->
-                    <div class="news_title line-clamp">
-                    <!-- TODO link to the full news item -->
-                    <a href="{% url 'website:news' item.id %}">
-                        <p>{{item.title}}</p>
-                    </a>
-                    </div>
-                    <p class="news_date">{{item.short_date}} | <a href="{% url 'website:member' item.author.get_url_name %}">{{item.author.first_name}}</a></p><!--</p><p class="news_date">{{item.author}}</p>-->
-                </div>
-                </div>
-                <div class="row news_body">
-                <!-- Truncation now uses a set number of lines which can be modified in news.css content-clamp class by changing -webkit-line-clamp -->
-                <div class="news_content content-clamp">
-                    {% autoescape off %}
-                    <p>{{ item.content | removehtmltags }}</p>
-                    {% endautoescape %}
-                </div>
-                </div>
-                {% endfor %}
-            </div>
-            </div>
-            {% endif %}
-            {% for project, proj_news in project_news.items %}
-            <div class="row">
-            {% if proj_news %}
-            <h3 class="news-type-label">Recent News from <a href="{% url 'website:project' project.short_name %}">{{project.name}}</a></h3>
-            {% endif %}
-            <div class="well news-well">
-                {% for item in proj_news %}
-                <!-- Create a row for each news item which has been passed in -->
-                <div class="row news_header">
-                <!-- TODO link to the full news item -->
-                <a href="">
-                    <!-- Use the items image if it exists, otherwise use the default icon -->
-                    {% if item.image %}
-                    <img src="{% thumbnail item.image 250x250 box=item.cropping crop detail %}" class="news_image" height="50" width="50" alt="{{item.alt_text}}">
-                    {% else %}
-                    <img src="{% static 'website/img/news_icon.png' %}" class="news_image" height="50" width="50">
-                    {% endif %}
-                </a>
-                <div class="news_info">
-                    <!-- https://css-tricks.com/line-clampin/ This seems to be a good way to do multi line wrapping, also referenced in relevant news.css file -->
-                    <div class="news_title line-clamp">
-                    <!-- TODO link to the full news item -->
-                    <a href="{% url 'website:news' item.id %}">
-                        <p>{{item.title}}</p>
-                    </a>
-                    </div>
-                    <p class="news_date">{{item.short_date}} | <a href="{% url 'website:member' item.author.get_url_name %}">{{item.author.first_name}}</a></p><!--</p><p class="news_date">{{item.author}}</p>-->
-                </div>
-                </div>
-                <div class="row news_body">
-                <!-- Truncation now uses a set number of lines which can be modified in news.css content-clamp class by changing -webkit-line-clamp -->
-                <div class="news_content content-clamp">
-                    {% autoescape off %}
-                    <p>{{item.content}}</p>
-                    {% endautoescape %}
-                </div>
-                </div>
-                {% endfor %}
-            </div>
-            </div>
-            {% endfor %}
-        </div>
+    <div class="row">
+	<div class="col-xs-12 col-md-10 main-content">
+	    <div class="row">
+		<div class="col-sm-4 hideden-xs">
+		    {% if news.image %}
+		    <img src="{% thumbnail news.image 250x250 box=news.cropping crop detail %}" class="big-news-image" height="250" width="250" alt="{{news.alt_text}}">
+		    {% else %}
+		    <img src="{% static 'website/img/news_icon.png' %}" class="big-news-image" height="250" width="250">			
+		    {% endif %}
+		</div>
+		<div class="col-xs-12 col-sm-8">
+		    <h1 class="big-news-title">{{news.title}}</h1>
+		    <br/>
+		    <span class="big-news-author"><a href="{% url 'website:member' news.author.get_url_name %}">{{news.author.get_full_name}}</a></span>
+		    <br/>
+		    <span class="big-news-published">Published {{news.short_date}}</span>
+		    <br/>
+		    {% for project in news.project.all %}
+		    <span class="big-news-project"><a href="{% url 'website:project' project.short_name %}">{{project.name}}</a></span>
+		    <br/>
+		    {% endfor %}
+		</div>
+	    </div>
+	    <div class="big-news-content">
+		{% autoescape off %}
+		<p>{{news.content}}</p>
+		{% endautoescape %}
+	    </div>
+	</div>
+	<div class="col-xs-12 col-md-2">
+	    <!-- This is the authors news -->
+	    {% if author_news %}
+	    <!-- Create a row for the well which will contain news from our feeds -->
+	    <div class="row">
+		<h3 class="news-type-label">Recent News from <a href="{% url 'website:member' news.author.get_url_name %}">{{news.author.first_name}}</a></h3>
+		<div class="well news-well">
+		    {% for item in author_news %}
+		    <!-- Create a row for each news item which has been passed in -->
+		    <div class="row news_header">
+			<!-- TODO link to the full news item -->
+			<a href="">
+			    <!-- Use the items image if it exists, otherwise use the default icon -->
+			    {% if item.image %}
+			    <img src="{% thumbnail item.image 250x250 box=item.cropping crop detail %}" class="news_image" height="50" width="50" alt="{{item.alt_text}}">
+			    {% else %}
+			    <img src="{% static 'website/img/news_icon.png' %}" class="news_image" height="50" width="50">			
+			    {% endif %}
+			</a>
+			<div class="news_info">
+			    <!-- https://css-tricks.com/line-clampin/ This seems to be a good way to do multi line wrapping, also referenced in relevant news.css file -->
+			    <div class="news_title line-clamp">
+				<!-- TODO link to the full news item -->
+				<a href="{% url 'website:news' item.id %}">
+				    <p>{{item.title}}</p>
+				</a>
+			    </div>
+			    <p class="news_date">{{item.short_date}} | <a href="{% url 'website:member' item.author.get_url_name %}">{{item.author.first_name}}</a></p><!--</p><p class="news_date">{{item.author}}</p>-->
+			</div>
+		    </div>
+		    <div class="row news_body">
+			<!-- Truncation now uses a set number of lines which can be modified in news.css content-clamp class by changing -webkit-line-clamp -->
+			<div class="news_content content-clamp">
+			    {% autoescape off %}
+			    <p>{{ item.content | removehtmltags }}</p>
+			    {% endautoescape %}
+			</div>
+		    </div>
+		    {% endfor %}
+		</div>
+	    </div>
+	    {% endif %}
+	    {% for project, proj_news in project_news.items %}
+	    <div class="row">
+		{% if proj_news %}
+		<h3 class="news-type-label">Recent News from <a href="{% url 'website:project' project.short_name %}">{{project.name}}</a></h3>
+		{% endif %}
+		<div class="well news-well">
+		    {% for item in proj_news %}
+		    <!-- Create a row for each news item which has been passed in -->
+		    <div class="row news_header">
+			<!-- TODO link to the full news item -->
+			<a href="">
+			    <!-- Use the items image if it exists, otherwise use the default icon -->
+			    {% if item.image %}
+			    <img src="{% thumbnail item.image 250x250 box=item.cropping crop detail %}" class="news_image" height="50" width="50" alt="{{item.alt_text}}">
+			    {% else %}
+			    <img src="{% static 'website/img/news_icon.png' %}" class="news_image" height="50" width="50">			
+			    {% endif %}
+			</a>
+			<div class="news_info">
+			    <!-- https://css-tricks.com/line-clampin/ This seems to be a good way to do multi line wrapping, also referenced in relevant news.css file -->
+			    <div class="news_title line-clamp">
+				<!-- TODO link to the full news item -->
+				<a href="{% url 'website:news' item.id %}">
+				    <p>{{item.title}}</p>
+				</a>
+			    </div>
+			    <p class="news_date">{{item.short_date}} | <a href="{% url 'website:member' item.author.get_url_name %}">{{item.author.first_name}}</a></p><!--</p><p class="news_date">{{item.author}}</p>-->
+			</div>
+		    </div>
+		    <div class="row news_body">
+			<!-- Truncation now uses a set number of lines which can be modified in news.css content-clamp class by changing -webkit-line-clamp -->
+			<div class="news_content content-clamp">
+			    {% autoescape off %}
+			    <p>{{item.content}}</p>
+			    {% endautoescape %}
+			</div>
+		    </div>
+		    {% endfor %}
+		</div>
+	    </div>
+	    {% endfor %}
+	</div>
     </div>
 </div>
 {% endblock %}
