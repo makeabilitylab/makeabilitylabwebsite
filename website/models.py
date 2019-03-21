@@ -843,6 +843,7 @@ class Photo(models.Model):
     # size is "width x height"
     # TODO: update with desired aspect ratio and maximum resolution
     cropping = ImageRatioField('picture', '368x245', size_warning=True)
+    detail_page_cropping = ImageRatioField('picture', '950x630', size_warning=True)
 
     def admin_thumbnail(self):
         return u'<img src="%s" height="100"/>' % (self.picture.url)

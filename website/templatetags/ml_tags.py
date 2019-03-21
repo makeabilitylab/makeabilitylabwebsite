@@ -1,6 +1,8 @@
 # Read more about custom tags and filters here: https://docs.djangoproject.com/en/dev/howto/custom-template-tags/#writing-custom-template-filters
 from django import template
 from django.template.defaultfilters import stringfilter
+import re
+
 from django.template.defaulttags import register
 import re
 
@@ -25,7 +27,7 @@ def jsdate(d):
     except AttributeError:
         return 'undefined'
 
-# Removes any HTML tags in String and returns new String
+ # Removes any HTML tags in String and returns new String
 @register.filter(name='removehtmltags')
 @stringfilter
 def removehtmltags(value):

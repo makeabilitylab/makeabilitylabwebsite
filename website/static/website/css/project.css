@@ -58,15 +58,15 @@
 
 .header-visual-title {
   font-family: adelle-regular;
-  font-weight: bold;
-  color: #464D59;
-  font-size: 15px;
-  word-wrap: break-word;
-  text-overflow: ellipsis;
-  padding-top: 5px;
-  margin-bottom: 0;
-  float: right;
-  max-width: 535px;
+	font-weight: bold;
+	color: #464D59;
+	font-size: 15px;
+	word-wrap: break-word;
+	text-overflow: ellipsis;
+	padding-top: 5px;
+	margin-bottom: 0px;
+	float: right;
+	max-width: 535px;
 }
 
 .header-visual-caption {
@@ -116,8 +116,92 @@
   padding-right: 30px;
 }
 
-@media (max-width: 414px) {
-  .recent-news,  .quick-info {
-    display: none;
-  }
+@media (max-width: 414px){
+    .recent-news, .quick-info {
+        display: none;
+    }
+}
+
+/*---------------------------------------*/
+/*      Photo Gallery Light Box          */
+/*---------------------------------------*/
+
+.is-hidden {
+	display: none;
+}
+
+.lightbox {
+  position: fixed;
+  z-index: 1;
+  padding-top: 95px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: black;
+}
+
+.lightbox-caption {
+  text-align: center;
+  background-color: black;
+  padding: 2px 16px;
+  color: white;
+}
+
+.lightbox-content {
+  position: relative;
+  background-color: #000000;
+  margin: auto;
+  padding: 0;
+  width: 90%;
+  max-width: 950px;
+}
+
+.lightbox-close-btn {
+  color: white;
+  position: absolute;
+	cursor: pointer;
+  top: 55px;
+  right: 25px;
+  font-size: 35px;
+  font-weight: bold;
+}
+
+.lightbox-slides {
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.lightbox-slides img {
+  width: 100%;
+  max-width: 950px;
+}
+
+.prev,
+.next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  padding: 16px;
+  margin-top: -50px;
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  transition: 0.6s ease;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+.prev:hover,
+.next:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #ffffff;
 }

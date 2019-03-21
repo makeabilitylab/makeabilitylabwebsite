@@ -20,6 +20,7 @@
     <!-- <script src="{% static 'website/js/peopleHeightFix.js' %}"></script> -->
     <script src="{% static 'website/js/utils.js' %}"></script>
     <script src="{% static 'website/js/indproject.js' %}"></script>
+    <script src="{% static 'website/js/lightbox.js' %}"></script>
 {% endblock %}
 
 
@@ -103,7 +104,7 @@
 			<!-- Truncation now uses a set number of lines which can be modified in news.css content-clamp class by changing -webkit-line-clamp -->
 			<div class="news_content content-clamp">
 			    {% autoescape off %}
-			    <p>{{ item.content | removehtmltags }}</p>
+			    <p>{{ item.content  | removehtmltags }}</p>
 			    {% endautoescape %}
 			</div>
 		    </div>
@@ -177,12 +178,11 @@
 
             </div>
         </div>
+        {% if photos %}
         <div class="row row-adjust-margins">
-            {% if photos %}
             <h3 class="news-type-label">Photo Gallery</h3>
-            {% endif %}
             {% for image in photos %}
-            <div class="col-md-4 project-gallery-col">
+            <div class="col-md-4 project-gallery-col" id="slide{{ forloop.counter }}">
             <img src="{% thumbnail image.picture 368x245 box=image.cropping crop detail %}" alt="{{image.alt_text}}" class="project-gallery">
             <div class="overlay-image">
                 <div class="image-gallery-caption">{{image.caption}}</div>
@@ -190,6 +190,8 @@
             </div>
             {% endfor %}
         </div>
+        {% include "snippets/display_project_gallery_lightbox.html" %}
+        {% endif %}
 
         {# Check to see if a project has ended. If so, just list all project members. If the project is #}
         {# active then split members into current and past #}

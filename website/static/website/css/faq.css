@@ -2,13 +2,13 @@
   margin-top: 20px;
 }
 
-.faq ul#questions-list {
+.faq-questions-list {
   padding: 0;
   list-style-type: none;
   margin: 0;
 }
 
-.faq ul#questions-list li {
+.faq-questions-list li {
   padding: 10px 0;
   border-bottom: 1px solid #ddd;
 }
@@ -22,6 +22,10 @@
   height: 44px;
   margin-top: -44px;
   visibility: hidden;
+}
+
+.faq-blockquote {
+    font-size: 14px;
 }
 
 html {

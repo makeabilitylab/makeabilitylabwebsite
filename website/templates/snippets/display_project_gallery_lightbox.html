@@ -1,0 +1,21 @@
+{% load staticfiles %}
+{% load thumbnail %}
+{% load cropping %}
+{% load ml_tags %}
+
+
+<div class="lightbox is-hidden">
+    <span class="lightbox-close-btn">&times;</span>
+    <div class="lightbox-content">
+        {% for image in photos %}
+            <div class="lightbox-slides" id="lightbox-slide{{ forloop.counter }}">
+                <img src="{% thumbnail image.picture 1000x0 box=image.detail_page_cropping %}" alt="{{image.alt_text}}">
+                <div class="lightbox-caption">
+                    <p>{{ image.caption }}</p>
+                </div>
+            </div>
+        {% endfor %}
+        <a class="prev">&#10094;</a>
+        <a class="next">&#10095;</a>
+    </div>
+</div>

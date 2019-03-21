@@ -55,10 +55,13 @@
 			if(pub.num_pages) {
 				text += pub.num_pages + " pages.";
 			}
-			text += " <i>To Appear</i>.";
+			text += " <i>To Appear</i>. ";
 		} else if(pub.start_page && pub.end_page) {
-			text += pub.start_page + "&ndash;" + pub.end_page + ".";
+			text += pub.start_page + "&ndash;" + pub.end_page + ". ";
 		}
+		if (pub.url && pub.url!="None" && pub.url!="tbd") {
+   			text += "DOI: <a href='" + pub.url + "'>" + pub.url + "</a>";
+    	}
 	    text+="</div>";
 	    text+="<div id=\"bibtex-text\" style=\"display: none\">";
 	    text+="@inproceedings{"+pub.authors[0].last_name;
@@ -97,10 +100,7 @@
 		text+=" numpages = {"+String(parseInt(pub.page_num_end)-parseInt(pub.page_num_start))+"},<br/>";
 	    }
 	    if (pub.url && pub.url!="None" && pub.url!="tbd"){
-		text+=" url = {"+pub.url+"},<br/>";
-	    }
-	    if (pub.doi && pub.doi!="None" && pub.doi!="tbd"){
-		text+=" doi = {"+pub.doi+"},<br/>";
+		text+=" doi = {"+pub.url+"},<br/>";
 	    }
 	    if (pub.acmid && pub.acmid!="None" && pub.acmid!="tbd"){
 		text+=" acmid = {"+pub.acmid+"},<br/>";
