@@ -31,7 +31,7 @@
     };
 
     /**
-     * Opens the lightbox to the image clicked on and disables scrolling
+     * Opens the lightbox to the image clicked on
      * @param {object} slide - id of the slide containing the image clicked on
      */
     function openLightBox(slide) {
@@ -43,18 +43,16 @@
             }
         }
         document.querySelector(".lightbox").classList.remove("is-hidden");
-        document.querySelector("body").classList.add("is-stop-scrolling");
     }
 
     /**
-     * Closes the lightbox and re-enables scrolling
+     * Closes the lightbox
      */
     function closeLightBox() {
         document.querySelector(".lightbox").classList.add("is-hidden");
         for (let i = 0; i < lightboxImages.length; i++) {
             lightboxImages[i].classList.remove("is-hidden");
         }
-        document.querySelector("body").classList.remove("is-stop-scrolling");
     }
 
     /**

@@ -555,10 +555,7 @@ h5 {
   text-decoration: none;
 }
 
-.is-stop-scrolling {
-  height: 100%;
-  overflow: hidden;
-}
+
 
 .makelab-footer-col a:link {
   color: white;
