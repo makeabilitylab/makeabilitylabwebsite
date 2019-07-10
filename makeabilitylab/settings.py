@@ -45,7 +45,7 @@ if config.has_option('Django', 'ALLOWED_HOSTS'):
     USE_X_FORWARDED_HOST = True
     ALLOWED_HOSTS = config.get('Django', 'ALLOWED_HOSTS').split(',')
 else:
-    ALLOWED_HOSTS = []
+    ALLOWED_HOSTS = ['*']
 
 
 # TODO: this seems to work fine on Docker but breaks localhost dev (without docker)
@@ -155,7 +155,7 @@ TEMPLATES = [
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-if ALLOWED_HOSTS:
+if config.has_section('Postgres'):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -167,12 +167,16 @@ if ALLOWED_HOSTS:
         }
     }
 else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db', 'db.sqlite3'),
-        }
+     DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'stemletics',
+        'USER': 'stemleticsadmin',
+        'PASSWORD': 'changeme',
+        'HOST': 'db', # set in docker-compose.yml
+        'PORT': 5432 # default postgres port
     }
+}
 
 
 # Password validation
