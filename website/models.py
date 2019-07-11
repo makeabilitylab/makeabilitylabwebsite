@@ -62,6 +62,7 @@ class Person(models.Model):
     last_name = models.CharField(max_length=50)
     url_name = models.CharField(editable=False, max_length=50, default='placeholder')
     email = models.EmailField(blank=True, null=True)
+    #linkedIn = models.URLField(blank=True, null=True)
     personal_website = models.URLField(blank=True, null=True)
     github = models.URLField(blank=True, null=True)
     twitter = models.URLField(blank=True, null=True)

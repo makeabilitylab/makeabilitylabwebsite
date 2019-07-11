@@ -14,7 +14,5 @@ def recent_news(request):
     news_items_num = 3  # Defines the number of news items that will be selected
     news_items = News.objects.order_by('-date')[:news_items_num]
 
-    print("******blah de blah*****")
-    print(news_items)
 
     return { 'recent_news': news_items, }

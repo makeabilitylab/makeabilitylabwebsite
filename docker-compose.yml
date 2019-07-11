@@ -6,9 +6,11 @@ services:
      ports:
        - '5432'
      environment:
-      - POSTGRES_DB=stemletics
-      - POSTGRES_USER=stemleticsadmin
-      - POSTGRES_PASSWORD=changeme
+      - POSTGRES_DB=makeability
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+     volumes:
+      - /var/lib/postgresql/data
   web:
     restart: always
     build:
@@ -21,6 +23,6 @@ services:
       - .:/code
     depends_on:
       - db
-    command: ["./makeabilitylabwebsite/wait-for-postgres.sh", "db", "python", "manage.py"]
+    command: ["./docker-entrypoint.sh", "db", "python", "manage.py"]
     links:
-      - "db:database"    
+      - "db:db"    
