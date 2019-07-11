@@ -2,15 +2,17 @@ version: '3'
 
 services:
   db:
+     restart: always
      image: 'postgres'
      ports:
        - '5432'
      environment:
-      - POSTGRES_DB=stemletics
-      - POSTGRES_USER=stemleticsadmin
-      - POSTGRES_PASSWORD=changeme
-  web:
-    restart: always
+      - POSTGRES_DB=makeability
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+     volumes:
+      - /var/lib/postgresql/data
+  web:    
     build:
       context: .
       dockerfile: Dockerfile
@@ -21,6 +23,6 @@ services:
       - .:/code
     depends_on:
       - db
-    command: ["./makeabilitylabwebsite/wait-for-postgres.sh", "db", "python", "manage.py"]
+    command: ["./docker-entrypoint.sh", "db", "python", "manage.py"]
     links:
       - "db:database"    

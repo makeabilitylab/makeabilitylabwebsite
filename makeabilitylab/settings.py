@@ -88,12 +88,12 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['file', 'console'],
+            'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': True,
         },
         'website': {
-            'handlers': ['file', 'console'],
+            'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': False,
         },
@@ -170,9 +170,9 @@ else:
      DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'stemletics',
-        'USER': 'stemleticsadmin',
-        'PASSWORD': 'changeme',
+        'NAME': 'makeability',
+        'USER': 'admin',
+        'PASSWORD': 'password',
         'HOST': 'db', # set in docker-compose.yml
         'PORT': 5432 # default postgres port
     }
