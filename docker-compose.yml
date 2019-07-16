@@ -11,7 +11,7 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
      volumes:
-      - /var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
   web:    
     build:
       context: .
@@ -25,4 +25,6 @@ services:
       - db
     command: ["./docker-entrypoint.sh", "db", "python", "manage.py"]
     links:
-      - "db:database"    
+      - "db:database"
+volumes:
+    postgres-data:   
