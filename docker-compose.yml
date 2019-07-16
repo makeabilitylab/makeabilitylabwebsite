@@ -2,7 +2,6 @@ version: '3'
 
 services:
   db:
-     restart: always
      image: 'postgres'
      ports:
        - '5432'
@@ -11,8 +10,8 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
      volumes:
-      - /var/lib/postgresql/data
-  web:    
+      - postgres-data:/var/lib/postgresql/data
+  web:
     build:
       context: .
       dockerfile: Dockerfile
@@ -25,4 +24,6 @@ services:
       - db
     command: ["./docker-entrypoint.sh", "db", "python", "manage.py"]
     links:
-      - "db:database"    
+      - "db:database"
+volumes:
+    postgres-data:
