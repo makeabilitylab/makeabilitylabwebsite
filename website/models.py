@@ -1190,8 +1190,8 @@ def poster_delete(sender, instance, **kwargs):
 
 class News(models.Model):
     title = models.CharField(max_length=255)
-    # date = models.DateTimeField(default=timezone.now)
-    date = models.DateField(default=date.today)  # check this line, might be diff
+    date = models.DateTimeField(default=timezone.now)
+    #date = models.DateField(default=date.today)  # check this line, might be diff
     author = models.ForeignKey(Person, null=True, on_delete=models.SET_NULL)
     content = models.TextField()
     # Following the scheme of above thumbnails in other models
@@ -1258,7 +1258,7 @@ class Banner(models.Model):
         (PROJECTS, "Projects"),
         (INDPROJECT, "Ind_Project"),
         (VIDEOS, "Videos")
-    )
+    )    
     page = models.CharField(max_length=50, choices=PAGE_CHOICES, default=FRONTPAGE)
     image = models.ImageField(blank=True, upload_to=UniquePathAndRename("banner", True), max_length=255)
     # This field is only needed if the banner has been assigned to a specific project. The field is used by project_ind to select project specific banners so we don't have to add each project to the PAGE_CHOICES dictionary.

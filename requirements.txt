@@ -1,6 +1,7 @@
 # Run `pip3 install -r requirements.txt` to install dependencies
 
 django==2.1.7
+psycopg2>=2.7,<3.0
 djangorestframework
 beautifulsoup4
 wand==0.4.4
@@ -14,5 +15,4 @@ xmltodict==0.11.0
 google-api-python-client==1.5.3
 pyOpenSSL
 requests
-psycopg2
 django-sortedm2m-filter-horizontal-widget

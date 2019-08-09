@@ -41,37 +41,21 @@ RUN mkdir /code
 # See: https://docs.docker.com/engine/reference/builder/#workdir
 WORKDIR /code
 
-# The ADD instruction copies new files, directories or remote file URLs from <src> and adds them to the
-# filesystem of the image at the path <dest>.
-# See: https://docs.docker.com/engine/reference/builder/#add
-ADD requirements.txt /code/
+#COPY the requirements.txt into the docker container
 
 # As an fyi: Layering RUN instructions and generating commits conforms to the core concepts 
 # of Docker where commits are cheap and containers can be created from any point in an image’s history, much like source control.
 # See: https://docs.docker.com/engine/reference/builder/#run
+COPY requirements.txt /code/
 RUN pip install -r requirements.txt
-
-# Add the current directory to /code/
-ADD . /code/
 
 ##Our local user needs write access to a website and static files
 RUN chown -R apache /code/
 
-# The EXPOSE instruction informs Docker that the container listens on the specified network ports at runtime. 
-# You can specify whether the port listens on TCP or UDP, and the default is TCP if the protocol is not specified.
-# Note: The EXPOSE instruction does not actually publish the port. To actually publish the port when running the container, 
-# use the -p flag on docker run to publish and map one or more ports
-# See: https://docs.docker.com/engine/reference/builder/#expose
-EXPOSE 8000
-
-# The main purpose of a CMD is to provide defaults for an executing container. These defaults can include an 
-# executable, or they can omit the executable, in which case you must specify an ENTRYPOINT instruction as well.
-# Note: There can only be one CMD instruction in a Dockerfile. If you list more than one CMD then only the 
-# last CMD will take effect.
-# CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+COPY . /code/
 
 #Run the process as our local user:
 USER apache
 
-COPY ./docker-entrypoint.sh /code/
-ENTRYPOINT ["/code/docker-entrypoint.sh"]
+COPY docker-entrypoint.sh docker-entrypoint.sh
+CMD ["/code/docker-entrypoint.sh"] 
