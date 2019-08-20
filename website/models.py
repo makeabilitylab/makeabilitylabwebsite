@@ -921,6 +921,25 @@ class Talk(models.Model):
     # auto-generate thumbnail
     thumbnail = models.ImageField(upload_to='talks/images/', editable=False, null=True, max_length=255)
 
+    #test field to verify adding new fields to models
+    INVITED_TALK = "Invited Talk"
+    CONFERENCE_TALK = "Conference Talk"
+    MS_DEFENSE = "MS Defense"
+    PHD_DEFENSE = "PhD Defense"
+    GUEST_LECTURE = "Guest Lecture"
+    QUALS_TALK = "Quals Talk"
+
+    TALK_TYPE_CHOICES = (
+        (INVITED_TALK, INVITED_TALK),
+        (CONFERENCE_TALK, CONFERENCE_TALK),
+        (MS_DEFENSE, MS_DEFENSE),
+        (PHD_DEFENSE, PHD_DEFENSE),
+        (GUEST_LECTURE, GUEST_LECTURE),
+        (QUALS_TALK, QUALS_TALK),
+    )
+
+    talk_type = models.CharField(max_length=50, choices=TALK_TYPE_CHOICES, null=True)
+
     # raw_file = models.FileField(upload_to='talks/')
     # print("In talk model!")
     def get_person(self):
