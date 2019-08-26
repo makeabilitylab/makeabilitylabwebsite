@@ -129,7 +129,10 @@ class VideoAdmin(admin.ModelAdmin):
 class TalkAdmin(admin.ModelAdmin):
     # The list display lets us control what is shown in the default talk table at Home > Website > Talk
     # See: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_display
-    list_display = ('title', 'date', 'get_speakers_as_csv', 'forum_name', 'location')
+    list_display = ('title', 'date', 'get_speakers_as_csv', 'forum_name', 'location', 'talk_type')
+    fieldsets = [
+        ('Talk Type',                      {'fields': ['talk_type']}),        
+    ]
 
     # Filters speakers only to current members and collaborators and sorts by first name
     # Based on: https://stackoverflow.com/a/17457828
@@ -275,4 +278,4 @@ admin.site.register(Project_umbrella, ProjectUmbrellaAdmin)
 admin.site.register(Sponsor)
 
 # For modifying more on the front admin landing page, see https://medium.com/django-musings/customizing-the-django-admin-site-b82c7d325510
-admin.site.index_title = "Makeability Lab Admin. Django version: " + django.get_version() + " ML Version: 0.3.2"
+admin.site.index_title = "Makeability Lab Admin. Django version: " + django.get_version() + " ML Version: 0.3.2.1"
