@@ -20,6 +20,7 @@ services:
       - '8000:8000'
     volumes:
       - .:/code
+      - /cse/web/research/makelab/www-test:/code/media
     depends_on:
       - db
     command: ["./docker-entrypoint.sh", "db", "python", "manage.py"]

@@ -916,12 +916,7 @@ class Talk(models.Model):
     pdf_file = models.FileField(upload_to='talks/', null=True, default=None, max_length=255)
     raw_file = models.FileField(upload_to='talks/', blank=True, null=True, default=None, max_length=255)
 
-    # The thumbnail should have null=True because it is added automatically later by a post_save signal
-    # TODO: decide if we should have this be editable=True and if user doesn't add one him/herself, then
-    # auto-generate thumbnail
-    thumbnail = models.ImageField(upload_to='talks/images/', editable=False, null=True, max_length=255)
-
-    #test field to verify adding new fields to models
+#test field to verify adding new fields to models
     INVITED_TALK = "Invited Talk"
     CONFERENCE_TALK = "Conference Talk"
     MS_DEFENSE = "MS Defense"
@@ -939,6 +934,11 @@ class Talk(models.Model):
     )
 
     talk_type = models.CharField(max_length=50, choices=TALK_TYPE_CHOICES, null=True)
+
+    # The thumbnail should have null=True because it is added automatically later by a post_save signal
+    # TODO: decide if we should have this be editable=True and if user doesn't add one him/herself, then
+    # auto-generate thumbnail
+    thumbnail = models.ImageField(upload_to='talks/images/', editable=False, null=True, max_length=255)
 
     # raw_file = models.FileField(upload_to='talks/')
     # print("In talk model!")
@@ -1212,7 +1212,7 @@ class News(models.Model):
     date = models.DateTimeField(default=timezone.now)
     #date = models.DateField(default=date.today)  # check this line, might be diff
     author = models.ForeignKey(Person, null=True, on_delete=models.SET_NULL)
-    content = models.TextField()
+    content = models.TextField(blank=True)
     # Following the scheme of above thumbnails in other models
     image = models.ImageField(blank=True, upload_to=UniquePathAndRename("news", True), max_length=255)
     image.help_text = 'You must select "Save and continue editing" at the bottom of the page after uploading a new image for cropping. Please note that since we are using a responsive design with fixed height banners, your selected image may appear differently on various screens.'
