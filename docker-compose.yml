@@ -17,7 +17,7 @@ services:
       dockerfile: Dockerfile
     command: python3 manage.py runserver 0.0.0.0:8000
     ports:
-      - '8000:8000'
+      - '127.0.0.1:8571:8000'
     volumes:
       - .:/code
       - /cse/web/research/makelab/www-test:/code/media
