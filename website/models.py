@@ -1083,6 +1083,7 @@ class Publication(models.Model):
     )
 
     # TODO: remove null=True from the following three
+    pub_venue_url = models.URLField(blank=True, null=True)
     pub_venue_type = models.CharField(max_length=50, choices=PUB_VENUE_TYPE_CHOICES, null=True)
     extended_abstract = models.NullBooleanField(null=True)
     peer_reviewed = models.NullBooleanField(null=True)
