@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#navigate to the root directory
+cd ../
+
 #First, build the website image
 docker-compose build website
 
