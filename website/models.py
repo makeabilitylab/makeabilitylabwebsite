@@ -1103,7 +1103,7 @@ class Publication(models.Model):
         (TEN_YEAR_IMPACT_AWARD, TEN_YEAR_IMPACT_AWARD)
     )
     award = models.CharField(max_length=50, choices=AWARD_CHOICES, blank=True, null=True)
-    test = models.CharField(blank=True, null=True)
+    test = models.CharField(max_length=50, blank=True, null=True)
 
     def get_person(self):
         """
