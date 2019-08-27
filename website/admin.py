@@ -167,7 +167,7 @@ class PublicationAuthorInline(admin.TabularInline):
 
 class PublicationAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None,                      {'fields': ['title', 'authors', 'date']}),
+        (None,                      {'fields': ['title', 'authors', 'date', 'test']}),
         ('Files',                   {'fields': ['pdf_file']}),
         ('Pub Venue information',   {'fields': ['pub_venue_url','pub_venue_type', 'book_title', 'book_title_short', 'geo_location', 'total_papers_submitted', 'total_papers_accepted']}),
         ('Archival Info',           {'fields': ['official_url', 'extended_abstract', 'peer_reviewed', 'award' ]}),
@@ -275,4 +275,4 @@ admin.site.register(Project_umbrella, ProjectUmbrellaAdmin)
 admin.site.register(Sponsor)
 
 # For modifying more on the front admin landing page, see https://medium.com/django-musings/customizing-the-django-admin-site-b82c7d325510
-admin.site.index_title = "Makeability Lab Admin. Django version: " + django.get_version() + " ML Version: 0.3.2.1"
+admin.site.index_title = "Makeability Lab Admin. Django version: " + django.get_version() + " ML Version: 0.3.2.2"
