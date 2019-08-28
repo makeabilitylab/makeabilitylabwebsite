@@ -1,0 +1,132 @@
+.sortedm2m-container {
+    margin-right: 10px;
+    width: 570px;
+}
+
+.sortedm2m-container p.selector-filter {
+    width: 570px;
+    padding: 0;
+    margin: 0;
+}
+
+.sortedm2m-container p.selector-filter input {
+    width: 532px;
+    margin: 5px 4px;
+}
+
+ul.sortedm2m {
+    display: block;
+    width: 554px;
+    min-height: 200px;
+    max-height: 400px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    margin: 0;
+    padding: 6px 8px;
+    list-style-type: none;
+    text-align: left;
+}
+
+ul.sortedm2m li {
+    list-style-type: none;
+    text-align: left;
+    width: 550px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: pre;
+}
+
+ul.sortedm2m li, ul.sortedm2m label {
+    cursor: move;
+}
+
+/* required to work properly in django admin */
+body.change-form .sortedm2m-container {
+    float: left;
+}
+.module ul.sortedm2m {
+    margin: 0;
+    padding: 6px 8px;
+}
+
+.hide {
+    display: none;
+}
+
+
+/* BEGIN CUSTOMIZATION */
+
+/* Make the whole widget wider, to fit the extra buttons: */
+.selector {
+  width: 827px;
+}
+
+.selector ul.selector-chooser {
+  float: left;
+  width: 22px;
+  background-color: #eee;
+  border-radius: 10px;
+  margin: 10em 5px 0 5px;
+  padding: 0;
+}
+
+.selector-chooser li {
+  list-style-type: none;
+  margin: 0;
+  padding: 3px;
+}
+
+.selector-up,
+.selector-down {
+  display: block;
+  width: 16px;
+  height: 16px;
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-indent: -3000px;
+}
+.selector-up {
+  background: url(../admin/img/selector-icons.svg) 0 1px no-repeat;
+}
+.selector-down {
+  background: url(../admin/img/selector-icons.svg) 0 -31px no-repeat;
+}
+.selector-up:hover {
+  background-position: 0 -15px;
+}
+.selector-down:hover {
+  background-position: 0 -47px;
+}
+
+/* Pull add-related button to the left: */
+.related-widget-wrapper-link.add-related {
+  margin-left: -26px;
+}
+
+
+@media (max-width: 1024px) {
+  .selector-up {
+    background: url(../admin/img/selector-icons.svg) 0 0 no-repeat;
+  }
+  .selector-down {
+    background: url(../admin/img/selector-icons.svg) 0 -41px no-repeat;
+  }
+  .selector-up:hover {
+    background-position: 0 -20px;
+  }
+  .selector-down:hover {
+    background-position: 0 -61px;
+  }
+
+  .selector-up,
+  .selector-down {
+      width: 20px;
+      height: 20px;
+      background-size: 20px auto;
+  }
+
+  /* Pull add-related button to the left: */
+  .related-widget-wrapper-link.add-related {
+    margin-left: -62px;
+  }
+}

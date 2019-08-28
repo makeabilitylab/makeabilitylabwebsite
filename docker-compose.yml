@@ -15,12 +15,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: python3 manage.py runserver 0.0.0.0:8000
+    command: python3 manage.py runserver 0.0.0.0:8571
     ports:
       - '127.0.0.1:8571:8000'
     volumes:
-      - .:/code
-      - /cse/web/research/makelab/www-test:/code/media
+      - .:/code      
     depends_on:
       - db
     command: ["./docker-entrypoint.sh", "db", "python", "manage.py"]

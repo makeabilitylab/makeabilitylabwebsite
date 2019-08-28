@@ -1,0 +1,57 @@
+.about-header {
+  margin-top: 10px;
+}
+
+.content-container {
+  margin-top: 25px;
+}
+
+.easter-egg-col img {
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.easter-egg-col {
+  margin-bottom: 18px;
+}
+
+.easter-egg-col:hover > img {
+  opacity: 0;
+}
+
+.easter-egg-col:hover .overlay-easter-egg {
+  opacity: 1;
+}
+
+.header-icon {
+  height: 25px;
+  width: 25px;
+  margin-right: 10px;
+}
+
+.header-link {
+  margin-top: 5px;
+  padding-left: 10px;
+}
+
+.icon-housing {
+  display: flex;
+}
+
+#makelab-recent-projects .individual-project-listing {
+  padding-left: 0;
+  padding-right: 30px;
+}
+
+#makelab-recent-projects .news-type-label {
+  margin-bottom: 10px;
+}
+
+.member-title {
+  margin: 0;
+}
+
+.person-title-text,.header-icon,.person-bio-text {
+  margin-top: 18px;
+  margin-bottom: 0;
+}
