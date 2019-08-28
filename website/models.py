@@ -717,6 +717,14 @@ class Project(models.Model):
 
     get_past_member_count.short_description = "Past Members"
 
+    def get_most_recent_publication(self):
+        """
+        Returns the most recent paper as a tuple of (date, publication)
+        :return: the most recent paper, a tuple of (date, publication)
+        """
+        most_recent_pub = self.publication_set.order_by('-date')[0]
+        return (most_recent_pub.date, most_recent_pub)
+
     def get_most_recent_artifact(self):
         """
         Returns the most recent artifact (publication, talk, or video) as tuple of (date, artifact)

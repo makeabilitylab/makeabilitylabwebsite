@@ -469,6 +469,7 @@ def projects(request):
 
     # if we are in debug mode, we include all projects even if they have no artifacts
     # as long as they have a start date
+    # TODO: change this to sort projects by most recent paper, only
     ordered_projects = sort_projects_by_most_recent_artifact(projects, settings.DEBUG)
 
     context = {'projects': ordered_projects,
