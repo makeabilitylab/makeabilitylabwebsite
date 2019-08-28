@@ -204,7 +204,7 @@ A few notes about this.
 Importantly, we will have to revise how we do this bootstrapping because Jon's UMD site is going away and because he no longer wants to maintain his own separate backend from the Makeability Lab website (in other words, the ML website will be the sole source of data thus eliminating the source of the bootstrap content). See Issue https://github.com/jonfroehlich/makeabilitylabwebsite/issues/420.
 
 # Test and Production Servers
-We have two UW servers hosting the ML website: https://makeabilitylab-test.cs.washington.edu (test) and https://makeabilitylab.cs.washington.edu (production). Note that both share the same PostgreSQL backend--so if you add test content to makeabilitylab-test.cs.washington.edu, it will automatically show up on the production server!
+We have two UW servers hosting the ML website: https://makeabilitylab-test.cs.washington.edu (test) and https://makeabilitylab.cs.washington.edu (production). They have different PostgresSQL backends so adding content to -test will not affect the production server and vice versa. 
 
 # Deploying Code to UW Servers
 The Makeability Lab website auto-deploys from GitHub to the department's Docker infrastructure using webhooks:
