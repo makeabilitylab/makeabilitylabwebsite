@@ -15,6 +15,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    restart: always
     command: python3 manage.py runserver 0.0.0.0:8000
     ports:
       - '127.0.0.1:8571:8000'
