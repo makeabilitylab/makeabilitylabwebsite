@@ -4,6 +4,7 @@ from django.template.defaultfilters import stringfilter
 import re
 
 from django.template.defaulttags import register
+import re
 
 register = template.Library()
 
