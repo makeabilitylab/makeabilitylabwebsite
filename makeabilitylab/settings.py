@@ -118,6 +118,8 @@ INSTALLED_APPS = [
     'image_cropping',
     'easy_thumbnails',
     'sortedm2m',
+    'ckeditor',
+    'ckeditor_uploader',
     'sortedm2m_filter_horizontal_widget',
     'rest_framework'
 ]
@@ -225,6 +227,16 @@ MEDIA_URL = '/media/'
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# CKEditor - Rich Text Editor
+CKEDITOR_UPLOAD_PATH = "uploads/"
+CKEDITOR_FILENAME_GENERATOR = 'website.models.get_filename'
+CKEDITOR_IMAGE_BACKEND = 'pillow'
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+    },
+}
 
 # Thumbnail processing
 # LS: from https://github.com/jonasundderwolf/django-image-cropping
