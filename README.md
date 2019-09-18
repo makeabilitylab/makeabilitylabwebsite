@@ -29,7 +29,7 @@ While the instructions below walk you through a step-by-step process to configur
   
 2. Clone this repository using `git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git` and navigate to the project home directory using the `cd` command.
 
-3. Build the docker images. This can be done by running `make build`, if make is installed. Alternatively, you can run `docker build .` or `docker build . -t <tag>`--the latter allows you to tag your build with a name (we recommend tagging it as `makelab_image` for easy access). This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
+3. Build the docker images. Run `docker build .` or `docker build . -t <tag>`--the latter allows you to tag your build with a name (we recommend tagging it as `makelab_image` for easy access). This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
 
 4. Running the container. Once the image has built, run `docker-compose up`, this will bring up both the postgres container for the database and the website containers. For future reference, running `docker-compose up -d` will allow you to continue using the same terminal and none of the output messages will be displayed.
 
@@ -69,7 +69,7 @@ exit
 
 6. Before you clone the repository, run this command `git config --global core.autocrlf false` in the directory you will be cloning the repository to. Windows crlf is unrecognized in Linux, thus we must set this auto-conversion as false to prevent look-up errors. If you don't do this, your dev environment will not work (see this [Issue](https://github.com/jonfroehlich/makeabilitylabwebsite/issues/429#issuecomment-406443833))
 
-7. Clone this repository using `git clone` and navigate to the project home directory using the `cd` command.
+7. Clone this repository using `git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git` and navigate to the project home directory using the `cd` command.
 
 8. Build the docker images. Run `docker build .` or `docker build . -t <tag>`--the latter allows you to tag your build with a name (we recommend tagging it as `makelab_image` for easy access). This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
 
