@@ -29,47 +29,29 @@ While the instructions below walk you through a step-by-step process to configur
   
 2. Clone this repository using `git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git` and navigate to the project home directory using the `cd` command.
 
-3. Build the docker images. This can be done by running `make build`, if make is installed. Alternatively, you can run `docker build .` or `docker build . -t <tag>`--the latter allows you to tag your build with a name (we recommend tagging it as `makelab_image` for easy access). This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
+3. Build the docker images. Run `docker build .` or `docker build . -t <tag>`--the latter allows you to tag your build with a name (we recommend tagging it as `makelab_image` for easy access). This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
 
-4. Open the interactive bash terminal using `docker run -ti -v $(pwd)/db:/code/db -v $(pwd)/media:/code/media --entrypoint=bash <tag>`
+4. Running the container. Once the image has built, run `docker-compose up`, this will bring up both the postgres container for the database and the website containers. For future reference, running `docker-compose up -d` will allow you to continue using the same terminal and none of the output messages will be displayed.
 
-5. Create the local database by running the following commands: `python3 manage.py makemigrations website` and `python3 manage.py migrate`. Type `exit` to leave the interactive terminal.
+5. Create the superuser. In another terminal, navigate to the project home directory using the `cd` command and open an interactive bash terminal in the website container using `docker exec -it makeabilitylabwebsite_website_1 bash`. Once inside the bash terminal, run `python manage.py createsuperuser`.
 
-6. Create the superuser. Run `make superuser` if make is installed, or `docker run -ti -v $(pwd)/db:/code/db -v $(pwd)/media:/code/media --entrypoint=python [tag] manage.py createsuperuser`.
+6. Open the development server in the web browser. At this point the development server should be running via step 4. You will find the website at `localhost:8571` as specified in the `docker-compose.yml` file. To fill this with test content for development purposes see Bootstrapping Content below.
 
-7. Rebuild the docker images. Use `make build` or `docker build . [-t] [tag]`
+7. Shutting down the server. In another terminal at the project home directory run `docker-compose down` and wait for the containers to shut-down. Note without running this command, the development server will persist even when you close down the terminal, thus preventing you from using port 8571 for other purposes.
 
-8. Run the local server using Docker. Use `make run` or `docker run -p 8000:8000 -ti -v $(pwd)/db:/code/db -v $(pwd)/media:/code/media $(pwd)/website:/code/website [tag]` 
-
-9. Open the development server in the web browser. This will be at `localhost:8000`. You should see a skeleton of the website (but no content). To fill this with test content for development purposes, see Bootstrapping Content below.
-
-After running the `docker run` command, you will not need to rebuild or rerun the Docker container after making changes. However, you will still need to refresh the webpage in order to see new updates.
-
+After running the `docker-compose up` command, you will not need to rebuild or rerun the Docker container (unless you have made changes to docker-compose.yml). However, you will still need to refresh the webpage in order to see new updates.
 ### Sample setup:
 ```
 git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git
 cd makeabilitylabwebsite/
 docker build . -t makelab_image
-docker run -ti -v $(pwd)/db:/code/db -v $(pwd)/media:/code/media --entrypoint=bash makelab_image
-python3 manage.py makemigrations website
-python3 manage.py migrate
-exit
-docker run -ti -v $(pwd)/db:/code/db -v $(pwd)/media:/code/media --entrypoint=python makelab_image manage.py createsuperuser
-docker build . -t makelab_image
-docker run -p 8000:8000 -ti -v database:/code/db -v $(pwd)/media:/code/media -v $(pwd)/website:/code/website makelab_image
+docker-compose up
 ```
-
-### Sample setup (using make):
+In new terminal (navigate to the project home directory)
 ```
-git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git
-cd makeabilitylabwebsite/
-make build
-make shell
-make makemigrations
+docker exec -it makeabilitylabwebsite_website_1 bash
+python manage.py createsuperuser
 exit
-make superuser
-make build
-make run
 ```
 
 # Docker Installation (Windows)
@@ -78,32 +60,28 @@ make run
 2. During the install, you will be prompted with a Configuration Dialog that will ask whether to use Windows containers instead of Linux containers. Do not check the box.
 ![InstallingDockerWindows_ConfigScreen](https://github.com/jonfroehlich/makeabilitylabwebsite/blob/master/readme/InstallingDockerWindows_ConfigScreen_UseWindowsContainersCheckbox.png)
 
-3. Goto the Start Menu and open `Docker for Windows.` If it asks you to enable Hyper-V, you should say Yes and restart.
+3. Go to the Start Menu and open `Docker for Windows.` If it asks you to enable Hyper-V, you should say Yes and restart.
 
-3. Open PowerShell, run `docker version` to make sure that it is running. 
+4. Open PowerShell, run `docker version` to make sure that it is running. 
 
-4. We need to configure Docker so that our local drives are available to our containers. From the system tray, open Docker -> Settings.  In Settings, navigate to the "Shared Drives" tab and select the drive that will host the Makeability Lab code/server. Click "Apply" and you will be prompted to enter the password for your machine.
+5. We need to configure Docker so that our local drives are available to our containers. From the system tray, open Docker -> Settings.  In Settings, navigate to the "Shared Drives" tab and select the drive that will host the Makeability Lab code/server. Click "Apply" and you will be prompted to enter the password for your machine.
 [![https://gyazo.com/16d374eeadcd0cc550b8ab17f4bcbe5f](https://i.gyazo.com/16d374eeadcd0cc550b8ab17f4bcbe5f.gif)](https://gyazo.com/16d374eeadcd0cc550b8ab17f4bcbe5f)
 
-3. Before you clone the repository, run this command `git config --global core.autocrlf false` in the directory you will be cloning the repository to. Windows crlf is unrecognized in Linux, thus we must set this auto-conversion as false to prevent look-up errors. If you don't do this, your dev environment will not work (see this [Issue](https://github.com/jonfroehlich/makeabilitylabwebsite/issues/429#issuecomment-406443833))
+6. Before you clone the repository, run this command `git config --global core.autocrlf false` in the directory you will be cloning the repository to. Windows crlf is unrecognized in Linux, thus we must set this auto-conversion as false to prevent look-up errors. If you don't do this, your dev environment will not work (see this [Issue](https://github.com/jonfroehlich/makeabilitylabwebsite/issues/429#issuecomment-406443833))
 
-4. Clone this repository using `git clone` and navigate to the project home directory using the `cd` command.
+7. Clone this repository using `git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git` and navigate to the project home directory using the `cd` command.
 
-5. Build the docker images. Run `docker build .` or `docker build . -t <tag>`--the latter allows you to tag your build with a name (we recommend tagging it as `makelab_image` for easy access). This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
+8. Build the docker images. Run `docker build .` or `docker build . -t <tag>`--the latter allows you to tag your build with a name (we recommend tagging it as `makelab_image` for easy access). This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
 
-6. Open the interactive bash terminal using `docker run -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media --entrypoint=bash [tag]`
+9. Running the container. Once the image has built, run `docker-compose up`, this will bring up both the postgres container for the database and the website containers. For future reference, running `docker-compose up -d` will allow you to continue using the same terminal and none of the output messages will be displayed.
 
-7. Create the local database. Run the following commands: `python3 manage.py makemigrations website` and `python3 manage.py migrate`. Type `exit` to leave the interactive terminal.
+10. Create the superuser. In another terminal, navigate to the project home directory using the `cd` command and open an interactive bash terminal in the website container using `docker exec -it makeabilitylabwebsite_website_1 bash`. Once inside the bash terminal, run `python manage.py createsuperuser`.
 
-8. Create the superuser. Run `docker run -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media --entrypoint=python [tag] manage.py createsuperuser`.
+11. Open the development server in the web browser. At this point the development server should be running via step 4. You will find the website at `localhost:8571` as specified in the `docker-compose.yml` file. To fill this with test content for development purposes see Bootstrapping Content below.
 
-9. Rebuild the docker images. Use `docker build . -t [tag]`
+12. Shutting down the server. In another terminal at the project home directory run `docker-compose down` and wait for the containers to shut-down. Note without running this command, the development server will persist even when you close down the terminal, thus preventing you from using port 8571 for other purposes.
 
-10. Run the local server using Docker. Use `docker run -p 8000:8000 -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media -v ${pwd}/website:/code/website [tag]` 
-
-11. Open the development server in the web browser. This will be at `localhost:8000`.
-
-After running the `docker run` command, you will not need to rebuild or rerun the Docker container after making changes. However, you will still need to refresh the webpage in order to see new updates. This development server will now persist even when you close down PowerShell. Thus, if you try to run the `docker run -p 8000:8000 -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media -v ${pwd}/website:/code/website [tag]` command again, you will receive the error:  `Error response from daemon: driver failed programming external connectivity on endpoint ecstatic_minsky (69ef6a6c62ca6b54bc81976758f03bf6e0c80362e3a9b7a8890714b4cc57d07f): Bind for 0.0.0.0:8000 failed: port is already allocated.`
+After running the `docker-compose up` command, you will not need to rebuild or rerun the Docker container (unless you have made changes to docker-compose.yml). However, you will still need to refresh the webpage in order to see new updates.
 
 ### Sample setup:
 ```
@@ -112,29 +90,13 @@ git config --global core.autocrlf false
 git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git
 cd .\makeabilitylabwebsite\
 docker build . -t makelab_image
-docker run -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media --entrypoint=bash makelab_image
-python3 manage.py makemigrations website
-python3 manage.py migrate
-exit
-docker run -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media --entrypoint=python makelab_image manage.py createsuperuser
-docker build . -t makelab_image
-docker run -p 8000:8000 -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media -v ${pwd}/website:/code/website makelab_image
+docker-compose up
 ```
-
-### Sample setup (using make)
-To use `make` in PowerShell, download gnuwin22 make from http://gnuwin32.sourceforge.net/packages/make.htm. Note that unlike on the Mac, some make commands have a postfix of a 'w' because their commands are slightly different in the makefile.
-
+In new terminal (navigate to the project home directory)
 ```
-git config --global core.autocrlf false
-git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git
-cd makeabilitylabwebsite
-make build
-make shellw
-make makemigrations
+docker exec -it makeabilitylabwebsite_website_1 bash
+python manage.py createsuperuser
 exit
-make superuserw
-make build
-make runw
 ```
 
 ### Manual Installation (In the event that Docker fails to run)
