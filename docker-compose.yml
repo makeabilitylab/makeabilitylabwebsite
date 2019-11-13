@@ -21,7 +21,7 @@ services:
       - '127.0.0.1:8571:8000'
     volumes:
       - .:/code
-      #- /cse/web/research/makelab/www-test:/code/media
+      - /cse/web/research/makelab/www:/code/media
     depends_on:
       - db
     command: ["./docker-entrypoint.sh", "db", "python", "manage.py"]
