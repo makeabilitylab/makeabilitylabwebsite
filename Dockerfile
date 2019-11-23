@@ -16,6 +16,8 @@
 FROM python:3
 
 # Setup some other prereqs needed:
+# TODO: we may want to consider adding pip here as I'm getting warnings about old pip
+# See: https://www.quora.com/How-does-one-install-pip-in-a-Docker-container-using-a-Dockerfile
 RUN apt-get update && apt-get --assume-yes install imagemagick ghostscript sqlite3 
 
 # The ENV instruction sets the environment variable <key> to the <value> in ENV <key> <value>. 
