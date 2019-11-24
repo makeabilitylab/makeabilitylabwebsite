@@ -400,6 +400,15 @@ h5 {
   font-size: small;
 }
 
+.project-award-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 40px;
+  width: 40px;
+  z-index: 20;
+}
+
 /* add this class to the container element for any images
    you would apply the zoom / darken effect to on hover */
 

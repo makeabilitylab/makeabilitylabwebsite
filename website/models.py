@@ -594,9 +594,19 @@ class Project(models.Model):
             ret.append(copi.person)
         return ret
 
-    def get_most_recent_publication(self):
+    def has_award(self):
+        '''Returns true if one or more pubs have an award'''
         if self.publication_set.exists():
-            return self.publication_set.order_by('-date')[0].date
+            # For filtering, see: https://stackoverflow.com/a/844572
+            num_award_papers = self.publication_set.filter(award__isnull=False).exclude(award__exact='').count()
+            return num_award_papers > 0
+        else:
+            return False
+
+    def get_most_recent_publication(self):
+        '''Returns the most recent publiation for project'''
+        if self.publication_set.exists():
+            return self.publication_set.order_by('-date')[0]
         else:
             return None
 
@@ -717,14 +727,6 @@ class Project(models.Model):
         return past_member_cnt
 
     get_past_member_count.short_description = "Past Members"
-
-    def get_most_recent_publication(self):
-        """
-        Returns the most recent paper as a tuple of (date, publication)
-        :return: the most recent paper, a tuple of (date, publication)
-        """
-        most_recent_pub = self.publication_set.order_by('-date')[0]
-        return (most_recent_pub.date, most_recent_pub)
 
     def get_most_recent_artifact(self):
         """

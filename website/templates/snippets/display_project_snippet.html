@@ -11,6 +11,9 @@
         <div style="background: white; width:100%; contain: content;">
             <img style="width:100%; height: auto; position: relative;object-fit: cover"
                  src="{% thumbnail project.gallery_image "300x180" crop="center" %}">
+            {% if project.has_award %}
+                <img src="/static/website/img/awardoverlay.png" class="project-award-banner">
+            {% endif %}
         </div>
     </a>
     <a href="{% url 'website:project' project.short_name %}">

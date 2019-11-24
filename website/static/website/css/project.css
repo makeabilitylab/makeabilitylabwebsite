@@ -33,6 +33,15 @@
   }
 }
 
+.project-award-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 40px;
+  width: 40px;
+  z-index: 20;
+}
+
 .header-visual {
   padding-right: 10px;
   margin-left: 20px;
