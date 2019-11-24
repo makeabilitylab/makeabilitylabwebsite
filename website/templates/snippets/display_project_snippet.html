@@ -19,4 +19,14 @@
     <a href="{% url 'website:project' project.short_name %}">
         <p class="artifact-title">{{ project.name }}</p>
     </a>
+    <p class="artifact-venue line-clamp-one-line" style="margin-bottom: 0px;">
+        {{ project.start_date.year }}
+        {% if project.has_ended %}
+            {% if project.start_date.year != project.end_date.year %}
+                – {{ project.start_date.year }}
+            {% endif %}
+        {% else %}
+            – Present
+        {% endif %}
+    </p>
 </div>
