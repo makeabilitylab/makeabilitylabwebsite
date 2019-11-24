@@ -77,7 +77,7 @@
 	    <div class="row recent-news">
 		<h3 class="news-type-label">Recent News</h3>
 		<div class="well news-well">
-		    {% for item in news %}
+		    {% for item in news|slice:"5"%}
 		    <!-- Create a row for each news item which has been passed in -->
 		    <div class="row news_header">
 			<!-- TODO link to the full news item -->
