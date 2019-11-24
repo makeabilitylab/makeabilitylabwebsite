@@ -17,7 +17,7 @@
         </div>
     </a>
     <a href="{% url 'website:project' project.short_name %}">
-        <p class="artifact-title">{{ project.name }}</p>
+        <p class="artifact-title line-clamp-one-line">{{ project.name }}</p>
     </a>
     <p class="artifact-venue line-clamp-one-line" style="margin-bottom: 0px;">
         {{ project.start_date.year }}
