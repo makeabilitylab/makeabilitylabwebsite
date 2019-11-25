@@ -249,8 +249,8 @@ class Person(models.Model):
         else:
             return self.position_set.latest('start_date')
 
-    # Returns the start date of current position. Used in Admin Interface. See PersonAdmin in admin.py
     def get_start_date(self):
+        """Returns the start date of current position. Used in Admin Interface. See PersonAdmin in admin.py"""
         latest_position = self.get_latest_position()
         if latest_position is not None:
             return latest_position.start_date
@@ -259,8 +259,8 @@ class Person(models.Model):
 
     get_start_date.short_description = "Start Date"  # This short description is used in the admin interface
 
-    # Returns the end date of current position. Used in Admin Interface. See PersonAdmin in admin.py
     def get_end_date(self):
+        """Returns the end date of current position. Used in Admin Interface. See PersonAdmin in admin.py"""
         latest_position = self.get_latest_position()
         if latest_position is not None:
             return latest_position.end_date
@@ -304,29 +304,40 @@ class Person(models.Model):
 
     def get_projects_sorted_by_contrib(self):
         """Returns a set of all projects this person is involved in ordered by number of pubs"""
-        map_project_name_to_tuple = dict() # tuple is (count, project)
-        publications = self.publication_set.order_by('-date')
+        map_project_name_to_tuple = dict() # tuple is (count, most_recent_pub_date, project)
+        #publications = self.publication_set.order_by('-date')
 
         # Go through all the projects by this person and track how much
         # they've contributed to each one (via publication)
-        for pub in publications:
+        #print("******{}*******".format(self.get_full_name()))
+        for pub in self.publication_set.all():
             for proj in pub.projects.all():
+                #print("pub", pub, "proj", proj)
                 if proj.name not in map_project_name_to_tuple:
-                    map_project_name_to_tuple[proj.name] = (0, proj)
+                    map_project_name_to_tuple[proj.name] = (0, proj.start_date, proj)
 
                 tuple_cnt_proj = map_project_name_to_tuple[proj.name]
-                map_project_name_to_tuple[proj.name] = (tuple_cnt_proj[0] + 1, tuple_cnt_proj[1])
+                most_recent_date = tuple_cnt_proj[1]
+                if pub.date is not None and pub.date > most_recent_date:
+                    most_recent_date = pub.date
+
+                map_project_name_to_tuple[proj.name] = (tuple_cnt_proj[0] + 1,
+                                                        most_recent_date,
+                                                        tuple_cnt_proj[2])
 
         list_tuples = list([tuple_cnt_proj for tuple_cnt_proj in map_project_name_to_tuple.values()])
-        list_tuples_sorted = sorted(list_tuples, key=itemgetter(0), reverse=True)
+        # list_tuples_sorted = sorted(list_tuples, key=itemgetter(0), reverse=True)
+        #print(self.get_full_name(), "list_tuples", list_tuples)
 
-        print("list_tuples_sorted", list_tuples_sorted)
+        list_tuples_sorted = sorted(list_tuples, key=lambda t: (t[0], t[1]), reverse=True)
+
+        #print("list_tuples_sorted", list_tuples_sorted)
 
         ordered_projects = []
         if len(list_tuples_sorted) > 0:
-            list_cnts, ordered_projects = zip(*list_tuples_sorted)
+            list_cnts, list_dates, ordered_projects = zip(*list_tuples_sorted)
 
-        print("ordered_projects", ordered_projects)
+        #print("ordered_projects", ordered_projects)
 
         return ordered_projects
 
