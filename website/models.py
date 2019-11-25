@@ -231,13 +231,34 @@ class Person(models.Model):
         else:
             return False
 
-    def get_earliest_member_position(self):
+    def get_earliest_member_position(self, contiguous_constraint=True):
         """
         Gets the earliest Position for this person
+        :param: if continguous_constraint is True, then we look only at continguous dates
         :return: the earliest Position for this person
         """
-        # The result of a QuerySet is a QuerySet so you can chain them together...
-        return self.position_set.filter(role=Position.MEMBER).earliest('start_date')
+        if not contiguous_constraint:
+            # The result of a QuerySet is a QuerySet so you can chain them together...
+            return self.position_set.filter(role=Position.MEMBER).earliest('start_date')
+        else:
+            next_position = None
+            for cur_position in self.position_set.filter(role=Position.MEMBER).order_by('-start_date'):
+                # we are going backwards in time. as soon as there is a gap greater than
+                # max_time_gap, we stop
+                max_time_gap = timedelta(weeks=1)
+                print(self.get_full_name(), cur_position)
+                if next_position is None:
+                    next_position = cur_position
+                elif (next_position.start_date - cur_position.end_date) <= max_time_gap:
+                    time_gap = (next_position.start_date - cur_position.end_date)
+                    print("Met minimum time gap: gap= {} max_gap={}".format(time_gap, max_time_gap))
+                    next_position = cur_position
+                else:
+                    time_gap = (next_position.start_date - cur_position.end_date)
+                    print("Exceeded minimum time gap: gap= {} max_gap={}".format(time_gap, max_time_gap))
+                    break
+
+            return next_position
 
     def get_latest_position(self):
         """
@@ -571,7 +592,8 @@ class Position(models.Model):
             raise ValidationError('The start date must be before the end date')
 
     def __str__(self):
-        return "Name={}, Role={}, Title={}".format(self.person.get_full_name(), self.role, self.title)
+        return "Name={}, Role={}, Title={}, Start={} End={}".format(
+            self.person.get_full_name(), self.role, self.title, self.start_date, self.end_date)
 
 
 class Keyword(models.Model):
