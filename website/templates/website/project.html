@@ -122,7 +122,7 @@
                     {% if project.project_header_set.all|length > 0 %}
                         {% with project.project_header_set.all|first as header %}
                             {% if header.has_video %}
-                                <iframe class="about-media" src="{{ header.get_video_embed }}"
+                                <iframe class="about-video" src="{{ header.get_video_embed }}"
                                         frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
                             {% else %}
                                 <img class="about-media" src="{{ header.image.url }}"/>

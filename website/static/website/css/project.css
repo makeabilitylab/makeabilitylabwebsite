@@ -33,6 +33,20 @@
   }
 }
 
+@media (max-width: 768px) {
+  .about-video {
+    width: 100%;
+  }
+}
+
+@media (min-width: 769px) {
+  .about-video {
+    height: 300px;
+    width: 535px;
+    /*1.78 * height*/
+  }
+}
+
 .project-award-banner {
   position: absolute;
   top: 0;
