@@ -262,7 +262,7 @@ def index(request):
     # projects = Project.objects.all()
     # sorted(projects, key=lambda project: student[2])
     projects = Project.objects.all()
-    projects = sort_projects_by_most_recent_artifact(projects, settings.DEBUG)
+    projects = sort_projects_by_most_recent_pub(projects, settings.DEBUG)
 
     if not settings.DEBUG:
         projects = filter_incomplete_projects(projects)
@@ -469,76 +469,13 @@ def projects(request):
 
     # if we are in debug mode, we include all projects even if they have no artifacts
     # as long as they have a start date
-    # TODO: change this to sort projects by most recent paper, only
-    ordered_projects = sort_projects_by_most_recent_artifact(projects, settings.DEBUG)
+    ordered_projects = sort_projects_by_most_recent_pub(projects, settings.DEBUG)
 
     context = {'projects': ordered_projects,
                'banners': displayed_banners,
                'filter': filter,
                'debug': settings.DEBUG}
     return render(request, 'website/projects.html', context)
-
-
-## Helper functions for views ##
-def sort_projects_by_most_recent_artifact(projects, include_projects_with_no_artifacts=False):
-    print(projects)
-    sorted_projects = list()
-    for project in projects:
-
-        # most_recent_artifact is a tuple of (date, artifact)
-        most_recent_artifact = project.get_most_recent_artifact()
-        _logger.debug("The most recent artifact: ", str(most_recent_artifact))
-        if most_recent_artifact != None:
-            project_date_tuple = (project, most_recent_artifact[0])
-            sorted_projects.append(project_date_tuple)
-        elif include_projects_with_no_artifacts and project.start_date is not None:
-            sorted_projects.append((project, project.start_date))
-
-    # sort the artifacts by date
-    sorted_projects = sorted(sorted_projects, key=itemgetter(1), reverse=True)
-    _logger.warning("Hello!")
-    print(__name__)
-    for project_tuple in sorted_projects:
-        _logger.debug("Project: " + str(project_tuple[0]) + " Most recent modification date: " + str(project_tuple[1]))
-
-    ordered_projects = []
-    if len(sorted_projects) > 0:
-        ordered_projects, temp = zip(*sorted_projects)
-
-    return ordered_projects
-
-    # updated = []
-    # print(projects)
-    # for project in projects:
-    #     # Adding more times to the time array will allow you to add additional fields in the future
-    #     times = []
-    #     if project.updated != None:
-    #         times.append(project.updated)
-    #     if len(project.publication_set.all()) > 0:
-    #         times.append(project.publication_set.order_by('-date')[0].date)
-    #     if len(project.talk_set.all()) > 0:
-    #         times.append(project.talk_set.order_by('-date')[0].date)
-    #     if len(project.video_set.all()) > 0:
-    #         times.append(project.video_set.order_by('-date')[0].date)
-    #     times.sort()
-    #     updated.append({'proj': project, 'updated': times[0]})
-    #
-    # sorted_list = sorted(updated, key=lambda k: k['updated'], reverse=True)
-    #
-    # # DEBUG
-    # for item in sorted_list:
-    #     mostRecentArtifact = item['proj'].get_most_recent_artifact();
-    #     if mostRecentArtifact is not None:
-    #         print(
-    #             "project '{}' has the most recent artifact of {} updated {} and the check {}".format(item['proj'].name,
-    #                                                                                                  mostRecentArtifact[0],
-    #                                                                                                  mostRecentArtifact[1],
-    #                                                                                                  item['updated']))
-    #     else:
-    #         print("mostRecentArtifact is none")
-    # # END DEBUG
-    #
-    # return [item['proj'] for item in sorted_list]
 
 
 def project(request, project_name):
@@ -691,6 +628,12 @@ def news(request, news_id):
                'debug': settings.DEBUG}
     return render(request, 'website/news.html', context)
 
+def faq(request):
+    all_banners = Banner.objects.filter(page=Banner.PEOPLE)
+    displayed_banners = choose_banners(all_banners)
+    context = {'banners': displayed_banners,
+               'debug': settings.DEBUG}
+    return render(request, "website/faq.html", context)
 
 def filter_incomplete_projects(projects):
     '''
@@ -810,9 +753,46 @@ def choose_banners(banners):
     return selected_banners
 
 
-def faq(request):
-    all_banners = Banner.objects.filter(page=Banner.PEOPLE)
-    displayed_banners = choose_banners(all_banners)
-    context = {'banners': displayed_banners,
-               'debug': settings.DEBUG}
-    return render(request, "website/faq.html", context)
+## Helper functions for views ##
+def sort_projects_by_most_recent_pub(projects, include_projects_with_no_artifacts=False):
+    return sort_projects_by_most_recent_artifact(projects, include_projects_with_no_artifacts,
+                                                 only_look_at_pubs=True)
+
+def sort_projects_by_most_recent_artifact(projects, include_projects_with_no_artifacts=False,
+                                          only_look_at_pubs=True):
+    """Sorts projects by most recent artifact
+    :return: a sorted list of projects by most recent artifact date"""
+    # print(projects)
+    sorted_projects = list()
+    for project in projects:
+
+        # most_recent_artifact is a tuple of (date, artifact)
+        most_recent_artifact = project.get_most_recent_artifact()
+
+        # get most recent pub. use this instead
+        if only_look_at_pubs:
+            most_recent_pub = project.get_most_recent_publication()
+            if most_recent_pub is not None:
+                most_recent_artifact = (most_recent_pub.date, most_recent_pub)
+            else:
+                most_recent_artifact = None
+
+        # _logger.debug("The most recent artifact: ", str(most_recent_artifact))
+        if most_recent_artifact is not None:
+            project_date_tuple = (project, most_recent_artifact[0])
+            sorted_projects.append(project_date_tuple)
+        elif include_projects_with_no_artifacts and project.start_date is not None:
+            sorted_projects.append((project, project.start_date))
+
+    # sort the artifacts by date
+    sorted_projects = sorted(sorted_projects, key=itemgetter(1), reverse=True)
+    _logger.warning("Hello!")
+    print(__name__)
+    for project_tuple in sorted_projects:
+        _logger.debug("Project: " + str(project_tuple[0]) + " Most recent modification date: " + str(project_tuple[1]))
+
+    ordered_projects = []
+    if len(sorted_projects) > 0:
+        ordered_projects, temp = zip(*sorted_projects)
+
+    return ordered_projects
