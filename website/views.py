@@ -393,12 +393,14 @@ def member(request, member_id):
     publications = person.publication_set.order_by('-date')
     talks = person.talk_set.order_by('-date')
     project_roles = person.project_role_set.order_by('start_date')
+    projects = person.get_projects()
 
     context = {'person': person,
                'news': news,
                'talks': talks,
                'publications': publications,
                'project_roles': project_roles,
+               'projects' : projects,
                'banners': displayed_banners,
                'debug': settings.DEBUG,
                'page_title': person.get_full_name()}

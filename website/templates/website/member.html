@@ -128,8 +128,8 @@
                         {% if project_roles %}
                             <div class="row">
                                 <h3 class="news-type-label"><b>Projects</b></h3>
-                                {% for project_role in project_roles %}
-                                    {% include "snippets/display_project_snippet.html" with project=project_role.project %}
+                                {% for project in projects %}
+                                    {% include "snippets/display_project_snippet.html" with project=project %}
                                 {% endfor %}
                             </div>
                         {% endif %}

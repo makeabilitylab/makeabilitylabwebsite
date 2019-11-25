@@ -173,8 +173,8 @@ class Person(models.Model):
 
     is_active.short_description = "Is Active?"
 
-    # Returns the total time as in the specified role across all positions
     def get_total_time_in_role(self, role):
+        """Returns the total time as in the specified role across all positions"""
         totalTimeInRole = timedelta(0)
         for position in self.position_set.all():
             if position.role == role:
@@ -183,22 +183,22 @@ class Person(models.Model):
 
     get_total_time_in_role.short_description = "Total Time In Role"
 
-    # Returns the total time as a member across all positions
     def get_total_time_as_member(self):
+        """Returns the total time as a member across all positions"""
         return self.get_total_time_in_role(Position.MEMBER)
 
     get_total_time_as_member.short_description = "Total Time As Member"
 
-    # Returns True if person is current member of the lab. False otherwise
     def is_current_member(self):
+        """Returns True if person is current member of the lab. False otherwise"""
         latest_position = self.get_latest_position()
         if latest_position is not None:
             return latest_position.is_current_member()
         else:
             return False
 
-    # Returns True if person is an alumni member of the lab. False otherwise
     def is_alumni_member(self):
+        """Returns True if person is an alumni member of the lab. False otherwise"""
         is_alumni_member = False
         for position in self.position_set.all():
             if position.is_member() is True:
@@ -211,8 +211,8 @@ class Person(models.Model):
 
         return is_alumni_member
 
-    # Returns True if person is current collaborator of the lab. False otherwise
     def is_current_collaborator(self):
+        """Returns True if person is current collaborator of the lab. False otherwise"""
         latest_position = self.get_latest_position()
         if latest_position is not None:
             # print('Checkpoint 1: ' + str(latest_position.is_current_collaborator()))
@@ -221,10 +221,7 @@ class Person(models.Model):
             return False
 
     def is_past_collaborator(self):
-        """
-        Gets whether a person is a past collaborator or not.
-        :return: True if person is a past collaborator of the lab. False otherwise
-        """
+        """Returns True if person is a past collaborator of the lab. False otherwise"""
         latest_position = self.get_latest_position()
         if latest_position is not None:
             return latest_position.is_past_collaborator()
@@ -232,8 +229,8 @@ class Person(models.Model):
             return False
 
     def get_earliest_member_position(self, contiguous_constraint=True):
-        """
-        Gets the earliest Position for this person
+        """Gets the earliest Position for this person
+
         :param: if continguous_constraint is True, then we look only at continguous dates
         :return: the earliest Position for this person
         """
@@ -261,10 +258,7 @@ class Person(models.Model):
             return next_position
 
     def get_latest_position(self):
-        """
-        Gets the latest Position for the person or None if none exists
-        :return: latest Position for the person or None if none exists
-        """
+        """Gets the latest Position for the person or None if none exists"""
         if self.position_set.exists() is False:
             return None
         else:
@@ -304,10 +298,7 @@ class Person(models.Model):
     get_full_name.short_description = "Full Name"
 
     def get_url_name(self):
-        """
-        Gets the URL name for this person. Format: firstlast
-        :return: the URL name for this person. Format: firstlast
-        """
+        """Gets the URL name for this person. Format: firstlast"""
         return self.url_name
 
     def get_projects(self):
