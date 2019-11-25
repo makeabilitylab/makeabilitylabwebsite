@@ -288,6 +288,7 @@ def people(request):
 
     for person in persons:
         position = person.get_latest_position()
+        position = person.get_earliest_position_in_role(position.role)
         if position is not None:
             title = position.title
             if "Professor" in position.title:  # necessary to collapse all prof categories to 1
@@ -311,6 +312,7 @@ def people(request):
 
             map_status_to_title_to_people[member_status_name][title].append(position)
 
+    # now go through these dicts and sort people by dates
     for status, map_title_to_people in map_status_to_title_to_people.items():
         for title, people_with_title in map_title_to_people.items():
             if "Current" in status:

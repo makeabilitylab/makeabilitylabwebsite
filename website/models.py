@@ -259,31 +259,6 @@ class Person(models.Model):
 
             return next_position
 
-    def get_earliest_member_position(self, contiguous_constraint=True):
-
-        if not contiguous_constraint:
-            # The result of a QuerySet is a QuerySet so you can chain them together...
-            return self.position_set.filter(role=Position.MEMBER).earliest('start_date')
-        else:
-            next_position = None
-            for cur_position in self.position_set.filter(role=Position.MEMBER).order_by('-start_date'):
-                # we are going backwards in time. as soon as there is a gap greater than
-                # max_time_gap, we stop
-                max_time_gap = timedelta(weeks=1)
-                print(self.get_full_name(), cur_position)
-                if next_position is None:
-                    next_position = cur_position
-                elif (next_position.start_date - cur_position.end_date) <= max_time_gap:
-                    time_gap = (next_position.start_date - cur_position.end_date)
-                    print("Met minimum time gap: gap= {} max_gap={}".format(time_gap, max_time_gap))
-                    next_position = cur_position
-                else:
-                    time_gap = (next_position.start_date - cur_position.end_date)
-                    print("Exceeded minimum time gap: gap= {} max_gap={}".format(time_gap, max_time_gap))
-                    break
-
-            return next_position
-
     def get_latest_position(self):
         """Gets the latest Position for the person or None if none exists"""
         if self.position_set.exists() is False:
