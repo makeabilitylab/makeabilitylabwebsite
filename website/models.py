@@ -228,12 +228,39 @@ class Person(models.Model):
         else:
             return False
 
-    def get_earliest_member_position(self, contiguous_constraint=True):
-        """Gets the earliest Position for this person
+    def get_earliest_position_in_role(self, role, contiguous_constraint=True):
+        """Gets the earliest Position for this person in the given role
 
-        :param: if continguous_constraint is True, then we look only at continguous dates
+        :param:
+            role: the role, see Position ROLE_CHOICES
+            contiguous_constraint: if True, then we look only at continguous dates
         :return: the earliest Position for this person
         """
+        if not contiguous_constraint:
+            # The result of a QuerySet is a QuerySet so you can chain them together...
+            return self.position_set.filter(role=role).earliest('start_date')
+        else:
+            next_position = None
+            for cur_position in self.position_set.filter(role=role).order_by('-start_date'):
+                # we are going backwards in time. as soon as there is a gap greater than
+                # max_time_gap, we stop
+                max_time_gap = timedelta(weeks=1)
+                print(self.get_full_name(), cur_position)
+                if next_position is None:
+                    next_position = cur_position
+                elif (next_position.start_date - cur_position.end_date) <= max_time_gap:
+                    time_gap = (next_position.start_date - cur_position.end_date)
+                    print("Met minimum time gap: gap= {} max_gap={}".format(time_gap, max_time_gap))
+                    next_position = cur_position
+                else:
+                    time_gap = (next_position.start_date - cur_position.end_date)
+                    print("Exceeded minimum time gap: gap= {} max_gap={}".format(time_gap, max_time_gap))
+                    break
+
+            return next_position
+
+    def get_earliest_member_position(self, contiguous_constraint=True):
+
         if not contiguous_constraint:
             # The result of a QuerySet is a QuerySet so you can chain them together...
             return self.position_set.filter(role=Position.MEMBER).earliest('start_date')
@@ -472,13 +499,11 @@ class Position(models.Model):
     school = models.CharField(max_length=60, default="University of Washington")
 
     def get_start_date_short(self):
-        if self.is_current_member():
-            return self.person.get_earliest_member_position().start_date.strftime('%b %Y')
-        else:
-            return self.start_date.strftime('%b %Y')
+        earliest_position = self.person.get_earliest_position_in_role(self.role, contiguous_constraint=True)
+        return earliest_position.start_date.strftime('%b %Y')
 
     def get_end_date_short(self):
-        return self.end_date.strftime('%b %Y') if self.end_date != None else "Present"
+        return self.end_date.strftime('%b %Y') if self.end_date is not None else "Present"
 
     # Returns an abbreviated version of the department field
     def get_department_abbreviated(self):
