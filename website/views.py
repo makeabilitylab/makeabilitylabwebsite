@@ -264,8 +264,8 @@ def index(request):
     projects = Project.objects.all()
     projects = sort_projects_by_most_recent_pub(projects, settings.DEBUG)
 
-    if not settings.DEBUG:
-        projects = filter_incomplete_projects(projects)
+    # we used to only filter out incomplete projects if DEBUG = TRUE; if not settings.DEBUG:
+    projects = filter_incomplete_projects(projects)
 
     context = {'people': Person.objects.all(),
                'banners': displayed_banners,
@@ -469,8 +469,8 @@ def projects(request):
     projects = Project.objects.all()
 
     # Only show projects that have a thumbnail, description, and a publication
-    if not settings.DEBUG:
-        projects = filter_incomplete_projects(projects)
+    # we used to only filter out incomplete projects if DEBUG = TRUE; if not settings.DEBUG:
+    projects = filter_incomplete_projects(projects)
 
     # if we are in debug mode, we include all projects even if they have no artifacts
     # as long as they have a start date
@@ -648,8 +648,11 @@ def filter_incomplete_projects(projects):
     '''
     filtered = list()
     for project in projects:
+        # I tested this and if project.about or project.gallery_image are not set,
+        # they will be interpreted as False by Python
         if project.has_artifact() and project.about and project.gallery_image:
             filtered.append(project)
+
     return filtered
 
 
