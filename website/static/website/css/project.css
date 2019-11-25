@@ -20,14 +20,14 @@
 }
 
 @media (max-width: 768px) {
-  .video-about {
+  .about-media {
     width: 100%;
   }
 }
 
 @media (min-width: 769px) {
-  .video-about {
-    height: 300px;
+  .about-media {
+    /*height: 300px;*/
     width: 535px;
     /*1.78 * height*/
   }
