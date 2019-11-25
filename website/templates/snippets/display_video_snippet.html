@@ -16,7 +16,7 @@
         <p class="artifact-title line-clamp" style="margin-top: 0px;">{{ video.title }}</p>
         {# TODO Consider adding in age of video and author #}
         <p class="artifact-links">
-            <a href="{{ video.video_url }}">YouTube</a>
+            <a href="{{ video.video_url }}">{{ video.get_video_host_str }}</a>
             {# TODO: fix this so that we are not using a constant for the media dir link #}
             {% if video.publication %}
                 | <a href="../../media/{{ video.publication.pdf_file }}">Paper</a>

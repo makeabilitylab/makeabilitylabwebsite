@@ -949,7 +949,16 @@ class Video(models.Model):
     date = models.DateField(null=True)
     project = models.ForeignKey(Project, blank=True, null=True, on_delete=models.SET_NULL)
 
+    def get_video_host_str(self):
+        if 'youtu.be' in self.video_url or 'youtube.com' in self.video_url:
+            return 'YouTube'
+        elif 'vimeo' in self.video_url:
+            return 'Vimeo'
+        else:
+            return 'Video'
+
     def get_embed(self):
+        """Given self.video_url, returns the correctly formatted video embed url for YouTube and Vimeo"""
         if 'youtu.be' in self.video_url or 'youtube.com' in self.video_url:
             # https://youtu.be/i0IDbHGir-8 or https://www.youtube.com/watch?v=i0IDbHGir-8
 
