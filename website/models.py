@@ -6,6 +6,7 @@ from django.db.models.signals import pre_delete, post_save, m2m_changed, post_de
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from datetime import date, datetime, timedelta
+from operator import itemgetter
 from django.utils import timezone
 from datetime import timedelta
 import datetime
@@ -91,6 +92,7 @@ class Person(models.Model):
 
     # Return current title
     def get_current_title(self):
+        """Returns the title for person's current position"""
         latest_position = self.get_latest_position()
         if latest_position is not None:
             return latest_position.title
@@ -100,14 +102,15 @@ class Person(models.Model):
     get_current_title.short_description = "Title"
 
     def get_current_title_index(self):
+        """Returns the title index for person's current position"""
         latest_position = self.get_latest_position()
         if latest_position is not None:
             return latest_position.get_title_index()
         else:
             return None
 
-    # Return current title
     def get_current_department(self):
+        """Returns current department for person"""
         latest_position = self.get_latest_position()
         if latest_position is not None:
             return latest_position.department
@@ -116,8 +119,8 @@ class Person(models.Model):
 
     get_current_title.short_description = "Department"
 
-    # Return current title
     def get_current_school(self):
+        """Returns current school for person"""
         latest_position = self.get_latest_position()
         if latest_position is not None:
             return latest_position.school
@@ -126,8 +129,8 @@ class Person(models.Model):
 
     get_current_school.short_description = "School"
 
-    # Returns current role
     def get_current_role(self):
+        """Returns current role for person"""
         latest_position = self.get_latest_position()
         if latest_position is not None:
             return latest_position.role
@@ -138,6 +141,7 @@ class Person(models.Model):
 
     # Returns time in current position
     def get_time_in_current_position(self):
+        """Returns time in current position (as a timedelta object)"""
         latest_position = self.get_latest_position()
         if latest_position is not None:
             return latest_position.get_time_in_this_position()
@@ -146,24 +150,24 @@ class Person(models.Model):
 
     get_time_in_current_position.short_description = "Time in Current Position"
 
-    # Returns true if a professor
     def is_professor(self):
+        """Returns true if a professor in current position"""
         latest_position = self.get_latest_position()
         if latest_position is not None:
             return latest_position.is_professor()
         else:
             return False
 
-    # Returns True if a grad student
     def is_grad_student(self):
+        """Returns true if a grad student in current position"""
         latest_position = self.get_latest_position()
         if latest_position is not None:
             return latest_position.is_grad_student()
         else:
             return False
 
-    # Returns True is person is current member of lab or current collaborator
     def is_active(self):
+        """Returns True is person is current member of lab or current collaborator"""
         # print(self.get_full_name() + " is active? " + str(self.is_current_member()) + " " + str(self.is_current_collaborator()))
         return self.is_current_member() or self.is_current_collaborator()
 
@@ -297,6 +301,35 @@ class Person(models.Model):
         #      https://www.python.org/dev/peps/pep-0202/
         projects = set([project_role.project for project_role in project_roles])
         return projects
+
+    def get_projects_sorted_by_contrib(self):
+        """Returns a set of all projects this person is involved in ordered by number of pubs"""
+        map_project_name_to_tuple = dict() # tuple is (count, project)
+        publications = self.publication_set.order_by('-date')
+
+        # Go through all the projects by this person and track how much
+        # they've contributed to each one (via publication)
+        for pub in publications:
+            for proj in pub.projects.all():
+                if proj.name not in map_project_name_to_tuple:
+                    map_project_name_to_tuple[proj.name] = (0, proj)
+
+                tuple_cnt_proj = map_project_name_to_tuple[proj.name]
+                map_project_name_to_tuple[proj.name] = (tuple_cnt_proj[0] + 1, tuple_cnt_proj[1])
+
+        list_tuples = list([tuple_cnt_proj for tuple_cnt_proj in map_project_name_to_tuple.values()])
+        list_tuples_sorted = sorted(list_tuples, key=itemgetter(0), reverse=True)
+
+        print("list_tuples_sorted", list_tuples_sorted)
+
+        ordered_projects = []
+        if len(list_tuples_sorted) > 0:
+            list_cnts, ordered_projects = zip(*list_tuples_sorted)
+
+        print("ordered_projects", ordered_projects)
+
+        return ordered_projects
+
 
     def __str__(self):
         return self.get_full_name()
@@ -585,9 +618,11 @@ class Project(models.Model):
     updated = models.DateField(auto_now=True)
 
     def get_pi(self):
+        """Returns the PI for the project (as a Person object)"""
         return self.project_role_set.get(pi_member="PI").person
 
     def get_co_pis(self):
+        """Returns the PIs for ths project (as a list of Person objects)"""
         copi_arr = self.project_role_set.filter(pi_member="Co-PI")
         ret = []
         for copi in copi_arr:
@@ -595,7 +630,7 @@ class Project(models.Model):
         return ret
 
     def has_award(self):
-        '''Returns true if one or more pubs have an award'''
+        """Returns true if one or more pubs have an award"""
         if self.publication_set.exists():
             # For filtering, see: https://stackoverflow.com/a/844572
             num_award_papers = self.publication_set.filter(award__isnull=False).exclude(award__exact='').count()
@@ -927,7 +962,6 @@ class Talk(models.Model):
     pdf_file = models.FileField(upload_to='talks/', null=True, default=None, max_length=255)
     raw_file = models.FileField(upload_to='talks/', blank=True, null=True, default=None, max_length=255)
 
-#test field to verify adding new fields to models
     INVITED_TALK = "Invited Talk"
     CONFERENCE_TALK = "Conference Talk"
     MS_DEFENSE = "MS Defense"
