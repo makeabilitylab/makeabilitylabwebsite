@@ -290,7 +290,8 @@ def people(request):
         position = person.get_latest_position()
 
         if position is not None:
-            position = person.get_earliest_position_in_role(position.role)
+
+
             title = position.title
             if "Professor" in position.title:  # necessary to collapse all prof categories to 1
                 title = "Professor"
@@ -319,7 +320,12 @@ def people(request):
             if "Current" in status:
                 # sort current members and collaborators by start date first (so
                 # people who started earliest are shown first)
-                people_with_title.sort(key=operator.attrgetter('start_date'))
+                # people_with_title.sort(key=operator.attrgetter('start_date'))
+
+                # sort people by their earliest position in the current role
+                people_with_title.sort(key=lambda pos: (
+                    pos.person.get_earliest_position_in_role(pos.role).start_date
+                ))
             else:
                 # sort past members and collaborators reverse chronologically by end date (so people
                 # who ended most recently are shown first)

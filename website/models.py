@@ -250,11 +250,11 @@ class Person(models.Model):
                     next_position = cur_position
                 elif (next_position.start_date - cur_position.end_date) <= max_time_gap:
                     time_gap = (next_position.start_date - cur_position.end_date)
-                    print("Met minimum time gap: gap= {} max_gap={}".format(time_gap, max_time_gap))
+                    # print("Met minimum time gap: gap= {} max_gap={}".format(time_gap, max_time_gap))
                     next_position = cur_position
                 else:
                     time_gap = (next_position.start_date - cur_position.end_date)
-                    print("Exceeded minimum time gap: gap= {} max_gap={}".format(time_gap, max_time_gap))
+                    # print("Exceeded minimum time gap: gap= {} max_gap={}".format(time_gap, max_time_gap))
                     break
 
             return next_position
