@@ -604,7 +604,7 @@ class Project(models.Model):
             return False
 
     def get_most_recent_publication(self):
-        '''Returns the most recent publiation for project'''
+        '''Returns the most recent publication for project'''
         if self.publication_set.exists():
             return self.publication_set.order_by('-date')[0]
         else:
