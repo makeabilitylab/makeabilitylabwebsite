@@ -23,7 +23,7 @@
         {{ project.start_date.year }}
         {% if project.has_ended %}
             {% if project.start_date.year != project.end_date.year %}
-                – {{ project.start_date.year }}
+                – {{ project.end_date.year }}
             {% endif %}
         {% else %}
             – Present
