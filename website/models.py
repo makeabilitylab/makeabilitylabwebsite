@@ -314,7 +314,13 @@ class Person(models.Model):
             for proj in pub.projects.all():
                 #print("pub", pub, "proj", proj)
                 if proj.name not in map_project_name_to_tuple:
-                    map_project_name_to_tuple[proj.name] = (0, proj.start_date, proj)
+                    most_recent_date = proj.start_date
+                    if most_recent_date is None:
+                        most_recent_date = pub.date
+                    if most_recent_date is None:
+                        most_recent_date = datetime.date(2012, 1, 1) # when the lab was founded
+
+                    map_project_name_to_tuple[proj.name] = (0, most_recent_date, proj)
 
                 tuple_cnt_proj = map_project_name_to_tuple[proj.name]
                 most_recent_date = tuple_cnt_proj[1]
