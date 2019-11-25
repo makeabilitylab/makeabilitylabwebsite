@@ -288,8 +288,9 @@ def people(request):
 
     for person in persons:
         position = person.get_latest_position()
-        position = person.get_earliest_position_in_role(position.role)
+
         if position is not None:
+            position = person.get_earliest_position_in_role(position.role)
             title = position.title
             if "Professor" in position.title:  # necessary to collapse all prof categories to 1
                 title = "Professor"
