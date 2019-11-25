@@ -343,7 +343,10 @@ class Person(models.Model):
         if len(list_tuples_sorted) > 0:
             list_cnts, list_dates, ordered_projects = zip(*list_tuples_sorted)
 
-        #print("ordered_projects", ordered_projects)
+        if len(ordered_projects) <= 0:
+            # if a person hasn't published but is still on projects
+            # default to this
+            ordered_projects = self.get_projects()
 
         return ordered_projects
 
