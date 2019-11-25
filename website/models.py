@@ -928,12 +928,18 @@ class Video(models.Model):
     project = models.ForeignKey(Project, blank=True, null=True, on_delete=models.SET_NULL)
 
     def get_embed(self):
-        # TODO this assumes that all videos are YouTube. This is not the case.
-        base_url = "https://youtube.com/embed"
-        unique_url = self.video_url[self.video_url.find("/", 9):]
+        if 'youtu.be' in self.video_url or 'youtube.com' in self.video_url:
+            # https://youtu.be/i0IDbHGir-8 or https://www.youtube.com/watch?v=i0IDbHGir-8
 
-        # See https://developers.google.com/youtube/youtube_player_demo for details on parameterizing YouTube video
-        return base_url + unique_url + "?showinfo=0&iv_load_policy=3"
+            base_url = "https://youtube.com/embed"
+            unique_url = self.video_url[self.video_url.find("/", 9):]
+
+            # See https://developers.google.com/youtube/youtube_player_demo for details on parameterizing YouTube video
+            return base_url + unique_url + "?showinfo=0&iv_load_policy=3"
+        elif 'vimeo' in self.video_url:
+            # https://player.vimeo.com/video/164630179
+            vimeo_video_id = self.video_url.rsplit('/', 1)[-1]
+            return "https://player.vimeo.com/video/" + vimeo_video_id
 
     # Returns a cap case title
     def get_title(self):
