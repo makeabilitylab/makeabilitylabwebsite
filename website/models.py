@@ -896,7 +896,10 @@ class Project_header(models.Model):
 
     def has_video(self):
         """Returns true if the video_url is set"""
-        return self.video_url is not None
+        if self.video_url:
+            return True
+
+        return False
 
     def get_video_embed(self):
         """Returns video embed code"""
