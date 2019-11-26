@@ -988,7 +988,7 @@ def get_video_embed(video_url):
         vimeo_video_id = video_url.rsplit('/', 1)[-1]
         return "https://player.vimeo.com/video/" + vimeo_video_id
     else:
-        return "unknown video service"
+        return "unknown video service for '{}'".format(video_url)
 
 
 class Talk(models.Model):
