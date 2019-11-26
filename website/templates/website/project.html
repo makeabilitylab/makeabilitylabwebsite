@@ -135,9 +135,10 @@
                         {% endwith %}
                     {% else %}
                         {% with project.video_set.all|first as first_video %}
-                            <iframe class="video-about" src="{{ first_video.get_embed }}" frameborder="0"
-                                    allowfullscreen></iframe><br/>
-                            <span class="header-visual-title">{{ first_video.title }}</span><br/>
+                            <iframe class="about-video" src="{{ first_video.get_embed }}"
+                                        frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+
+                            <p style="font-weight: bold; margin:0px;">{{ first_video.title }}</p>
                             {% if first_video.caption %}
                                 <span class="header-visual-caption">{{ first_video.caption }}</span>
                             {% endif %}
