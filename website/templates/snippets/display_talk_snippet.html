@@ -10,7 +10,7 @@
             {#  TODO: I don't get this thumbnail stuff; need to talk to Lee about it  #}
             <a href="../../media/{{ talk.pdf_file }}" target="_blank">
                 <div style="background: white; width:100%; height: 180px; contain: content;">
-                    <img style="width:100%; height: auto; position: relative;top: 50%; left: 50%;transform: translate(-50%,-50%);object-fit: cover" src="{% thumbnail talk.thumbnail 420x0 detail %}" class="talk2-thumbnail-image img-responsive">
+                    <img style="border: 1px solid #dddddd; width:100%; height: auto; position: relative;top: 50%; left: 50%;transform: translate(-50%,-50%);object-fit: cover" src="{% thumbnail talk.thumbnail 420x0 detail %}" class="talk2-thumbnail-image img-responsive">
                 </div>
             </a>
         </div>
