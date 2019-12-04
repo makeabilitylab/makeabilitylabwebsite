@@ -1028,6 +1028,9 @@ class Talk(models.Model):
     date = models.DateField(null=True)
     slideshare_url = models.URLField(blank=True, null=True)
 
+    # add in video field to address https://github.com/jonfroehlich/makeabilitylabwebsite/issues/539
+    video = models.ForeignKey(Video, blank=True, null=True, on_delete=models.DO_NOTHING)
+
     # The PDF and raw files (e.g., keynote, pptx) are required
     # TODO: remove null=True from these two fields
     pdf_file = models.FileField(upload_to='talks/', null=True, default=None, max_length=255)
