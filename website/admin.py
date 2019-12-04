@@ -152,6 +152,17 @@ class TalkAdmin(admin.ModelAdmin):
             kwargs["widget"] = widgets.FilteredSelectMultiple("keywords", is_stacked=False)
         return super(TalkAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
+class PosterAdmin(admin.ModelAdmin):
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        print("PosterAdmin.formfield_for_manytomany: db_field: {} db_field.name {} request: {}".format(db_field, db_field.name, request))
+        if db_field.name == "projects":
+            kwargs["widget"] = widgets.FilteredSelectMultiple("projects", is_stacked=False)
+        if db_field.name == "authors":
+            kwargs["widget"] = widgets.FilteredSelectMultiple("authors", is_stacked=False)
+        if db_field.name == "keywords":
+            kwargs["widget"] = widgets.FilteredSelectMultiple("keywords", is_stacked=False)
+        return super(PosterAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
+
 class ProjectUmbrellaAdmin(admin.ModelAdmin):
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
         if db_field.name == "keywords":
@@ -171,9 +182,8 @@ class PublicationAdmin(admin.ModelAdmin):
         ('Files',                   {'fields': ['pdf_file']}),
         ('Pub Venue information',   {'fields': ['pub_venue_url','pub_venue_type', 'book_title', 'book_title_short', 'geo_location', 'total_papers_submitted', 'total_papers_accepted']}),
         ('Archival Info',           {'fields': ['official_url', 'extended_abstract', 'peer_reviewed', 'award' ]}),
-        ('Video Info',              {'fields': ['video']}),
         ('Page Info',               {'fields': ['num_pages', 'page_num_start', 'page_num_end']}),
-        ('Talk Info',               {'fields': ['talk']}),
+        ('Supplementary Artifacts', {'fields': ['poster', 'video', 'talk']}),
         ('Project Info',            {'fields': ['projects', 'project_umbrellas']}),
         ('Keyword Info',            {'fields': ['keywords']}),
     ]
@@ -183,8 +193,6 @@ class PublicationAdmin(admin.ModelAdmin):
     ordering = ('-date',)
 
     list_filter = (PubVenueTypeListFilter, PubVenueListFilter)
-
-
 
 
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
@@ -265,7 +273,7 @@ admin.site.register(Person, PersonAdmin)
 admin.site.register(Publication, PublicationAdmin)
 admin.site.register(Talk, TalkAdmin)
 admin.site.register(Project, ProjectAdmin)
-admin.site.register(Poster)
+admin.site.register(Poster, PosterAdmin)
 admin.site.register(Keyword)
 admin.site.register(News, NewsAdmin)
 admin.site.register(Banner, BannerAdmin)

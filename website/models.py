@@ -1007,7 +1007,6 @@ def get_video_embed(video_url):
     else:
         return "unknown video service for '{}'".format(video_url)
 
-
 class Talk(models.Model):
     title = models.CharField(max_length=255)
 
@@ -1109,6 +1108,31 @@ def update_file_name_talks(sender, instance, action, reverse, **kwargs):
         os.rename(initial_path, new_path)
         instance.save()
 
+        # old_pdf_filename_with_path = instance.pdf_file.path
+        # new_pdf_filename = get_formatted_filename(instance.get_person(), instance.title, instance.date.year, '.pdf')
+        #
+        # old_raw_filename_with_path = instance.raw_file.path
+        # raw_ext = os.path.splitext(instance.raw_file.path)[1]
+        # new_raw_filename = get_formatted_filename(instance.get_person(), instance.title, instance.date.year, raw_ext)
+
+
+# def get_formatted_filename(person, title_str, year, ext):
+#     initial_path = instance.pdf_file.path
+#     person = instance.get_person()
+#     name = person.last_name
+#     year = instance.date.year
+#     title = instance.title.title()
+#     title = ''.join(x for x in title if not x.isspace())
+#     title = ''.join(e for e in title if e.isalnum())
+#
+#     # change the pdf_file path to point to the renamed file
+#     instance.pdf_file.name = os.path.join(dir_name, name + '_' + title + '_' + str(year) + '.pdf')
+#     new_path = os.path.join(settings.MEDIA_ROOT, instance.pdf_file.name)
+#     os.rename(initial_path, new_path)
+#     instance.save()
+
+
+
 m2m_changed.connect(update_file_name_talks, sender=Talk.speakers.through)
 
 @receiver(post_delete, sender=Talk)
@@ -1117,6 +1141,59 @@ def talk_delete(sender, instance, **kwargs):
         instance.pdf_file.delete(True)
     if instance.raw_file:
         instance.raw_file.delete(True)
+    if instance.thumbnail:
+        instance.thumbnail.delete(True)
+
+class Poster(models.Model):
+
+    title = models.CharField(max_length=255, blank=True, null=True)
+    authors = models.ManyToManyField(Person, blank=True, null=True) # a poster can have multiple authors
+    projects = models.ManyToManyField(Project, blank=True, null=True) # a poster can be about multiple projects
+    date = models.DateField(null=True)
+
+    # The PDF and raw files (e.g., illustrator, powerpoint)
+    pdf_file = models.FileField(upload_to='posters/', null=True, default=None, max_length=255)
+    raw_file = models.FileField(upload_to='posters/', blank=True, null=True, default=None, max_length=255)
+
+    # The thumbnail should have null=True because it is added automatically later by a post_save signal
+    # TODO: decide if we should have this be editable=True and if user doesn't add one him/herself, then
+    # auto-generate thumbnail
+    thumbnail = models.ImageField(upload_to='posters/images/', editable=False, null=True, max_length=255)
+
+    def get_person(self):
+        """Returns the first speaker"""
+        return self.authors.all()[0]
+
+    def __str__(self):
+        return self.title
+
+def update_file_name_poster(sender, instance, action, reverse, **kwargs):
+    # Reverse: Indicates which side of the relation is updated (i.e., if it is the forward or reverse relation that is being modified)
+    # Action: A string indicating the type of update that is done on the relation.
+    # post_add: Sent after one or more objects are added to the relation
+    if action == 'post_add' and not reverse:
+        initial_path = instance.pdf_file.path
+        person = instance.get_person()
+        name = person.last_name
+        year = instance.date.year
+        title = ''.join(x for x in instance.title.title() if not x.isspace())
+        title = ''.join(e for e in title if e.isalnum())
+
+
+        #change the path of the pdf file to point to the new file name
+        instance.pdf_file.name = os.path.join('posters', name + '_' + title + '_' + str(year) + '.pdf')
+        new_path = os.path.join(settings.MEDIA_ROOT, instance.pdf_file.name)
+        os.rename(initial_path, new_path)
+        instance.save()
+
+m2m_changed.connect(update_file_name_poster , sender=Poster.authors.through)
+
+@receiver(pre_delete, sender=Poster)
+def poster_delete(sender, instance, **kwargs):
+    if instance.pdf_file:
+        instance.pdf_file.delete(False)
+    if instance.raw_file:
+        instance.raw_file.delete(False)
     if instance.thumbnail:
         instance.thumbnail.delete(True)
 
@@ -1157,8 +1234,10 @@ class Publication(models.Model):
     geo_location = models.CharField(max_length=255, blank=True, null=True)
     geo_location.help_text = "The physical location of the conference, if any. For example, CHI 2017 is 'Denver, Colorado'"
 
+    # Publications can have corresponding videos, talks, and posters
     video = models.OneToOneField(Video, on_delete=models.DO_NOTHING, null=True, blank=True)
     talk = models.ForeignKey(Talk, blank=True, null=True, on_delete=models.DO_NOTHING)
+    poster = models.ForeignKey(Poster, blank=True, null=True, on_delete=models.DO_NOTHING)
 
     series = models.CharField(max_length=255, blank=True, null=True)
     isbn = models.CharField(max_length=255, blank=True, null=True)
@@ -1280,9 +1359,19 @@ def update_file_name_publication(sender, instance, action, reverse, **kwargs):
         title = ''.join(x for x in instance.title.title() if not x.isspace())
         title = ''.join(e for e in title if e.isalnum())
 
+        # Get the publication venue but remove proceedings from it (if it exists)
+        forum = instance.book_title_short.lower()
+        if "proceedings of" in forum.lower():
+            forum = forum.replace('proceedings of', '')
+
+        forum = forum.strip().upper()
+        forum = ''.join(x for x in forum if not x.isspace())
+
+        if not forum[-1].isdigit():
+            forum = forum + str(year)
 
         #change the path of the pdf file to point to the new file name
-        instance.pdf_file.name = os.path.join('publications', name + '_' + title + '_' + str(year) + '.pdf')
+        instance.pdf_file.name = os.path.join('publications', name + '_' + title + '_' + forum + '.pdf')
         new_path = os.path.join(settings.MEDIA_ROOT, instance.pdf_file.name)
         os.rename(initial_path, new_path)
         instance.save()
@@ -1297,38 +1386,6 @@ def publication_delete(sender, instance, **kwards):
         instance.pdf_file.delete(True)
     if instance.thumbnail:
         instance.thumbnail.delete(True)
-
-
-class Poster(models.Model):
-    publication = models.ForeignKey(Publication, blank=True, null=True, on_delete=models.DO_NOTHING)
-
-    # If publication is set, then these fields will be drawn from Publication
-    # and ignored here.
-    title = models.CharField(max_length=255, blank=True, null=True)
-    authors = models.ManyToManyField(Person, blank=True, null=True)
-
-    # The PDF and raw files (e.g., illustrator, powerpoint)
-    pdf_file = models.FileField(upload_to='posters/', null=True, default=None, max_length=255)
-    raw_file = models.FileField(upload_to='posters/', null=True, default=None, max_length=255)
-
-    # The thumbnail should have null=True because it is added automatically later by a post_save signal
-    # TODO: decide if we should have this be editable=True and if user doesn't add one him/herself, then
-    # auto-generate thumbnail
-    thumbnail = models.ImageField(upload_to='posters/images/', editable=False, null=True, max_length=255)
-
-    def __str__(self):
-        if self.publication:
-            return self.publication.title
-        else:
-            return self.title
-
-
-@receiver(pre_delete, sender=Poster)
-def poster_delete(sender, instance, **kwargs):
-    if instance.pdf_file:
-        instance.pdf_file.delete(False)
-    if instance.raw_file:
-        instance.raw_file.delete(False)
 
 
 class News(models.Model):
@@ -1353,13 +1410,6 @@ class News(models.Model):
     alt_text = models.CharField(max_length=1024, blank=True, null=True)
 
     project = models.ManyToManyField(Project, blank=True, null=True)
-
-    # def time_now(self):
-    #    d = self.date.date() - datetime.timedelta(seconds=0)
-    #    if d > timezone.now() - datetime.timedelta(hours=24):
-    #        return str(int(timezone.now().hour) - int(self.date.hour)) + ' hours ago'
-    #    else:
-    #        return self.short_date()
 
     def short_date(self):
         month = self.date.strftime('%b')
