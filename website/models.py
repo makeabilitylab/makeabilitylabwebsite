@@ -888,7 +888,9 @@ class Project_Role(models.Model):
                (self.end_date is not None and self.end_date < date.today())
 
     def __str__(self):
-        return "Name={}, PI/Co-PI={}".format(self.person.get_full_name(), self.pi_member)
+        return "Project: '{}' Name={}, Dates={}, PI/Co-PI={}".format(
+            self.project.name, self.person.get_full_name(), self.get_date_range_as_str(),
+            self.pi_member)
 
 
 # This class contains the image or video which will appear in the top description of each project. It functions as a combination of Photo and Video, but is separated to make it simpler to have a specific video or photo as the projects header.
