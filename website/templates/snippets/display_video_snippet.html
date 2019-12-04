@@ -7,14 +7,12 @@
 {% load ml_tags %}
 
 <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4 video-column">
-    {# TODO: Jon was just working on fixing this for project.html and videos.html. For former, need to #}
-    {# TODO: show two across rather than three. For latter, need to fix display--see display talk snippet #}
     <div class="video" style="height: 300px; margin-bottom: 20px;">
         {# TODO: fix this on mobile; has weird aspect ratio because of fixed height  #}
         <iframe class="video-player" src="{{ video.get_embed }}" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
 
         <p class="artifact-title line-clamp" style="margin-top: 0px;">{{ video.title }}</p>
-        {# TODO Consider adding in age of video and author #}
+
         <p class="artifact-links">
             <a href="{{ video.video_url }}">{{ video.get_video_host_str }}</a>
             {# TODO: fix this so that we are not using a constant for the media dir link #}
@@ -24,6 +22,14 @@
             {% if video.project %}
                 | <a href="{% url 'website:project' video.project.short_name %}">{{ video.project.name }}</a>
             {% endif %}
+
+            {# humanize-duration.js must be loaded for this to work #}
+            <script>
+                {% autoescape off %}
+                    age = humanizeDuration({{ video.get_age_in_ms }}, { largest: 1 })
+                    document.write("• " + age + " ago")
+                {% endautoescape %}
+            </script>
         </p>
     </div>
 </div>

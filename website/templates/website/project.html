@@ -21,6 +21,10 @@
     <script src="{% static 'website/js/utils.js' %}"></script>
     <script src="{% static 'website/js/indproject.js' %}"></script>
     <script src="{% static 'website/js/lightbox.js' %}"></script>
+
+    {# humanize-duration is used to pretty print date ages, see https://github.com/EvanHahn/HumanizeDuration.js #}
+    {# we use it, for example, to pretty print the age of videos #}
+    <script src="{% static 'website/js/humanize-duration.js' %}"></script>
 {% endblock %}
 
 

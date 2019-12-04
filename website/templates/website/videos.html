@@ -14,6 +14,10 @@
 
 {% block external_scripts %}
     <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
+
+    {# humanize-duration is used to pretty print date ages, see https://github.com/EvanHahn/HumanizeDuration.js #}
+    {# we use it, for example, to pretty print the age of videos #}
+    <script src="{% static 'website/js/humanize-duration.js' %}"></script>
 {% endblock %}
 
 {% block maincarousel %}

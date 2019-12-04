@@ -961,6 +961,12 @@ class Video(models.Model):
         """Given self.video_url, returns the correctly formatted video embed url for YouTube and Vimeo"""
         return get_video_embed(self.video_url)
 
+    def get_age_in_ms(self):
+        """Gets the age of this video in milliseconds (as an integer)"""
+        age_td = datetime.datetime.now().date() - self.date # calculate age as a timedelta object
+        age_in_ms = age_td.total_seconds() * 1000 # conver to milliseconds
+        return int(age_in_ms)
+
     # Returns a cap case title
     def get_title(self):
         words = self.title.split()
