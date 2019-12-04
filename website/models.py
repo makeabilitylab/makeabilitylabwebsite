@@ -854,7 +854,15 @@ class Project_Role(models.Model):
         return self.start_date.strftime('%b %Y')
 
     def get_end_date_short(self):
-        return self.end_date.strftime('%b %Y') if self.end_date != None else "Present"
+        # if this project role has no end date, check to see if the project itself has ended
+        # and use the end date for that instead
+        # See: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/836
+        if self.end_date is None and self.project.has_ended():
+            return self.project.end_date.strftime('%b %Y')
+        elif self.end_date is None:
+            return "Present" # project is still active and role has no end date
+        else:
+            return self.end_date.strftime('%b %Y')
 
     def get_date_range_as_str(self):
         if self.start_date is not None and self.end_date is None:
