@@ -34,3 +34,13 @@ def removehtmltags(value):
     cleanr = re.compile('<.*?>')
     cleantext = re.sub(cleanr, '', value)
     return cleantext
+
+@register.filter(name='parametric_slice')
+def parametric_slice(list, cnt):
+    return list[:cnt]
+
+@register.filter(name='news_slice')
+def news_slice(list, pub_cnt):
+    """Returns the number of news items based on num of pubs"""
+    return list[:pub_cnt + 1]
+

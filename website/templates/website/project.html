@@ -79,9 +79,10 @@
         {% if news %}
             <!-- Create a row for the well which will contain news from our feeds -->
             <div class="row recent-news">
-                <h3 class="news-type-label">Recent News</h3>
+                <h3 class="news-type-label">News</h3>
                 <div class="well news-well">
-                    {% for news_item in news|slice:"5" %}
+{#                    {% for news_item in news|slice:"5" %}#}
+                    {% for news_item in news|news_slice:publications.count %}
                         {% include "snippets/display_news_blurb_sidebar_snippet.html" %}
                     {% endfor %}
                 </div>
