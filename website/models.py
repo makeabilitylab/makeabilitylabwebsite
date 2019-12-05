@@ -668,6 +668,10 @@ class Project(models.Model):
         else:
             return False
 
+    def has_thumbnail(self):
+        """Returns true if a project thumbnail has been set"""
+        return self.gallery_image is not None
+
     def has_publication(self):
         """Returns True if the project has at least one publication"""
         return self.publication_set.exists()

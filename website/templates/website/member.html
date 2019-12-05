@@ -127,7 +127,9 @@
                             <div class="row">
                                 <h3 class="news-type-label"><b>Projects</b></h3>
                                 {% for project in projects %}
-                                    {% include "snippets/display_project_snippet.html" with project=project %}
+                                    {% if project.has_thumbnail and project.has_publication %}
+                                        {% include "snippets/display_project_snippet.html" with project=project %}
+                                    {% endif %}
                                 {% endfor %}
                             </div>
                         {% endif %}
