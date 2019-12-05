@@ -39,6 +39,7 @@
             <p class="pub-download-links line-clamp-one-line">
                 <a href="../../media/{{ pub.pdf_file }}">PDF</a>
                 {% if pub.official_url %}<a href="{{ pub.official_url }}">| doi</a>{% endif %}
+                {% if pub.code_repo_url %}<a href="{{ pub.code_repo_url }}">| Code</a>{% endif %}
                 {% if pub.talk.pdf_file %}<a href="../../media/{{ pub.talk.pdf_file }}">| Talk</a>{% endif %}
                 {% if pub.poster.pdf_file %}<a href="../../media/{{ pub.poster.pdf_file }}">| Poster</a>{% endif %}
                 <span class="citation-link">| <a data-toggle="popover" data-html="true" data-trigger="manual"
@@ -108,7 +109,9 @@
                 <p class="pub-download-links line-clamp-one-line">
                     <a href="../../media/{{ pub.pdf_file }}">PDF</a>
                     {% if pub.official_url %}<a href="{{ pub.official_url }}">| doi</a>{% endif %}
+                    {% if pub.code_repo_url %}<a href="{{ pub.code_repo_url }}">| Code</a>{% endif %}
                     {% if pub.talk.pdf_file %}<a href="../../media/{{ pub.talk.pdf_file }}">| Talk</a>{% endif %}
+                    {% if pub.poster.pdf_file %}<a href="../../media/{{ pub.poster.pdf_file }}">| Poster</a>{% endif %}
                     <span class="citation-link">| <a data-toggle="popover" data-html="true" data-trigger="manual"
                                                      tabindex="0"
                                                      title="Citation" data-content="Empty Citation"

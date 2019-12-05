@@ -183,7 +183,7 @@ class PublicationAdmin(admin.ModelAdmin):
         ('Pub Venue information',   {'fields': ['pub_venue_url','pub_venue_type', 'book_title', 'book_title_short', 'geo_location', 'total_papers_submitted', 'total_papers_accepted']}),
         ('Archival Info',           {'fields': ['official_url', 'extended_abstract', 'peer_reviewed', 'award' ]}),
         ('Page Info',               {'fields': ['num_pages', 'page_num_start', 'page_num_end']}),
-        ('Supplementary Artifacts', {'fields': ['poster', 'video', 'talk']}),
+        ('Supplementary Artifacts', {'fields': ['poster', 'video', 'talk', 'code_repo_url']}),
         ('Project Info',            {'fields': ['projects', 'project_umbrellas']}),
         ('Keyword Info',            {'fields': ['keywords']}),
     ]

@@ -1237,12 +1237,14 @@ class Publication(models.Model):
     page_num_end = models.IntegerField(blank=True, null=True)
     official_url = models.URLField(blank=True, null=True)
     geo_location = models.CharField(max_length=255, blank=True, null=True)
-    geo_location.help_text = "The physical location of the conference, if any. For example, CHI 2017 is 'Denver, Colorado'"
+    geo_location.help_text = "The physical location of the conference, if any. For example, CHI 2017 was in 'Denver, Colorado'"
 
-    # Publications can have corresponding videos, talks, and posters
+    # Publications can have corresponding videos, talks, posters, etc.
     video = models.OneToOneField(Video, on_delete=models.DO_NOTHING, null=True, blank=True)
     talk = models.ForeignKey(Talk, blank=True, null=True, on_delete=models.DO_NOTHING)
     poster = models.ForeignKey(Poster, blank=True, null=True, on_delete=models.DO_NOTHING)
+    code_repo_url = models.URLField(blank=True, null=True)
+    code_repo_url.help_text = "URL to github or gitlab"
 
     series = models.CharField(max_length=255, blank=True, null=True)
     isbn = models.CharField(max_length=255, blank=True, null=True)
