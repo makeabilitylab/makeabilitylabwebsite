@@ -82,40 +82,8 @@
                         <div class="row">
                             <h3 class="news-type-label">Recent News</h3>
                             <div class="well news-well">
-                                {% for item in news %}
-                                    <!-- Create a row for each news item which has been passed in -->
-                                    <div class="row news_header">
-                                        <a href="">
-                                            <!-- Use the items image if it exists, otherwise use the default icon -->
-                                            {% if item.image %}
-                                                <img src="{% thumbnail item.image 250x250 box=item.cropping crop detail %}"
-                                                     class="news_image" height="50" width="50"
-                                                     alt="{{ item.alt_text }}">
-                                            {% else %}
-                                                <img src="{% static 'website/img/news_icon.png' %}" class="news_image"
-                                                     height="50" width="50">
-                                            {% endif %}
-                                        </a>
-                                        <div class="news_info">
-                                            <!-- https://css-tricks.com/line-clampin/ This seems to be a good way to do multi line wrapping, also referenced in relevant news.css file -->
-                                            <div class="news_title line-clamp">
-                                                <a href="{% url 'website:news' item.id %}">
-                                                    <p>{{ item.title }}</p>
-                                                </a>
-                                            </div>
-                                            <p class="news_date">{{ item.short_date }} | <a
-                                                    href="{% url 'website:member' item.author.url_name %}">{{ item.author.first_name }}</a>
-                                            </p><!--</p><p class="news_date">{{item.author}}</p>-->
-                                        </div>
-                                    </div>
-                                    <div class="row news_body">
-                                        <!-- Truncation now uses a set number of lines which can be modified in news.css content-clamp class by changing -webkit-line-clamp -->
-                                        <div class="news_content content-clamp">
-                                            {% autoescape off %}
-                                                <p>{{ item.content | removehtmltags }}</p>
-                                            {% endautoescape %}
-                                        </div>
-                                    </div>
+                                {% for news_item in news %}
+                                    {% include "snippets/display_news_blurb_sidebar_snippet.html" %}
                                 {% endfor %}
                             </div>
                         </div>
