@@ -36,7 +36,7 @@
         <!-- We only show the download bar if there is a paper to download. And, thankfully, this if condition checks that
              pub.pdf_file exists, is not empty, and is not a false boolean value. See https://docs.djangoproject.com/en/1.9/ref/templates/builtins/#if-->
         {% if pub.pdf_file %}
-            <p class="pub-download-links line-clamp-one-line">
+            <p class="pub-download-links">
                 <a href="../../media/{{ pub.pdf_file }}">PDF</a>
                 {% if pub.official_url %}| <a href="{{ pub.official_url }}">doi</a>{% endif %}
                 {% if pub.code_repo_url %}| <a href="{{ pub.code_repo_url }}">Code</a>{% endif %}
@@ -106,7 +106,7 @@
             </p>
 
             {% if pub.pdf_file %}
-                <p class="pub-download-links line-clamp-one-line">
+                <p class="pub-download-links">
                     <a href="../../media/{{ pub.pdf_file }}">PDF</a>
                     {% if pub.official_url %}| <a href="{{ pub.official_url }}">doi</a>{% endif %}
                     {% if pub.code_repo_url %}| <a href="{{ pub.code_repo_url }}">Code</a>{% endif %}
