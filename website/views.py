@@ -663,7 +663,7 @@ def filter_incomplete_projects(projects):
     for project in projects:
         # I tested this and if project.about or project.gallery_image are not set,
         # they will be interpreted as False by Python
-        if project.has_artifact() and project.about and project.gallery_image:
+        if project.has_publication() and project.about and project.gallery_image:
             filtered.append(project)
 
     return filtered

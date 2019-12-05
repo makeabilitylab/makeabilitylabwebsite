@@ -24,8 +24,10 @@
 {% block content %}
     <div id="makelab-projects" class="container-fluid makelab-content-container">
         <div class="section" style="margin-top: 50px;">
-            {% for project in projects%}
-                {% include "snippets/display_project_snippet.html" %}
+            {% for project in projects %}
+                {% if project.has_thumbnail and project.has_publication %}
+                    {% include "snippets/display_project_snippet.html" %}
+                {% endif %}
             {% endfor %}
         </div>
     </div>

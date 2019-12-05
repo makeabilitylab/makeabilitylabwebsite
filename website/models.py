@@ -670,11 +670,13 @@ class Project(models.Model):
 
     def has_thumbnail(self):
         """Returns true if a project thumbnail has been set"""
-        return self.gallery_image is not None
+
+        # From: https://stackoverflow.com/a/8850547
+        return bool(self.gallery_image)
 
     def has_publication(self):
         """Returns True if the project has at least one publication"""
-        return self.publication_set.exists()
+        return self.get_publication_count() > 0
 
     def get_most_recent_publication(self):
         """Returns the most recent publication for project"""
