@@ -129,8 +129,6 @@
                                 {% for project in projects %}
                                     {% if project.has_thumbnail and project.has_publication %}
                                         {% include "snippets/display_project_snippet.html" with project=project %}
-                                    {% else %}
-                                        Project {{ project }} has a thumbnail={{ project.has_thumbnail }} and a pub={{ project.has_publication  }}
                                     {% endif %}
                                 {% endfor %}
                             </div>
