@@ -71,11 +71,11 @@
                     {% if n.image %}
                         <img src="{% thumbnail n.image 200x200 box=news.cropping crop detail %}" class="news-listing-image-image img-responsive"/>
                     {% else %}
-                        <img src="{% static 'website/img/news_icon.png' %}" class="big-news-image" height="110" width="110">
+                        <img src="{% static 'website/img/news_icon.png' %}" class="big-news-image" style="width: 110px; margin-top:7px">
                     {% endif %}
                     </a>
                 </div>
-                <div class="news-listing-info" style="margin-top: 10px;">
+                <div class="news-listing-info">
                     <p class="news-listing-artifact-title"><a href="{% url 'website:news' news_id=n.id %}">{{ n.title }}</a></p>
                     <p class="news-listing-author-outside" style="margin-bottom: 10px;">
                         <span class="news-listing-author"><a href="{% url 'website:member' member_id=n.author.id %}">{{ n.author }}</a> &mdash;</span>

@@ -2,6 +2,10 @@
   margin-top: 25px;
 }
 
+.big-news-image{
+  width: 250px;
+}
+
 .big-news-title {
   font-weight: bold;
   padding-left: 0;

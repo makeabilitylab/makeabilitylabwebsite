@@ -8,8 +8,8 @@
 {% load ml_tags %}
 
 {% block stylesheets %}
-<link rel="stylesheet" href="{% static 'website/css/news.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/bignews.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/news.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/bignews.css' %}">
 {% endblock %}
 
 {% block maincarousel %}
@@ -26,9 +26,9 @@
 	    <div class="row">
 		<div class="col-sm-4 hideden-xs">
 		    {% if news.image %}
-		    <img src="{% thumbnail news.image 250x250 box=news.cropping crop detail %}" class="big-news-image" height="250" width="250" alt="{{news.alt_text}}">
+		    <img src="{% thumbnail news.image 250x250 box=news.cropping crop detail %}" class="big-news-image" alt="{{news.alt_text}}">
 		    {% else %}
-		    <img src="{% static 'website/img/news_icon.png' %}" class="big-news-image" height="250" width="250">			
+		    <img src="{% static 'website/img/news_icon.png' %}" class="big-news-image">
 		    {% endif %}
 		</div>
 		<div class="col-xs-12 col-sm-8">
