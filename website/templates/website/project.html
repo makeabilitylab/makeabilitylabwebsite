@@ -82,6 +82,8 @@
                 <h3 class="news-type-label">News</h3>
                 <div class="well news-well">
 {#                    {% for news_item in news|slice:"5" %}#}
+                    {# We dynamically show the number of news stories based on num of pubs #}
+                    {# This is because of: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/224 #}
                     {% for news_item in news|news_slice:publications.count %}
                         {% include "snippets/display_news_blurb_sidebar_snippet.html" %}
                     {% endfor %}
