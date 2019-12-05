@@ -36,7 +36,7 @@
         <p class="line-clamp-one-line no-margin">{{ member.person.get_current_school }}</p>
 
         {# Currently special casing me from this as I have so many projects and the clamping isn't working correctly #}
-        {% if member.person.project_role_set.all %}
+        {% if member.person.get_projects_sorted_by_contrib %}
             <p class="pub-download-links line-clamp-one-line no-margin" style="position: static; margin:3px 0px 0px 0px;">
                 {% if member.person.last_name == "Froehlich" %}
                     <a href="{% url 'website:projects' %}">All Projects</a>

@@ -404,6 +404,13 @@ def member(request, member_id):
     project_roles = person.project_role_set.order_by('start_date')
     projects = person.get_projects()
 
+    # filter projects to those that have a thumbnail and have been published
+    filtered_projects = list()
+    for proj in projects:
+        if proj.gallery_image is not None and proj.has_publication():
+            filtered_projects.append(proj)
+    projects = filtered_projects
+
     context = {'person': person,
                'news': news,
                'talks': talks,

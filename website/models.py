@@ -90,7 +90,6 @@ class Person(models.Model):
     cropping = ImageRatioField('image', '245x245', size_warning=True)
     easter_egg_crop = ImageRatioField('easter_egg', '245x245', size_warning=True)
 
-    # Return current title
     def get_current_title(self):
         """Returns the title for person's current position"""
         latest_position = self.get_latest_position()
@@ -168,7 +167,8 @@ class Person(models.Model):
 
     def is_active(self):
         """Returns True is person is current member of lab or current collaborator"""
-        # print(self.get_full_name() + " is active? " + str(self.is_current_member()) + " " + str(self.is_current_collaborator()))
+        # print(self.get_full_name() + " is active? " + str(self.is_current_member()) + " " +
+        # str(self.is_current_collaborator()))
         return self.is_current_member() or self.is_current_collaborator()
 
     is_active.short_description = "Is Active?"
@@ -316,7 +316,7 @@ class Person(models.Model):
         projects = set([project_role.project for project_role in project_roles])
         return projects
 
-    def get_projects_sorted_by_contrib(self):
+    def get_projects_sorted_by_contrib(self, filter_out_projs_with_zero_pubs=True):
         """Returns a set of all projects this person is involved in ordered by number of pubs"""
         map_project_name_to_tuple = dict() # tuple is (count, most_recent_pub_date, project)
         #publications = self.publication_set.order_by('-date')
@@ -341,14 +341,11 @@ class Person(models.Model):
                 if pub.date is not None and pub.date > most_recent_date:
                     most_recent_date = pub.date
 
-                map_project_name_to_tuple[proj.name] = (tuple_cnt_proj[0] + 1,
-                                                        most_recent_date,
-                                                        tuple_cnt_proj[2])
+                map_project_name_to_tuple[proj.name] = (tuple_cnt_proj[0] + 1, # pub cnt
+                                                        most_recent_date,      # most recent pub date
+                                                        tuple_cnt_proj[2])     # project
 
         list_tuples = list([tuple_cnt_proj for tuple_cnt_proj in map_project_name_to_tuple.values()])
-        # list_tuples_sorted = sorted(list_tuples, key=itemgetter(0), reverse=True)
-        #print(self.get_full_name(), "list_tuples", list_tuples)
-
         list_tuples_sorted = sorted(list_tuples, key=lambda t: (t[0], t[1]), reverse=True)
 
         #print("list_tuples_sorted", list_tuples_sorted)
@@ -357,7 +354,7 @@ class Person(models.Model):
         if len(list_tuples_sorted) > 0:
             list_cnts, list_dates, ordered_projects = zip(*list_tuples_sorted)
 
-        if len(ordered_projects) <= 0:
+        if len(ordered_projects) <= 0 and not filter_out_projs_with_zero_pubs:
             # if a person hasn't published but is still on projects
             # default to this
             ordered_projects = self.get_projects()
@@ -671,8 +668,12 @@ class Project(models.Model):
         else:
             return False
 
+    def has_publication(self):
+        """Returns True if the project has at least one publication"""
+        return self.publication_set.exists()
+
     def get_most_recent_publication(self):
-        '''Returns the most recent publication for project'''
+        """Returns the most recent publication for project"""
         if self.publication_set.exists():
             return self.publication_set.order_by('-date')[0]
         else:
@@ -681,15 +682,11 @@ class Project(models.Model):
     def has_artifact(self):
         """
         Returns true if project has at least one artifact (pub, talk, or video)
-        :return:
         """
         return self.get_most_recent_artifact() is not None
 
     def has_ended(self):
-        """
-        Returns true if the project has ended
-        :return:
-        """
+        """Returns true if the project has ended"""
         return self.end_date is not None and self.end_date < date.today()
 
     def get_most_recent_artifact_date(self):
