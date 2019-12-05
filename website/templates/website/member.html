@@ -85,7 +85,6 @@
                                 {% for item in news %}
                                     <!-- Create a row for each news item which has been passed in -->
                                     <div class="row news_header">
-                                        <!-- TODO link to the full news item -->
                                         <a href="">
                                             <!-- Use the items image if it exists, otherwise use the default icon -->
                                             {% if item.image %}
@@ -100,7 +99,6 @@
                                         <div class="news_info">
                                             <!-- https://css-tricks.com/line-clampin/ This seems to be a good way to do multi line wrapping, also referenced in relevant news.css file -->
                                             <div class="news_title line-clamp">
-                                                <!-- TODO link to the full news item -->
                                                 <a href="{% url 'website:news' item.id %}">
                                                     <p>{{ item.title }}</p>
                                                 </a>
