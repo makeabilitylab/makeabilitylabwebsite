@@ -123,12 +123,14 @@
                 </div>
                 <div class="col-xs-12 col-md-10 col-md-pull-2 landing-content">
                     <div id="makelab-recent-projects" class="makelab-content-container">
-                        {% if project_roles %}
+                        {% if project_roles and projects %}
                             <div class="row">
                                 <h3 class="news-type-label"><b>Projects</b></h3>
                                 {% for project in projects %}
                                     {% if project.has_thumbnail and project.has_publication %}
                                         {% include "snippets/display_project_snippet.html" with project=project %}
+                                    {% else %}
+                                        Project {{ project }} has a thumbnail={{ project.has_thumbnail }} and a pub={{ project.has_publication  }}
                                     {% endif %}
                                 {% endfor %}
                             </div>
