@@ -71,7 +71,7 @@
                     {% if n.image %}
                         <img src="{% thumbnail n.image 200x200 box=news.cropping crop detail %}" class="news-listing-image-image img-responsive"/>
                     {% else %}
-                        <img src="{% static 'website/img/news_icon.png' %}" class="big-news-image" style="width: 110px; margin-top:7px">
+                        <img src="{% static 'website/img/news_icon.png' %}" class="big-news-image" style="width: 110px">
                     {% endif %}
                     </a>
                 </div>
