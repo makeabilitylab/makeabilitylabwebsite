@@ -39,13 +39,14 @@
             <p class="pub-download-links">
                 <a href="../../media/{{ pub.pdf_file }}">PDF</a>
                 {% if pub.official_url %}| <a href="{{ pub.official_url }}">doi</a>{% endif %}
-                {% if pub.code_repo_url %}| <a href="{{ pub.code_repo_url }}">Code</a>{% endif %}
-                {% if pub.talk.pdf_file %}| <a href="../../media/{{ pub.talk.pdf_file }}">Talk</a>{% endif %}
-                {% if pub.poster.pdf_file %}| <a href="../../media/{{ pub.poster.pdf_file }}">Poster</a>{% endif %}
                 <span class="citation-link">| <a data-toggle="popover" data-html="true" data-trigger="manual"
                                                  tabindex="0"
                                                  title="Citation" data-content="Empty Citation"
                                                  class="publication-citation-link">Citation</a></span>
+                {% if pub.code_repo_url %}| <a href="{{ pub.code_repo_url }}">Code</a>{% endif %}
+                {% if pub.talk.pdf_file %}| <a href="../../media/{{ pub.talk.pdf_file }}">Talk</a>{% endif %}
+                {% if pub.poster.pdf_file %}| <a href="../../media/{{ pub.poster.pdf_file }}">Poster</a>{% endif %}
+
                 {% for project in pub.projects.all %}
                     | <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>
                 {% endfor %}
@@ -109,13 +110,13 @@
                 <p class="pub-download-links">
                     <a href="../../media/{{ pub.pdf_file }}">PDF</a>
                     {% if pub.official_url %}| <a href="{{ pub.official_url }}">doi</a>{% endif %}
-                    {% if pub.code_repo_url %}| <a href="{{ pub.code_repo_url }}">Code</a>{% endif %}
-                    {% if pub.talk.pdf_file %}| <a href="../../media/{{ pub.talk.pdf_file }}">Talk</a>{% endif %}
-                    {% if pub.poster.pdf_file %}| <a href="../../media/{{ pub.poster.pdf_file }}">Poster</a>{% endif %}
                     <span class="citation-link">| <a data-toggle="popover" data-html="true" data-trigger="manual"
                                                      tabindex="0"
                                                      title="Citation" data-content="Empty Citation"
                                                      class="publication-citation-link">Citation</a></span>
+                    {% if pub.code_repo_url %}| <a href="{{ pub.code_repo_url }}">Code</a>{% endif %}
+                    {% if pub.talk.pdf_file %}| <a href="../../media/{{ pub.talk.pdf_file }}">Talk</a>{% endif %}
+                    {% if pub.poster.pdf_file %}| <a href="../../media/{{ pub.poster.pdf_file }}">Poster</a>{% endif %}
                     {% for project in pub.projects.all %}
                         | <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>
                     {% endfor %}
