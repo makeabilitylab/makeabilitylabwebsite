@@ -1314,17 +1314,11 @@ class Publication(models.Model):
     #test = models.CharField(max_length=50, blank=True, null=True)
 
     def get_person(self):
-        """
-        Returns the first author
-        :return:
-        """
+        """Returns the first author"""
         return self.authors.all()[0]
 
     def is_extended_abstract(self):
-        """
-        Returns True if this publication is an extended abstract
-        :return: True if this publication is an extended abstract
-        """
+        """Returns True if this publication is an extended abstract"""
         return (self.extended_abstract or
                 self.pub_venue_type == self.POSTER or
                 self.pub_venue_type == self.DEMO or
@@ -1334,20 +1328,21 @@ class Publication(models.Model):
 
     # Returns the title of the publication in capital case
     def get_title(self):
+        """Returns the title of this publication"""
         # Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
         # TODO looks like we have similar code in class Talk--should make a common utility method for both to reduce code redundancy
         cap_title = capitalize_title(self.title, articles)
         return cap_title
 
-    # Returns the acceptance rate as a percentage
     def get_acceptance_rate(self):
+        """Returns the acceptance rate as a percentage"""
         if self.total_papers_accepted and self.total_papers_submitted:
             return 100 * (self.total_papers_accepted / self.total_papers_submitted)
         else:
             return -1
 
-    # Returns true if the publication date happens in the future (e.g., tomorrow or later)
     def to_appear(self):
+        """Returns true if the publication date happens in the future (e.g., tomorrow or later)"""
         return self.date and self.date > date.today()
 
     def __str__(self):
