@@ -4,6 +4,9 @@ services:
   db:
      image: 'postgres'
      ports:
+       # if you want to expose the postgres instance to a tool on localhost, use this instead:
+       # see: https://stackoverflow.com/a/55259785
+       # - '6543:5432'
        - '5432'
      environment:
       - POSTGRES_DB=makeability
@@ -21,6 +24,7 @@ services:
       - '127.0.0.1:8571:8000'
     volumes:
       - .:/code
+      # you must comment out the following line for local host development
       - /cse/web/research/makelab/www:/code/media
     depends_on:
       - db
