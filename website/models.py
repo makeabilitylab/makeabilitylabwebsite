@@ -1402,7 +1402,7 @@ class Publication(models.Model):
 
         forum = forum.upper().replace(" ", "")
         if not forum[-1].isdigit():
-            forum = forum + str(year)
+            forum = forum + str(self.date.year)
 
         bibtex_id += ":" + forum
 
