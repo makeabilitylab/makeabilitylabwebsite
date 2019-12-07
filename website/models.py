@@ -1379,8 +1379,8 @@ class Publication(models.Model):
         citation += self.title + ". "
         citation += "<i>{}</i>. ".format(self.book_title_short)
 
-        if self.doi:
-            citation += "DOI: <a href={}>{}</a>".format(self.doi, self.doi)
+        if self.official_url:
+            citation += "<a href={}>{}</a>".format(self.official_url, self.official_url)
 
         return citation
 
@@ -1465,6 +1465,12 @@ class Publication(models.Model):
                 bibtex += " doi={{<a href='{}'>{}</a>}},{}".format(self.doi, self.doi, newline)
             else:
                 bibtex += " doi={{{}}},{}".format(self.doi, newline)
+
+        if self.official_url:
+            if use_hyperlinks:
+                bibtex += " url={{<a href='{}'>{}</a>}},{}".format(self.official_url, self.official_url, newline)
+            else:
+                bibtex += " url={{{}}},{}".format(self.official_url, newline)
 
         if self.acmid:
             bibtex += " acmid={{{}}},{}".format(self.acmid, newline)
