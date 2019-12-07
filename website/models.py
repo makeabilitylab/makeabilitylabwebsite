@@ -1328,6 +1328,7 @@ class Publication(models.Model):
     # connection was working, see: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/366
     #test = models.CharField(max_length=50, blank=True, null=True)
 
+
     def get_person(self):
         """Returns the first author"""
         return self.authors.all()[0]
@@ -1341,7 +1342,6 @@ class Publication(models.Model):
                 self.pub_venue_type == self.DOCTORAL_CONSORTIUM)
 
 
-    # Returns the title of the publication in capital case
     def get_title(self):
         """Returns the title of this publication"""
         # Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
@@ -1355,6 +1355,14 @@ class Publication(models.Model):
             return 100 * (self.total_papers_accepted / self.total_papers_submitted)
         else:
             return -1
+
+    def is_best_paper(self):
+        """Returns true if earned best paper or test of time award"""
+        return self.award == self.BEST_PAPER_AWARD or self.award == self.TEN_YEAR_IMPACT_AWARD
+
+    def is_honorable_mention(self):
+        """Returns true if earned honorable mention or best paper nomination"""
+        return self.award == self.HONORABLE_MENTION or self.award == self.BEST_PAPER_NOMINATION
 
     def to_appear(self):
         """Returns true if the publication date happens in the future (e.g., tomorrow or later)"""
@@ -1385,6 +1393,7 @@ class Publication(models.Model):
         return citation
 
     def get_bibtex_id(self):
+        """Generates and returns the bibtex id for this paper"""
         bibtex_id = self.get_person().last_name
 
         forum = self.book_title_short.lower()

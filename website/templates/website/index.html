@@ -15,7 +15,7 @@
 
 {% block external_scripts %}
     <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
-    <script src="{% static 'website/js/citationPopover.js' %}"></script>
+    <script src="{% static 'website/js/citationPopoverSimple.js' %}"></script>
 
     {# humanize-duration is used to pretty print date ages, see https://github.com/EvanHahn/HumanizeDuration.js #}
     {# we use it, for example, to pretty print the age of videos #}
@@ -24,97 +24,14 @@
 
 {% block scripts %}
 
-    // TODO: move these scripts into a separate file
     $(document).ready(function() {
 
         // find the citation links and set up the popover content and behavior for each
         var citationLinks = $(".publication-citation-link");
         for(var i = 0; i < citationLinks.length; i++) {
-            $(citationLinks[i]).citationPopover(publications[i]);
-        }
-
-        // update the publication awards
-        var publicationItems = $(".pub-column");
-        for(var i = 0; i < publicationItems.length; i++) {
-            var pub = publications[i];
-            var publicationData = publicationItems[i];
-            if (pub.award) {
-                var award_icon;
-                if (pub.award == "Best Paper Award") {
-                    award_icon = pub.best_paper;
-                } else {
-                    award_icon = pub.honorable_mention;
-                }
-
-                $(publicationData).find(".publication-award-icon").append("<img src=\"" + award_icon + "\" align=\"center\" class=\"award-icon\"/>");
-                $(publicationData).find(".pub-thumbnail-link").append("<img src=\"" + pub.award_banner + "\" class=\"publication-award-banner\"/>");
-                $(publicationData).find(".publication-award-text").html(pub.award);
-            } else {
-                $(publicationData).find(".publication-award").css("display", "none");
-            }
+            $(citationLinks[i]).citationPopover();
         }
     });
-
-    // get the publication data for filling the citations
-    // TODO: is there a way to integrate this into the HTML/Django code below?
-    var publications = [
-        {% for pub in publications|slice:"6" %}
-        {
-            "id": "A.###",
-            "title": "{{ pub.get_title }}",
-            "authors": [
-            {% for author in pub.authors.all %}
-                {
-                "name": "{{ author.get_full_name }}",
-                "first_name": "{{ author.first_name }}",
-                "middle_name": "{{ author.middle_name }}",
-                "last_name": "{{ author.last_name }}",
-                "link": "{% url 'website:member' author.url_name %}"
-                },
-            {% endfor %}
-            ],
-            "date": new Date("{{ pub.date }}"),
-            "pdf": "../../media/{{ pub.pdf_file }}",
-            {% if pub.video %}"video_url": "{{ pub.video.video_url }}",{% endif %}
-            "thumbnail": "{% thumbnail pub.thumbnail 300x0 detail %}",
-            "venue": "{{ pub.book_title_short }}",
-            "pub_type": "{{ pub.pub_venue_type }}",
-            "geo_location": "{{ pub.geo_location }}",
-            "series": "{{ pub.series }}",
-            "page_num_start": "{{ pub.page_num_start }}",
-            "page_num_end": "{{ pub.page_num_end }}",
-            "book_title": "{{ pub.book_title }}",
-            "url": "{{ pub.official_url }}",
-            "doi": "{{ pub.doi }}",
-            "publisher": "{{ pub.publisher }}",
-            "publisher_address": "{{ pub.publisher_address }}",
-            "isbn": "{{ pub.isbn }}",
-            "best_paper": "{% static 'website/img/bestpaper.png' %}",
-            "honorable_mention": "{% static 'website/img/honorablemention.png' %}",
-            "award_banner": "{% static 'website/img/awardoverlay.png' %}",
-            {% if pub.award %}"award": "{{ pub.award }}",{% endif %}
-            {% if pub.total_papers_accepted and pub.total_papers_submitted %}
-                "total_papers_accepted": {{ pub.total_papers_accepted }},
-                "total_papers_submitted": {{ pub.total_papers_submitted }},
-            {% endif %}
-            {% if pub.page_num_start %} "start_page": {{ pub.page_num_start }},{% endif %}
-            {% if pub.page_num_end %} "end_page": {{ pub.page_num_end }},{% endif %}
-            {% if pub.num_pages %} "num_pages": {{ pub.num_pages }},{% endif %}
-            "to_appear": {% if pub.to_appear %}true{% else %}false{% endif %},
-            "keywords": [
-                {% for keyword in pub.keywords.all %}
-                    "{{ keyword.keyword }}",
-                {% endfor %}
-            ],
-            "projects": [
-                {% for project in pub.projects.all %}
-                    "{{ project.short_name }}",
-                {% endfor %}
-            ]
-        },
-        {% endfor %}
-    ];
-
 {% endblock %}
 
 <!-- TODO: In general, I need to test on and support mobile devices. I just tested it and it looks weird. Also need to test on other browsers -->
