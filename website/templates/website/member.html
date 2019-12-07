@@ -14,6 +14,33 @@
     <link rel="stylesheet" href="{% static 'website/css/member.css' %}">
 {% endblock %}
 
+
+{#{% block scripts %}#}
+{##}
+    {# see: https://getbootstrap.com/docs/3.3/javascript/#popovers#}
+{#    $(function () {#}
+{#      $('[data-toggle="popover"]').popover()#}
+{#      <!--$("#costsDropdown li").attr("citation", "TEST-VALUE123");-->#}
+{#      <!--$("a[citation]").attr("citation", "TEST-VALUE123");-->#}
+{#    })#}
+{##}
+{#{% endblock %}#}
+
+{% block scripts %}
+    $(document).ready(function() {
+        // find the citation links and set up the popover content and behavior for each
+        var citationLinks = $(".publication-citation-link");
+        for(var i = 0; i < citationLinks.length; i++) {
+            $(citationLinks[i]).citationPopover();
+        }
+    });
+{% endblock %}
+
+{% block external_scripts %}
+    <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
+    <script src="{% static 'website/js/citationPopoverSimple.js' %}"></script>
+{% endblock %}
+
 {% block maincarousel %}
     <div style="min-height: 40px">&nbsp;
         {# Uncomment the following if you want to have a carousel on the people page #}
@@ -22,6 +49,29 @@
 {% endblock %}
 
 {% block content %}
+{#    <script>#}
+{#        $(document).ready(function(){#}
+{#            //console.log("DOCUMENT READY");#}
+{##}
+{#            // see: https://getbootstrap.com/docs/3.3/javascript/#popovers#}
+{#            $('[data-toggle="popover"]').popover();#}
+{#            //$("a[title]").attr("title", "TEST-VALUE123"); // just a test!#}
+{#        });#}
+{##}
+{#        function onClickShowPlainTextCitation(event) {#}
+{#          var parentDiv = event.parentElement.parentElement; // TODO could update to find parent '.publication-citation.link'#}
+{#          parentDiv.getElementsByClassName('bibtex-text')[0].style.display = 'none';#}
+{#          parentDiv.getElementsByClassName('citation-text')[0].style.display = 'block';#}
+{#        }#}
+{##}
+{#        function onClickShowBibtexCitation(event) {#}
+{#          var parentDiv = event.parentElement.parentElement; // TODO could update to find parent '.publication-citation.link'#}
+{#          parentDiv.getElementsByClassName('citation-text')[0].style.display = 'none';#}
+{#          parentDiv.getElementsByClassName('bibtex-text')[0].style.display = 'block';#}
+{#        }#}
+{##}
+{#    </script>#}
+
     <div id="content" class="container content-container" data-spy="scroll">
         <div id="header" class="container">
             <div class="row" id="about-header">

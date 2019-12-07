@@ -25,6 +25,19 @@
     {# humanize-duration is used to pretty print date ages, see https://github.com/EvanHahn/HumanizeDuration.js #}
     {# we use it, for example, to pretty print the age of videos #}
     <script src="{% static 'website/js/humanize-duration.js' %}"></script>
+
+    <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
+    <script src="{% static 'website/js/citationPopoverSimple.js' %}"></script> {# used for citation popups #}
+{% endblock %}
+
+{% block scripts %}
+    $(document).ready(function() {
+        // find the citation links and set up the popover content and behavior for each
+        var citationLinks = $(".publication-citation-link");
+        for(var i = 0; i < citationLinks.length; i++) {
+            $(citationLinks[i]).citationPopover();
+        }
+    });
 {% endblock %}
 
 
