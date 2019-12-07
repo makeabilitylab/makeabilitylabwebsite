@@ -138,7 +138,6 @@ class Person(models.Model):
 
     get_current_role.short_description = "Role"
 
-    # Returns time in current position
     def get_time_in_current_position(self):
         """Returns time in current position (as a timedelta object)"""
         latest_position = self.get_latest_position()
@@ -298,6 +297,22 @@ class Person(models.Model):
             return u"{0} {1}".format(self.first_name, self.last_name)
 
     get_full_name.short_description = "Full Name"
+
+    def get_citation_name(self, include_middle=True, full_name=True):
+        citation_name = self.last_name
+
+        if full_name:
+            citation_name += ", " + self.first_name
+        else:
+            citation_name += ", " + self.first_name.upper()[0] + "."
+
+        if self.middle_name and include_middle:
+            if full_name:
+                citation_name += " " + self.middle_name
+            else:
+                citation_name += " " + self.middle_name.upper()[0] + "."
+
+        return citation_name
 
     def get_url_name(self):
         """Gets the URL name for this person. Format: firstlast"""
@@ -1344,6 +1359,121 @@ class Publication(models.Model):
     def to_appear(self):
         """Returns true if the publication date happens in the future (e.g., tomorrow or later)"""
         return self.date and self.date > date.today()
+
+    def get_citation_as_html(self):
+        """Returns a human readable citation as html"""
+        citation = ""
+        author_idx = 0
+        num_authors = self.authors.count()
+        for author in self.authors.all():
+            citation += author.get_citation_name(full_name=False)
+
+            if (author_idx + 1) < num_authors:
+                citation += ", "
+            else:
+                citation += " "
+
+            author_idx += 1
+
+        citation += "({}). ".format(self.date.year)
+        citation += self.title + ". "
+        citation += "<i>{}</i>. ".format(self.book_title_short)
+
+        if self.doi:
+            citation += "DOI: <a href={}>{}</a>".format(self.doi, self.doi)
+
+        return citation
+
+    def get_bibtex_id(self):
+        bibtex_id = self.get_person().last_name
+
+        forum = self.book_title_short.lower()
+        if "proceedings of" in forum:
+            forum = forum.replace('proceedings of', '')
+
+        forum = forum.upper().replace(" ", "")
+        if not forum[-1].isdigit():
+            forum = forum + str(year)
+
+        bibtex_id += ":" + forum
+
+        # code to make acronym from: https://stackoverflow.com/a/4355337
+        title_acronym = ''.join(w[0] for w in self.title.split() if w[0].isupper())
+        bibtex_id += ":" + title_acronym[:3]
+
+        if self.doi:
+            doi = self.doi.rsplit('/', 1)[-1]
+            bibtex_id += doi
+
+        bibtex_id += ","
+
+        return bibtex_id
+
+
+    def get_citation_as_bibtex(self, newline="<br/>", use_hyperlinks=True):
+        """Returns bibtex citation as a string"""
+        bibtex = ""
+
+        if self.pub_venue_type is self.JOURNAL or\
+            self.pub_venue_type is self.ARTICLE:
+            bibtex += "@article{"
+        else:
+            bibtex += "@inproceedings{"
+
+
+        bibtex += self.get_bibtex_id() + newline
+
+        # start author block
+        bibtex += " author = {"
+
+        author_idx = 0
+        num_authors = self.authors.count()
+        for author in self.authors.all():
+            citation_name = author.get_citation_name(full_name=True)
+            bibtex += citation_name
+
+            if (author_idx + 1) < num_authors:
+                bibtex += " and "
+
+            author_idx += 1
+        bibtex += "}" + newline
+        # end author block
+
+        bibtex += " title={{{}}},{}".format(self.title, newline)
+        bibtex += " booktitle={{{}}},{}".format(self.book_title, newline)
+        bibtex += " booktitleshort={{{}}},{}".format(self.book_title_short, newline)
+
+        if self.series:
+            bibtex += " series = {" + self.series + "},"
+
+        bibtex += " year={{{}}},{}".format(self.date.year, newline)
+
+        if self.isbn:
+            bibtex += " isbn={{{}}},{}".format(self.isbn, newline)
+
+        if self.geo_location:
+            bibtex += " location={{{}}},{}".format(self.geo_location, newline)
+
+        if self.page_num_start and self.page_num_end:
+            bibtex += " pages={{{}--{}}},{}".format(self.page_num_start, self.page_num_end, newline)
+
+        if self.num_pages:
+            bibtex += " numpages={{{}}},{}".format(self.num_pages, newline)
+
+        if self.doi:
+            if use_hyperlinks:
+                bibtex += " doi={{<a href='{}'>{}</a>}},{}".format(self.doi, self.doi, newline)
+            else:
+                bibtex += " doi={{{}}},{}".format(self.doi, newline)
+
+        if self.acmid:
+            bibtex += " acmid={{{}}},{}".format(self.acmid, newline)
+
+        if self.publisher:
+            bibtex += " publisher={{{}}},{}".format(self.publisher, newline)
+
+        bibtex += "}"
+        return bibtex
 
     def __str__(self):
         return self.title
