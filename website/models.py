@@ -1324,10 +1324,6 @@ class Publication(models.Model):
     )
     award = models.CharField(max_length=50, choices=AWARD_CHOICES, blank=True, null=True)
 
-    # remove test field that we added to verify that the postgres
-    # connection was working, see: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/366
-    #test = models.CharField(max_length=50, blank=True, null=True)
-
 
     def get_person(self):
         """Returns the first author"""
