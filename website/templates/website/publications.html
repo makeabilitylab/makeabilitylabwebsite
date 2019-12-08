@@ -36,7 +36,7 @@
         {% for pub in publications %}
         {
             "id": "A.###",
-            "title": "{{ pub.get_title }}",
+            "title": "{{ pub.title }}",
             "authors": [
             {% for author in pub.authors.all %}
                 {

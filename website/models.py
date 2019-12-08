@@ -11,25 +11,14 @@ from django.utils import timezone
 from datetime import timedelta
 import datetime
 from website.utils.fileutils import UniquePathAndRename
+import website.utils.ml_utils as ml_utils
 import os
 import glob
-import re
 from random import choice
 from django.core.files import File
 import shutil
 from ckeditor_uploader.fields import RichTextUploadingField
 
-
-#helper function to correctly capitalize a string, specify words to not capitalize in the articles list
-def capitalize_title(s, exceptions):
-    word_list = re.split(' ', s)       # re.split behaves as expected
-    final = [word_list[0].capitalize()]
-    for word in word_list[1:]:
-        final.append(word if word in exceptions else word.capitalize())
-    return " ".join(final)
-
-#Standard list of words to not capitalize in a sentence
-articles = ['a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'from', 'is', 'of', 'on', 'or', 'nor', 'the', 'to', 'up', 'yet']
 
 # Special character mappings
 special_chars = {
@@ -987,18 +976,6 @@ class Video(models.Model):
         age_in_ms = age_td.total_seconds() * 1000 # conver to milliseconds
         return int(age_in_ms)
 
-    # Returns a cap case title
-    def get_title(self):
-        words = self.title.split()
-        cap_title = ""
-        first = True
-        for word in words:
-            if not first:
-                cap_title += " "
-            cap_title += word[0].upper() + word[1:].lower()
-            first = False
-        return cap_title
-
     def __str__(self):
         return self.title
 # These two auto-delete files from filesystem when they are unneeded:
@@ -1081,16 +1058,11 @@ class Talk(models.Model):
     # raw_file = models.FileField(upload_to='talks/')
     # print("In talk model!")
     def get_person(self):
+        """Gets the "first author" (or speaker in this case) for the talk"""
         return self.speakers.all()[0]
 
-    def get_title(self):
-        # Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
-        #cap_title = ' '.join(s[0].upper() + s[1:] for s in self.title.split(' '))
-        cap_title = capitalize_title(self.title, articles)
-        return cap_title
-
-    # Gets the list of speakers as a csv string
     def get_speakers_as_csv(self):
+        """Gets the list of speakers as a csv string"""
         # iterate through all of the speakers and return the csv
         is_first_speaker = True
         list_of_speakers_as_csv = ""
@@ -1336,14 +1308,6 @@ class Publication(models.Model):
                 self.pub_venue_type == self.DEMO or
                 self.pub_venue_type == self.WIP or
                 self.pub_venue_type == self.DOCTORAL_CONSORTIUM)
-
-
-    def get_title(self):
-        """Returns the title of this publication"""
-        # Comes from here http://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
-        # TODO looks like we have similar code in class Talk--should make a common utility method for both to reduce code redundancy
-        cap_title = capitalize_title(self.title, articles)
-        return cap_title
 
     def get_acceptance_rate(self):
         """Returns the acceptance rate as a percentage"""
