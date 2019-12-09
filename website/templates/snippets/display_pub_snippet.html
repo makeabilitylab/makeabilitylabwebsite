@@ -72,7 +72,9 @@
                 {% if pub.poster.pdf_file %}| <a href="../../media/{{ pub.poster.pdf_file }}">Poster</a>{% endif %}
 
                 {% for project in pub.projects.all %}
-                    • <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>
+                    {% if project.can_show_online %}
+                        • <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>
+                    {% endif %}
                 {% endfor %}
             </p>
         {% endif %}
@@ -170,7 +172,9 @@
 
 
                     {% for project in pub.projects.all %}
-                        • <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>
+                        {% if project.can_show_online %}
+                            • <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>
+                        {% endif %}
                     {% endfor %}
                 </p>
             {% endif %}

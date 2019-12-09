@@ -676,6 +676,10 @@ class Project(models.Model):
         else:
             return False
 
+    def can_show_online(self):
+        """Returns true if we can show this project on the webpage"""
+        return self.has_thumbnail() and self.has_publication()
+
     def has_thumbnail(self):
         """Returns true if a project thumbnail has been set"""
         # From: https://stackoverflow.com/a/8850547
