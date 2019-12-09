@@ -53,15 +53,16 @@
                     {{project.start_date}} - {% if project.end_date %}{{project.end_date}}{% else %}Present{% endif %}
                     <br>
                 {% endif %}
-                {% with project.get_pi as pi %}
-                    {% if pi %}
-                        <b>PIs: </b>
+
+                {% if project.get_pis or project.get_co_pis %}
+                    <b>PIs: </b>
+                    {% for pi in project.get_pis %}
                         <a href="{% url 'website:member' pi.get_url_name %}">{{pi.get_full_name}}</a> (PI)<br/>
-                    {% endif %}
-                {% endwith %}
-                {% for copi in project.get_co_pis %}
-                    <a href="{% url 'website:member' copi.get_url_name %}">{{copi.get_full_name}}</a> (Co-PI)<br/>
-                {% endfor %}
+                    {% endfor %}
+                    {% for copi in project.get_co_pis %}
+                        <a href="{% url 'website:member' copi.get_url_name %}">{{copi.get_full_name}}</a> (Co-PI)<br/>
+                    {% endfor %}
+                {% endif %}
                 {% if project.sponsors.all %}
                     <b>Sponsors: </b>
                     {% for sponsor in project.sponsors.all %}

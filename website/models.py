@@ -17,6 +17,7 @@ import glob
 from random import choice
 from django.core.files import File
 import shutil
+import re
 from ckeditor_uploader.fields import RichTextUploadingField
 
 
@@ -651,17 +652,20 @@ class Project(models.Model):
 
     updated = models.DateField(auto_now=True)
 
-    def get_pi(self):
-        """Returns the PI for the project (as a Person object)"""
-        return self.project_role_set.get(pi_member="PI").person
+    def get_pis(self):
+        """Returns the PIs for the project (as a Person object)"""
+        pis_queryset = self.project_role_set.filter(pi_member="PI")
+        pis_list = [pi.person for pi in pis_queryset]
+        print("queryset: ", pis_queryset)
+        print(pis_list)
+        return pis_list
 
     def get_co_pis(self):
         """Returns the PIs for ths project (as a list of Person objects)"""
-        copi_arr = self.project_role_set.filter(pi_member="Co-PI")
-        ret = []
-        for copi in copi_arr:
-            ret.append(copi.person)
-        return ret
+        copis_queryset = self.project_role_set.filter(pi_member="Co-PI")
+        copis_list = [copi.person for copi in copis_queryset]
+        print(copis_list)
+        return copis_list
 
     def has_award(self):
         """Returns true if one or more pubs have an award"""
@@ -674,7 +678,6 @@ class Project(models.Model):
 
     def has_thumbnail(self):
         """Returns true if a project thumbnail has been set"""
-
         # From: https://stackoverflow.com/a/8850547
         return bool(self.gallery_image)
 
