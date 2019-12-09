@@ -131,6 +131,11 @@ class TalkAdmin(admin.ModelAdmin):
     # See: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_display
     list_display = ('title', 'date', 'get_speakers_as_csv', 'forum_name', 'location', 'talk_type')
 
+    # search_fields are used for auto-complete, see:
+    #   https://docs.djangoproject.com/en/3.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields
+    # for example, the PublicationAdmin uses auto-complete select2 for talks
+    search_fields = ['title', 'forum_name']
+
     # Filters speakers only to current members and collaborators and sorts by first name
     # Based on: https://stackoverflow.com/a/17457828
     # Update: we no longer do this because sometimes we want to add a talk by a former member or collaborator
@@ -194,6 +199,10 @@ class PublicationAdmin(admin.ModelAdmin):
 
     list_filter = (PubVenueTypeListFilter, PubVenueListFilter)
 
+    # add in auto-complete fields for talks, see:
+    #   https://docs.djangoproject.com/en/3.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields
+    # this addresses: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/553
+    autocomplete_fields = ['talk']
 
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
         if db_field.name == "authors":

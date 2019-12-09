@@ -1084,7 +1084,7 @@ class Talk(models.Model):
     get_speakers_as_csv.short_description = 'Speaker List'
 
     def __str__(self):
-        return self.title
+        return "{}, {}, {} {}".format(self.get_person().get_full_name(), self.title, self.forum_name, self.date)
 
 #@receiver(post_save, sender=Talk)
 def update_file_name_talks(sender, instance, action, reverse, **kwargs):
