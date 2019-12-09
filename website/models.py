@@ -96,7 +96,7 @@ class Person(models.Model):
         if latest_position is not None:
             return latest_position.get_title_index()
         else:
-            return None
+            return Position.TITLE_ORDER_MAPPING[self.UNKNOWN]
 
     def get_current_department(self):
         """Returns current department for person"""
