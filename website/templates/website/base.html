@@ -120,6 +120,9 @@
 
     {% if debug %}
         <!-- No google analytics will be loaded as you are in development -->
+        <script>
+            console.log("We are in debug mode so no Google Analytics loaded");
+        </script>
     {% else %}
         <script>
             (function (i, s, o, g, r, a, m) {
