@@ -21,7 +21,6 @@
         });
 
         $(this).updateCitationPopover();
-        console.log("WE ARE HERE!");
 
         return this;
     }
