@@ -984,10 +984,9 @@ class Video(models.Model):
         return int(age_in_ms)
 
     def __str__(self):
-        return self.title
-# These two auto-delete files from filesystem when they are unneeded:
+        return "{}, {}, {}".format(self.title, self.get_video_host_str(), self.date)
 
-
+#TODO: figure out why we need this and then move it somewhere
 def repl_func(m):
     """process regular expression match groups for word upper-casing problem"""
     return m.group(1) + m.group(2).upper()
@@ -1164,7 +1163,7 @@ class Poster(models.Model):
         return self.authors.all()[0]
 
     def __str__(self):
-        return self.title
+        return "{}, {}, {}".format(self.get_person().get_full_name(), self.title, self.date)
 
 def update_file_name_poster(sender, instance, action, reverse, **kwargs):
     # Reverse: Indicates which side of the relation is updated (i.e., if it is the forward or reverse relation that is being modified)

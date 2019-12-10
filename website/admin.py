@@ -4,6 +4,7 @@ from .models import Person, Publication, Position, Talk, Project, Poster, Keywor
 from website.admin_list_filters import PositionRoleListFilter, PositionTitleListFilter, PubVenueTypeListFilter, PubVenueListFilter
 from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
 import django
+from django import forms
 
 from django.http import HttpResponse
 from datetime import datetime
@@ -123,6 +124,10 @@ class VideoAdmin(admin.ModelAdmin):
     # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
     list_display = ('title', 'date', 'caption', 'project')
 
+    # search_fields are used for auto-complete, see:
+    #   https://docs.djangoproject.com/en/3.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields
+    search_fields = ['title', 'get_video_host_str', 'date']
+
     # default the sort order in table to descending order by date
     ordering = ('-date',)
 
@@ -158,6 +163,11 @@ class TalkAdmin(admin.ModelAdmin):
         return super(TalkAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 class PosterAdmin(admin.ModelAdmin):
+
+    # search_fields are used for auto-complete, see:
+    #   https://docs.djangoproject.com/en/3.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields
+    search_fields = ['title', 'date']
+
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         print("PosterAdmin.formfield_for_manytomany: db_field: {} db_field.name {} request: {}".format(db_field, db_field.name, request))
         if db_field.name == "projects":
@@ -202,7 +212,32 @@ class PublicationAdmin(admin.ModelAdmin):
     # add in auto-complete fields for talks, see:
     #   https://docs.djangoproject.com/en/3.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields
     # this addresses: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/553
-    autocomplete_fields = ['talk']
+    # You must also update the search_fields in the respective admins like PosterAdmin, VideoAdmin, and TalkAdmin
+    # these search fields become what the auto-complete function searches for filtering
+    autocomplete_fields = ['poster', 'video', 'talk']
+
+    def get_form(self, request, obj=None, **kwargs):
+        """We custom style some of the admin UI, including expanding the width of the talk select interface"""
+        form = super(PublicationAdmin, self).get_form(request, obj, **kwargs)
+
+        # we style the talks select2 widget so that it's wider, see:
+        #   https://docs.djangoproject.com/en/2.2/ref/forms/widgets/#customizing-widget-instances
+        # see also:
+        #   https://stackoverflow.com/questions/10588275/django-change-field-size-of-modelmultiplechoicefield
+        #   https://stackoverflow.com/questions/110378/change-the-width-of-form-elements-created-with-modelform-in-django
+        # and finally, this is what worked for me:
+        #   https://stackoverflow.com/q/35211809
+        # to address: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/851
+        text_min_width = 750
+        form.base_fields['title'].widget.attrs['style'] = 'min-width: {}px;'.format(text_min_width)
+        form.base_fields['book_title'].widget.attrs['style'] = 'min-width: {}px;'.format(text_min_width)
+        form.base_fields['book_title_short'].widget.attrs['style'] = 'min-width: {}px;'.format(500)
+
+        select_min_width = 600
+        form.base_fields['poster'].widget.attrs['style'] = 'min-width: {}px;'.format(select_min_width)
+        form.base_fields['video'].widget.attrs['style'] = 'min-width: {}px;'.format(select_min_width)
+        form.base_fields['talk'].widget.attrs['style'] = 'min-width: {}px;'.format(select_min_width)
+        return form
 
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
         if db_field.name == "authors":
