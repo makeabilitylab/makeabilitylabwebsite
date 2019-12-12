@@ -23,7 +23,10 @@ class BannerAdmin(ImageCroppingMixin, admin.ModelAdmin):
         # ('Image', {'fields': ["image", "image_preview"]})
         ('Image', {'fields': ["image", "cropping"]})
     ]
-    list_display = ('__str__', 'admin_thumbnail')
+
+    # The list display lets us control what is shown in the default persons table at Home > Website > Banners
+    # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
+    list_display = ('title', 'project', 'page', 'favorite', 'image')
     # readonly_fields = ["image_preview"]
 
 

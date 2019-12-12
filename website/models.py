@@ -1597,10 +1597,7 @@ class Banner(models.Model):
     admin_thumbnail.allow_tags = True
 
     def __str__(self):
-        if self.title and self.page:
-            return self.title + ' (' + self.get_page_display() + ')'
-        else:
-            return "Banner object for " + self.get_page_display()
+        return "Title={} Page={} Project={}".format(self.title, self.page, self.project)
 
 
 @receiver(pre_delete, sender=Banner)
