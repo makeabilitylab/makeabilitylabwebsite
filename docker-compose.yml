@@ -3,6 +3,7 @@ version: '3'
 services:
   db:
      image: 'postgres'
+     restart: always
      ports:
        # if you want to expose the postgres instance to a tool on localhost, use this instead:
        # see: https://stackoverflow.com/a/55259785
