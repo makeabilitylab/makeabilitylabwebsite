@@ -17,8 +17,10 @@ FROM python:3
 
 # Setup some other prereqs needed:
 # TODO: we may want to consider adding pip here as I'm getting warnings about old pip
+#RUN pip install --upgrade pip 
+
 # See: https://www.quora.com/How-does-one-install-pip-in-a-Docker-container-using-a-Dockerfile
-RUN apt-get update && apt-get --assume-yes install imagemagick ghostscript sqlite3 
+RUN apt-get update && apt-get --assume-yes install imagemagick ghostscript sqlite3
 
 # The ENV instruction sets the environment variable <key> to the <value> in ENV <key> <value>. 
 # See: https://docs.docker.com/engine/reference/builder/#environment-replacement
@@ -50,6 +52,9 @@ WORKDIR /code
 # See: https://docs.docker.com/engine/reference/builder/#run
 COPY requirements.txt /code/
 RUN pip install -r requirements.txt
+
+## TEMP related to: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/866
+#RUN pip install django-ckeditor
 
 ##Our local user needs write access to a website and static files
 RUN chown -R apache /code/
