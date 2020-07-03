@@ -26,7 +26,7 @@ services:
     volumes:
       - .:/code
       # you must comment out the following line for local host development
-      - /cse/web/research/makelab/www:/code/media
+      # - /cse/web/research/makelab/www:/code/media
       - /cse/web/research/makelab/secret/config.ini:/code/config.ini # for loading vars into ConfigParser in Django
     depends_on:
       - db
