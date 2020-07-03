@@ -104,20 +104,6 @@
 {#        </div>#}
 {#    </div>#}
 
-    <div id="makelab-recent-videos" class="container-fluid makelab-content-container">
-        <h1 class="section-header">Recent Videos</h1>
-        <div class="section">
-            {#  Slice limits to a number of elements in list; see https://stackoverflow.com/a/3907661 #}
-            {% for video in videos|slice:"3" %}
-                {% include "snippets/display_video_snippet.html" %}
-            {% endfor %}
-            <div class="col-xs-12 see-all-artifacts">
-                <a href="{% url 'website:videos' %}">See All Videos ></a>
-            </div>
-        </div>
-    </div>
-
-
     <div id="makelab-recent-papers" class="container-fluid makelab-content-container">
         <h1 class="section-header">Recent Papers</h1>
         <div class="section">
@@ -130,6 +116,18 @@
         </div>
     </div>
 
+    <div id="makelab-recent-videos" class="container-fluid makelab-content-container">
+        <h1 class="section-header">Recent Videos</h1>
+        <div class="section">
+            {#  Slice limits to a number of elements in list; see https://stackoverflow.com/a/3907661 #}
+            {% for video in videos|slice:"3" %}
+                {% include "snippets/display_video_snippet.html" %}
+            {% endfor %}
+            <div class="col-xs-12 see-all-artifacts">
+                <a href="{% url 'website:videos' %}">See All Videos ></a>
+            </div>
+        </div>
+    </div>
 
     <div id="makelab-recent-talks" class="container-fluid makelab-content-container">
         <h1 class="section-header">Recent Talks</h1>
