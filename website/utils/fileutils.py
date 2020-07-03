@@ -27,3 +27,8 @@ class UniquePathAndRename(object):
 
         # return the whole path to the file
         return os.path.join(self.path, filename)
+
+# Returns file name for CKEditor image uploads
+# See: https://django-ckeditor.readthedocs.io/en/latest/#required-for-using-widget-with-file-upload
+def get_ckeditor_image_filename(filename):
+    return filename.upper()

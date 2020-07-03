@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
-from configparser import ConfigParser
+from configparser import ConfigParser 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -230,7 +230,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # CKEditor - Rich Text Editor
 CKEDITOR_UPLOAD_PATH = "uploads/"
-CKEDITOR_FILENAME_GENERATOR = 'website.models.get_filename'
+CKEDITOR_FILENAME_GENERATOR = 'website.utils.fileutils.get_ckeditor_image_filename'
 CKEDITOR_IMAGE_BACKEND = 'pillow'
 CKEDITOR_CONFIGS = {
     'default': {
