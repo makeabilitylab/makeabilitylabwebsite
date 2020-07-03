@@ -8,7 +8,7 @@
 
 <div class="col-ts-12 col-xs-6 col-sm-4 col-lg-3 individual-project-listing">
     <a href="{% url 'website:project' project.short_name %}">
-        <div style="background: white; width:100%; contain: content;">
+        <div style="background: white; width:100%; contain:content; position:relative;">
             <img style="width:100%; height: auto; position: relative;object-fit: cover"
                  src="{% thumbnail project.gallery_image "300x180" crop="center" %}">
             {% if project.has_award %}
