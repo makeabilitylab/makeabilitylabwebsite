@@ -1,11 +1,12 @@
 from django.db import models
-from datetime import date, datetime, timedelta
-
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_save, m2m_changed, post_delete
+
 from ckeditor_uploader.fields import RichTextUploadingField
 from website.utils.fileutils import UniquePathAndRename
 from image_cropping import ImageRatioField
+
+from datetime import date, datetime, timedelta
 
 from .person import Person
 from .project import Project

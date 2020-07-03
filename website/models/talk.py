@@ -1,8 +1,11 @@
 from django.db import models
+from django.conf import settings
 from django.db.models.signals import pre_delete, post_save, m2m_changed, post_delete
 from django.dispatch import receiver
 
 from sortedm2m.fields import SortedManyToManyField
+
+import os
 
 from .project import Project
 from .project_umbrella import Project_umbrella

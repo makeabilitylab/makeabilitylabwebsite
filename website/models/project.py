@@ -1,8 +1,16 @@
 from django.db import models
+
+from image_cropping import ImageRatioField
+
+from datetime import date, datetime, timedelta
+
 from .sponsor import Sponsor
 from .project_umbrella import Project_umbrella
 from .keyword import Keyword
-from image_cropping import ImageRatioField
+from .publication import Publication
+from .talk import Talk
+from .video import Video
+
 
 class Project(models.Model):
     name = models.CharField(max_length=255)

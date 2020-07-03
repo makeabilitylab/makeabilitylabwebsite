@@ -1,6 +1,10 @@
 from django.db import models
 
+from datetime import date, datetime, timedelta
+
 from .project import Project
+
+import website.utils.ml_utils as ml_utils 
 
 class Video(models.Model):
     video_url = models.URLField(blank=True, null=True)
@@ -20,7 +24,7 @@ class Video(models.Model):
 
     def get_embed(self):
         """Given self.video_url, returns the correctly formatted video embed url for YouTube and Vimeo"""
-        return get_video_embed(self.video_url)
+        return ml_utils.get_video_embed(self.video_url)
 
     def get_age_in_ms(self):
         """Gets the age of this video in milliseconds (as an integer)"""

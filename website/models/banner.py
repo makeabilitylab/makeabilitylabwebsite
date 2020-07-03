@@ -1,10 +1,12 @@
 from django.db import models
-from website.utils.fileutils import UniquePathAndRename
-from .project import Project
-from .sponsor import Sponsor
-from image_cropping import ImageRatioField
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_save, m2m_changed, post_delete
+
+from website.utils.fileutils import UniquePathAndRename
+from image_cropping import ImageRatioField
+
+from .project import Project
+from .sponsor import Sponsor
 
 class Banner(models.Model):
     FRONTPAGE = "FRONTPAGE"

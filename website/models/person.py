@@ -1,25 +1,16 @@
 from django.db import models
-
-from image_cropping import ImageRatioField
-from sortedm2m.fields import SortedManyToManyField
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_save, m2m_changed, post_delete
-from django.conf import settings
-from django.core.exceptions import ValidationError
-from datetime import date, datetime, timedelta
-from operator import itemgetter
-from django.utils import timezone
-from datetime import timedelta
-import datetime
-from website.utils.fileutils import UniquePathAndRename
-import website.utils.ml_utils as ml_utils
-import os
-import glob
-from random import choice
 from django.core.files import File
-import shutil
+
+import os
 import re
-from ckeditor_uploader.fields import RichTextUploadingField
+from datetime import date, datetime, timedelta
+from random import choice
+
+from image_cropping import ImageRatioField
+
+from .position import Position
 
 # Special character mappings
 special_chars = {
