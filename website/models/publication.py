@@ -9,7 +9,6 @@ from datetime import date, datetime, timedelta
 import os
 
 from .person import Person
-from .project import Project
 from .project_umbrella import Project_umbrella
 from .keyword import Keyword
 from .video import Video
@@ -41,9 +40,9 @@ class Publication(models.Model):
     num_pages = models.IntegerField(null=True)
 
     # A publication can be about more than one project
-    projects = SortedManyToManyField(Project, blank=True, null=True)
-    project_umbrellas = SortedManyToManyField(Project_umbrella, blank=True, null=True)
-    keywords = SortedManyToManyField(Keyword, blank=True, null=True)
+    projects = SortedManyToManyField('Project', blank=True, null=True)
+    project_umbrellas = SortedManyToManyField('Project_umbrella', blank=True, null=True)
+    keywords = SortedManyToManyField('Keyword', blank=True, null=True)
 
     # TODO, see if there is an IntegerRangeField or something like that for page_num_start and end
     page_num_start = models.IntegerField(blank=True, null=True)

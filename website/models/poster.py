@@ -6,14 +6,11 @@ from django.db.models.signals import pre_delete, post_save, m2m_changed, post_de
 import datetime
 import os
 
-from .person import Person
-from .project import Project
-
 class Poster(models.Model):
 
     title = models.CharField(max_length=255, blank=True, null=True)
-    authors = models.ManyToManyField(Person, blank=True, null=True) # a poster can have multiple authors
-    projects = models.ManyToManyField(Project, blank=True, null=True) # a poster can be about multiple projects
+    authors = models.ManyToManyField('Person', blank=True, null=True) # a poster can have multiple authors
+    projects = models.ManyToManyField('Project', blank=True, null=True) # a poster can be about multiple projects
     date = models.DateField(null=True)
 
     # The PDF and raw files (e.g., illustrator, powerpoint)

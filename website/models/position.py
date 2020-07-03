@@ -3,10 +3,14 @@ from django.core.exceptions import ValidationError
 
 from datetime import date, datetime, timedelta
 
-from .person import Person
+# from .person import Person
 
 class Position(models.Model):
-    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+
+    # For ForeignKey, not using the class name Person but rather the string 'Person'
+    # so we don't have circular dependencies, see: https://docs.djangoproject.com/en/dev/ref/models/fields/#foreignkey
+    # and https://stackoverflow.com/a/8466752
+    person = models.ForeignKey('Person', on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField(blank=True, null=True)
     advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Advisor', on_delete=models.SET_NULL)

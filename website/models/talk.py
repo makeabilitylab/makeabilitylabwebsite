@@ -7,7 +7,6 @@ from sortedm2m.fields import SortedManyToManyField
 
 import os
 
-from .project import Project
 from .project_umbrella import Project_umbrella
 from .keyword import Keyword
 from .person import Person
@@ -17,8 +16,8 @@ class Talk(models.Model):
     title = models.CharField(max_length=255)
 
     # A talk can be about more than one project
-    projects = models.ManyToManyField(Project, blank=True, null=True)
-    project_umbrellas = SortedManyToManyField(Project_umbrella, blank=True, null=True)
+    projects = models.ManyToManyField('Project', blank=True, null=True)
+    project_umbrellas = SortedManyToManyField('Project_umbrella', blank=True, null=True)
 
     # TODO: remove the null = True from all of the following objects
     # including forum_name, forum_url, location, speakers, date, slideshare_url
