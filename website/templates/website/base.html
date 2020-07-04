@@ -77,22 +77,6 @@
             // $("#back-top").hide();
         });
 
-        function parseHashtoAnchor(string) {
-            if (!isNaN(parseInt(string))) {
-                return string.trim();
-            }
-            string = string.replace(/-/g, " ");
-            string = string.trim();
-            var stringArray = string.split(" ");
-            var returnVal = '';
-            stringArray.forEach(function (element) {
-                element = element.charAt(0).toUpperCase() + element.substring(1, element.length);
-                returnVal = returnVal + element + " ";
-            });
-            return returnVal.trim()
-
-        }
-
         // allow for smooth scrolling to anchor links
         $(document).click(function (event) {
             var target = event.originalEvent.target;
@@ -104,7 +88,7 @@
 
                 //get the top offset of the target anchor
                 var hashName = element.hash.substring(1);
-                hashName = parseHashtoAnchor(hashName);
+                //hashName = parseHashtoAnchor(hashName);
                 console.log(hashName)
                 var target_offset = $('[name=' + hashName + ']').offset();
                 console.log(target_offset)

@@ -117,6 +117,8 @@ function groupPublicationsByType()
 
 	var groups = []
 	for(group in tempGroups) {
+		//group_name = group.replace(/\s+/g, '-').toLowerCase();
+		//groups.push({"name": group_name, "items": tempGroups[group]});
 		groups.push({"name": group, "items": tempGroups[group]});
 	}
 
@@ -227,7 +229,9 @@ function addHighlight(text, filter) {
 // helper function to populate the template with the group data
 function formatGroup(group) {
 	var groupData = groupTemplate.clone();
-	groupData.attr("name", group);
+
+	group_name = group.replace(/\s+/g, '-').toLowerCase();
+	groupData.attr("name", group_name);
 	groupData.html(group);
 	return groupData[0].outerHTML;
 }
