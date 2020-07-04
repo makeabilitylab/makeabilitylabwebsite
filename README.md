@@ -71,7 +71,7 @@ exit
 
 7. Clone this repository using `git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git` and navigate to the project home directory using the `cd` command.
 
-8. Build the docker images. Run `docker-compose build`. This is different from the Mac instructions because of this [Issue](https://github.com/jonfroehlich/makeabilitylabwebsite/issues/866#issuecomment-653687671)
+8. Build the docker images. Run `docker-compose build`. This is different from the Mac instructions because of this [Issue](https://github.com/jonfroehlich/makeabilitylabwebsite/issues/866#issuecomment-653687671). You may still need to run `docker build . -t <tag>` to build the database image.
 
 9. Running the container. Once the image has built, run `docker-compose up`, this will bring up both the postgres container for the database and the website containers. For future reference, running `docker-compose up -d` will allow you to continue using the same terminal and none of the output messages will be displayed.
 
