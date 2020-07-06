@@ -3,6 +3,11 @@
 #navigate to the root directory
 cd ../
 
+#if we're on a test system, lets mount the test volume
+if [[ $(hostname -s) == *"test"* ]] ; then
+   sed -i 's,makelab/www:,makelab/www-test:,' docker-compose.yml
+fi
+
 #First, build the website image
 docker-compose build website
 

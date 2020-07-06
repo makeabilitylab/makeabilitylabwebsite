@@ -256,7 +256,7 @@ function do_fetch($key,$url,$path) {
  * @return string Command output
  */
 function do_pull($key,$url,$path) {
-    $cmd = "ssh-agent bash -c 'cd $path; ssh-add $key; git pull' 2>&1";
+    $cmd = "ssh-agent bash -c 'cd $path; ssh-add $key; git reset --hard; git pull' 2>&1";
     _log("Exec command: $cmd\n");
     return shell_exec($cmd);
 }
