@@ -26,7 +26,7 @@ class Video(models.Model):
 
     def get_age_in_ms(self):
         """Gets the age of this video in milliseconds (as an integer)"""
-        age_td = datetime.datetime.now().date() - self.date # calculate age as a timedelta object
+        age_td = datetime.now().date() - self.date # calculate age as a timedelta object
         age_in_ms = age_td.total_seconds() * 1000 # conver to milliseconds
         return int(age_in_ms)
 
