@@ -102,7 +102,7 @@ exit
 ### Manual Installation (In the event that Docker fails to run)
 Proceed to the manual installation instructions [here](https://docs.google.com/document/d/1LJPSSZA0kLzUX34pq4TgYP406bGH_1JhBtFLEPax7a8/edit?usp=sharing)
 
-# PyCharm
+# PyCharm main
 We recommend using PyCharm as an IDE. You can use PyCharm regardless of whether you setup PyCharm to run directly with Docker or to run the website server. (Note: Jon uses PyCharm for dev but not with Docker integration or to run the website server).
 
 ## Configuring PyCharm to run with Docker (optional)
