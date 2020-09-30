@@ -3,7 +3,7 @@ The [Makeability Lab](https://makeabilitylab.cs.washington.edu) is an HCI/Ubicom
 
 This repository contains the [Makeability Lab's website](https://makeabilitylab.cs.washington.edu), which is written in Django (backend) and Bootstrap/Javascript (frontend).
 
-# Table of Contents
+# Table of Contents for interested users
 * [Dev Prereqs](#dev-prereqs)
 * [Docker Installation (Mac)](#docker-installation-mac)
 * [Docker Installation (Windows)](#docker-installation-windows)
@@ -20,9 +20,9 @@ This repository contains the [Makeability Lab's website](https://makeabilitylab.
 
 # Dev Prereqs
 While the instructions below walk you through a step-by-step process to configure your machine for developing the Makeability Lab website, here's a summary of the tools we use:
-- Docker
-- PyCharm
-- Git
+1- Docker
+2- PyCharm
+3- Git
 
 # Docker Installation (Mac)
 1. If you don't have Docker yet, you can download it [here](https://store.docker.com/search?type=edition&offering=community). We use the Community Edition. Open up the application. Run `docker version` to make sure that it is running. 
