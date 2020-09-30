@@ -40,7 +40,7 @@ While the instructions below walk you through a step-by-step process to configur
 7. Shutting down the server. In another terminal at the project home directory run `docker-compose down` and wait for the containers to shut-down. Note without running this command, the development server will persist even when you close down the terminal, thus preventing you from using port 8571 for other purposes.
 
 After running the `docker-compose up` command, you will not need to rebuild or rerun the Docker container (unless you have made changes to docker-compose.yml). However, you will still need to refresh the webpage in order to see new updates.
-### Sample setup:
+### Sample setup :
 ```
 git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git
 cd makeabilitylabwebsite/
