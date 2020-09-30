@@ -18,7 +18,7 @@ This repository contains the [Makeability Lab's website](https://makeabilitylab.
 * [Contributing](#contributing)
 * [Troubleshooting](#troubleshooting)
 
-# Dev Prereqs
+# Dev Prerqer.
 While the instructions below walk you through a step-by-step process to configure your machine for developing the Makeability Lab website, here's a summary of the tools we use:
 - Docker
 - PyCharm
