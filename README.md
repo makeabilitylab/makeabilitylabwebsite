@@ -53,7 +53,6 @@ docker exec -it makeabilitylabwebsite_website_1 bash
 python manage.py createsuperuser
 exit
 ```
-
 # Docker Installation (Windows)
 1. If you don't have Docker yet, you can download it [here](https://store.docker.com/search?type=edition&offering=community). We use the Community Edition. If you previously installed Docker, please navigate to the Docker settings, in the window go to the Reset tab and click "Restore Factory defaults". This will ensure that there will be no conflicts in allocating ports later on.
 
@@ -498,7 +497,7 @@ The Makeability Lab website uses PostgreSQL on production, which is running on g
 # Manual Installation
 We strongly advise running the Docker-based installation since that's what the department mandates and you get an instantly configured dev environment for free. However, if you want the *pain* :) of manually installing all of the required libs, then this is how you should do it. The full step-by-step instructions for installation are [here](https://docs.google.com/document/d/149S_SHOzkJOhNHU4ENMU0YCbk-Vy92y5ZSTeCXG9Bhc/edit) (invite only for now).
 
-## Requirements
+## Requirements for the project
 * Python 3.51
 * Pip 3
 * Django 1.9
@@ -529,7 +528,7 @@ Optional dependencies
 6. Follow the instructions [here](https://developers.google.com/analytics/devguides/reporting/core/v3/quickstart/service-py) to install google analytics api using pip, and to download the p12 private key from google analytics for authentication. This file should also go in the website directory along with the googleaccount.py file.
 7. Run server using `python manage.py runserver`.
 
-# Contributing
+# Contribution
 We use the following process for contributing code:
 1. We use issues to organize tasks. You may choose to either select an existing issue to work on, or add your own. When adding issues, be sure to add tags as necessary. 
 2. Assign yourself to an issue and create a branch off `master`. The name of your branch should be descriptive and based off the issue that you are working on. (EX: if you were fixing [this](https://github.com/jonfroehlich/makeabilitylabwebsite/issues/335) issue, an appropriate branch name would be `adding-hover-to-landing-page`). Each branch should address one issue.
