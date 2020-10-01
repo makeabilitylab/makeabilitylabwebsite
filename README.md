@@ -3,7 +3,7 @@ The [Makeability Lab](https://makeabilitylab.cs.washington.edu) is an HCI/Ubicom
 
 This repository contains the [Makeability Lab's website](https://makeabilitylab.cs.washington.edu), which is written in Django (backend) and Bootstrap/Javascript (frontend).
 
-# Table of Contents
+# List of Contents
 * [Dev Prereqs](#dev-prereqs)
 * [Docker Installation (Mac)](#docker-installation-mac)
 * [Docker Installation (Windows)](#docker-installation-windows)
