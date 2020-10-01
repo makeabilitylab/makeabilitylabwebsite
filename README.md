@@ -23,6 +23,7 @@ While the instructions below walk you through a step-by-step process to configur
 - Docker
 - PyCharm
 - Git
+-python IDLE
 
 # Docker Installation (Mac)
 1. If you don't have Docker yet, you can download it [here](https://store.docker.com/search?type=edition&offering=community). We use the Community Edition. Open up the application. Run `docker version` to make sure that it is running. 
