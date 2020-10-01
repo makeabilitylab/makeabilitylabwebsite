@@ -564,3 +564,6 @@ CREATE INDEX "website_talk_keywords_5c003bba" ON "website_talk_keywords" ("keywo
 5. Move the copied database back into place using: `mv db.sqlite3.backup db.sqlite3`.
 6. Recreate the database. Run `make shell`. In the interactive terminal, type `python manage.py`.
 7. Rerun the website with `make run`.
+
+
+#An Amazing Project
