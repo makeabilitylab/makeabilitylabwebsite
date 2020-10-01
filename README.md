@@ -1,3 +1,4 @@
+# Hello Floks
 # Makeability Lab Website
 The [Makeability Lab](https://makeabilitylab.cs.washington.edu) is an HCI/Ubicomp research lab at the University of Washington directed by Professor Jon Froehlich. Founded in 2012 by Froehlich and students, the Makeability Lab focuses on designing and studying novel interactive experiences that cross between bits and atoms—the virtual and the physical—and back again to confront some of the world's greatest challenges in environmental sustainability, health and wellness, education, and universal accessibility. 
 
@@ -213,8 +214,8 @@ A script in the website automatically serializes some models specified in `seria
 
 ### How to use
 There are two ways to call and retrieve the data:
-1.	List: will return all of the model objects in the data serialized into JSON
-2.	Detail: will return a specific object based on the primary key
+1.	List: will return all of the model objects in the data serialized into JSON.
+2.	Detail: will return a specific object based on the primary key.
 
 ##### Publications:
 List: `https://makeabilitylab.cs.washington.edu/api/pubs/`
@@ -539,6 +540,7 @@ We use the following process for contributing code:
 Tasks that include changes to the user/admin interface should always include mockups. This is so we can collectively agree on how we want the site to look. A good example is [here](https://github.com/jonfroehlich/makeabilitylabwebsite/issues/287). Pull requests should also include before/after images, when applicable.
 
 # Troubleshooting
+
 ## Bind for 0.0.0.0:8000 failed: port is already allocated
 This means that there is already some process running at `0.0.0.0:8000`. First, make to close out of any windows that might be running a local server on your computer. If this error is still occuring, there might be a Docker container that is still running. 
 
@@ -547,7 +549,7 @@ To delete the container, do the following steps:
 2. A table should be displayed. Look for the row that has `0.0.0.0:8000->8000/tcp` under the ports column. Copy the container name (under the `NAMES` column). 
 3. Run `docker kill [NAME]`. (EX: `docker kill confident_tereshkova`). 
 
-## Operational Error: Table/Column does not exist
+## Operational Error: Table/Column doesn't exist
 WARNING: This method resets the database. 
 1. Run `make dbshell` to enter an interactive terminal to view the current tables. In the interactive terminal, type `.tables` to display all tables that are listed in the database. (If the problem is that a column doesn't exist, type `.schema [table name]` to display the information about a specific table). If the table/column doesn't exist, continue.
 2. Create a second docker container that mounts the database using `docker run -ti -v database:/database ubuntu`
