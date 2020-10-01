@@ -3,7 +3,7 @@ The [Makeability Lab](https://makeabilitylab.cs.washington.edu) is an HCI/Ubicom
 
 This repository contains the [Makeability Lab's website](https://makeabilitylab.cs.washington.edu), which is written in Django (backend) and Bootstrap/Javascript (frontend).
 
-# Table of Contents
+# Table of Contents:
 * [Dev Prereqs](#dev-prereqs)
 * [Docker Installation (Mac)](#docker-installation-mac)
 * [Docker Installation (Windows)](#docker-installation-windows)
@@ -99,7 +99,7 @@ python manage.py createsuperuser
 exit
 ```
 
-### Manual Installation (In the event that Docker fails to run)
+### Manual Installation (In the event if Docker fails to run)
 Proceed to the manual installation instructions [here](https://docs.google.com/document/d/1LJPSSZA0kLzUX34pq4TgYP406bGH_1JhBtFLEPax7a8/edit?usp=sharing)
 
 # PyCharm
@@ -108,7 +108,7 @@ We recommend using PyCharm as an IDE. You can use PyCharm regardless of whether 
 ## Configuring PyCharm to run with Docker (optional)
 Note that in order to configure PyCharm with Docker, you must have the professional version. Students can get this for free at: https://www.jetbrains.com/student/. 
 
-1. You must first configure Docker. Right click on Docker->Settings and then enable daemon on tcp://localhost:2375 [link](https://intellij-support.jetbrains.com/hc/en-us/community/posts/207465185-Pycharm-Docker-and-connection-refused)
+1. You must first configure the Docker. Right click on Docker->Settings and then enable daemon on tcp://localhost:2375 [link](https://intellij-support.jetbrains.com/hc/en-us/community/posts/207465185-Pycharm-Docker-and-connection-refused)
 1. Then, in Pycharm, select 'Open New Project'. Select the root directory of this project for the file.
 2. Go to Run > Edit Configurations. In the side window, go to Defaults > Docker > Dockerfile.
 3. Click on the `...` by Server. Select the `Docker for [your OS here]` option. Click `OK` to finish.
