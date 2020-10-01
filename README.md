@@ -25,7 +25,7 @@ While the instructions below walk you through a step-by-step process to configur
 - Git
 
 # Docker Installation (Mac)
-1. If you don't have Docker yet, you can download it [here](https://store.docker.com/search?type=edition&offering=community). We use the Community Edition. Open up the application. Run `docker version` to make sure that it is running. 
+1. If you don't have Docker yet, you can download it from [here](https://store.docker.com/search?type=edition&offering=community). We use the Community Edition. Open up the application. Run `docker version` to make sure that it is running. 
   
 2. Clone this repository using `git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git` and navigate to the project home directory using the `cd` command.
 
