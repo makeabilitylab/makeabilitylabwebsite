@@ -1,4 +1,4 @@
-# Makeability Lab Website
+# Makeability Lab  Website - An amazing project
 The [Makeability Lab](https://makeabilitylab.cs.washington.edu) is an HCI/Ubicomp research lab at the University of Washington directed by Professor Jon Froehlich. Founded in 2012 by Froehlich and students, the Makeability Lab focuses on designing and studying novel interactive experiences that cross between bits and atoms—the virtual and the physical—and back again to confront some of the world's greatest challenges in environmental sustainability, health and wellness, education, and universal accessibility. 
 
 This repository contains the [Makeability Lab's website](https://makeabilitylab.cs.washington.edu), which is written in Django (backend) and Bootstrap/Javascript (frontend).
@@ -208,10 +208,10 @@ You can also view `buildlog.text`, `httpd-access.log`, and `httpd-error.log` at 
 There are two types of Makeability Lab data: (i) uploaded files like PDFs, PowerPoint files, images, etc. and (ii) data that goes into the database (SQLite in local dev, PostgreSQL on production). Although we have both a test (makeability-test.cs) and a production server (makeability.cs), they are linked to the same backend data for both (i) and (ii).
 
 # Makeability Lab API
-### What it does
+### What it does:
 A script in the website automatically serializes some models specified in `serializers.py`. The data, in JSON format, is then rendered into an APIView and displayed in a webpage. The entire api framework is housed under the `/api/` url extension. Currently only publications and talks are serialized.
 
-### How to use
+### How to use:
 There are two ways to call and retrieve the data:
 1.	List: will return all of the model objects in the data serialized into JSON
 2.	Detail: will return a specific object based on the primary key
@@ -241,7 +241,7 @@ List: `https://makeabilitylab.cs.washington.edu/api/project/`
 <br>Detail: `https://makeabilitylab.cs.washington.edu/api/project/<pk: int>`
 
 
-###### Sample API Calls
+###### Sample API Calls:
 To request the pure json version, append `?format=json` to the end of the url. The data will then be rendered in complete JSON without the apiview.
 <br>Sample call to `https://makeabilitylab.cs.washington.edu/api/pubs/` returns the following (below JSON only displays one object in a list of many):
 ```
