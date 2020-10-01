@@ -1,9 +1,10 @@
-# Makeability Lab Website
+# An amazing project
+# Make_ability_Lab_Website
 The [Makeability Lab](https://makeabilitylab.cs.washington.edu) is an HCI/Ubicomp research lab at the University of Washington directed by Professor Jon Froehlich. Founded in 2012 by Froehlich and students, the Makeability Lab focuses on designing and studying novel interactive experiences that cross between bits and atoms—the virtual and the physical—and back again to confront some of the world's greatest challenges in environmental sustainability, health and wellness, education, and universal accessibility. 
 
 This repository contains the [Makeability Lab's website](https://makeabilitylab.cs.washington.edu), which is written in Django (backend) and Bootstrap/Javascript (frontend).
 
-# Table of Contents
+# Table_of_Contents :-
 * [Dev Prereqs](#dev-prereqs)
 * [Docker Installation (Mac)](#docker-installation-mac)
 * [Docker Installation (Windows)](#docker-installation-windows)
@@ -18,13 +19,13 @@ This repository contains the [Makeability Lab's website](https://makeabilitylab.
 * [Contributing](#contributing)
 * [Troubleshooting](#troubleshooting)
 
-# Dev Prereqs
+# Dev Prereqs -
 While the instructions below walk you through a step-by-step process to configure your machine for developing the Makeability Lab website, here's a summary of the tools we use:
 - Docker
 - PyCharm
 - Git
 
-# Docker Installation (Mac)
+# Docker Installation (Mac)-
 1. If you don't have Docker yet, you can download it [here](https://store.docker.com/search?type=edition&offering=community). We use the Community Edition. Open up the application. Run `docker version` to make sure that it is running. 
   
 2. Clone this repository using `git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git` and navigate to the project home directory using the `cd` command.
@@ -40,7 +41,7 @@ While the instructions below walk you through a step-by-step process to configur
 7. Shutting down the server. In another terminal at the project home directory run `docker-compose down` and wait for the containers to shut-down. Note without running this command, the development server will persist even when you close down the terminal, thus preventing you from using port 8571 for other purposes.
 
 After running the `docker-compose up` command, you will not need to rebuild or rerun the Docker container (unless you have made changes to docker-compose.yml). However, you will still need to refresh the webpage in order to see new updates.
-### Sample setup:
+# Sample setup(just follow it) :-
 ```
 git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git
 cd makeabilitylabwebsite/
@@ -54,7 +55,7 @@ python manage.py createsuperuser
 exit
 ```
 
-# Docker Installation (Windows)
+# Docker Installation (for Windows user-)
 1. If you don't have Docker yet, you can download it [here](https://store.docker.com/search?type=edition&offering=community). We use the Community Edition. If you previously installed Docker, please navigate to the Docker settings, in the window go to the Reset tab and click "Restore Factory defaults". This will ensure that there will be no conflicts in allocating ports later on.
 
 2. During the install, you will be prompted with a Configuration Dialog that will ask whether to use Windows containers instead of Linux containers. Do not check the box.
@@ -83,7 +84,7 @@ exit
 
 After running the `docker-compose up` command, you will not need to rebuild or rerun the Docker container (unless you have made changes to docker-compose.yml). However, you will still need to refresh the webpage in order to see new updates.
 
-### Sample setup:
+### Sample setup (just follow it):
 ```
 # navigate to the directory you will be cloning the repository into
 git config --global core.autocrlf false
@@ -102,7 +103,7 @@ exit
 ### Manual Installation (In the event that Docker fails to run)
 Proceed to the manual installation instructions [here](https://docs.google.com/document/d/1LJPSSZA0kLzUX34pq4TgYP406bGH_1JhBtFLEPax7a8/edit?usp=sharing)
 
-# PyCharm
+# (PyCharm)
 We recommend using PyCharm as an IDE. You can use PyCharm regardless of whether you setup PyCharm to run directly with Docker or to run the website server. (Note: Jon uses PyCharm for dev but not with Docker integration or to run the website server).
 
 ## Configuring PyCharm to run with Docker (optional)
