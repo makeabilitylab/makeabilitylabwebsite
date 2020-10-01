@@ -11,8 +11,8 @@
 $TEST_HOSTNAME = 'makeabilitylab-test.cs.washington.edu';
 $PROD_HOSTNAME = 'makeabilitylab.cs.washington.edu';
 
-$TEST_MODE = 'master'; //'branch name' OR keyword 'TAG
-$PROD_MODE = 'TAG'; //'branch name' OR keyword 'TAG'
+$TEST_MODE = 'Master'; //'branch name' OR keyword 'TAG
+$PROD_MODE = 'Tag'; //'branch name' OR keyword 'TAG'
 
 $AUTO_DEPLOY_REPO_URL = 'git@github.com:jonfroehlich/makeabilitylabwebsite.git'; //the ssh repo url of your auto-deploy aproject
 
