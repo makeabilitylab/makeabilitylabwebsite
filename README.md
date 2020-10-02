@@ -54,7 +54,7 @@ python manage.py createsuperuser
 exit
 ```
 
-# Docker Installation (Windows)
+# Docker Installation (Windows not for Mac)
 1. If you don't have Docker yet, you can download it [here](https://store.docker.com/search?type=edition&offering=community). We use the Community Edition. If you previously installed Docker, please navigate to the Docker settings, in the window go to the Reset tab and click "Restore Factory defaults". This will ensure that there will be no conflicts in allocating ports later on.
 
 2. During the install, you will be prompted with a Configuration Dialog that will ask whether to use Windows containers instead of Linux containers. Do not check the box.
