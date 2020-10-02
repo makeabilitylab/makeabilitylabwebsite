@@ -1,7 +1,7 @@
 # Makeability Lab Website
-The [Makeability Lab](https://makeabilitylab.cs.washington.edu) is an HCI/Ubicomp research lab at the University of Washington directed by Professor Jon Froehlich. Founded in 2012 by Froehlich and students, the Makeability Lab focuses on designing and studying novel interactive experiences that cross between bits and atoms—the virtual and the physical—and back again to confront some of the world's greatest challenges in environmental sustainability, health and wellness, education, and universal accessibility. 
+The [Makeability Lab](https://makeabilitylab.cs.washington.edu) is an HCI/Ubicomp research lab at the University of WashingtonDC which is  directed by Professor Jon Froehlich. Founded in 2012 by Froehlich and students of recpective University , the Makeability Lab focuses on designing and studying novel by interactive experiences that cross between bits and atoms—the virtual, the physical— back again to confront some of the world's greatest challenges in the environmental sustainability, health and wellness, education, and universal accessibility are supporting to this reserach. 
 
-This repository contains the [Makeability Lab's website](https://makeabilitylab.cs.washington.edu), which is written in Django (backend) and Bootstrap/Javascript (frontend).
+This repository is contains the [Makeability Lab's website](https://makeabilitylab.cs.washington.edu), which is written in Django (backend) and Bootstrap/Javascript (frontend).
 
 # Table of Contents
 * [Dev Prereqs](#dev-prereqs)
@@ -19,17 +19,17 @@ This repository contains the [Makeability Lab's website](https://makeabilitylab.
 * [Troubleshooting](#troubleshooting)
 
 # Dev Prereqs
-While the instructions below walk you through a step-by-step process to configure your machine for developing the Makeability Lab website, here's a summary of the tools we use:
+While the instructions which is given below to walk you through a step-by-step.the  process to configure your machine for developing the Makeability Lab website, here's a summary of the fowling tools we use:
 - Docker
 - PyCharm
 - Git
 
 # Docker Installation (Mac)
-1. If you don't have Docker yet, you can download it [here](https://store.docker.com/search?type=edition&offering=community). We use the Community Edition. Open up the application. Run `docker version` to make sure that it is running. 
+1. If you don't have Docker yet, then you can download it➡ [here](https://store.docker.com/search?type=edition&offering=community). We use the Community Edition. then Open up the application.and Run `docker version` to make sure that it is running or not. 
   
-2. Clone this repository using `git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git` and navigate to the project home directory using the `cd` command.
+2.most important to  Clone this repository using➡ `git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git` and navigate to the project home directory using the `cd` this command.
 
-3. Build the docker images. Run `docker build .` or `docker build . -t <tag>`--the latter allows you to tag your build with a name (we recommend tagging it as `makelab_image` for easy access). This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
+3. Build the docker images. and Run `docker build .` or `docker build . -t <tag>`--the latter allows you to tag your build with a name (we recommend tagging it as `makelab_image` for easy access for you). This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
 
 4. Running the container. Once the image has built, run `docker-compose up`, this will bring up both the postgres container for the database and the website containers. For future reference, running `docker-compose up -d` will allow you to continue using the same terminal and none of the output messages will be displayed.
 
@@ -163,10 +163,10 @@ A few notes about this.
 * Projects which are specified in the bibtex/xml by project, will be created if necessary. Anyone who is an author or speaker will be added to associated projects, and any keywords from the paper will also be assigned to the project. The above is true of assigned project_umbrellas as well.
  
 
-Importantly, we will have to revise how we do this bootstrapping because Jon's UMD site is going away and because he no longer wants to maintain his own separate backend from the Makeability Lab website (in other words, the ML website will be the sole source of data thus eliminating the source of the bootstrap content). See Issue https://github.com/jonfroehlich/makeabilitylabwebsite/issues/420.
+Importantly, we will have to revise how we do this bootstrapping because Jon's UMD site is going away and because he no longer wants to maintain his own separate backend from the Makeability Lab website (in other words, the ML website will be the sole source of data thus eliminating the source of the bootstrap content). See Issue ➡https://github.com/jonfroehlich/makeabilitylabwebsite/issues/420.
 
 # Test and Production Servers
-We have two UW servers hosting the ML website: https://makeabilitylab-test.cs.washington.edu (test) and https://makeabilitylab.cs.washington.edu (production). They have different PostgresSQL backends so adding content to -test will not affect the production server and vice versa. 
+We have two UW servers hosting the ML website:➡ https://makeabilitylab-test.cs.washington.edu (test) and➡ https://makeabilitylab.cs.washington.edu (production). They have different PostgresSQL backends so adding content to -test will not affect the production server and vice versa. 
 
 # Deploying Code to UW Servers
 The Makeability Lab website auto-deploys from GitHub to the department's Docker infrastructure using webhooks:
@@ -175,10 +175,10 @@ The Makeability Lab website auto-deploys from GitHub to the department's Docker 
 git tag <my version number>
 git push --tags
 ```
-This will cause that tag to deploy to production. To verify that the code has actually been pushed to production, view the `buildlog.txt` [here](https://makeabilitylab.cs.washington.edu/logs/buildlog.txt).
+This will cause that tag to deploy to production. To verify that the code has actually been pushed to production, view the `buildlog.txt` [here]➡(https://makeabilitylab.cs.washington.edu/logs/buildlog.txt).
 
 ## Versioning
-We will using semantic versioning when adding tags to push to production. The table below gives instructions for how semantic labeling works. More information is available [here](https://docs.npmjs.com/getting-started/semantic-versioning).
+We will using semantic versioning when adding tags to push to production. The table below gives instructions for how semantic labeling works. More information is available [here]➡(https://docs.npmjs.com/getting-started/semantic-versioning).
 
 The current version number can be viewed [here](https://github.com/jonfroehlich/makeabilitylabwebsite/releases) along with a history of all previous releases. 
 
@@ -490,7 +490,7 @@ To request the pure json version, append `?format=json` to the end of the url. T
 ```
 
 ## Uploaded Files
-All data/files uploaded to the Makeability Lab website via the admin interface (e.g., talks, publications) goes into the `/media` folder. Although typically you will not ever need to manually access this folder (except, for example, to view the `debug.log`), you can do so by ssh'ing into recycle.cs.washington.edu and cd to `/cse/web/research/makelab/www`. This files area is being mapped into the `/media` folder. This directory is shared by both https://makeabilitylab-test.cs.washington.edu/ and https://makeabilitylab.cs.washington.edu/.
+All data/files are uploaded to the Makeability Lab website via the admin interface (e.g., talks, publications) goes into the `/media` folder. Although typically you will not ever need to manually access this folder (except, for example, to view the `debug.log`), you can do so by ssh'ing into recycle.cs.washington.edu and cd to `/cse/web/research/makelab/www`. This files area is being mapped into the `/media` folder. This directory is shared by both https://makeabilitylab-test.cs.washington.edu/ and https://makeabilitylab.cs.washington.edu/.
 
 ## Access to Production Database Server
 The Makeability Lab website uses PostgreSQL on production, which is running on grabthar.cs.washington.edu. In the (extremely) rare instance that you need to access Postgres directly, you must do so via recycle.cs.washington.edu.
