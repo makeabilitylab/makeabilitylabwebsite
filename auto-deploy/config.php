@@ -14,7 +14,7 @@ $PROD_HOSTNAME = 'makeabilitylab.cs.washington.edu';
 $TEST_MODE = 'master'; //'branch name' OR keyword 'TAG
 $PROD_MODE = 'TAG'; //'branch name' OR keyword 'TAG'
 
-$AUTO_DEPLOY_REPO_URL = 'git@github.com:jonfroehlich/makeabilitylabwebsite.git'; //the ssh repo url of your auto-deploy aproject
+$AUTO_DEPLOY_REPO_URL = 'git@github.com:makeabilitylab/makeabilitylabwebsite.git'; //the ssh repo url of your auto-deploy aproject
 
 $USE_DOCKER = TRUE; // Set to FALSE for just doing code pulls without a docker container
 
