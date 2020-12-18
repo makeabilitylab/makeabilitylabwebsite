@@ -512,7 +512,7 @@ h5 {
 
 .makelab-footer-affiliation-logo {
   /*height: 75px;*/
-  max-height: 30px;
+  max-height: 60px;
   /* Center content. See center-block in bootstrap.css */
   display: block;
   margin-right: auto;
@@ -520,7 +520,7 @@ h5 {
 }
 
 .makelab-footer-affiliation-col {
-  max-width: 18%;
+  max-width: 20%;
   margin: 0 5px;
 }
 
