@@ -47,6 +47,8 @@ cd makeabilitylabwebsite/
 docker build . -t makelab_image
 docker-compose up
 ```
+You should then be able to visit the server at `http://localhost:8571/`.
+
 In new terminal (navigate to the project home directory)
 ```
 docker exec -it makeabilitylabwebsite_website_1 bash
@@ -92,6 +94,8 @@ cd .\makeabilitylabwebsite\
 docker build . -t makelab_image
 docker-compose up
 ```
+You should then be able to visit the server at `http://localhost:8571/`.
+
 In new terminal (navigate to the project home directory)
 ```
 docker exec -it makeabilitylabwebsite_website_1 bash
