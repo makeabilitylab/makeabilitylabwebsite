@@ -1,23 +1,12 @@
-# This Dockerfile is based on:
-#  1. https://docs.docker.com/compose/django/ (official Docker Django quickstart guide)
-#
-# To build this Dockerfile:
-#   > docker build -t jonfroehlich/makelab_image .
-# To run the image:
-#   > docker run -p 8000:8000 jonfroehlich/makelab_image:latest
-# To stop the server, try ctrl-C in terminal, otherwise:
-#   > docker stop $(docker ps -aq) //this will stop all running containers
-
 # All Dockerfiles must start with a 'FROM' instruction, which specifies a base image
 # See: https://docs.docker.com/engine/reference/builder/#format
 # Note, some online sources say that you should put FROM django here (e.g., https://runnable.com/docker/python/dockerize-your-django-application)
 # but, in fact, you should NOT do this according to the official docs (as this approach has been deprecated). 
 # See: https://hub.docker.com/_/django/
-FROM python:3
+FROM python
 
-# Setup some other prereqs needed:
-# TODO: we may want to consider adding pip here as I'm getting warnings about old pip
-#RUN pip install --upgrade pip 
+# Sometimes we get warnings about old pip, so take care of that here
+RUN pip install --upgrade pip 
 
 # See: https://www.quora.com/How-does-one-install-pip-in-a-Docker-container-using-a-Dockerfile
 RUN apt-get update && apt-get --assume-yes install imagemagick ghostscript sqlite3
