@@ -3,7 +3,7 @@
 # Note, some online sources say that you should put FROM django here (e.g., https://runnable.com/docker/python/dockerize-your-django-application)
 # but, in fact, you should NOT do this according to the official docs (as this approach has been deprecated). 
 # See: https://hub.docker.com/_/django/
-FROM python
+FROM python:3.8
 
 # Sometimes we get warnings about old pip, so take care of that here
 RUN pip install --upgrade pip 
@@ -39,13 +39,18 @@ WORKDIR /code
 # of Docker where commits are cheap and containers can be created from any point in an image’s history, much like source control.
 # See: https://docs.docker.com/engine/reference/builder/#run
 COPY requirements.txt /code/
-RUN pip install -r requirements.txt
+RUN pip3.8 install -r requirements.txt
 
 ## TEMP related to: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/866
 #RUN pip install django-ckeditor
 
-##Our local user needs write access to a website and static files
+# Our local user needs write access to a website and static files
 RUN chown -R apache /code/
+
+# Despite the above, still getting permission errors on WSL2
+# -- PermissionError: [Errno 13] Permission denied: '/code/static'
+# -- PermissionError: [Errno 13] Permission denied: '/code/website/migrations'
+# RUN chown apache:apache -R /code/
 
 COPY . /code/
 
