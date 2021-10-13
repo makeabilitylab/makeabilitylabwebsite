@@ -22,7 +22,6 @@ ENV PYTHONUNBUFFERED 1
 RUN useradd -u 48 apache
 RUN groupmod -g 48 apache
 
-
 # The RUN instruction will execute any commands in a new layer on top of the current image and commit the results. 
 # The resulting committed image will be used for the next step in the Dockerfile.
 # See: https://docs.docker.com/engine/reference/builder/#run
