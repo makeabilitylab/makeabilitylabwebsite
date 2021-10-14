@@ -1,4 +1,3 @@
-@@ -1,21 +1,51 @@
 #!/bin/bash
 
 # This docker-entrypoint script is based on https://stackoverflow.com/a/33993532/388117
