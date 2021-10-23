@@ -108,6 +108,8 @@ class Publication(models.Model):
     total_papers_submitted = models.IntegerField(blank=True, null=True)
     total_papers_accepted = models.IntegerField(blank=True, null=True)
 
+    BEST_ARTIFACT_AWARD = "Best Artifact Award"
+    BEST_ARTIFACT_RUNNERUP_AWARD = "Best Artifact Runner-up Award"
     BEST_PAPER_AWARD = "Best Paper Award"
     HONORABLE_MENTION = "Honorable Mention"
     BEST_PAPER_NOMINATION = "Best Paper Nominee"
@@ -117,7 +119,9 @@ class Publication(models.Model):
         (BEST_PAPER_AWARD, BEST_PAPER_AWARD),
         (HONORABLE_MENTION, HONORABLE_MENTION),
         (BEST_PAPER_NOMINATION, BEST_PAPER_NOMINATION),
-        (TEN_YEAR_IMPACT_AWARD, TEN_YEAR_IMPACT_AWARD)
+        (TEN_YEAR_IMPACT_AWARD, TEN_YEAR_IMPACT_AWARD),
+        (BEST_ARTIFACT_AWARD, BEST_ARTIFACT_AWARD),
+        (BEST_ARTIFACT_RUNNERUP_AWARD, BEST_ARTIFACT_RUNNERUP_AWARD)
     )
     award = models.CharField(max_length=50, choices=AWARD_CHOICES, blank=True, null=True)
 
@@ -142,12 +146,16 @@ class Publication(models.Model):
             return -1
 
     def is_best_paper(self):
-        """Returns true if earned best paper or test of time award"""
-        return self.award == self.BEST_PAPER_AWARD or self.award == self.TEN_YEAR_IMPACT_AWARD
+        """Returns true if earned best paper, best artifact, or test of time award"""
+        return self.award == self.BEST_PAPER_AWARD or \
+            self.award == self.BEST_ARTIFACT_AWARD or \
+            self.award == self.TEN_YEAR_IMPACT_AWARD
 
     def is_honorable_mention(self):
         """Returns true if earned honorable mention or best paper nomination"""
-        return self.award == self.HONORABLE_MENTION or self.award == self.BEST_PAPER_NOMINATION
+        return self.award == self.HONORABLE_MENTION or \
+            self.award == self.BEST_ARTIFACT_RUNNERUP_AWARD or \
+            self.award == self.BEST_PAPER_NOMINATION
 
     def to_appear(self):
         """Returns true if the publication date happens in the future (e.g., tomorrow or later)"""
