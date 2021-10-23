@@ -26,10 +26,14 @@
         </a>
         <p class="no-margin">{{ member.get_start_date_short }} - {{ member.get_end_date_short }}</p>
 
-        <p class="line-clamp-one-line no-margin">{{ member.person.get_current_title }}</p>
+        <p class="line-clamp-one-line no-margin">
+            {% if member.person.get_current_title != 'Uncategorized' %}
+                {{ member.person.get_current_title }}
+            {% endif %}
+        </p>
 
         <p class="line-clamp-one-line no-margin">
-            {% if member.person.get_current_title != 'High School Student' %}
+            {% if member.person.get_current_title != 'High School Student' or not member.person.get_current_department %}
                 {{ member.person.get_current_department }}
             {% endif %}
         </p>

@@ -331,8 +331,7 @@ def people(request):
                 # who ended most recently are shown first)
                 people_with_title.sort(key=operator.attrgetter('end_date'), reverse=True)
 
-    sorted_titles = ("Professor", Position.RESEARCH_SCIENTIST, Position.POST_DOC, Position.SOFTWARE_DEVELOPER,
-                     Position.PHD_STUDENT, Position.MS_STUDENT, Position.UGRAD, Position.HIGH_SCHOOL)
+    sorted_titles = Position.get_sorted_titles()
 
     # Professors can't be past members, so deal with this case
     if Position.PAST_MEMBER in map_status_to_title_to_people and \
@@ -566,9 +565,8 @@ def project(request, project_name):
                 project_role_with_title.sort(key=operator.attrgetter('end_date'), reverse=True)
 
     # TODO: While we likely want current members sorted by titles, I think it makes the most sense
-    # TODO: to sort previous members by most recent first (and ignore title)... but I'm not sure
-    sorted_titles = ("Professor", Position.RESEARCH_SCIENTIST, Position.POST_DOC, Position.SOFTWARE_DEVELOPER,
-                     Position.PHD_STUDENT, Position.MS_STUDENT, Position.UGRAD, Position.HIGH_SCHOOL)
+    #       to sort previous members by most recent first (and ignore title)... but I'm not sure
+    sorted_titles = Position.get_sorted_titles()
 
     map_status_to_title_to_people = map_status_to_title_to_project_role
 

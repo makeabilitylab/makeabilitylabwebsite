@@ -29,6 +29,9 @@ class Position(models.Model):
     )
     role = models.CharField(max_length=50, choices=ROLE_CHOICES, default=MEMBER)
 
+    # Note, if you add a new title here, you must also update:
+    #  1. The TITLE_ORDER_MAPPING below
+    #  2. The static method get_sorted_titles
     HIGH_SCHOOL = "High School Student"
     UGRAD = "Undergrad"
     MS_STUDENT = "MS Student"
@@ -39,6 +42,7 @@ class Position(models.Model):
     FULL_PROF = "Professor"
     RESEARCH_SCIENTIST = "Research Scientist"
     SOFTWARE_DEVELOPER = "Software Developer"
+    DESIGNER = "Designer"
     UNKNOWN = "Uncategorized"
 
     TITLE_CHOICES = (
@@ -52,6 +56,7 @@ class Position(models.Model):
         (FULL_PROF, FULL_PROF),
         (RESEARCH_SCIENTIST, RESEARCH_SCIENTIST),
         (SOFTWARE_DEVELOPER, SOFTWARE_DEVELOPER),
+        (DESIGNER, DESIGNER),
         (UNKNOWN, UNKNOWN)
     )
     title = models.CharField(max_length=50, choices=TITLE_CHOICES)
@@ -65,6 +70,7 @@ class Position(models.Model):
         PHD_STUDENT: 5,
         MS_STUDENT: 6,
         SOFTWARE_DEVELOPER: 6,
+        DESIGNER: 6,
         UGRAD: 7,
         HIGH_SCHOOL: 8,
         UNKNOWN: 9
@@ -114,6 +120,13 @@ class Position(models.Model):
         else:
             return "".join(e[0] for e in self.department.split(" "))
 
+    # Static method returns a sorted list of title names
+    def get_sorted_titles():
+        return ("Professor", Position.RESEARCH_SCIENTIST, Position.POST_DOC, 
+                Position.SOFTWARE_DEVELOPER, Position.DESIGNER, Position.PHD_STUDENT, 
+                Position.MS_STUDENT, Position.UGRAD, Position.HIGH_SCHOOL, Position.UNKNOWN)
+
+    # Returns the index from TITLE_ORDER_MAPPING for the current title
     def get_title_index(self):
         if self.title in self.TITLE_ORDER_MAPPING:
             return self.TITLE_ORDER_MAPPING[self.title]
