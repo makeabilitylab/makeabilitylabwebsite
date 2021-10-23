@@ -252,12 +252,6 @@ def index(request):
     talks = Talk.objects.order_by('-date')[:talks_num]
     videos = Video.objects.order_by('-date')[:videos_num]
 
-    # if settings.DEBUG:
-    #   projects = Project.objects.all()[:projects_num];
-    # else:
-    #   # Return projects based on Google Analytics popularity
-    #   projects = sort_popular_projects(googleanalytics.run(get_ind_pageviews))[:projects_num]
-
     # Sort projects by recency of publication
     # projects = Project.objects.all()
     # sorted(projects, key=lambda project: student[2])
@@ -694,21 +688,6 @@ def get_project(page):
         if project.short_name in page.lower():
             proj = project
     return proj
-
-
-def sort_popular_projects(projects):
-    page_views = {}
-    for path, subpage, count in projects:
-        if 'project' in path:
-            proj = get_project(subpage)
-            if proj != None:
-                if proj in page_views.keys():
-                    page_views[proj] += int(count)
-                else:
-                    page_views[proj] = int(count)
-    project_popularity = sorted([{'proj': key, 'views': page_views[key]} for key in page_views.keys()],
-                                key=lambda k: k['views'], reverse=True)
-    return [item['proj'] for item in project_popularity]
 
 
 def weighted_choice(choices):
