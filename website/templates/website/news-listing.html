@@ -82,12 +82,10 @@
                             <span class="news-listing-author-last">{{ n.short_date }}</span>
                     </p>
                     <p class="news-listing-content">
-                        <span class="line-clamp">
-                            {% autoescape off %}
-                            {{ n.content }}
-                            {% endautoescape %}
-                        </span>
-                        <a href="{% url 'website:news' news_id=n.id %}">[read more]</a>
+                        {% autoescape off %}
+                            {{ n.get_shortened_content }}
+                        {% endautoescape %}
+                        <p><a href="{% url 'website:news' news_id=n.id %}">[read more]</a></p>
                     </p>
                 </div>
 
