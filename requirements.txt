@@ -1,6 +1,6 @@
 # Run `pip3 install -r requirements.txt` to install dependencies
 
-django==2.1.15
+django==2.2.24
 
 # Because of an AssertionError 'database connection isn't set to UTC' caused with psycopg2
 # https://stackoverflow.com/a/68034786
