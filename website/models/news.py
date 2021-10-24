@@ -28,11 +28,19 @@ class News(models.Model):
     # TODO: update with desired aspect ratio and maximum resolution
     cropping = ImageRatioField('image', '245x245', size_warning=True)
 
-    # Optional caption and alt_text for the imate
+    # Optional caption and alt_text for the image
     caption = models.CharField(max_length=1024, blank=True, null=True)
     alt_text = models.CharField(max_length=1024, blank=True, null=True)
 
     project = models.ManyToManyField(Project, blank=True, null=True)
+
+    def get_shortened_content(self, length=200, auto_add_ellipses=True):
+        # add ellipses if we cut off the text
+        append_str = ""
+        if len(self.content) > length and auto_add_ellipses:
+            append_str = "..."
+        
+        return self.content[:length] + append_str
 
     def short_date(self):
         month = self.date.strftime('%b')
