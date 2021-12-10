@@ -110,7 +110,7 @@ exit
 Proceed to the manual installation instructions [here](https://docs.google.com/document/d/1LJPSSZA0kLzUX34pq4TgYP406bGH_1JhBtFLEPax7a8/edit?usp=sharing)
 
 # PyCharm
-We recommend using PyCharm as an IDE. You can use PyCharm regardless of whether you setup PyCharm to run directly with Docker or to run the website server. (Note: Jon uses PyCharm for dev but not with Docker integration or to run the website server).
+We recommend using PyCharm as an IDE. You can use PyCharm regardless of whether you setup PyCharm to run directly with Docker or to run the website server. (Note: Jon uses PyCharm for dev but not with Docker integration or to run the website server; Update: now Jon generally uses VS Code).
 
 ## Configuring PyCharm to run with Docker (optional)
 Note that in order to configure PyCharm with Docker, you must have the professional version. Students can get this for free at: https://www.jetbrains.com/student/. 
@@ -152,6 +152,9 @@ NOTE: If you haven't created a superuser yet, you will need to do so through ter
 TIP: Save time by only adding the content needed to fix the issue you are working on.
 
 # Bootstrapping Content
+
+WARNING: this is outdated and should be taken out (and the relevant code should also be stripped out too)
+
 To support quickly adding content for development, we have two automated tools that download data from Jon’s UMD website. 
 
 1. Go into the Docker shell, run `make shell`. If you're on Windows and can't use the Makefile, just type this in instead `docker run -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media --entrypoint=bash`
