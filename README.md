@@ -49,6 +49,25 @@ python manage.py createsuperuser
 exit
 ```
 
+# Docker Installation (Windows)
+
+On Windows, [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install) provides an actual Linux kernel running within a lightweight VM, unlike the older WSL which tried to emulate a linux kernel within the Windows kernel—see [Docker's official WSL2 overview](https://docs.docker.com/desktop/windows/wsl/). WSL2 offers faster compile times and is better supported by Docker.
+
+1. [Install  Docker Desktop](https://www.docker.com/get-started). Follow the official [Docker Windows Install Guide](https://docs.docker.com/desktop/windows/install/).
+1. [Install WSL2](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
+1. Enter the Docker Dashboard and click the settings gear icon in the top right. From there, click the "General" tab and select the "Use the WSL 2 based engine" check box (this will be grayed out and pre-checked if you're running Windows Home).
+1. Proceed by clicking **Resources &rarr; WSL Integration** and select your Linux VM of choice under "Enable integration with additional distros:". Here is some extra [documentation](https://docs.docker.com/docker-for-windows/wsl/) from Docker that may help out with this process.
+1. Open your Linux VM shell and navigate to where you would like to set up your Makeability Lab website repository.
+1. Run `git clone https://github.com/makeabilitylab/makeabilitylabwebsite.git`.
+1. Make sure to `chmod 755 docker-entrypoint.sh`
+1. You must also manually create some directories:
+```
+mkdir static
+chmod -R 777 static/
+mkdir website/migrations
+chmod -R 777 website/
+```
+
 # Old Docker Installation (Windows)
 
 WARNING: THESE INSTRUCTIONS ARE OLD AND NEED TO BE UPDATED FOR DOCKER + WSL2
