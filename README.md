@@ -4,10 +4,6 @@ The [Makeability Lab](https://makeabilitylab.cs.washington.edu) is an HCI/Ubicom
 This repository contains the [Makeability Lab's website](https://makeabilitylab.cs.washington.edu), which is written in Django (backend) and Bootstrap/Javascript (frontend).
 
 # Table of Contents
-* [Dev Prereqs](#dev-prereqs)
-* [Docker Installation (Mac)](#docker-installation-mac)
-* [Docker Installation (Windows)](#docker-installation-windows)
-* [PyCharm IDE](#pycharm)
 * [Adding Content Manually](#adding-content-manually)
 * [Bootstrapping Content](#bootstrapping-content)
 * [Test and Production Servers](#test-and-production-servers)
@@ -18,11 +14,7 @@ This repository contains the [Makeability Lab's website](https://makeabilitylab.
 * [Contributing](#contributing)
 * [Troubleshooting](#troubleshooting)
 
-# Dev Prereqs
-While the instructions below walk you through a step-by-step process to configure your machine for developing the Makeability Lab website, here's a summary of the tools we use:
-- Docker
-- PyCharm
-- Git
+
 
 # Docker Installation (Mac)
 1. If you don't have Docker yet, you can download it [here](https://store.docker.com/search?type=edition&offering=community). We use the Community Edition. Open up the application. Run `docker version` to make sure that it is running. 
@@ -40,6 +32,7 @@ While the instructions below walk you through a step-by-step process to configur
 7. Shutting down the server. In another terminal at the project home directory run `docker-compose down` and wait for the containers to shut-down. Note without running this command, the development server will persist even when you close down the terminal, thus preventing you from using port 8571 for other purposes.
 
 After running the `docker-compose up` command, you will not need to rebuild or rerun the Docker container (unless you have made changes to docker-compose.yml). However, you will still need to refresh the webpage in order to see new updates.
+
 ### Sample setup:
 ```
 git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git
@@ -56,7 +49,7 @@ python manage.py createsuperuser
 exit
 ```
 
-# Docker Installation (Windows)
+# Old Docker Installation (Windows)
 
 WARNING: THESE INSTRUCTIONS ARE OLD AND NEED TO BE UPDATED FOR DOCKER + WSL2
 
@@ -106,39 +99,7 @@ python manage.py createsuperuser
 exit
 ```
 
-### Manual Installation (In the event that Docker fails to run)
-Proceed to the manual installation instructions [here](https://docs.google.com/document/d/1LJPSSZA0kLzUX34pq4TgYP406bGH_1JhBtFLEPax7a8/edit?usp=sharing)
-
-# PyCharm
-We recommend using PyCharm as an IDE. You can use PyCharm regardless of whether you setup PyCharm to run directly with Docker or to run the website server. (Note: Jon uses PyCharm for dev but not with Docker integration or to run the website server; Update: now Jon generally uses VS Code).
-
-## Configuring PyCharm to run with Docker (optional)
-Note that in order to configure PyCharm with Docker, you must have the professional version. Students can get this for free at: https://www.jetbrains.com/student/. 
-
-1. You must first configure Docker. Right click on Docker->Settings and then enable daemon on tcp://localhost:2375 [link](https://intellij-support.jetbrains.com/hc/en-us/community/posts/207465185-Pycharm-Docker-and-connection-refused)
-1. Then, in Pycharm, select 'Open New Project'. Select the root directory of this project for the file.
-2. Go to Run > Edit Configurations. In the side window, go to Defaults > Docker > Dockerfile.
-3. Click on the `...` by Server. Select the `Docker for [your OS here]` option. Click `OK` to finish.
-4. Click on the `+` button in the upper-left corner to add a new configuration.
-5. Set the name to be `makeabilitylabwebsite`, the Dockerfile to be `Dockerfile` with the drop-down menu, and the image tag to `pycharm`. Click `OK` to finish.
-6. Select Run > Run 'makeabilitylabwebsite'.
-7. Go to Pycharm > Preferences > Project Interpreter
-8. Click on the Gear button to the right of the Project Interpreter. Select the `Add...` button.
-9. Open the Docker option. The Image Name should be `pycharm:latest`. Click `OK` to finish.
-
-## Configuring PyCharm to run the website server (optional)
-You may choose to use either the Terminal or PyCharm to run the website server. The benefit of running the website server via PyCharm is that you can set breakpoints and use the IDE for debugging. (Note: Jon has never done this--I just run the website server from terminal).
-
-NOTE: If you haven't created a superuser yet, you will need to do so through terminal. Refer to Step 6 in the Docker Installation for more information.
-
-1. Go to Run > Run 'makeabilitylabwebsite'. The initial setup for this might take a minute or so.
-2. Go to the Docker toolbar. (This should pop up automatically on the bottom of your screen). Click on the dropdown menu for images. Press create container and select `pycharm:latest`. Set the Container name to be `pycharm-web-container`. 
-3. Click on the `...` button by Bind Ports. Click the `+` button, and select the Host Port to be `8000` and the Container Port to be `8000`. Click OK to finish.
-4. Click on the `...` button by Bind Ports. Click the `+` button, and select the Host path to be `database` and the Container path to be `/code/db`. (Windows users may need to switch the Container path to `\code\db`).
-5. Click the `+` button again. Under Host path, click the `...` button. Select the media directory. Select the Container path to be `/code/media`. (Windows users may need to switch the Container path to `\code\media`).
-6. Right click on `pycharm-web-container`. Click 'Start container' to run and 'Stop container' to stop the local server. (The attached consoles isn't interactive, so ctrl+c doesn't work here)
-
-# Adding Content Manually
+# Adding Content
 Content must be added manually until the bootstrapping code is fixed.
 
 NOTE: If you haven't created a superuser yet, you will need to do so through terminal. Refer to Step 6 in the Docker Installation for more information.
@@ -150,30 +111,6 @@ NOTE: If you haven't created a superuser yet, you will need to do so through ter
 5. Follow what information is needed to create that content for the website in your local development environment.
 
 TIP: Save time by only adding the content needed to fix the issue you are working on.
-
-# Bootstrapping Content
-
-WARNING: this is outdated and should be taken out (and the relevant code should also be stripped out too)
-
-To support quickly adding content for development, we have two automated tools that download data from Jon’s UMD website. 
-
-1. Go into the Docker shell, run `make shell`. If you're on Windows and can't use the Makefile, just type this in instead `docker run -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media --entrypoint=bash`
-2. Now, to import pubs, run `python3 manage.py importpubs`
-3. To import talks, run `python3 manage.py importtalks`
-
-Alternate commands:
-1. To import pubs, run `docker run -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media --entrypoint=python makelab_image manage.py importpubs` for Windows and `docker run -ti -v $(pwd)/db:/code/db -v $(pwd)/media:/code/media --entrypoint=python makelab_image manage.py importpubs` for Mac
-2. To import talks, run `docker run -ti -v ${pwd}/db:/code/db -v ${pwd}/media:/code/media --entrypoint=python makelab_image manage.py importtalks` for Windows and `docker run -ti -v $(pwd)/db:/code/db -v $(pwd)/media:/code/media --entrypoint=python makelab_image manage.py importtalks` for Mac
-
-A few notes about this. 
-* All publications/talks are downloaded from https://makeabilitylab.cs.washington.edu/ so they must already exist on the official site before being added in this way.
-* Authors added using this method are not assigned a position, and so they won’t appear on the People page until one is manually added. However they will be assigned a star wars image.
-* The publications will not allow for duplication, so any publications with the same title as an existing one are ignored. This is not true for talks.
-* Publications with no PDF are ignored. Talks with no PDF and no slide deck are ignored, however talks with only a slide deck will be converted automatically to PDF’s using unoconv (This takes a long time)
-* Projects which are specified in the bibtex/xml by project, will be created if necessary. Anyone who is an author or speaker will be added to associated projects, and any keywords from the paper will also be assigned to the project. The above is true of assigned project_umbrellas as well.
- 
-
-Importantly, we will have to revise how we do this bootstrapping because Jon's UMD site is going away and because he no longer wants to maintain his own separate backend from the Makeability Lab website (in other words, the ML website will be the sole source of data thus eliminating the source of the bootstrap content). See Issue https://github.com/jonfroehlich/makeabilitylabwebsite/issues/420.
 
 # Test and Production Servers
 We have two UW servers hosting the ML website: https://makeabilitylab-test.cs.washington.edu (test) and https://makeabilitylab.cs.washington.edu (production). They have different PostgresSQL backends so adding content to -test will not affect the production server and vice versa. 
@@ -218,6 +155,9 @@ You can also view `buildlog.text`, `httpd-access.log`, and `httpd-error.log` at 
 There are two types of Makeability Lab data: (i) uploaded files like PDFs, PowerPoint files, images, etc. and (ii) data that goes into the PostgreSQL database. Although we have both a test (makeability-test.cs) and a production server (makeability.cs), they are linked to the same backend data for both (i) and (ii).
 
 # Makeability Lab API
+
+TODO: needs to be updated
+
 ### What it does
 A script in the website automatically serializes some models specified in `serializers.py`. The data, in JSON format, is then rendered into an APIView and displayed in a webpage. The entire api framework is housed under the `/api/` url extension. Currently only publications and talks are serialized.
 
@@ -504,40 +444,6 @@ All data/files uploaded to the Makeability Lab website via the admin interface (
 
 ## Access to Production Database Server
 The Makeability Lab website uses PostgreSQL on production, which is running on grabthar.cs.washington.edu. In the (extremely) rare instance that you need to access Postgres directly, you must do so via recycle.cs.washington.edu.
-
-# Manual Installation
-We strongly advise running the Docker-based installation since that's what the department mandates and you get an instantly configured dev environment for free. However, if you want the *pain* :) of manually installing all of the required libs, then this is how you should do it. The full step-by-step instructions for installation are [here](https://docs.google.com/document/d/149S_SHOzkJOhNHU4ENMU0YCbk-Vy92y5ZSTeCXG9Bhc/edit) (invite only for now).
-
-## Requirements
-* Python 3.51
-* Pip 3
-* Django 1.9
-* ImageMagick
-* ghostscript
-* django_extensions (pip)
-* Pillow (pip)
-* Wand (pip)
-* bibtex parser (pip)
-* xmltodict (pip)
-* django-image-cropping (pip)
-* easy-thumbnails (pip)
-* django-sortedm2m (pip)
-* requests (pip)
-* sqlite3 (for development)
-* postgres (for production)
-* gunicorn (for production)
-
-Optional dependencies
-* Virtual Env (for encapsulating the projects dependencies)
-
-## Development
-1. Install all dependencies. Pip dependencies can be installed using the requirements.txt file `pip install -r requirements.txt` from the project root, once the repository has been cloned.
-2. Create the local database. On development we use sqlite. This can be done using `make migrate` if make is installed. Otherwise one must run `python manage.py makemigrations website && python manage.py migrate`
-3. Create a super user using `python manage.py createsuperuser` to manage the admin interface.
-4. The scripts `python manage.py importpubs` and `python manage.py importtalks` will import from bibtex and xml files located under the import directory respectively. These files are designed for use by the Makeability lab and will import from Jon Froehlich's website cs.umd.edu/~jonf
-5. Add a file googleaccount.py in the website directory. This file should contain only the line ANALYTICS_ACCOUNT = 'your_google_analytics_email'. Replace your_google_analytics_email with whatever google account has been set up to track the domain in google analytics.
-6. Follow the instructions [here](https://developers.google.com/analytics/devguides/reporting/core/v3/quickstart/service-py) to install google analytics api using pip, and to download the p12 private key from google analytics for authentication. This file should also go in the website directory along with the googleaccount.py file.
-7. Run server using `python manage.py runserver`.
 
 # Contributing
 We use the following process for contributing code:
