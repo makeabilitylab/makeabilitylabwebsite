@@ -455,28 +455,25 @@ We use the following process for contributing code:
 Tasks that include changes to the user/admin interface should always include mockups. This is so we can collectively agree on how we want the site to look. A good example is [here](https://github.com/jonfroehlich/makeabilitylabwebsite/issues/287). Pull requests should also include before/after images, when applicable.
 
 # Troubleshooting
-## Bind for 0.0.0.0:8000 failed: port is already allocated
-This means that there is already some process running at `0.0.0.0:8000`. First, make to close out of any windows that might be running a local server on your computer. If this error is still occuring, there might be a Docker container that is still running. 
 
-To delete the container, do the following steps:
-1. Run `docker ps -a`.
-2. A table should be displayed. Look for the row that has `0.0.0.0:8000->8000/tcp` under the ports column. Copy the container name (under the `NAMES` column). 
-3. Run `docker kill [NAME]`. (EX: `docker kill confident_tereshkova`). 
+## Cannot start service website: OCI runtime create failed
+If you receive an error like this
 
-## Operational Error: Table/Column does not exist
-WARNING: This method resets the database. 
-1. Run `make dbshell` to enter an interactive terminal to view the current tables. In the interactive terminal, type `.tables` to display all tables that are listed in the database. (If the problem is that a column doesn't exist, type `.schema [table name]` to display the information about a specific table). If the table/column doesn't exist, continue.
-2. Create a second docker container that mounts the database using `docker run -ti -v database:/database ubuntu`
-3. Move the database. Type: `cd /database` then `mv db.sqlite3 db.sqlite3.backup`. Exit the interactive terminal.
-4. Run `make dbshell`. Find the information for the table that is missing (either entirely or just a column) using `.schema [table name]`. Copy this information.
-
-(You should copy something that might look something like this):
 ```
-CREATE TABLE "website_talk_keywords" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "talk_id" integer NOT NULL REFERENCES "website_talk" ("id"), "keyword_id" integer NOT NULL REFERENCES "website_keyword" ("id"));
-CREATE UNIQUE INDEX "website_talk_keywords_talk_id_fbb52519_uniq" ON "website_talk_keywords" ("talk_id", "keyword_id");
-CREATE INDEX "website_talk_keywords_393ebc1b" ON "website_talk_keywords" ("talk_id");
-CREATE INDEX "website_talk_keywords_5c003bba" ON "website_talk_keywords" ("keyword_id");
+jonfroehlich@jonfhome:~/git/makeabilitylabwebsite$ docker-compose up
+makeabilitylabwebsite_db_1 is up-to-date
+Starting makeabilitylabwebsite_website_1 ... error
+
+ERROR: for makeabilitylabwebsite_website_1  Cannot start service website: OCI runtime create failed: container_linux.go:380: starting container process caused: exec: "./docker-entrypoint.sh": permission denied: unknown
+
+ERROR: for website  Cannot start service website: OCI runtime create failed: container_linux.go:380: starting container process caused: exec: "./docker-entrypoint.sh": permission denied: unknown
+ERROR: Encountered errors while bringing up the project.
 ```
-5. Move the copied database back into place using: `mv db.sqlite3.backup db.sqlite3`.
-6. Recreate the database. Run `make shell`. In the interactive terminal, type `python manage.py`.
-7. Rerun the website with `make run`.
+
+Then you need to update some permissions on your configuration files. Try:
+
+```
+chmod 755 docker-entrypoint.sh
+```
+
+
