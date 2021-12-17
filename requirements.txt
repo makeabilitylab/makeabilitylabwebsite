@@ -1,21 +1,19 @@
 # Run `pip3 install -r requirements.txt` to install dependencies
 
-django==2.1.15
+django==3.2.10
 
-# Because of an AssertionError 'database connection isn't set to UTC' caused with psycopg2
-# https://stackoverflow.com/a/68034786
-psycopg2>=2.8,<2.9
-djangorestframework
-beautifulsoup4
-wand==0.4.4
-bibtexparser==1.0.1
-Pillow==6.2.0
-django-extensions==2.0.7
-django-image-cropping==1.2.0
-django-sortedm2m==1.5.0
-easy_thumbnails==2.5
-xmltodict==0.11.0
-pyOpenSSL
-requests
-django-sortedm2m-filter-horizontal-widget
-django-ckeditor
+psycopg2==2.9.2
+djangorestframework==3.13.1
+beautifulsoup4==4.10.0
+wand==0.6.7
+bibtexparser==1.2.0
+Pillow==8.4.0
+django-extensions==3.1.5
+django-image-cropping==1.6.1
+django-sortedm2m==3.1.1
+easy_thumbnails==2.8
+xmltodict==0.12.0
+pyOpenSSL==21.0.0
+requests==2.26.0
+django-sortedm2m-filter-horizontal-widget==1.3.2
+django-ckeditor==6.2.0
