@@ -16,18 +16,6 @@ urlpatterns = [
     url(r'^project/(?P<project_name>[a-zA-Z ]+)/$', views.project, name='project'),
     url(r'^news/$', views.news_listing, name='news_listing'),
     url(r'^news/(?P<news_id>[0-9]+)/$', views.news, name='news'),
-    url(r'^api/talks/$', views.TalkList.as_view(), name='api_all_talks'),
-    url(r'^api/talks/(?P<pk>[0-9])/$', views.TalkDetail.as_view(), name='api_talk'),
-    url(r'^api/pubs/$', views.PubsList.as_view(), name='api_all_pubs'),
-    url(r'^api/pubs/(?P<pk>[0-9])/$', views.PubsDetail.as_view(), name='api_pub'),
-    url(r'^api/people/$', views.PersonList.as_view(), name='api_all_people'),
-    url(r'^api/people/(?P<pk>[0-9])/$', views.PersonDetail.as_view(), name='api_person'),
-    url(r'^api/news/$', views.NewsList.as_view(), name='api_all_news'),
-    url(r'^api/news/(?P<pk>[0-9])/$', views.NewsDetail.as_view(), name='api_news'),
-    url(r'^api/video/$', views.VideoList.as_view(), name='api_all_videos'),
-    url(r'^api/video/(?P<pk>[0-9])/$', views.VideoDetail.as_view(), name='api_video'),
-    url(r'^api/project/$', views.ProjectList.as_view(), name='api_all_projects'),
-    url(r'^api/project/(?P<pk>[0-9])/$', views.ProjectDetail.as_view(), name='api_project'),
     url(r'^faq/$', views.faq, name='faq'),
 ]
 
