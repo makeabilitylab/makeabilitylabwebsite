@@ -28,7 +28,8 @@ def index(request):
 
     all_banners = Banner.objects.filter(page=Banner.FRONTPAGE)
     displayed_banners = choose_banners(all_banners)
-    print(settings.DEBUG)
+    print("settings.DEBUG =", settings.DEBUG)
+
     # Select recent news, papers, and talks.
     news_items = News.objects.order_by('-date')[:news_items_num]
     publications = Publication.objects.order_by('-date')[:papers_num]
@@ -140,7 +141,7 @@ def people(request):
                     map_status_to_headers[status]["subHeader"] += ", "
 
                 header = title + " (" + str(len(map_title_to_people[title])) + ")"
-                print(title)
+                # print(title)
                 map_status_to_headers[status]["subHeader"] += header
                 map_status_to_headers[status]["headerText"].append(header)
                 map_header_text_to_header_name[title + " (" + str(len(map_title_to_people[title])) + ")"] = title
