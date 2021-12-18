@@ -243,11 +243,6 @@ def videos(request):
                'debug': settings.DEBUG}
     return render(request, 'website/videos.html', context)
 
-
-def website_analytics(request):
-    return render(request, 'admin/analytics.html')
-
-
 def projects(request):
     """
     Creates the render context for the project gallery page.
