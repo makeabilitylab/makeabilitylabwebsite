@@ -8,7 +8,7 @@ class Project_umbrella(models.Model):
     # Short name is used for urls, and should be name.lower().replace(" ", "")
     short_name = models.CharField(max_length=255)
     short_name.help_text = "This should be the same as your name but lower case with no spaces. It is used in the url of the project"
-    keywords = models.ManyToManyField(Keyword, blank=True, null=True)
+    keywords = models.ManyToManyField(Keyword, blank=True)
 
     def __str__(self):
         return self.name

@@ -9,8 +9,8 @@ import os
 class Poster(models.Model):
 
     title = models.CharField(max_length=255, blank=True, null=True)
-    authors = models.ManyToManyField('Person', blank=True, null=True) # a poster can have multiple authors
-    projects = models.ManyToManyField('Project', blank=True, null=True) # a poster can be about multiple projects
+    authors = models.ManyToManyField('Person', blank=True) # a poster can have multiple authors
+    projects = models.ManyToManyField('Project', blank=True) # a poster can be about multiple projects
     date = models.DateField(null=True)
 
     # The PDF and raw files (e.g., illustrator, powerpoint)

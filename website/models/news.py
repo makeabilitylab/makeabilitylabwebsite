@@ -32,7 +32,7 @@ class News(models.Model):
     caption = models.CharField(max_length=1024, blank=True, null=True)
     alt_text = models.CharField(max_length=1024, blank=True, null=True)
 
-    project = models.ManyToManyField(Project, blank=True, null=True)
+    project = models.ManyToManyField(Project, blank=True)
 
     def get_shortened_content(self, length=200, auto_add_ellipses=True):
         # add ellipses if we cut off the text

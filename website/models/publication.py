@@ -42,9 +42,9 @@ class Publication(models.Model):
     num_pages.help_text = "The total number of pages in this publication (including references)"
 
     # A publication can be about more than one project
-    projects = SortedManyToManyField('Project', blank=True, null=True)
-    project_umbrellas = SortedManyToManyField('Project_umbrella', blank=True, null=True)
-    keywords = SortedManyToManyField('Keyword', blank=True, null=True)
+    projects = SortedManyToManyField('Project', blank=True)
+    project_umbrellas = SortedManyToManyField('Project_umbrella', blank=True)
+    keywords = SortedManyToManyField('Keyword', blank=True)
 
     # TODO, see if there is an IntegerRangeField or something like that for page_num_start and end
     page_num_start = models.IntegerField(blank=True, null=True)

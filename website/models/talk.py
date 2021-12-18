@@ -16,18 +16,18 @@ class Talk(models.Model):
     title = models.CharField(max_length=255)
 
     # A talk can be about more than one project
-    projects = models.ManyToManyField('Project', blank=True, null=True)
-    project_umbrellas = SortedManyToManyField('Project_umbrella', blank=True, null=True)
+    projects = models.ManyToManyField('Project', blank=True)
+    project_umbrellas = SortedManyToManyField('Project_umbrella', blank=True)
 
     # TODO: remove the null = True from all of the following objects
     # including forum_name, forum_url, location, speakers, date, slideshare_url
-    keywords = models.ManyToManyField(Keyword, blank=True, null=True)
+    keywords = models.ManyToManyField(Keyword, blank=True)
     forum_name = models.CharField(max_length=255, null=True)
     forum_url = models.URLField(blank=True, null=True)
     location = models.CharField(max_length=255, null=True)
 
     # Most of the time talks are given by one person, but sometimes they are given by two people
-    speakers = models.ManyToManyField(Person, null=True)
+    speakers = models.ManyToManyField(Person)
 
     date = models.DateField(null=True)
     slideshare_url = models.URLField(blank=True, null=True)

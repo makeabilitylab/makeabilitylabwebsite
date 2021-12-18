@@ -20,13 +20,13 @@ class Project(models.Model):
     short_name.help_text = "This should be the same as your name but lower case with no spaces. It is used in the url of the project"
 
     # Sponsors is currently a simple list of sponsors but could be updated to a many to many field if a sponsors model is desired.
-    sponsors = models.ManyToManyField('Sponsor', blank=True, null=True)
+    sponsors = models.ManyToManyField('Sponsor', blank=True)
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
-    project_umbrellas = models.ManyToManyField('Project_umbrella', blank=True, null=True)
+    project_umbrellas = models.ManyToManyField('Project_umbrella', blank=True)
 
     # header_visual = models.ForeignKey(Project_header, blank=True, null=True)
-    keywords = models.ManyToManyField(Keyword, blank=True, null=True)
+    keywords = models.ManyToManyField(Keyword, blank=True)
 
     # pis = models.ManyToOneField(Person, blank=True, null=True)
     # TODO: consider switching gallery_image var name to thumbnail
