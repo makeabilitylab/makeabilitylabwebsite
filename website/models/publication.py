@@ -37,6 +37,7 @@ class Publication(models.Model):
     thumbnail = models.ImageField(upload_to='publications/images/', editable=False, null=True, max_length=255)
 
     date = models.DateField(null=True)
+    date.help_text = "This is the publication date (e.g., first day of the conference in which the paper appears or the journal publication date)"
     num_pages = models.IntegerField(null=True)
 
     # A publication can be about more than one project
