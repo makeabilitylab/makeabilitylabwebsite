@@ -93,32 +93,29 @@ class Position(models.Model):
 
     # Returns an abbreviated version of the department field
     def get_department_abbreviated(self):
-        department_keywords_normal = ["building science", "architecture", "bioengineering"]
-        department_keywords_map = ["BuildSci", "Arch", "BIOE"]
-        abbrv = ""
-        if "computer science" in self.department.lower() and "engineering" in self.department.lower():
-            abbrv += 'CSE,'
-        elif "computer science" in self.department.lower():
-            abbrv += 'CS,'
-        elif 'computer engineering' in self.department.lower():
-            abbrv += 'CprE,'
+        dept_low = self.department.lower();
 
-        if "information" in self.department.lower() or "ischool" in self.department.lower():
-            abbrv += 'iSchool,'
-
-        if "hcde" in self.department.lower() or "human centered design" in self.department.lower() and "engineering" in self.department.lower():
-            abbrv += 'HCDE,'
-
-        for keyword in department_keywords_normal:
-            counter = 0
-            if keyword in self.department.lower():
-                abbrv += department_keywords_map[counter]
-                counter += 1
-
-        if abbrv.__len__() > 0:
-            return abbrv[:abbrv.__len__() - 1]
+        if "computer science" in dept_low and "engineering" in dept_low:
+            return 'CSE'
+        elif "computer science" in dept_low:
+            return 'CS'
+        elif 'computer engineering' in dept_low:
+            return 'CprE'
+        elif "information" in dept_low or "ischool" in dept_low:
+            return 'iSchool'
+        elif "hcde" in dept_low or "human centered design" in dept_low and "engineering" in dept_low:
+            return 'HCDE'
+        elif "building science" in dept_low:
+            return 'BuildSci'
+        elif "architecture" in dept_low:
+            return 'Arch'
+        elif "bioengineering" in dept_low:
+            return 'BioE'
+        elif self.department is not None:
+            return self.department[:3]
         else:
-            return "".join(e[0] for e in self.department.split(" "))
+            return ""
+        
 
     # Static method returns a sorted list of title names
     def get_sorted_titles():
