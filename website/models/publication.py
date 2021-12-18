@@ -108,9 +108,9 @@ class Publication(models.Model):
     pub_venue_url.help_text = "The url to the publication venue (e.g., https://chi2021.acm.org/ or https://cscw.acm.org/2022/)"
 
     pub_venue_type = models.CharField(max_length=50, choices=PUB_VENUE_TYPE_CHOICES, null=True)
-    extended_abstract = models.NullBooleanField(null=True)
+    extended_abstract = models.BooleanField(null=True)
     extended_abstract.help_text = "If the paper is not a *full* paper, it's likely an extended abstract (like a poster, demo, etc.)"
-    peer_reviewed = models.NullBooleanField(null=True)
+    peer_reviewed = models.BooleanField(null=True)
 
     total_papers_accepted = models.IntegerField(blank=True, null=True)
     total_papers_accepted.help_text = "The total number of papers accepted to the venue (if known)"
