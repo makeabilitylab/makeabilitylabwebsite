@@ -47,6 +47,11 @@ if config.has_option('Django', 'ALLOWED_HOSTS'):
 else:
     ALLOWED_HOSTS = ['*']
 
+# With the upgrade to Django 3.2, we now need to specify the default auto field for primary keys
+# See: 
+#  - https://docs.djangoproject.com/en/3.2/releases/3.2/#customizing-type-of-auto-created-primary-keys
+#  - https://stackoverflow.com/a/66971813
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # TODO: this seems to work fine on Docker but breaks localhost dev (without docker)
 # See: https://docs.djangoproject.com/en/2.0/topics/logging/
