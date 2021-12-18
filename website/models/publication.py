@@ -39,6 +39,7 @@ class Publication(models.Model):
     date = models.DateField(null=True)
     date.help_text = "This is the publication date (e.g., first day of the conference in which the paper appears or the journal publication date)"
     num_pages = models.IntegerField(null=True)
+    num_pages.help_text = "The total number of pages in this publication (including references)"
 
     # A publication can be about more than one project
     projects = SortedManyToManyField('Project', blank=True, null=True)
@@ -49,6 +50,8 @@ class Publication(models.Model):
     page_num_start = models.IntegerField(blank=True, null=True)
     page_num_end = models.IntegerField(blank=True, null=True)
     official_url = models.URLField(blank=True, null=True)
+    official_url.help_text = "The official url link to the paper, often a DOI url like https://doi.org/10.1145/3441852.3476542"
+
     geo_location = models.CharField(max_length=255, blank=True, null=True)
     geo_location.help_text = "The physical location of the conference, if any. For example, CHI 2017 was in 'Denver, Colorado'"
 
@@ -102,12 +105,17 @@ class Publication(models.Model):
 
     # TODO: remove null=True from the following three
     pub_venue_url = models.URLField(blank=True, null=True)
+    pub_venue_url.help_text = "The url to the publication venue (e.g., https://chi2021.acm.org/ or https://cscw.acm.org/2022/)"
+
     pub_venue_type = models.CharField(max_length=50, choices=PUB_VENUE_TYPE_CHOICES, null=True)
     extended_abstract = models.NullBooleanField(null=True)
+    extended_abstract.help_text = "If the paper is not a *full* paper, it's likely an extended abstract (like a poster, demo, etc.)"
     peer_reviewed = models.NullBooleanField(null=True)
 
-    total_papers_submitted = models.IntegerField(blank=True, null=True)
     total_papers_accepted = models.IntegerField(blank=True, null=True)
+    total_papers_accepted.help_text = "The total number of papers accepted to the venue (if known)"
+    total_papers_submitted = models.IntegerField(blank=True, null=True)
+    total_papers_submitted.help_text = "The total number of papers submitted to the venue (if known)"
 
     BEST_ARTIFACT_AWARD = "Best Artifact Award"
     BEST_ARTIFACT_RUNNERUP_AWARD = "Best Artifact Runner-up Award"
