@@ -61,12 +61,12 @@ On Windows, [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install) provide
 1. Run `git clone https://github.com/makeabilitylab/makeabilitylabwebsite.git`.
 1. Make sure to `chmod 755 docker-entrypoint.sh`
 1. You must also manually create some directories:
-```
-mkdir static
-chmod -R 777 static/
-mkdir website/migrations
-chmod -R 777 website/
-```
+    ```
+    mkdir static
+    chmod -R 777 static/
+    mkdir website/migrations
+    chmod -R 777 website/
+    ```
 
 1. Build the docker images. Run `docker build .` or `docker build . -t <tag>`--the latter allows you to tag your build with a name (we recommend tagging it as `makelab_image` for easy access). This step may take a while (~2-3 min). If you don't add an explicit tag to your build, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
 
