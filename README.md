@@ -27,7 +27,7 @@ This repository contains the [Makeability Lab's website](https://makeabilitylab.
 
 5. Create the superuser. In another terminal, navigate to the project home directory using the `cd` command and open an interactive bash terminal in the website container using `docker exec -it makeabilitylabwebsite_website_1 bash`. Once inside the bash terminal, run `python manage.py createsuperuser`.
 
-6. Open the development server in the web browser. At this point the development server should be running via step 4. You will find the website at `localhost:8571` as specified in the `docker-compose.yml` file. To fill this with test content for development purposes see Bootstrapping Content below.
+6. Open the development server in the web browser. At this point the development server should be running via step 4. You will find the website at `localhost:8571` as specified in the `docker-compose.yml` file.
 
 7. Shutting down the server. In another terminal at the project home directory run `docker-compose down` and wait for the containers to shut-down. Note without running this command, the development server will persist even when you close down the terminal, thus preventing you from using port 8571 for other purposes.
 
@@ -67,6 +67,15 @@ chmod -R 777 static/
 mkdir website/migrations
 chmod -R 777 website/
 ```
+
+1. Build the docker images. Run `docker build .` or `docker build . -t <tag>`--the latter allows you to tag your build with a name (we recommend tagging it as `makelab_image` for easy access). This step may take a while (~2-3 min). If you don't add an explicit tag to your build, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
+
+1. Running the container. Once the image has built, run `docker-compose up`, this will bring up both the PostgreSQL container for the database and the website containers. 
+
+1. At this point, you can visit the website at `localhost:8571` as specified in the `docker-compose.yml` file. However, to add content, you need to add an admin users. For this, follow the next step to create a "superuser."
+
+1. Create the superuser. In another terminal, navigate to the project home directory using the `cd` command and open an interactive bash terminal in the website container using `docker exec -it makeabilitylabwebsite_website_1 bash`. Once inside the bash terminal, run `python manage.py createsuperuser` and follow the instructions. Then you can visit localhost:8571/admin to add content.
+
 
 # Old Docker Installation (Windows)
 
