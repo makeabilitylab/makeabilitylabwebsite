@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 from configparser import ConfigParser 
+import datetime # for DATE_MAKEABILITYLAB_FORMED global
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -46,6 +47,10 @@ if config.has_option('Django', 'ALLOWED_HOSTS'):
     ALLOWED_HOSTS = config.get('Django', 'ALLOWED_HOSTS').split(',')
 else:
     ALLOWED_HOSTS = ['*']
+
+# Makeability Lab Global Variables
+DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
+MAX_BANNERS = 7 # Maximum number of banners on a page
 
 # With the upgrade to Django 3.2, we now need to specify the default auto field for primary keys
 # See: 
