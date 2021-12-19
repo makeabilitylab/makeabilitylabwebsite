@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 from configparser import ConfigParser 
+import datetime # for DATE_MAKEABILITYLAB_FORMED global
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -47,6 +48,10 @@ if config.has_option('Django', 'ALLOWED_HOSTS'):
 else:
     ALLOWED_HOSTS = ['*']
 
+# Makeability Lab Global Variables
+DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
+MAX_BANNERS = 7 # Maximum number of banners on a page
+
 # With the upgrade to Django 3.2, we now need to specify the default auto field for primary keys
 # See: 
 #  - https://docs.djangoproject.com/en/3.2/releases/3.2/#customizing-type-of-auto-created-primary-keys
@@ -56,54 +61,54 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 # TODO: this seems to work fine on Docker but breaks localhost dev (without docker)
 # See: https://docs.djangoproject.com/en/2.0/topics/logging/
 # https://lincolnloop.com/blog/django-logging-right-way/
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse',
-        },
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        },
-    },
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-        },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
-        },
-    },
-    'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/code/media/debug.log',
-            'maxBytes': 1024*1024*10,  # 10 MB
-            'backupCount': 5,
-            'formatter': 'verbose',  # can switch between verbose and simple
-        },
-        'console': {
-            'level': 'DEBUG',
-            'filters': ['require_debug_true'],
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'website': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'filters': {
+#         'require_debug_false': {
+#             '()': 'django.utils.log.RequireDebugFalse',
+#         },
+#         'require_debug_true': {
+#             '()': 'django.utils.log.RequireDebugTrue',
+#         },
+#     },
+#     'formatters': {
+#         'verbose': {
+#             'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+#         },
+#         'simple': {
+#             'format': '%(levelname)s %(message)s'
+#         },
+#     },
+#     'handlers': {
+#         'file': {
+#             'level': 'DEBUG',
+#             'class': 'logging.handlers.RotatingFileHandler',
+#             'filename': '/code/media/debug.log',
+#             'maxBytes': 1024*1024*10,  # 10 MB
+#             'backupCount': 5,
+#             'formatter': 'verbose',  # can switch between verbose and simple
+#         },
+#         'console': {
+#             'level': 'DEBUG',
+#             'filters': ['require_debug_true'],
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'verbose',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['file'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+#         'website': {
+#             'handlers': ['file'],
+#             'level': 'DEBUG',
+#             'propagate': False,
+#         },
+#     },
+# }
 
 # Application definition
 
