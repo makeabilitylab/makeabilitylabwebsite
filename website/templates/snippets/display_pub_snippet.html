@@ -5,7 +5,6 @@
 
 {% if orientation == "horizontal" %}
     <div class="col-xs-12 col-md-4 pub-column" style="margin-bottom: 20px;">
-        <!-- TODO: add in best paper icon, etc. -->
         <div class="pub-thumbnail" style="float: left; margin-right: 7px;">
             <a href="../../media/{{ pub.pdf_file }}" class="pub-thumbnail-link">
                 <img src="{% thumbnail pub.thumbnail 300x0 detail %}" class="pub-thumbnail-image2 img-responsive"
@@ -72,8 +71,9 @@
                 {% if pub.poster.pdf_file %}| <a href="../../media/{{ pub.poster.pdf_file }}">Poster</a>{% endif %}
 
                 {% for project in pub.projects.all %}
+                    {% if forloop.first and pub.projects.all|length > 0 %}| {% endif %}
                     {% if project.can_show_online %}
-                        • <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>
+                        <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>{% if not forloop.last %} • {% endif %}
                     {% endif %}
                 {% endfor %}
             </p>
@@ -170,10 +170,10 @@
                     {% if pub.talk.pdf_file %}| <a href="../../media/{{ pub.talk.pdf_file }}">Talk</a>{% endif %}
                     {% if pub.poster.pdf_file %}| <a href="../../media/{{ pub.poster.pdf_file }}">Poster</a>{% endif %}
 
-
                     {% for project in pub.projects.all %}
+                        {% if forloop.first and pub.projects.all|length > 0 %}| {% endif %}
                         {% if project.can_show_online %}
-                            • <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>
+                            <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>{% if not forloop.last %} • {% endif %}
                         {% endif %}
                     {% endfor %}
                 </p>
