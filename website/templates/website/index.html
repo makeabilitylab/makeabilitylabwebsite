@@ -97,7 +97,7 @@
         </div>
     </div>
 
-    <div id="makelab-recent-videos" class="container-fluid makelab-content-container">
+    {% comment %} <div id="makelab-recent-videos" class="container-fluid makelab-content-container">
         <h1 class="section-header">Recent Videos</h1>
         <div class="section">
             {#  Slice limits to a number of elements in list; see https://stackoverflow.com/a/3907661 #}
@@ -120,6 +120,6 @@
                 <a href="{% url 'website:talks' %}">See All Talks ></a>
             </div>
         </div>
-    </div>
+    </div> {% endcomment %}
 
 {% endblock %}
