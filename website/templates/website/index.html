@@ -85,25 +85,6 @@
         </div>
     </div>
 
-    <!-- TODO: make the news feed look good. Uncomment the following to start playing with this -->
-{#    <div id="makelab-recent-news" class="container-fluid makelab-content-container">#}
-{#        <h1 class="section-header">Recent News</h1>#}
-{#        <div class="">#}
-{#            <!-- TODO: update formatting of news items. Decide on 4 or 5 columns -->#}
-{#            {% for news_item in news %}#}
-{#                <div class="col-xs-12 col-md-3">#}
-{#                    {% if news_item.image %}#}
-{#                        <img src="{% thumbnail item.image 250x250 box=item.cropping crop detail %}" class="news_thumbnail_image" alt="{{ item.alt_text }}">#}
-{#                    {% else %}#}
-{#                        <img src="{% static 'website/img/news_icon.png' %}" class="news_thumbnail_image" alt="{{ item.alt_text }}">#}
-{#                    {% endif %}#}
-{#                    <a href="{% url 'website:news' news_item.id %}">{{ news_item.title }}</a>#}
-{#                </div>#}
-{##}
-{#            {% endfor %}#}
-{#        </div>#}
-{#    </div>#}
-
     <div id="makelab-recent-papers" class="container-fluid makelab-content-container">
         <h1 class="section-header">Recent Papers</h1>
         <div class="section">
