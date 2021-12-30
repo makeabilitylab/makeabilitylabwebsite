@@ -2,11 +2,14 @@ from django.db import models
 from django.conf import settings
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_save, m2m_changed, post_delete
+from django.utils.text import get_valid_filename
 
 from sortedm2m.fields import SortedManyToManyField
 
 from datetime import date, datetime, timedelta
 import os
+import os.path
+import logging
 
 from .person import Person
 from .project_umbrella import Project_umbrella
@@ -15,13 +18,19 @@ from .video import Video
 from .talk import Talk
 from .poster import Poster
 
+# This retrieves a Python logging instance (or creates it)
+_logger = logging.getLogger(__name__)
+
 class Publication(models.Model):
+    UPLOAD_DIR = 'publications/' # relative path
+    THUMBNAIL_DIR = os.path.join(UPLOAD_DIR, 'images/') # relative path
+
     title = models.CharField(max_length=255)
     authors = SortedManyToManyField(Person)
     # authorsOrdered = models.ManyToManyField(Person, through='PublicationAuthorThroughModel')
 
     # The PDF is required
-    pdf_file = models.FileField(upload_to='publications/', null=False, default=None, max_length=255)
+    pdf_file = models.FileField(upload_to=UPLOAD_DIR, null=False, default=None, max_length=255)
 
     book_title = models.CharField(max_length=255, null=True)
     book_title.help_text = "This is the long-form proceedings title. For example, for UIST, this would be 'Proceedings of the 27th Annual ACM Symposium on User " \
@@ -34,7 +43,7 @@ class Publication(models.Model):
     # The thumbnail should have null=True because it is added automatically later by a post_save signal
     # TODO: decide if we should have this be editable=True and if user doesn't add one him/herself, then
     # auto-generate thumbnail
-    thumbnail = models.ImageField(upload_to='publications/images/', editable=False, null=True, max_length=255)
+    thumbnail = models.ImageField(upload_to=THUMBNAIL_DIR, editable=False, null=True, max_length=255)
 
     date = models.DateField(null=True)
     date.help_text = "This is the publication date (e.g., first day of the conference in which the paper appears or the journal publication date)"
@@ -303,10 +312,12 @@ def update_file_name_publication(sender, instance, action, reverse, **kwargs):
     if action == 'post_add' and not reverse:
         initial_path = instance.pdf_file.path
         person = instance.get_person()
-        name = person.last_name
+        last_name = person.last_name
         year = instance.date.year
-        title = ''.join(x for x in instance.title.title() if not x.isspace())
-        title = ''.join(e for e in title if e.isalnum())
+
+        # Remove spaces non alphanumeric characters
+        pub_title = ''.join(x for x in instance.title.title() if not x.isspace())
+        pub_title = ''.join(e for e in pub_title if e.isalnum())
 
         # Get the publication venue but remove proceedings from it (if it exists)
         forum = instance.book_title_short.lower()
@@ -319,11 +330,22 @@ def update_file_name_publication(sender, instance, action, reverse, **kwargs):
         if not forum[-1].isdigit():
             forum = forum + str(year)
 
-        #change the path of the pdf file to point to the new file name
-        instance.pdf_file.name = os.path.join('publications', name + '_' + title + '_' + forum + '.pdf')
+        # Convert metadata into a filename
+        new_filename = last_name + '_' + pub_title + '_' + forum + '.pdf'
+
+        # Use Django helper function to ensure a clean filename
+        new_filename = get_valid_filename(new_filename)
+
+        # Change the path of the pdf file to point to the new file name
+        instance.pdf_file.name = os.path.join(Publication.UPLOAD_DIR, new_filename)
         new_path = os.path.join(settings.MEDIA_ROOT, instance.pdf_file.name)
-        os.rename(initial_path, new_path)
-        instance.save()
+        
+        # Actually rename the existing file (aka initial_path) but only if it exists (it should!)
+        if os.path.exists(initial_path):
+            os.rename(initial_path, new_path)
+            instance.save()
+        else:
+            _logger.error(f'The file {initial_path} does not exist and cannot be renamed to {new_path}')      
 
 m2m_changed.connect(update_file_name_publication , sender=Publication.authors.through)
 
