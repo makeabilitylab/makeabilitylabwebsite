@@ -17,7 +17,9 @@ This repository contains the [Makeability Lab's website](https://makeabilitylab.
 
 
 # Docker Installation (Mac)
-1. If you don't have Docker yet, you can download it [here](https://store.docker.com/search?type=edition&offering=community). We use the Community Edition. Open up the application. Run `docker version` to make sure that it is running. 
+1. Install [Docker Desktop](https://www.docker.com/get-started)
+
+3. Run `> docker version` from terminal to ensure Docker is running 
   
 2. Clone this repository using `git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git` and navigate to the project home directory using the `cd` command.
 
@@ -77,57 +79,6 @@ On Windows, [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install) provide
 1. Create the superuser. In another terminal, navigate to the project home directory using the `cd` command and open an interactive bash terminal in the website container using `docker exec -it makeabilitylabwebsite_website_1 bash`. Once inside the bash terminal, run `python manage.py createsuperuser` and follow the instructions. Then you can visit localhost:8571/admin to add content.
 
 1. It's also useful to create a mapping between your Linux filesystem in WSL2 and your Windows filesystem. For this, type `Windows + R` to open the Run menu and type: `\\wsl$`. Then, find the Linux installation you're using for the Makeability Lab website (e.g., Ubuntu-18.04) and right-click on that folder, then select `Map Network Drive` and follow the on-screen instructions. By default, it will map to drive `Z:`. So, you can open "This PC" or "My Computer" and see drive `Z:`, which will be the Linux VM.
-
-
-# Old Docker Installation (Windows)
-
-WARNING: THESE INSTRUCTIONS ARE OLD AND NEED TO BE UPDATED FOR DOCKER + WSL2
-
-1. If you don't have Docker yet, you can download it [here](https://store.docker.com/search?type=edition&offering=community). We use the Community Edition. If you previously installed Docker, please navigate to the Docker settings, in the window go to the Reset tab and click "Restore Factory defaults". This will ensure that there will be no conflicts in allocating ports later on.
-
-2. During the install, you will be prompted with a Configuration Dialog that will ask whether to use Windows containers instead of Linux containers. Do not check the box.
-![InstallingDockerWindows_ConfigScreen](https://github.com/jonfroehlich/makeabilitylabwebsite/blob/master/readme/InstallingDockerWindows_ConfigScreen_UseWindowsContainersCheckbox.png)
-
-3. Go to the Start Menu and open `Docker for Windows.` If it asks you to enable Hyper-V, you should say Yes and restart.
-
-4. Open PowerShell, run `docker version` to make sure that it is running. 
-
-5. We need to configure Docker so that our local drives are available to our containers. From the system tray, open Docker -> Settings.  In Settings, navigate to the "Shared Drives" tab and select the drive that will host the Makeability Lab code/server. Click "Apply" and you will be prompted to enter the password for your machine.
-[![https://gyazo.com/16d374eeadcd0cc550b8ab17f4bcbe5f](https://i.gyazo.com/16d374eeadcd0cc550b8ab17f4bcbe5f.gif)](https://gyazo.com/16d374eeadcd0cc550b8ab17f4bcbe5f)
-
-6. Before you clone the repository, run this command `git config --global core.autocrlf false` in the directory you will be cloning the repository to. Windows crlf is unrecognized in Linux, thus we must set this auto-conversion as false to prevent look-up errors. If you don't do this, your dev environment will not work (see this [Issue](https://github.com/jonfroehlich/makeabilitylabwebsite/issues/429#issuecomment-406443833))
-
-7. Clone this repository using `git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git` and navigate to the project home directory using the `cd` command.
-
-8. Build the docker images. Run `docker-compose build`. This is different from the Mac instructions because of this [Issue](https://github.com/jonfroehlich/makeabilitylabwebsite/issues/866#issuecomment-653687671). You may still need to run `docker build . -t <tag>` to build the database image.
-
-9. Running the container. Once the image has built, run `docker-compose up`, this will bring up both the postgres container for the database and the website containers. For future reference, running `docker-compose up -d` will allow you to continue using the same terminal and none of the output messages will be displayed.
-
-10. Create the superuser. In another terminal, navigate to the project home directory using the `cd` command and open an interactive bash terminal in the website container using `docker exec -it makeabilitylabwebsite_website_1 bash`. Once inside the bash terminal, run `python manage.py createsuperuser`.
-
-11. Open the development server in the web browser. At this point the development server should be running via step 4. You will find the website at `localhost:8571` as specified in the `docker-compose.yml` file. To fill this with test content for development purposes see Bootstrapping Content below.
-
-12. Shutting down the server. In another terminal at the project home directory run `docker-compose down` and wait for the containers to shut-down. Note without running this command, the development server will persist even when you close down the terminal, thus preventing you from using port 8571 for other purposes.
-
-After running the `docker-compose up` command, you will not need to rebuild or rerun the Docker container (unless you have made changes to docker-compose.yml). However, you will still need to refresh the webpage in order to see new updates.
-
-### Sample setup:
-```
-# navigate to the directory you will be cloning the repository into
-git config --global core.autocrlf false
-git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git
-cd .\makeabilitylabwebsite\
-docker build . -t makelab_image
-docker-compose up
-```
-You should then be able to visit the server at `http://localhost:8571/`.
-
-In new terminal (navigate to the project home directory)
-```
-docker exec -it makeabilitylabwebsite_website_1 bash
-python manage.py createsuperuser
-exit
-```
 
 # Adding Content
 Content must be added manually until the bootstrapping code is fixed.
