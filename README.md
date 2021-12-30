@@ -506,4 +506,16 @@ Then you need to update some permissions on your configuration files. Try:
 chmod 755 docker-entrypoint.sh
 ```
 
+## standard_init_linux.go:228: exec user process caused: no such file or directory
+
+If you receive an error like:
+
+```
+website_1  | standard_init_linux.go:228: exec user process caused: no such file or directory
+```
+
+Then the line endings in the shell script are set to CRLF rather than LF (see [StackOverflow post](https://stackoverflow.com/a/52665687/388117)). 
+
+To fix this, open `docker-entrypoint.sh` in VSCode and set the line endings to LF.
+
 
