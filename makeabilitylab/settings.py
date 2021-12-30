@@ -39,9 +39,6 @@ if config.has_option('Django', 'DEBUG'):
 else:
     DEBUG = True
 
-# TODO: Take this out when done debugging production
-# DEBUG = True
-
 if config.has_option('Django', 'ALLOWED_HOSTS'):
     USE_X_FORWARDED_HOST = True
     ALLOWED_HOSTS = config.get('Django', 'ALLOWED_HOSTS').split(',')
@@ -61,6 +58,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 # TODO: this seems to work fine on Docker but breaks localhost dev (without docker)
 # See: https://docs.djangoproject.com/en/2.0/topics/logging/
 # https://lincolnloop.com/blog/django-logging-right-way/
+# For the log format, see: https://stackoverflow.com/a/26276689/388117
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -74,7 +72,7 @@ LOGGING = {
     },
     'formatters': {
         'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+            'format': '%(levelname)s %(asctime)s %(module)s %(funcName)s %(process)d %(thread)d %(message)s'
         },
         'simple': {
             'format': '%(levelname)s %(message)s'
@@ -103,7 +101,7 @@ LOGGING = {
             'propagate': True,
         },
         'website': {
-            'handlers': ['file'],
+            'handlers': ['file', 'console'],
             'level': 'DEBUG',
             'propagate': False,
         },
