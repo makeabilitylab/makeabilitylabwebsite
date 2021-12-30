@@ -6,6 +6,11 @@ from django.conf import settings
 import os
 from django.core.files import File
 
+import logging
+
+# This retrieves a Python logging instance (or creates it)
+_logger = logging.getLogger(__name__)
+
 #
 # A note about the @receiver decorator used in signals.py.
 # There are two ways to hook up receiver functions
@@ -32,7 +37,7 @@ def publication_post_save(sender, **kwargs):
 
     pub = kwargs['instance']
     if pub.pdf_file:
-        print("Publication '{}' has just been saved with PDF={}, checking to see if we should auto-generate a thumbnail".format(pub.title, pub.pdf_file.path))
+        _logger.debug("Publication '{}' has just been saved with PDF={}, checking to see if we should auto-generate a thumbnail".format(pub.title, pub.pdf_file.path))
         thumbnail_res = 300
         generate_and_save_thumbnail_from_pdf(pub, thumbnail_res)
 
@@ -48,7 +53,7 @@ def talk_post_save(sender, **kwargs):
     # get the talk that was just saved and auto-generate a thumbnail
     talk = kwargs['instance']
     if talk.pdf_file:
-        print("Talk '{}' has just been saved with PDF={}, checking to see if we should auto-generate a thumbnail".format(talk.title, talk.pdf_file.path))
+        _logger.debug("Talk '{}' has just been saved with PDF={}, checking to see if we should auto-generate a thumbnail".format(talk.title, talk.pdf_file.path))
         thumbnail_res = 300
         generate_and_save_thumbnail_from_pdf(talk, thumbnail_res)
 
@@ -64,7 +69,7 @@ def poster_post_save(sender, **kwargs):
     # get the talk that was just saved and auto-generate a thumbnail
     poster = kwargs['instance']
     if poster.pdf_file:
-        print("Poster '{}' has just been saved with PDF={}, checking to see if we should auto-generate a thumbnail".format(poster.title, poster.pdf_file.path))
+        _logger.debug("Poster '{}' has just been saved with PDF={}, checking to see if we should auto-generate a thumbnail".format(poster.title, poster.pdf_file.path))
         thumbnail_res = 300
         generate_and_save_thumbnail_from_pdf(poster, thumbnail_res)
 
@@ -83,13 +88,13 @@ def generate_and_save_thumbnail_from_pdf(artifact, thumbnail_resolution):
     thumbnail_filename = "{}.{}".format(pdf_filename_no_extension, "jpg");
     thumbnail_path = os.path.join(thumbnail_dir, thumbnail_filename)
 
-    print("Checking for thumbnail at '{}', otherwise will auto-generate".format(thumbnail_path))
+    _logger.debug("Checking for thumbnail at '{}', otherwise will auto-generate".format(thumbnail_path))
 
     # check to see if this is a new (or changed) file. This 'if condition' is super necessary
     # because otherwise we would enter an infinite loop given that we save the model again below
     if not artifact.thumbnail or artifact.thumbnail.name is None or \
                     os.path.normpath(os.path.normcase(artifact.thumbnail.path)) != os.path.normpath(os.path.normcase(thumbnail_path)):
-        print("Thumbnail does not exist, creating...")
+        _logger.debug("Thumbnail does not exist, creating...")
 
         with Image(filename="{}[0]".format(artifact.pdf_file.path), resolution=300) as img:
             img.format = 'jpeg'
@@ -103,4 +108,4 @@ def generate_and_save_thumbnail_from_pdf(artifact, thumbnail_resolution):
 
         artifact.save()
     else:
-        print("No need to save, the thumbnail '{}' already exists!".format(thumbnail_path))
+        _logger.debug("No need to save, the thumbnail '{}' already exists!".format(thumbnail_path))
