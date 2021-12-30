@@ -8,7 +8,7 @@ def index(request):
     papers_num = 10  # Defines the number of papers which will be selected
     talks_num = 8  # Defines the number of talks which will be selected
     videos_num = 4  # Defines the number of videos which will be selected
-    projects_num = 3  # Defines the number of projects which will be selected
+    projects_num = 8  # Defines the number of projects which will be selected
 
     all_banners = Banner.objects.filter(page=Banner.FRONTPAGE)
     displayed_banners = ml_utils.choose_banners(all_banners)
@@ -28,9 +28,9 @@ def index(request):
 
     # we used to only filter out incomplete projects if DEBUG = TRUE; if not settings.DEBUG:
     projects = ml_utils.filter_incomplete_projects(projects)
+    projects = projects[:projects_num]
 
-    context = {'people': Person.objects.all(),
-               'banners': displayed_banners,
+    context = {'banners': displayed_banners,
                'news': news_items,
                'publications': publications,
                'talks': talks,
