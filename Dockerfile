@@ -5,6 +5,9 @@
 # See: https://hub.docker.com/_/django/
 FROM python:3.8
 
+# Echo out the start of the Dockerfile
+RUN echo "Running the Makeability Lab Dockerfile!"
+
 # Sometimes we get warnings about old pip, so take care of that here
 RUN pip install --upgrade pip 
 
@@ -33,8 +36,7 @@ RUN mkdir /code
 # See: https://docs.docker.com/engine/reference/builder/#workdir
 WORKDIR /code
 
-#COPY the requirements.txt into the docker container
-
+# COPY the requirements.txt into the docker container
 # As an fyi: Layering RUN instructions and generating commits conforms to the core concepts 
 # of Docker where commits are cheap and containers can be created from any point in an image’s history, much like source control.
 # See: https://docs.docker.com/engine/reference/builder/#run
@@ -54,7 +56,11 @@ RUN chown -R apache /code/
 
 COPY . /code/
 
-#Run the process as our local user:
+# Copy over the new ImageMagick policy, see:
+# https://github.com/makeabilitylab/makeabilitylabwebsite/issues/974
+COPY imagemagick-policy.xml /etc/ImageMagick-6/policy.xml
+
+# Run the process as our local user:
 USER apache
 
 COPY docker-entrypoint.sh docker-entrypoint.sh
