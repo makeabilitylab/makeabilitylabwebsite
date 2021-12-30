@@ -3,7 +3,7 @@
 {% load cropping %}
 {% load ml_tags %}
 
-{% if orientation == "horizontal" %}
+{% if pub and orientation == "horizontal" %}
     <div class="col-xs-12 col-md-4 pub-column" style="margin-bottom: 20px;">
         <div class="pub-thumbnail" style="float: left; margin-right: 7px;">
             <a href="../../media/{{ pub.pdf_file }}" class="pub-thumbnail-link">
@@ -79,7 +79,7 @@
             </p>
         {% endif %}
     </div>
-{% else %}
+{% elif pub %} {# If we're here, we display the pubs vertically #}
     <div class="row publication-template">
         <div class="publication-thumbnail">
             <a href="../../media/{{ pub.pdf_file }}" class="publication-thumbnail-link">
