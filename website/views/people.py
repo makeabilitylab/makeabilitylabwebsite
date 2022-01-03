@@ -1,6 +1,7 @@
 from django.conf import settings # for access to settings variables, see https://docs.djangoproject.com/en/4.0/topics/settings/#using-settings-in-python-code
 from website.models import Banner, Position, Person
 import website.utils.ml_utils as ml_utils 
+import operator
 from django.shortcuts import render # for render https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
 
 def people(request):
