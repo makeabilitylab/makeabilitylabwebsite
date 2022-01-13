@@ -7,7 +7,7 @@ djangorestframework==3.13.1
 beautifulsoup4==4.10.0
 wand==0.6.7
 bibtexparser==1.2.0
-Pillow==8.4.0
+Pillow==9.0.0
 django-extensions==3.1.5
 django-image-cropping==1.6.1
 django-sortedm2m==3.1.1
