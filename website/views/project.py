@@ -41,8 +41,8 @@ def project(request, project_name):
         elif project_role.has_completed_role():
             project_roles_past.append(project_role)
 
-    _logger.debug("project_roles_past: ", project_roles_past)
-    project_roles_past = sorted(project_roles_past, key=attrgetter('end_date'), reverse=True)
+    _logger.warn("project_roles_past: ", project_roles_past)
+    project_roles_past = [] # sorted(project_roles_past, key=attrgetter('end_date'), reverse=True)
 
     map_status_to_title_to_project_role = dict()
 
@@ -56,9 +56,13 @@ def project(request, project_name):
                 title = "Professor"
 
             # check for current status on project
-            member_status_name = Position.PAST_MEMBER
+            member_status_name = "unknown"
             if project_role.is_active():
                 member_status_name = Position.CURRENT_MEMBER
+            elif project_role.has_completed_role():
+                member_status_name = Position.PAST_MEMBER
+            elif project_role.has_role_started():
+                member_status_name = Position.FUTURE_MEMBER
 
             if member_status_name not in map_status_to_title_to_project_role:
                 map_status_to_title_to_project_role[member_status_name] = dict()
@@ -74,7 +78,7 @@ def project(request, project_name):
                 # sort current members and collaborators by start date first (so
                 # people who started earliest are shown first)
                 project_role_with_title.sort(key=attrgetter('start_date'))
-            else:
+            elif "Past" in status:
                 # sort past members and collaborators reverse chronologically by end date (so people
                 # who ended most recently are shown first)
                 project_role_with_title.sort(key=attrgetter('end_date'), reverse=True)
