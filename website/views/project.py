@@ -4,6 +4,11 @@ import website.utils.ml_utils as ml_utils
 from django.shortcuts import render, get_object_or_404
 from operator import attrgetter
 
+import logging
+
+# This retrieves a Python logging instance (or creates it)
+_logger = logging.getLogger(__name__)
+
 def project(request, project_name):
     """
     This is the view for *individual* project pages rather than the project page gallery
@@ -36,6 +41,7 @@ def project(request, project_name):
         elif project_role.has_completed_role():
             project_roles_past.append(project_role)
 
+    _logger.debug("project_roles_past: ", project_roles_past)
     project_roles_past = sorted(project_roles_past, key=attrgetter('end_date'), reverse=True)
 
     map_status_to_title_to_project_role = dict()
