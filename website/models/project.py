@@ -188,7 +188,7 @@ class Project(models.Model):
 
     def get_past_member_count(self):
         """
-        Returns the number of current members
+        Returns the number of past members
         :return:
         """
 
@@ -196,7 +196,7 @@ class Project(models.Model):
         project_roles = self.project_role_set.order_by('-start_date')
         past_member_cnt = 0
         for project_role in project_roles:
-            if project_role.is_active():
+            if project_role.has_completed_role():
                 past_member_cnt = past_member_cnt + 1
         return past_member_cnt
 

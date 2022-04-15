@@ -33,7 +33,7 @@ def project(request, project_name):
     for project_role in project_roles:
         if project_role.is_active():
             project_roles_current.append(project_role)
-        else:
+        elif project_role.has_completed_role():
             project_roles_past.append(project_role)
 
     project_roles_past = sorted(project_roles_past, key=attrgetter('end_date'), reverse=True)
