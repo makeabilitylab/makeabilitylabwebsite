@@ -59,6 +59,9 @@ class Project_Role(models.Model):
         return self.start_date is not None and self.start_date <= date.today() and \
                (self.end_date is None or self.end_date >= date.today())
     
+    def has_role_started(self):
+        return self.start_Date is not None and self.start_date <= date.today()
+
     def has_completed_role(self):
         """Returns true if this role is completed (as of today). That is, if end_date < date.today()"""
         if self.end_date == None:
