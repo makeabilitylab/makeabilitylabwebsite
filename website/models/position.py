@@ -78,6 +78,7 @@ class Position(models.Model):
 
     CURRENT_MEMBER = "Current Member"
     PAST_MEMBER = "Past Member"
+    FUTURE_MEMBER = "Future Member"
     CURRENT_COLLABORATOR = "Current Collaborator"
     PAST_COLLABORATOR = "Past Collaborator"
 
