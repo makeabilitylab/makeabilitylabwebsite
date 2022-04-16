@@ -64,6 +64,7 @@
                             <div class='bibtex-text' style='display: none'>
                                 {{ pub.get_citation_as_bibtex }}
                             </div>
+                            <div style='text-align: right;'>Download | <a id='citation-copy' onclick='$(this).copyCitation()'>Copy</a></div>
                       ">Citation</a>
                     </span>
                 {% if pub.code_repo_url %}| <a href="{{ pub.code_repo_url }}">Code</a>{% endif %}

@@ -25,6 +25,24 @@
         return this;
     }
 
+    $.fn.copyCitation = function () {
+
+        let plainCitationElementList = $(".citation-text");
+        let bibtexElementList = $(".bibtex-text");
+        
+        if(plainCitationElementList.length >= 0 && bibtexElementList.length >= 0){
+            let citationText = plainCitationElementList[0].innerText;
+            if(plainCitationElementList[0].style.display === 'none'){
+                citationText = bibtexElementList[0].innerText;
+            }
+
+            console.log(citationText);
+            if(navigator.clipboard) {
+                navigator.clipboard.writeText(citationText);
+            }
+        }
+    }
+
     $.fn.citationclick = function () {
         console.log("citation click")
         $(".citation-text").css('display', 'block');
