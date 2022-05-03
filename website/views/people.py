@@ -49,7 +49,7 @@ def people(request):
                 people_with_title.sort(key=lambda pos: (
                     pos.person.get_earliest_position_in_role(pos.role).start_date
                 ))
-            else:
+            elif "Past" in status:
                 # sort past members and collaborators reverse chronologically by end date (so people
                 # who ended most recently are shown first)
                 people_with_title.sort(key=operator.attrgetter('end_date'), reverse=True)
