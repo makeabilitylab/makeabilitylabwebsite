@@ -22,6 +22,8 @@ This repository contains the [Makeability Lab's website](https://makeabilitylab.
   
 2. Clone this repository using `git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git` and navigate to the project home directory using the `cd` command.
 
+1. Edit the `docker-compose.yml` file, commenting out the last two lines in the "volumes" section in the "website" service (there is a comment explaining which lines to comment out).
+
 3. Build the docker images. Run `docker build .` or `docker build . -t <tag>`--the latter allows you to tag your build with a name (we recommend tagging it as `makelab_image` for easy access). This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
 
 4. Running the container. Once the image has built, run `docker-compose up`, this will bring up both the postgres container for the database and the website containers. For future reference, running `docker-compose up -d` will allow you to continue using the same terminal and none of the output messages will be displayed.
@@ -69,6 +71,8 @@ On Windows, [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install) provide
     chmod -R 777 website/
     ```
 
+1. Edit the `docker-compose.yml` file, commenting out the last two lines in the "volumes" section in the "website" service (there is a comment explaining which lines to comment out).
+
 1. Build the docker images. Run `docker build .` or `docker build . -t <tag>`--the latter allows you to tag your build with a name (we recommend tagging it as `makelab_image` for easy access). This step may take a while (~2-3 min). If you don't add an explicit tag to your build, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
 
 1. Running the container. Once the image has built, run `docker-compose up`, this will bring up both the PostgreSQL container for the database and the website containers. 
@@ -84,7 +88,7 @@ Content must be added manually.
 
 NOTE: If you haven't created a superuser yet, you will need to do so through terminal. Refer to Step 6 in the Docker Installation for more information.
 
-1. Once the website is running on your local machine, go to `localhost:8000/admin` in your browser. This will take you to the Django admin interface.
+1. Once the website is running on your local machine, go to `localhost:8571/admin` in your browser. This will take you to the Django admin interface.
 2. Login using the credentials of the superuser created in the previous step.
 3. Once logged in, you will see two main headers. Listed under the "WEBSITE" header, there will be a number of folders relating to the various types of content that make up the Makeability website.
 4. Chose the folder corresponding to the content you wish to upload. Inside the folder, in the upper right of the screen, there will be an ADD button.
