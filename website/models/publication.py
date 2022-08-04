@@ -244,7 +244,7 @@ class Publication(models.Model):
         bibtex += self.get_bibtex_id() + newline
 
         # start author block
-        bibtex += " author = {"
+        bibtex += " author={"
 
         author_idx = 0
         num_authors = self.authors.count()
@@ -256,7 +256,7 @@ class Publication(models.Model):
                 bibtex += " and "
 
             author_idx += 1
-        bibtex += "}" + newline
+        bibtex += "}," + newline
         # end author block
 
         bibtex += " title={{{}}},{}".format(self.title, newline)
