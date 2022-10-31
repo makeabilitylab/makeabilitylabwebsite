@@ -14,6 +14,10 @@ which python
 python --version
 
 echo ""
+echo "Django version:"
+python3 -m django --version
+
+echo ""
 echo "User:"
 whoami
 
