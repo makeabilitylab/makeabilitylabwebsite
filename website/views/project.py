@@ -1,13 +1,20 @@
 from django.conf import settings # for access to settings variables, see https://docs.djangoproject.com/en/4.0/topics/settings/#using-settings-in-python-code
 from website.models import Project, Position
 import website.utils.ml_utils as ml_utils 
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from operator import attrgetter
 
 import logging
 
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
+
+def redirect_project(request, project_name):
+    """
+    Redirects the project to a url with /project/
+    """
+    response = redirect('/project/' + project_name)
+    return response
 
 def project(request, project_name):
     """
