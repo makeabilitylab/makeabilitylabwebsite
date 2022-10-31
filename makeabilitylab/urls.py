@@ -14,7 +14,12 @@ Including another URLconf
     2. Import the include() function: from django.conf.urls import url, include
     3. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
-from django.conf.urls import include, url
+
+# Django 4+ eliminated django.conf.urls import url
+# See: https://stackoverflow.com/a/70319607
+# from django.conf.urls import include, url
+
+from django.urls import include, re_path
 from django.contrib import admin
 from django.conf.urls.static import static
 from django.views.static import serve
@@ -22,15 +27,15 @@ from django.conf import settings
 
 urlpatterns = [
     #Info on how to route root to website was found here http://stackoverflow.com/questions/7580220/django-urls-howto-map-root-to-app
-    url(r'', include('website.urls')),
-    url(r'^admin/', admin.site.urls),
-    url(r'^ckeditor/', include('ckeditor_uploader.urls')),
+    re_path(r'', include('website.urls')),
+    re_path(r'^admin/', admin.site.urls),
+    re_path(r'^ckeditor/', include('ckeditor_uploader.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # serving media files only on debug mode
 if settings.DEBUG:
     urlpatterns += [
-        url(r'^media/(?P<path>.*)$', serve, {
+        re_path(r'^media/(?P<path>.*)$', serve, {
             'document_root': settings.MEDIA_ROOT
         }),
     ]

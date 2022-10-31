@@ -1,6 +1,8 @@
 from django.contrib import admin
 from website.models import Person, Position, Publication
-from django.utils.translation import ugettext_lazy as _
+
+# For lazy translations: https://docs.djangoproject.com/en/4.1/topics/i18n/translation/#lazy-translations
+from django.utils.translation import gettext_lazy as _
 
 class PositionRoleListFilter(admin.SimpleListFilter):
 

@@ -128,7 +128,9 @@ INSTALLED_APPS = [
     'sortedm2m',
     'ckeditor',
     'ckeditor_uploader',
-    'sortedm2m_filter_horizontal_widget',
+    
+    # Removed sortedm2m_filter_horizontal_widget as incompatible with Django 4
+    # 'sortedm2m_filter_horizontal_widget',
     'rest_framework'
 ]
 

@@ -1,22 +1,26 @@
-from django.conf.urls import url
+# Django 4+ removed django.conf.urls.url()
+# https://stackoverflow.com/a/70319607
+# from django.conf.urls import url
+from django.urls import re_path
+
 from . import views
 from rest_framework.urlpatterns import format_suffix_patterns
 
 app_name = 'website'
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
-    url(r'^people/$', views.people, name='people'),
-    url(r'^member/(?P<member_id>[0-9]+)/$', views.member, name='member'),
-    url(r'^member/(?P<member_id>[-a-z]+)/$', views.member, name='member'),
-    url(r'^publications/$', views.publications, name='publications'),
-    url(r'^talks/$', views.talks, name='talks'),
-    url(r'^videos/$', views.videos, name='videos'),
-    url(r'^projects/$', views.projects, name='projects'),
-    url(r'^projects/(?P<project_name>[a-zA-Z ]+)/$', views.project, name='project'),
-    url(r'^project/(?P<project_name>[a-zA-Z ]+)/$', views.project, name='project'),
-    url(r'^news/$', views.news_listing, name='news_listing'),
-    url(r'^news/(?P<news_id>[0-9]+)/$', views.news, name='news'),
-    url(r'^faq/$', views.faq, name='faq'),
+    re_path(r'^$', views.index, name='index'),
+    re_path(r'^people/$', views.people, name='people'),
+    re_path(r'^member/(?P<member_id>[0-9]+)/$', views.member, name='member'),
+    re_path(r'^member/(?P<member_id>[-a-z]+)/$', views.member, name='member'),
+    re_path(r'^publications/$', views.publications, name='publications'),
+    re_path(r'^talks/$', views.talks, name='talks'),
+    re_path(r'^videos/$', views.videos, name='videos'),
+    re_path(r'^projects/$', views.projects, name='projects'),
+    re_path(r'^projects/(?P<project_name>[a-zA-Z ]+)/$', views.project, name='project'),
+    re_path(r'^project/(?P<project_name>[a-zA-Z ]+)/$', views.project, name='project'),
+    re_path(r'^news/$', views.news_listing, name='news_listing'),
+    re_path(r'^news/(?P<news_id>[0-9]+)/$', views.news, name='news'),
+    re_path(r'^faq/$', views.faq, name='faq'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
