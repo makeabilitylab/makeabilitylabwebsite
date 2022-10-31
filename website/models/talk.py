@@ -10,7 +10,7 @@ import os
 import os.path
 import logging
 
-from .project_umbrella import Project_umbrella
+from .project_umbrella import ProjectUmbrella
 from .keyword import Keyword
 from .person import Person
 from .video import Video
@@ -26,7 +26,7 @@ class Talk(models.Model):
 
     # A talk can be about more than one project
     projects = models.ManyToManyField('Project', blank=True)
-    project_umbrellas = SortedManyToManyField('Project_umbrella', blank=True)
+    project_umbrellas = SortedManyToManyField('ProjectUmbrella', blank=True)
 
     # TODO: remove the null = True from all of the following objects
     # including forum_name, forum_url, location, speakers, date, slideshare_url

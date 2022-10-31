@@ -7,7 +7,7 @@ from .project import Project
 # This class contains the image or video which will appear in the top description of each project. It functions as a combination of Photo and Video, but is separated to make it simpler to have a specific video or photo as the projects header.
 # TODO: I want to rename Project_header to ProjectHeader
 # but it looks like this is a bit of a pain, see: https://stackoverflow.com/questions/25091130/django-migration-strategy-for-renaming-a-model-and-relationship-fields
-class Project_header(models.Model):
+class ProjectHeader(models.Model):
     title = models.CharField(max_length=500)
     title.help_text = "These fields are used as the image in the about section. To add a banner to your page go to the banners table and assign banners to your project using the project field there. This field will accept both a video and an image. If both are provided the video will be used."
     caption = models.CharField(max_length=2000, blank=True, null=True)

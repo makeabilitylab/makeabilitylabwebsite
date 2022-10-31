@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin import widgets
-from .models import Person, Publication, Position, Talk, Project, Poster, Keyword, News, Banner, Video, Project_header, Photo, Project_umbrella, Project_Role, Sponsor
+from .models import Person, Publication, Position, Talk, Project, Poster, Keyword, News, Banner, Video, ProjectHeader, Photo, ProjectUmbrella, ProjectRole, Sponsor
 from website.admin_list_filters import PositionRoleListFilter, PositionTitleListFilter, PubVenueTypeListFilter, PubVenueListFilter
 # from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
 import django
@@ -59,11 +59,11 @@ class PositionInline(admin.StackedInline):
         return super(PositionInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
     
 class ProjectRoleInline(admin.StackedInline):
-    model = Project_Role
+    model = ProjectRole
     extra = 0
 
 class ProjectHeaderInline(ImageCroppingMixin, admin.StackedInline):
-    model = Project_header
+    model = ProjectHeader
     extra = 0
 
 # Uses format as per https://github.com/jonasundderwolf/django-image-cropping to add cropping to the admin page
@@ -263,7 +263,7 @@ admin.site.register(News, NewsAdmin)
 admin.site.register(Banner, BannerAdmin)
 admin.site.register(Video, VideoAdmin)
 admin.site.register(Photo, PhotoAdmin)
-admin.site.register(Project_umbrella, ProjectUmbrellaAdmin)
+admin.site.register(ProjectUmbrella, ProjectUmbrellaAdmin)
 admin.site.register(Sponsor)
 
 # For modifying more on the front admin landing page, see https://medium.com/django-musings/customizing-the-django-admin-site-b82c7d325510

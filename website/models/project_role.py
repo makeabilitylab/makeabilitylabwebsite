@@ -5,7 +5,7 @@ from datetime import date, datetime, timedelta
 from .person import Person
 from .project import Project
 
-class Project_Role(models.Model):
+class ProjectRole(models.Model):
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     role = models.TextField(blank=True, null=True)

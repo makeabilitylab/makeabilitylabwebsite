@@ -3,7 +3,7 @@ from .keyword import Keyword
 
 # TODO: Argh, need to change all multi-world class names to CapWords convention, 
 # see official docs: https://www.python.org/dev/peps/pep-0008/#id41
-class Project_umbrella(models.Model):
+class ProjectUmbrella(models.Model):
     name = models.CharField(max_length=255)
     # Short name is used for urls, and should be name.lower().replace(" ", "")
     short_name = models.CharField(max_length=255)

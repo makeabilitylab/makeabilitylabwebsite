@@ -6,9 +6,9 @@ from .photo import Photo
 from .position import Position
 from .poster import Poster
 from .project import Project
-from .project_header import Project_header
-from .project_role import Project_Role
-from .project_umbrella import Project_umbrella
+from .project_header import ProjectHeader
+from .project_role import ProjectRole
+from .project_umbrella import ProjectUmbrella
 from .publication import Publication
 from .sponsor import Sponsor
 from .talk import Talk

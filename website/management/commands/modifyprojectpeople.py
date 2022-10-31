@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from website.models import Person, Project, Project_Role
+from website.models import Person, Project, ProjectRole
 from datetime import datetime
 
 class Command(BaseCommand):
@@ -11,6 +11,6 @@ class Command(BaseCommand):
             for person in project.people.all():
                 print(person.get_full_name()+" "+project.name)
                 start_date = project.start_date if project.start_date else datetime.now()
-                proj_role = Project_Role(person=person, project=project, start_date=start_date)
+                proj_role = ProjectRole(person=person, project=project, start_date=start_date)
                 proj_role.save()
                 

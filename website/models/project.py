@@ -5,7 +5,7 @@ from image_cropping import ImageRatioField
 from datetime import date, datetime, timedelta
 
 from .sponsor import Sponsor
-from .project_umbrella import Project_umbrella
+from .project_umbrella import ProjectUmbrella
 from .keyword import Keyword
 from .publication import Publication
 from .talk import Talk
@@ -23,9 +23,9 @@ class Project(models.Model):
     sponsors = models.ManyToManyField('Sponsor', blank=True)
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
-    project_umbrellas = models.ManyToManyField('Project_umbrella', blank=True)
+    project_umbrellas = models.ManyToManyField('ProjectUmbrella', blank=True)
 
-    # header_visual = models.ForeignKey(Project_header, blank=True, null=True)
+    # header_visual = models.ForeignKey(ProjectHeader, blank=True, null=True)
     keywords = models.ManyToManyField(Keyword, blank=True)
 
     # pis = models.ManyToOneField(Person, blank=True, null=True)

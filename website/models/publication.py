@@ -12,7 +12,7 @@ import os.path
 import logging
 
 from .person import Person
-from .project_umbrella import Project_umbrella
+from .project_umbrella import ProjectUmbrella
 from .keyword import Keyword
 from .video import Video
 from .talk import Talk
@@ -52,7 +52,7 @@ class Publication(models.Model):
 
     # A publication can be about more than one project
     projects = SortedManyToManyField('Project', blank=True)
-    project_umbrellas = SortedManyToManyField('Project_umbrella', blank=True)
+    project_umbrellas = SortedManyToManyField('ProjectUmbrella', blank=True)
     keywords = SortedManyToManyField('Keyword', blank=True)
 
     # TODO, see if there is an IntegerRangeField or something like that for page_num_start and end
