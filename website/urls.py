@@ -26,7 +26,10 @@ urlpatterns = [
     # and we'll try to go to that project without putting in 'projects' or 'project'
     # For example, http://makeabilitylab.cs.uw.edu/soundwatch will go to
     # http://makeabilitylab.cs.uw.edu/project/soundwatch 
-    re_path(r'(?P<project_name>[a-zA-Z ]+)/$', views.redirect_project, name='project'),
+    #
+    # Update: had to remove this as it prevented us from going to the admin page, oops!
+    # Needs more thought.
+    #re_path(r'(?P<project_name>[a-zA-Z ]+)/$', views.redirect_project, name='project'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
