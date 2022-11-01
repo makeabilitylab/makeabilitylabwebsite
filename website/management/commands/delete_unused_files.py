@@ -233,7 +233,7 @@ class Command(BaseCommand):
         for filename_with_path_to_delete in files:
             _logger.debug("Attempting to delete unused file: {}".format(filename_with_path_to_delete))
             bytes_deleted += os.path.getsize(filename_with_path_to_delete)
-            # os.remove(filename_with_path_to_delete)
+            os.remove(filename_with_path_to_delete)
             num_files_deleted += 1
         
         return (num_files_deleted, bytes_deleted)
