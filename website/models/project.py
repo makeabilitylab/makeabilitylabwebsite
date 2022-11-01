@@ -46,7 +46,7 @@ class Project(models.Model):
 
     def get_pis(self):
         """Returns the PIs for the project (as a Person object)"""
-        pis_queryset = self.project_role_set.filter(pi_member="PI")
+        pis_queryset = self.projectrole_set.filter(pi_member="PI")
         pis_list = [pi.person for pi in pis_queryset]
         print("queryset: ", pis_queryset)
         print(pis_list)
@@ -54,7 +54,7 @@ class Project(models.Model):
 
     def get_co_pis(self):
         """Returns the PIs for ths project (as a list of Person objects)"""
-        copis_queryset = self.project_role_set.filter(pi_member="Co-PI")
+        copis_queryset = self.projectrole_set.filter(pi_member="Co-PI")
         copis_list = [copi.person for copi in copis_queryset]
         print(copis_list)
         return copis_list
@@ -162,7 +162,7 @@ class Project(models.Model):
         Returns the number of people involved in the project
         :return:
         """
-        project_roles = self.project_role_set.order_by('-start_date')
+        project_roles = self.projectrole_set.order_by('-start_date')
 
         # For more on this style of list iteration (called list comprehension)
         # See: https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions
@@ -177,7 +177,7 @@ class Project(models.Model):
         Returns the number of current members
         :return:
         """
-        project_roles = self.project_role_set.order_by('-start_date')
+        project_roles = self.projectrole_set.order_by('-start_date')
         current_member_cnt = 0
         for project_role in project_roles:
             if project_role.is_active():
@@ -193,7 +193,7 @@ class Project(models.Model):
         """
 
         # TODO: could likely turn all of this code into a single query?
-        project_roles = self.project_role_set.order_by('-start_date')
+        project_roles = self.projectrole_set.order_by('-start_date')
         past_member_cnt = 0
         for project_role in project_roles:
             if project_role.has_completed_role():

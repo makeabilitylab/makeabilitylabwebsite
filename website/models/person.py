@@ -286,7 +286,7 @@ class Person(models.Model):
         Gets a set of all the projects this person is involved in ordered by most recent start date first
         :return: a set of all the projects this person is involved in ordered by most recent start date first
         """
-        project_roles = self.project_role_set.order_by('-start_date')
+        project_roles = self.projectrole_set.order_by('-start_date')
 
         # For more on this style of list iteration (called list comprehension)
         # See: https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions

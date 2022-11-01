@@ -20,7 +20,7 @@ def member(request, member_id):
     news = person.news_set.order_by('-date')[:news_items_num]
     publications = person.publication_set.order_by('-date')
     talks = person.talk_set.order_by('-date')
-    project_roles = person.project_role_set.order_by('start_date')
+    project_roles = person.projectrole_set.order_by('start_date')
     projects = person.get_projects()
 
     # filter projects to those that have a thumbnail and have been published
