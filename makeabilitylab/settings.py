@@ -55,6 +55,11 @@ MAX_BANNERS = 7 # Maximum number of banners on a page
 #  - https://stackoverflow.com/a/66971813
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
+# With the upgrade to Django 4.1.2, we now need to specify trusted origins
+# See: https://docs.djangoproject.com/en/4.0/ref/settings/#csrf-trusted-origins
+# See also: https://stackoverflow.com/a/70326426
+CSRF_TRUSTED_ORIGINS = ['https://*.cs.washington.edu']
+
 # TODO: this seems to work fine on Docker but breaks localhost dev (without docker)
 # See: https://docs.djangoproject.com/en/2.0/topics/logging/
 # https://lincolnloop.com/blog/django-logging-right-way/
