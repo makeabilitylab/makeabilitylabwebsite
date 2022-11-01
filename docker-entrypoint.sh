@@ -27,8 +27,7 @@ ls -al
 # chown -R apache /code
 
 # Collect static files
-echo "Collecting static files"
-echo "****************** STEP 1: docker-entrypoint.sh ************************"
+echo "****************** STEP 1/5: docker-entrypoint.sh ************************"
 echo "1. Collecting static files"
 echo "******************************************"
 python manage.py collectstatic --noinput
@@ -37,23 +36,26 @@ python manage.py collectstatic --noinput
 
 # Apply database migrations
 # TODO: explore doing migration in compose yml file: https://stackoverflow.com/a/44283611
-echo "Running makemigrations and migrate"
-echo "****************** STEP 2a: docker-entrypoint.sh ************************"
-echo "2a. Running makemigrations and migrate"
+echo "****************** STEP 2/5: docker-entrypoint.sh ************************"
+echo "2. Running makemigrations and migrate"
 echo "******************************************"
 python manage.py makemigrations
 python manage.py migrate
 
-echo "Running makemigrations and migrate explicitly to website (often fixes some first-time run issues)"
-echo "****************** STEP 2b: docker-entrypoint.sh ************************"
-echo "2b. Running makemigrations and migrate explicitly to website (often fixes some first-time run issues)"
+echo "****************** STEP 3/5: docker-entrypoint.sh ************************"
+echo "3. Running makemigrations and migrate explicitly to website (often fixes some first-time run issues)"
 echo "******************************************"
 python manage.py makemigrations website
 python manage.py migrate website
 
+echo "****************** STEP 4/5: docker-entrypoint.sh ************************"
+echo "4. Running 'python manage.py delete_unused_files' to delete unused files in file system"
+echo "******************************************"
+python manage.py delete_unused_files
+
 # Start server
 echo "Starting server"
-echo "****************** STEP 3: docker-entrypoint.sh ************************"
-echo "3. Starting server"
+echo "****************** STEP 5/5: docker-entrypoint.sh ************************"
+echo "5. Starting server with 'python manage.py runserver 0.0.0.0:8000'"
 echo "******************************************"
 python manage.py runserver 0.0.0.0:8000
