@@ -16,7 +16,11 @@
         <p class="artifact-links">
             <a href="{{ video.video_url }}">{{ video.get_video_host_str }}</a>
             {# TODO: fix this so that we are not using a constant for the media dir link #}
-            {% if video.publication %}
+
+            {# We can access the linked video publication, if one exists, using Django's 'reverse' query, #}
+            {# which if you define a OneToOneField on your model--as we did in Publication for video-- #}
+            {# then we can access the related object like this: video.publication #}
+            {% if video.has_publication %}
                 | <a href="../../media/{{ video.publication.pdf_file }}">Paper</a>
             {% endif %}
             {% if video.project %}

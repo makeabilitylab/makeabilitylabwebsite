@@ -20,6 +20,11 @@ class Video(models.Model):
         else:
             return 'Video'
 
+    def has_publication(self):
+        """Check if video has an associate publication using a reverse query. See:
+           https://stackoverflow.com/a/40743258"""
+        return hasattr(self, 'publication')
+
     def get_embed(self):
         """Given self.video_url, returns the correctly formatted video embed url for YouTube and Vimeo"""
         return ml_utils.get_video_embed(self.video_url)
