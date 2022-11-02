@@ -267,4 +267,4 @@ admin.site.register(ProjectUmbrella, ProjectUmbrellaAdmin)
 admin.site.register(Sponsor)
 
 # For modifying more on the front admin landing page, see https://medium.com/django-musings/customizing-the-django-admin-site-b82c7d325510
-admin.site.index_title = "Makeability Lab Admin. Django version: " + django.get_version() + " | Makeability Lab Website Version: 1.0.4 (has video snippet)"
+admin.site.index_title = "Makeability Lab Admin. Django version: " + django.get_version() + " | Makeability Lab Website Version: 1.0.5 (fixed project headers)"
