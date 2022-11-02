@@ -139,7 +139,11 @@ You can also view `buildlog.text`, `httpd-access.log`, and `httpd-error.log` at 
 There are two types of Makeability Lab data: (i) uploaded files like PDFs, PowerPoint files, images, etc. and (ii) data that goes into the PostgreSQL database. Although we have both a test (makeability-test.cs) and a production server (makeability.cs), they are linked to the same backend data for both (i) and (ii).
 
 ## Uploaded Files
-All data/files uploaded to the Makeability Lab website via the admin interface (e.g., talks, publications) goes into the `/media` folder. Although typically you will not ever need to manually access this folder (except, for example, to view the `debug.log`), you can do so by ssh'ing into recycle.cs.washington.edu and cd to `/cse/web/research/makelab/www`. This files area is being mapped into the `/media` folder. This directory is shared by both https://makeabilitylab-test.cs.washington.edu/ and https://makeabilitylab.cs.washington.edu/.
+All data/files uploaded to the Makeability Lab website via the admin interface (e.g., talks, publications) goes into the `/media` folder, which is mapped to:
+* `/cse/web/research/makelab/www` on production
+* `/cse/web/research/makelab/www-test` on test
+
+If you want to look at uploaded content or view the `debug.log`, you can SSH into `recycle.cs.washington.edu` and cd to `/cse/web/research/makelab/www` or `/cse/web/research/makelab/www-test`, respectively.
 
 ## Access to Production Database Server
 The Makeability Lab website uses PostgreSQL on production, which is running on grabthar.cs.washington.edu. In the (extremely) rare instance that you need to access Postgres directly, you must do so via recycle.cs.washington.edu.
