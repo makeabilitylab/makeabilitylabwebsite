@@ -111,8 +111,8 @@
             <p class="project-about">
             <div style="float: right">
                 <div class="header-visual">
-                    {% if project.project_header_set.all|length > 0 %}
-                        {% with project.project_header_set.all|first as header %}
+                    {% if project.projectheader_set.all|length > 0 %}
+                        {% with project.projectheader_set.all|first as header %}
                             {% if header.has_video %}
                                 <iframe class="about-video" src="{{ header.get_video_embed }}"
                                         frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
