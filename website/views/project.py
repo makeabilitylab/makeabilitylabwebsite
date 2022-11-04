@@ -3,6 +3,7 @@ from website.models import Project, Position
 import website.utils.ml_utils as ml_utils 
 from django.shortcuts import render, get_object_or_404, redirect
 from operator import attrgetter
+import time
 
 import logging
 
@@ -23,6 +24,7 @@ def project(request, project_name):
     :param project_name:
     :return:
     """
+    start_time = time.perf_counter()
     project = get_object_or_404(Project, short_name__iexact=project_name)
     all_banners = project.banner_set.all()
     displayed_banners = ml_utils.choose_banners(all_banners)
@@ -33,6 +35,8 @@ def project(request, project_name):
     news = project.news_set.order_by('-date')
     photos = project.photo_set.all()
 
+    start_time_position = time.perf_counter()
+    
     # A Project_Role object has a person, role (open text field), start_date, end_date
     project_roles = project.projectrole_set.order_by('start_date')
 
@@ -95,6 +99,8 @@ def project(request, project_name):
     sorted_titles = Position.get_sorted_titles()
 
     map_status_to_title_to_people = map_status_to_title_to_project_role
+    end_time_position = time.perf_counter()
+    _logger.debug(f"Took {end_time_position - start_time_position:0.4f} seconds to calculate position roles for '{project.name}'")
 
     context = {'banners': displayed_banners,
                'project': project,
@@ -110,6 +116,9 @@ def project(request, project_name):
                'news': news,
                'photos': photos,
                'debug': settings.DEBUG}
+
+    end_time = time.perf_counter()
+    _logger.debug(f"Rendered '{project.name}' in {end_time - start_time:0.4f} seconds")
 
     # Render is a Django helper function. It combines a given template—in this case project.html—with
     # a context dictionary and returns an HttpResponse object with that rendered text.
