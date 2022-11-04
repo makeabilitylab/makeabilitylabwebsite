@@ -10,7 +10,6 @@ This repository contains the [Makeability Lab's website](https://makeabilitylab.
 * [Deploying Code to UW Servers](#deploying-code-to-uw-servers)
 * [Makeability Lab Data](#makeability-lab-data)
 * [Makeability Lab API](#makeability-lab-api)
-* [Manual Installation](#manual-installation)
 * [Contributing](#contributing)
 * [Troubleshooting](#troubleshooting)
 
