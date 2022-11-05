@@ -370,6 +370,8 @@ h5 {
   bottom: 0;
   position: absolute;
   border-top: 1px solid #dddddd;
+  overflow: hidden;
+  max-height: 14px;
 }
 
 .artifact-venue {
