@@ -366,9 +366,10 @@ h5 {
 .pub-download-links {
   font-size: 7pt;
   color: gray;
+  margin-top: 8px !important;
   margin: 0 20px 0 107px;
   bottom: 0;
-  position: absolute;
+  /* position: absolute; */
   border-top: 1px solid #dddddd;
   overflow: hidden;
   max-height: 14px;
