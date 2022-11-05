@@ -355,11 +355,23 @@ h5 {
   color: black;
 }
 
+/* This opacity stuff auto-shows the download links on mouseover ('hover');
+otherwise, they are hidden! */
 .talk-column .pub-download-links {
   opacity: 0;
 }
 
 .talk-column:hover .pub-download-links {
+  opacity: 1;
+}
+
+/* This opacity stuff auto-shows the download links on mouseover ('hover');
+otherwise, they are hidden! */
+.pub-column .pub-download-links {
+  opacity: 0;
+}
+
+.pub-column:hover .pub-download-links {
   opacity: 1;
 }
 
