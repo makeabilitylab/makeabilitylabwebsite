@@ -1,7 +1,7 @@
 # Run `pip3 install -r requirements.txt` to install dependencies
 
 #django==3.2.15
-django==4.1.2
+django==4.1.6
 
 psycopg2==2.9.5
 djangorestframework==3.14
