@@ -8,6 +8,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 app_name = 'website'
 urlpatterns = [
+    re_path(r"^admin/", admin.site.urls),
     re_path(r'^$', views.index, name='index'),
     re_path(r'^people/$', views.people, name='people'),
     re_path(r'^member/(?P<member_id>[0-9]+)/$', views.member, name='member'),
@@ -29,7 +30,7 @@ urlpatterns = [
     #
     # Update: had to remove this as it prevented us from going to the admin page, oops!
     # Needs more thought.
-    #re_path(r'(?P<project_name>[a-zA-Z ]+)/$', views.redirect_project, name='project'),
+    re_path(r'(?P<project_name>[a-zA-Z ]+)/$', views.redirect_project, name='project'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
