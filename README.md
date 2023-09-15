@@ -4,8 +4,9 @@ The [Makeability Lab](https://makeabilitylab.cs.washington.edu) is an HCI/Ubicom
 This repository contains the [Makeability Lab's website](https://makeabilitylab.cs.washington.edu), which is written in Django (backend) and Bootstrap/Javascript (frontend).
 
 # Table of Contents
-* [Adding Content Manually](#adding-content-manually)
-* [Bootstrapping Content](#bootstrapping-content)
+* [Docker Installation](#docker-installation)
+* [Running the website](#running-the-website)
+* [Adding Content](#adding-content)
 * [Test and Production Servers](#test-and-production-servers)
 * [Deploying Code to UW Servers](#deploying-code-to-uw-servers)
 * [Makeability Lab Data](#makeability-lab-data)
@@ -84,7 +85,7 @@ On Windows, [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install) provide
 
 1. It's also useful to create a mapping between your Linux filesystem in WSL2 and your Windows filesystem. For this, type `Windows + R` to open the Run menu and type: `\\wsl$`. Then, find the Linux installation you're using for the Makeability Lab website (e.g., Ubuntu-18.04) and right-click on that folder, then select `Map Network Drive` and follow the on-screen instructions. By default, it will map to drive `Z:`. So, you can open "This PC" or "My Computer" and see drive `Z:`, which will be the Linux VM.
 
-# Running Website
+# Running the Website
 After following the above installation instructions, all future runs of the website can be accomplished by
 1. Opening Docker (or verifying that it is running)
 2. Drop into your terminal in the `makeabilitylabwebsite` directory
