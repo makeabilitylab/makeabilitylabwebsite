@@ -64,6 +64,7 @@ On Windows, [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install) provide
 1. Proceed by clicking **Resources &rarr; WSL Integration** and select your Linux VM of choice under "Enable integration with additional distros:". Here is some extra [documentation](https://docs.docker.com/docker-for-windows/wsl/) from Docker that may help out with this process.
 1. Open your Linux VM shell and navigate to where you would like to set up your Makeability Lab website repository.
 1. Run `git clone https://github.com/makeabilitylab/makeabilitylabwebsite.git`.
+1. Run `cd makeabilitylabwebsite` to change to he root website folder
 1. Make sure to `chmod 755 docker-entrypoint.sh`
 1. You must also manually create some directories:
     ```
