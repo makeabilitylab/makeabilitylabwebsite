@@ -14,7 +14,9 @@ This repository contains the [Makeability Lab's website](https://makeabilitylab.
 * [Troubleshooting](#troubleshooting)
 
 
-# Docker Installation (Mac)
+# Docker Installation
+
+## Mac
 1. Install [Docker Desktop](https://www.docker.com/get-started)
 
 3. Run `> docker version` from terminal to ensure Docker is running 
@@ -51,7 +53,7 @@ python manage.py createsuperuser
 exit
 ```
 
-# Docker Installation (Windows)
+## Windows
 
 On Windows, [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install) provides an actual Linux kernel running within a lightweight VM, unlike the older WSL which tried to emulate a linux kernel within the Windows kernel—see [Docker's official WSL2 overview](https://docs.docker.com/desktop/windows/wsl/). WSL2 offers faster compile times and is better supported by Docker.
 
@@ -81,6 +83,13 @@ On Windows, [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install) provide
 1. Create the superuser. In another terminal, navigate to the project home directory using the `cd` command and open an interactive bash terminal in the website container using `docker exec -it makeabilitylabwebsite_website_1 bash`. Once inside the bash terminal, run `python manage.py createsuperuser` and follow the instructions. Then you can visit localhost:8571/admin to add content.
 
 1. It's also useful to create a mapping between your Linux filesystem in WSL2 and your Windows filesystem. For this, type `Windows + R` to open the Run menu and type: `\\wsl$`. Then, find the Linux installation you're using for the Makeability Lab website (e.g., Ubuntu-18.04) and right-click on that folder, then select `Map Network Drive` and follow the on-screen instructions. By default, it will map to drive `Z:`. So, you can open "This PC" or "My Computer" and see drive `Z:`, which will be the Linux VM.
+
+# Running Website
+After following the above installation instructions, all future runs of the website can be accomplished by
+1. Opening Docker (or verifying that it is running)
+2. Drop into your terminal in the `makeabilitylabwebsite` directory
+3. Run `docker-compose up`
+4. Visit the website on localhost at: [http://localhost:8571/](http://localhost:8571/)
 
 # Adding Content
 Content must be added manually.
