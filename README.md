@@ -201,4 +201,25 @@ Then the line endings in the shell script are set to CRLF rather than LF (see [S
 
 To fix this, open `docker-entrypoint.sh` in VSCode and set the line endings to LF.
 
+## WSL2
+If you receive a `PermissionError: [Errno 13] Permission denied: '/code/media/debug.log'` error on localhost, see this [StackOverflow post](https://stackoverflow.com/questions/69575151/permissionerror-errno-13-permission-denied-on-windows-with-wsl2-and-docker).
 
+```
+makeabilitylabwebsite-website-1  | ****************** STEP 1/5: docker-entrypoint.sh ************************
+makeabilitylabwebsite-website-1  | 1. Collecting static files
+makeabilitylabwebsite-website-1  | ******************************************
+makeabilitylabwebsite-website-1  | Traceback (most recent call last):
+makeabilitylabwebsite-website-1  |   File "/usr/local/lib/python3.8/logging/config.py", line 563, in configure
+makeabilitylabwebsite-website-1  |     handler = self.configure_handler(handlers[name])
+makeabilitylabwebsite-website-1  |   File "/usr/local/lib/python3.8/logging/config.py", line 744, in configure_handler
+makeabilitylabwebsite-website-1  |     result = factory(**kwargs)
+makeabilitylabwebsite-website-1  |   File "/usr/local/lib/python3.8/logging/handlers.py", line 148, in __init__
+makeabilitylabwebsite-website-1  |     BaseRotatingHandler.__init__(self, filename, mode, encoding, delay)
+makeabilitylabwebsite-website-1  |   File "/usr/local/lib/python3.8/logging/handlers.py", line 55, in __init__
+makeabilitylabwebsite-website-1  |     logging.FileHandler.__init__(self, filename, mode, encoding, delay)
+makeabilitylabwebsite-website-1  |   File "/usr/local/lib/python3.8/logging/__init__.py", line 1147, in __init__
+makeabilitylabwebsite-website-1  |     StreamHandler.__init__(self, self._open())
+makeabilitylabwebsite-website-1  |   File "/usr/local/lib/python3.8/logging/__init__.py", line 1176, in _open
+makeabilitylabwebsite-website-1  |     return open(self.baseFilename, self.mode, encoding=self.encoding)
+makeabilitylabwebsite-website-1  | PermissionError: [Errno 13] Permission denied: '/code/media/debug.log'
+```
