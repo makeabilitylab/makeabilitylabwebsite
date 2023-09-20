@@ -82,7 +82,7 @@ On Windows, [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install) provide
 
 1. At this point, you can visit the website at `localhost:8571` as specified in the `docker-compose.yml` file. However, to add content, you need to add an admin users. For this, follow the next step to create a "superuser."
 
-1. Create the superuser. In another terminal, navigate to the project home directory using the `cd` command and open an interactive bash terminal in the website container using `docker exec -it makeabilitylabwebsite_website_1 bash`. Once inside the bash terminal, run `python manage.py createsuperuser` and follow the instructions. Then you can visit localhost:8571/admin to add content.
+1. Create the superuser. In another terminal, navigate to the project home directory using the `cd` command and open an interactive bash terminal in the website container using `docker exec -it makeabilitylabwebsite_website_1 bash`. If this fails, try `docker exec -it makeabilitylabwebsite-website-1 bash`. Once inside the bash terminal, run `python manage.py createsuperuser` and follow the instructions. Then you can visit localhost:8571/admin to add content.
 
 1. It's also useful to create a mapping between your Linux filesystem in WSL2 and your Windows filesystem. For this, type `Windows + R` to open the Run menu and type: `\\wsl$`. Then, find the Linux installation you're using for the Makeability Lab website (e.g., Ubuntu-18.04) and right-click on that folder, then select `Map Network Drive` and follow the on-screen instructions. By default, it will map to drive `Z:`. So, you can open "This PC" or "My Computer" and see drive `Z:`, which will be the Linux VM.
 
