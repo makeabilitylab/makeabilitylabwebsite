@@ -18,11 +18,21 @@ echo "Django version:"
 python3 -m django --version
 
 echo ""
-echo "User:"
+echo "User (whoami output):"
 whoami
 
+echo ""
+echo "pwd":
+pwd
+
+echo ""
+echo "Directory (la -al) info:"
 ls -al
 
+echo ""
+
+# This is related to the permissions issues I'm having with WSL2 and Docker
+# https://stackoverflow.com/q/69575151/388117
 # setfacl -m u:48:rwx /code
 # chown -R apache /code
 
