@@ -66,6 +66,7 @@ On Windows, [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install) provide
 1. Run `git clone https://github.com/makeabilitylab/makeabilitylabwebsite.git`.
 1. Run `cd makeabilitylabwebsite` to change to he root website folder
 1. Make sure to `chmod 755 docker-entrypoint.sh`
+1. Make sure to `chmod 777 media` (maybe 755 might be ok?)
 1. You must also manually create some directories:
     ```
     mkdir static
