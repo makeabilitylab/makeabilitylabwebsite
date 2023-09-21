@@ -3,8 +3,9 @@ from website.models import Project, Position
 import website.utils.ml_utils as ml_utils 
 from django.shortcuts import render, get_object_or_404, redirect
 from operator import attrgetter
-import time
 
+# For logging
+import time
 import logging
 
 # This retrieves a Python logging instance (or creates it)
@@ -24,7 +25,7 @@ def project(request, project_name):
     :param project_name:
     :return:
     """
-    start_time = time.perf_counter()
+    func_start_time = time.perf_counter()
     project = get_object_or_404(Project, short_name__iexact=project_name)
     all_banners = project.banner_set.all()
     displayed_banners = ml_utils.choose_banners(all_banners)
@@ -117,8 +118,8 @@ def project(request, project_name):
                'photos': photos,
                'debug': settings.DEBUG}
 
-    end_time = time.perf_counter()
-    _logger.debug(f"Rendered '{project.name}' in {end_time - start_time:0.4f} seconds")
+    func_end_time = time.perf_counter()
+    _logger.debug(f"Rendered '{project.name}' in {func_end_time - func_start_time:0.4f} seconds")
 
     # Render is a Django helper function. It combines a given template—in this case project.html—with
     # a context dictionary and returns an HttpResponse object with that rendered text.

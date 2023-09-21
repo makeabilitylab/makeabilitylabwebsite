@@ -4,7 +4,16 @@ import website.utils.ml_utils as ml_utils
 import operator
 from django.shortcuts import render # for render https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
 
+# For logging
+import time
+import logging
+
+# This retrieves a Python logging instance (or creates it)
+_logger = logging.getLogger(__name__)
+
 def people(request):
+    func_start_time = time.perf_counter()
+
     persons = Person.objects.all()
     map_status_to_title_to_people = dict()
     map_status_to_headers = dict()
@@ -54,6 +63,9 @@ def people(request):
                 # who ended most recently are shown first)
                 people_with_title.sort(key=operator.attrgetter('end_date'), reverse=True)
 
+    position_start_time = time.perf_counter()
+
+    # Get a list of all titles
     sorted_titles = Position.get_sorted_titles()
 
     # Professors can't be past members, so deal with this case
@@ -72,7 +84,10 @@ def people(request):
         map_status_to_headers[position]["subHeader"] = "None"
         map_status_to_headers[position]["headerText"] = list()
 
-    # setup headers
+    position_end_time = time.perf_counter()
+    _logger.debug(f"Took {position_end_time - position_start_time:0.4f} seconds to tabulate position roles for {persons.count()} people")
+
+    # setup title headers for webpage
     for status, map_title_to_people in map_status_to_title_to_people.items():
         if status not in map_status_to_headers:
             map_status_to_headers[status] = dict()
@@ -110,6 +125,10 @@ def people(request):
         'banners': displayed_banners,
         'debug': settings.DEBUG
     }
+
+    # People rendering
+    func_end_time = time.perf_counter()
+    _logger.debug(f"Rendered people in {func_end_time - func_start_time:0.4f} seconds")
 
     # Render is a Django helper function. It combines a given template—in this case people.html—with
     # a context dictionary and returns an HttpResponse object with that rendered text.

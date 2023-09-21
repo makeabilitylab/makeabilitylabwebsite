@@ -3,7 +3,16 @@ from website.models import Banner, Publication, Talk, Video, Project, Person, Ne
 import website.utils.ml_utils as ml_utils 
 from django.shortcuts import render # for render https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
 
+# For logging
+import time
+import logging
+
+# This retrieves a Python logging instance (or creates it)
+_logger = logging.getLogger(__name__)
+
 def index(request):
+    func_start_time = time.perf_counter()
+
     news_items_num = 7  # Defines the number of news items that will be selected
     papers_num = 10  # Defines the number of papers which will be selected
     talks_num = 8  # Defines the number of talks which will be selected
@@ -37,6 +46,10 @@ def index(request):
                'videos': videos,
                'projects': projects,
                'debug': settings.DEBUG}
+    
+    # People rendering
+    func_end_time = time.perf_counter()
+    _logger.debug(f"Rendered index in {func_end_time - func_start_time:0.4f} seconds")
 
     # Render is a Django shortcut (aka helper function). It combines a given template—in this case
     # index.html—with a context dictionary and returns an HttpResponse object with that rendered text.
