@@ -66,6 +66,7 @@ On Windows, [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install) provide
 1. Run `git clone https://github.com/makeabilitylab/makeabilitylabwebsite.git`.
 1. Run `cd makeabilitylabwebsite` to change to he root website folder
 1. Make sure to `chmod 755 docker-entrypoint.sh`
+1. Make sure to `chmod 777 media` (maybe 755 might be ok?)
 1. You must also manually create some directories:
     ```
     mkdir static
@@ -82,7 +83,7 @@ On Windows, [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install) provide
 
 1. At this point, you can visit the website at `localhost:8571` as specified in the `docker-compose.yml` file. However, to add content, you need to add an admin users. For this, follow the next step to create a "superuser."
 
-1. Create the superuser. In another terminal, navigate to the project home directory using the `cd` command and open an interactive bash terminal in the website container using `docker exec -it makeabilitylabwebsite_website_1 bash`. Once inside the bash terminal, run `python manage.py createsuperuser` and follow the instructions. Then you can visit localhost:8571/admin to add content.
+1. Create the superuser. In another terminal, navigate to the project home directory using the `cd` command and open an interactive bash terminal in the website container using `docker exec -it makeabilitylabwebsite_website_1 bash`. If this fails, try `docker exec -it makeabilitylabwebsite-website-1 bash`. Once inside the bash terminal, run `python manage.py createsuperuser` and follow the instructions. Then you can visit localhost:8571/admin to add content.
 
 1. It's also useful to create a mapping between your Linux filesystem in WSL2 and your Windows filesystem. For this, type `Windows + R` to open the Run menu and type: `\\wsl$`. Then, find the Linux installation you're using for the Makeability Lab website (e.g., Ubuntu-18.04) and right-click on that folder, then select `Map Network Drive` and follow the on-screen instructions. By default, it will map to drive `Z:`. So, you can open "This PC" or "My Computer" and see drive `Z:`, which will be the Linux VM.
 
@@ -201,4 +202,25 @@ Then the line endings in the shell script are set to CRLF rather than LF (see [S
 
 To fix this, open `docker-entrypoint.sh` in VSCode and set the line endings to LF.
 
+## WSL2
+If you receive a `PermissionError: [Errno 13] Permission denied: '/code/media/debug.log'` error on localhost, see this [StackOverflow post](https://stackoverflow.com/questions/69575151/permissionerror-errno-13-permission-denied-on-windows-with-wsl2-and-docker).
 
+```
+makeabilitylabwebsite-website-1  | ****************** STEP 1/5: docker-entrypoint.sh ************************
+makeabilitylabwebsite-website-1  | 1. Collecting static files
+makeabilitylabwebsite-website-1  | ******************************************
+makeabilitylabwebsite-website-1  | Traceback (most recent call last):
+makeabilitylabwebsite-website-1  |   File "/usr/local/lib/python3.8/logging/config.py", line 563, in configure
+makeabilitylabwebsite-website-1  |     handler = self.configure_handler(handlers[name])
+makeabilitylabwebsite-website-1  |   File "/usr/local/lib/python3.8/logging/config.py", line 744, in configure_handler
+makeabilitylabwebsite-website-1  |     result = factory(**kwargs)
+makeabilitylabwebsite-website-1  |   File "/usr/local/lib/python3.8/logging/handlers.py", line 148, in __init__
+makeabilitylabwebsite-website-1  |     BaseRotatingHandler.__init__(self, filename, mode, encoding, delay)
+makeabilitylabwebsite-website-1  |   File "/usr/local/lib/python3.8/logging/handlers.py", line 55, in __init__
+makeabilitylabwebsite-website-1  |     logging.FileHandler.__init__(self, filename, mode, encoding, delay)
+makeabilitylabwebsite-website-1  |   File "/usr/local/lib/python3.8/logging/__init__.py", line 1147, in __init__
+makeabilitylabwebsite-website-1  |     StreamHandler.__init__(self, self._open())
+makeabilitylabwebsite-website-1  |   File "/usr/local/lib/python3.8/logging/__init__.py", line 1176, in _open
+makeabilitylabwebsite-website-1  |     return open(self.baseFilename, self.mode, encoding=self.encoding)
+makeabilitylabwebsite-website-1  | PermissionError: [Errno 13] Permission denied: '/code/media/debug.log'
+```
