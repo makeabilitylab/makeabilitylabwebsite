@@ -16,7 +16,8 @@
             <div class="overlay-title">
                 {# We now have a new way of looking for if a var exist in the context #}
                 {# {% if page_title %} #}
-                {% if var_exists 'page_title '%}
+                {% var_exists 'page_title' as page_title_exists %}
+                {% if page_title_exists %}
                     {{ page_title }}
                 {% else %}
                     {{ request.path|get_url_page|title }}
