@@ -4,9 +4,15 @@ from django.template.defaultfilters import stringfilter
 import re
 
 from django.template.defaulttags import register
-import re
+
+from website.models import Publication
 
 register = template.Library()
+
+# We use this to generate citation filenames dynamically when downloading citations like .bib
+@register.simple_tag
+def get_pub_filename(pub, file_extension, max_pub_title_length):
+    return Publication.generate_file_name(pub, file_extension, max_pub_title_length)
 
 # From https://stackoverflow.com/questions/8000022/django-template-how-to-look-up-a-dictionary-value-with-a-variable
 @register.filter

@@ -43,6 +43,39 @@
         }
     }
 
+    $.fn.downloadCitation = function (citationFilenameNoExtension) {
+
+        let plainCitationElementList = $(".citation-text");
+        let bibtexElementList = $(".bibtex-text");
+        
+        if(plainCitationElementList.length >= 0 && bibtexElementList.length >= 0){
+            let citationText = plainCitationElementList[0].innerText;
+            let filenameExtension = "-Citation.txt";
+            if(plainCitationElementList[0].style.display === 'none'){
+                citationText = bibtexElementList[0].innerText;
+                filenameExtension = "-Citation.bib";
+            }
+
+            let filename = citationFilenameNoExtension + filenameExtension;
+
+            console.log("Downloading..." + citationText);
+            console.log("Citation filename: " + filename);
+            
+            // Download code modified from:
+            // https://stackoverflow.com/a/18197341/388117
+            let element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(citationText));
+            element.setAttribute('download', filename);
+
+            element.style.display = 'none';
+            document.body.appendChild(element);
+
+            element.click();
+
+            document.body.removeChild(element);
+        }
+    }
+
     $.fn.citationclick = function () {
         console.log("citation click")
         $(".citation-text").css('display', 'block');

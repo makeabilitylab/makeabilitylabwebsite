@@ -304,18 +304,14 @@ class Publication(models.Model):
     def __str__(self):
         return self.title
 
-
-def update_file_name_publication(sender, instance, action, reverse, **kwargs):
-    # Reverse: Indicates which side of the relation is updated (i.e., if it is the forward or reverse relation that is being modified)
-    # Action: A string indicating the type of update that is done on the relation.
-    # post_add: Sent after one or more objects are added to the relation
-    if action == 'post_add' and not reverse:
-        initial_path = instance.pdf_file.path
+    @staticmethod
+    def generate_file_name(instance, filename_extension = ".pdf", max_pub_title_length = -1):
+        """Generates a filename for this publication instance"""
         person = instance.get_person()
         last_name = person.last_name
         year = instance.date.year
 
-        # Remove spaces non alphanumeric characters
+        # Remove spaces and non alphanumeric characters
         pub_title = ''.join(x for x in instance.title.title() if not x.isspace())
         pub_title = ''.join(e for e in pub_title if e.isalnum())
 
@@ -330,16 +326,31 @@ def update_file_name_publication(sender, instance, action, reverse, **kwargs):
         if not forum[-1].isdigit():
             forum = forum + str(year)
 
+        # Only get the first N characters of the string if max_pub_title_length set
+        if max_pub_title_length > 0 and max_pub_title_length < len(pub_title):
+            pub_title = pub_title[0:max_pub_title_length]
+
         # Convert metadata into a filename
-        new_filename = last_name + '_' + pub_title + '_' + forum + '.pdf'
+        new_filename = last_name + '_' + pub_title + '_' + forum + filename_extension
 
         # Use Django helper function to ensure a clean filename
         new_filename = get_valid_filename(new_filename)
+
+        return new_filename
+
+def update_file_name_publication(sender, instance, action, reverse, **kwargs):
+    # Reverse: Indicates which side of the relation is updated (i.e., if it is the forward or reverse relation that is being modified)
+    # Action: A string indicating the type of update that is done on the relation.
+    # post_add: Sent after one or more objects are added to the relation
+    if action == 'post_add' and not reverse:
+        
+        new_filename = generate_file_name(instance)
 
         # Change the path of the pdf file to point to the new file name
         instance.pdf_file.name = os.path.join(Publication.UPLOAD_DIR, new_filename)
         new_path = os.path.join(settings.MEDIA_ROOT, instance.pdf_file.name)
         
+        initial_path = instance.pdf_file.path
         # Actually rename the existing file (aka initial_path) but only if it exists (it should!)
         if os.path.exists(initial_path):
             os.rename(initial_path, new_path)
