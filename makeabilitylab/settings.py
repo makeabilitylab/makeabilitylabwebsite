@@ -20,7 +20,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Load a ConfigParser object from a file called config.ini at the base level
 # of the django project.
 config = ConfigParser()
-config.read(os.path.join(BASE_DIR, 'config.ini'))
+
+if "DJANGO_ENV" in os.environ:
+    # We set this variable in makeabilitylabwebsite/rebuildanddeploy.sh via the webhook
+    # it should be set to DEBUG if on the debug environment
+    if os.environ.get('DJANGO_ENV') == 'TEST':
+       config.read(os.path.join(BASE_DIR, 'config-test.ini'))
+    else:
+       config.read(os.path.join(BASE_DIR, 'config.ini'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
@@ -34,12 +41,7 @@ else:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # we will default to True if not overriden in the config file
-if "DJANGO_ENV" in os.environ:
-    # We set this variable in makeabilitylabwebsite/rebuildanddeploy.sh via the webhook
-    # it should be set to DEBUG if on the debug environment
-    if os.environ.get('DJANGO_ENV') == 'TEST':
-       DEBUG = True 
-else if config.has_option('Django', 'DEBUG'):
+if config.has_option('Django', 'DEBUG'):
     DEBUG = config.getboolean('Django', 'DEBUG')
 else:
     DEBUG = True
