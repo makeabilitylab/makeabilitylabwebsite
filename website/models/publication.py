@@ -344,7 +344,7 @@ def update_file_name_publication(sender, instance, action, reverse, **kwargs):
     # post_add: Sent after one or more objects are added to the relation
     if action == 'post_add' and not reverse:
         
-        new_filename = generate_file_name(instance)
+        new_filename = Publication.generate_file_name(instance)
 
         # Change the path of the pdf file to point to the new file name
         instance.pdf_file.name = os.path.join(Publication.UPLOAD_DIR, new_filename)
