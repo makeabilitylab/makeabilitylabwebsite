@@ -6,6 +6,9 @@ from website.admin_list_filters import PositionRoleListFilter, PositionTitleList
 import django
 from django import forms
 
+# so we can print debug
+from django.conf import settings
+
 from django.http import HttpResponse
 from datetime import datetime
 from django.template import loader
@@ -267,4 +270,6 @@ admin.site.register(ProjectUmbrella, ProjectUmbrellaAdmin)
 admin.site.register(Sponsor)
 
 # For modifying more on the front admin landing page, see https://medium.com/django-musings/customizing-the-django-admin-site-b82c7d325510
-admin.site.index_title = "Makeability Lab Admin. Django version: " + django.get_version() + " | Makeability Lab Website Version: 1.0.11 (redirect)"
+admin.site.index_title = f"Makeability Lab Admin. Django version: {django.get_version()} \
+    Makeability Lab Website Version: 1.0.11 (redirect) | DEBUG MODE={settings.DEBUG}\
+    INTERNAL_IPS={settings.INTERNAL_IPS}"
