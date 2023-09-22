@@ -21,10 +21,12 @@ def people(request):
     map_status_to_num_people = dict()
 
     latest_position_start_time = time.perf_counter()
+    non_null_position_count = 0
     for person in persons:
         position = person.get_latest_position()
 
         if position is not None:
+            non_null_position_count = non_null_position_count + 1
             title = position.title
             if "Professor" in position.title:  # necessary to collapse all prof categories to 1
                 title = "Professor"
@@ -48,7 +50,7 @@ def people(request):
             map_status_to_title_to_people[member_status_name][title].append(position)
 
     latest_position_end_time = time.perf_counter()
-    _logger.debug(f"Took {latest_position_end_time - latest_position_start_time:0.4f} seconds to get the latest positions for {persons.count()} people")
+    _logger.debug(f"Took {latest_position_end_time - latest_position_start_time:0.4f} seconds to get the latest positions for {persons.count()} people (and {non_null_position_count} had positions)")
 
     # now go through these dicts and sort people by dates
     sort_people_start_time = time.perf_counter()

@@ -19,7 +19,7 @@ Including another URLconf
 # See: https://stackoverflow.com/a/70319607
 # from django.conf.urls import include, url
 
-from django.urls import include, re_path
+from django.urls import include, re_path, path
 from django.contrib import admin
 from django.conf.urls.static import static
 from django.views.static import serve
@@ -30,6 +30,7 @@ urlpatterns = [
     re_path(r'', include('website.urls')),
     re_path(r'^admin/', admin.site.urls),
     re_path(r'^ckeditor/', include('ckeditor_uploader.urls')),
+    path("__debug__/", include("debug_toolbar.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # serving media files only on debug mode

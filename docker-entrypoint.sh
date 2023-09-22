@@ -30,6 +30,10 @@ echo "Directory (la -al) info:"
 ls -al
 
 echo ""
+echo "Directory info for media (la -al media):"
+ls -al media
+
+echo ""
 
 # This is related to the permissions issues I'm having with WSL2 and Docker
 # https://stackoverflow.com/q/69575151/388117

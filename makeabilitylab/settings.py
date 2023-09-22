@@ -123,6 +123,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     # To use IPython-enabled Django shell through Django extensions
     # pip3 install django_extensions
     # python manage.py shell_plus
@@ -136,10 +137,32 @@ INSTALLED_APPS = [
     
     # Removed sortedm2m_filter_horizontal_widget as incompatible with Django 4
     # 'sortedm2m_filter_horizontal_widget',
-    'rest_framework'
+    'rest_framework',
+
+    # Adding django-debug-toolbar, which is recommended by Django
+    # https://docs.djangoproject.com/en/4.2/topics/performance/#performance-benchmarking
+    # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html
+    "debug_toolbar",
 ]
 
+# JEF: Added 9/22/2023
+# The Debug Toolbar is shown only if your IP address is listed in Django’s INTERNAL_IPS setting.
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
+if DEBUG:
+    import socket  # only if you haven't already imported this
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
+
 MIDDLEWARE = [
+    # JEF (9/22/2023) The order of MIDDLEWARE is important. You should include the Debug Toolbar middleware as 
+    # early as possible in the list. However, it must come after any other middleware that 
+    # encodes the response’s content, such as GZipMiddleware.
+    # See: https://django-debug-toolbar.readthedocs.io/en/latest/installation.html
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
