@@ -71,8 +71,8 @@
                       ">Citation</a>
                     </span>
                 {% if pub.code_repo_url %}| <a href="{{ pub.code_repo_url }}">Code</a>{% endif %}
-                {% if pub.talk.pdf_file %}| <a href="../../media/{{ pub.talk.pdf_file }}">Talk</a>{% endif %}
-                {% if pub.poster.pdf_file %}| <a href="../../media/{{ pub.poster.pdf_file }}">Poster</a>{% endif %}
+                {% if pub.talk and pub.talk.pdf_file %}| <a href="../../media/{{ pub.talk.pdf_file }}">Talk</a>{% endif %}
+                {% if pub.poster and pub.poster.pdf_file %}| <a href="../../media/{{ pub.poster.pdf_file }}">Poster</a>{% endif %}
 
                 {% for project in pub.projects.all %}
                     {% if forloop.first and pub.projects.all|length > 0 %}| {% endif %}
@@ -175,8 +175,8 @@
                       ">Citation</a>
                     </span>
                     {% if pub.code_repo_url %}| <a href="{{ pub.code_repo_url }}">Code</a>{% endif %}
-                    {% if pub.talk.pdf_file %}| <a href="../../media/{{ pub.talk.pdf_file }}">Talk</a>{% endif %}
-                    {% if pub.poster.pdf_file %}| <a href="../../media/{{ pub.poster.pdf_file }}">Poster</a>{% endif %}
+                    {% if pub.talk and pub.talk.pdf_file %}| <a href="../../media/{{ pub.talk.pdf_file }}">Talk</a>{% endif %}
+                    {% if pub.poster and pub.poster.pdf_file %}| <a href="../../media/{{ pub.poster.pdf_file }}">Poster</a>{% endif %}
 
                     {% for project in pub.projects.all %}
                         {% if forloop.first and pub.projects.all|length > 0 %}| {% endif %}
