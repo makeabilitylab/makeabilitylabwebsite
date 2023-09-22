@@ -6,6 +6,11 @@ from django.urls import re_path
 from . import views
 from rest_framework.urlpatterns import format_suffix_patterns
 
+# Need to import admin because we now have "lazy" loading where
+# we try to go to a project page if someone puts http://makeabilitylab.cs.uw.edu/soundwatch
+# then website will try to load http://makeabilitylab.cs.uw.edu/project/soundwatch 
+from django.contrib import admin
+
 app_name = 'website'
 urlpatterns = [
     re_path(r"^admin/", admin.site.urls),
