@@ -224,3 +224,24 @@ makeabilitylabwebsite-website-1  |   File "/usr/local/lib/python3.8/logging/__in
 makeabilitylabwebsite-website-1  |     return open(self.baseFilename, self.mode, encoding=self.encoding)
 makeabilitylabwebsite-website-1  | PermissionError: [Errno 13] Permission denied: '/code/media/debug.log'
 ```
+
+Interestingly, after fixing this by doing the following (per the instructions above)
+
+```
+chmod 777 media
+mkdir static
+chmod -R 777 static/
+mkdir website/migrations
+chmod -R 777 website/
+```
+
+I had to rerun `docker build . -t make_lab` and that broke things again.
+
+So, I ended up opening up a new terminal inside the Docker container as root and resetting the directory permissions (from [Stackoverflow](https://stackoverflow.com/a/49529946/388117)):
+
+```
+> docker exec -u root -t -i container_id /bin/bash
+root@c6ee57d8d824:/code# chmod -R 777 media
+```
+
+And that changed media from `drwxr-xr-x  2 root root  4096 Sep 15 23:36 media` to `drwxrwxrwx  2 root root  4096 Sep 15 23:36 media`
