@@ -20,6 +20,7 @@ def people(request):
     map_header_text_to_header_name = dict()
     map_status_to_num_people = dict()
 
+    latest_position_start_time = time.perf_counter()
     for person in persons:
         position = person.get_latest_position()
 
@@ -46,7 +47,11 @@ def people(request):
 
             map_status_to_title_to_people[member_status_name][title].append(position)
 
+    latest_position_end_time = time.perf_counter()
+    _logger.debug(f"Took {latest_position_end_time - latest_position_start_time:0.4f} seconds to get the latest positions for {persons.count()} people")
+
     # now go through these dicts and sort people by dates
+    sort_people_start_time = time.perf_counter()
     for status, map_title_to_people in map_status_to_title_to_people.items():
         for title, people_with_title in map_title_to_people.items():
             if "Current" in status:
@@ -62,6 +67,9 @@ def people(request):
                 # sort past members and collaborators reverse chronologically by end date (so people
                 # who ended most recently are shown first)
                 people_with_title.sort(key=operator.attrgetter('end_date'), reverse=True)
+
+    sort_people_end_time = time.perf_counter()
+    _logger.debug(f"Took {sort_people_end_time - sort_people_start_time:0.4f} seconds to sort people by position and date")
 
     position_start_time = time.perf_counter()
 
