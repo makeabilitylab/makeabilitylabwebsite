@@ -244,4 +244,10 @@ So, I ended up opening up a new terminal inside the Docker container as root and
 root@c6ee57d8d824:/code# chmod -R 777 media
 ```
 
+Then, from Linux (Ubuntu using WSL2), I had to copy over the media directory:
+
+```
+> docker cp media c6ee57d8d824:/code
+```
+
 And that changed media from `drwxr-xr-x  2 root root  4096 Sep 15 23:36 media` to `drwxrwxrwx  2 root root  4096 Sep 15 23:36 media`
