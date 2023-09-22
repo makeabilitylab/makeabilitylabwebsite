@@ -9,6 +9,19 @@ from website.models import Publication
 
 register = template.Library()
 
+# This helps remove the "KeyError" from our log files when there is no variable in the template
+# context. For example, we use to look for `page_title` and by {% if page_title %} but
+# if page_title didn't exist, it would create a log entry
+# See: https://stackoverflow.com/a/65709948
+@register.simple_tag(takes_context=True)
+def var_exists(context, var_name):
+    dicts = context.dicts  # array of dicts
+    if dicts:
+        for d in dicts:
+            if var_name in d:
+                return True
+    return False
+
 # We use this to generate citation filenames dynamically when downloading citations like .bib
 @register.simple_tag
 def get_pub_filename(pub, file_extension, max_pub_title_length):
