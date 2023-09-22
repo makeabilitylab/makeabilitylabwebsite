@@ -62,13 +62,13 @@
     <div id="content" class="container" data-spy="scroll" data-target="#navbar-scroll" data-offset="50" style="width:100%; max-width: 1170px">
         <div class="navbar navbar-filter" role="navigation">
             <ol class="navbar-right breadcrumb">
-                {% if current_members %}
+                {% if map_status_to_headers|get_item:"Current Member"|get_item:"headerText"|length > 0 %}
                     <li><a href="#currentteam" class="scroll">Current Team</a></li> {% endif %}
-                {% if alumni_members %}
+                {% if map_status_to_headers|get_item:"Past Member"|get_item:"headerText"|length > 0 %}
                     <li><a href="#alumni" class="scroll">Alumni</a></li> {% endif %}
-                {% if cur_collaborators %}
+                {% if map_status_to_headers|get_item:"Current Collaborator"|get_item:"headerText"|length > 0 %}
                     <li><a href="#collaborators" class="scroll">Collaborators</a></li> {% endif %}
-                {% if past_collaborators %}
+                {% if map_status_to_headers|get_item:"Past Collaborator"|get_item:"headerText"|length > 0 %}
                     <li><a href="#pastcollaborators" class="scroll">Past Collaborators</a></li> {% endif %}
             </ol>
         </div>
