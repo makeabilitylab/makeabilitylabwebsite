@@ -33,8 +33,13 @@ else:
     SECRET_KEY = 'pe)-#st8rk!pomy!_1ha7=cpypp_(8%1xqmtw%!u@kw-f5&w^e' 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#  we will default to True if not overriden in the config file
-if config.has_option('Django', 'DEBUG'):
+# we will default to True if not overriden in the config file
+if "DJANGO_ENV" in os.environ:
+    # We set this variable in makeabilitylabwebsite/rebuildanddeploy.sh via the webhook
+    # it should be set to DEBUG if on the debug environment
+    if os.environ.get('DJANGO_ENV') == 'TEST':
+       DEBUG = True 
+else if config.has_option('Django', 'DEBUG'):
     DEBUG = config.getboolean('Django', 'DEBUG')
 else:
     DEBUG = True
@@ -60,7 +65,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 # See also: https://stackoverflow.com/a/70326426
 CSRF_TRUSTED_ORIGINS = ['https://*.cs.washington.edu']
 
-# TODO: this seems to work fine on Docker but breaks localhost dev (without docker)
 # See: https://docs.djangoproject.com/en/2.0/topics/logging/
 # https://lincolnloop.com/blog/django-logging-right-way/
 # For the log format, see: https://stackoverflow.com/a/26276689/388117

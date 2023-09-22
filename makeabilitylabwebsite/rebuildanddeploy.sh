@@ -6,6 +6,9 @@ cd ../
 #if we're on a test system, lets mount the test volume
 if [[ $(hostname -s) == *"test"* ]] ; then
    sed -i 's,makelab/www:,makelab/www-test:,' docker-compose.yml
+   export DJANGO_ENV=TEST
+else
+   export DJANGO_ENV=PROD
 fi
 
 #First, build the website image
