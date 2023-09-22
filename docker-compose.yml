@@ -24,10 +24,6 @@ services:
       - '127.0.0.1:8571:8000'
     volumes:
       - .:/code
-      # you must comment out the following line for local host development
-      - /cse/web/research/makelab/www:/code/media
-      - /cse/web/research/makelab/secret/config.ini:/code/config.ini # for loading vars into ConfigParser in Django
-      - /cse/web/research/makelab/secret/config-test.ini:/code/config-test.ini # for loading vars into ConfigParser in Django
     depends_on:
       - db
     command: ["./docker-entrypoint.sh", "db", "python", "manage.py"]
