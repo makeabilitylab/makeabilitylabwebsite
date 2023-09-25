@@ -1,9 +1,12 @@
 # All Dockerfiles must start with a 'FROM' instruction, which specifies a base image
 # See: https://docs.docker.com/engine/reference/builder/#format
+#
 # Note, some online sources say that you should put FROM django here (e.g., https://runnable.com/docker/python/dockerize-your-django-application)
 # but, in fact, you should NOT do this according to the official docs (as this approach has been deprecated). 
 # See: https://hub.docker.com/_/django/
-FROM python:3.8
+# 
+# So, instead, we start from an official Docker-created base image of Python.
+FROM python:3.11.5
 
 # Echo out the start of the Dockerfile
 RUN echo "Running the Makeability Lab Dockerfile!"
@@ -41,7 +44,7 @@ WORKDIR /code
 # of Docker where commits are cheap and containers can be created from any point in an image’s history, much like source control.
 # See: https://docs.docker.com/engine/reference/builder/#run
 COPY requirements.txt /code/
-RUN pip3.8 install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 ## TEMP related to: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/866
 #RUN pip install django-ckeditor

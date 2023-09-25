@@ -9,6 +9,9 @@ echo "2. Applies database migrations"
 echo "3. Starts server"
 echo "******************************************"
 
+echo "But first, let's print out some environment-related contexts to ensure we're all on the same page:"
+echo ""
+
 echo "Python info:"
 which python
 python --version
@@ -16,6 +19,10 @@ python --version
 echo ""
 echo "Django version:"
 python3 -m django --version
+
+echo ""
+echo "pip3 list:"
+pip3 list
 
 echo ""
 echo "User (whoami output):"
