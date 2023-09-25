@@ -110,7 +110,7 @@ TIP: Save time by only adding the content needed to fix the issue you are workin
 # Test and Production Servers
 We have two UW servers hosting the ML website: 
 1. **Test server:** https://makeabilitylab-test.cs.washington.edu
-2. **Production server:** https://makeabilitylab.cs.washington.edu (production).
+2. **Production server:** https://makeabilitylab.cs.washington.edu
 
 They have different PostgresSQL and file storage backends so adding content to -test will _not_ affect the production server and vice versa. 
 
@@ -175,4 +175,4 @@ We use the following process for contributing code:
 Tasks that include changes to the user/admin interface should always include mockups. This is so we can collectively agree on how we want the site to look. A good example is [here](https://github.com/jonfroehlich/makeabilitylabwebsite/issues/287). Pull requests should also include before/after images, when applicable.
 
 # Troubleshooting
-See our Troubleshooting wiki.
+See our [Troubleshooting wiki](https://github.com/makeabilitylab/makeabilitylabwebsite/wiki/Troubleshooting).
