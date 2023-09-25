@@ -108,7 +108,11 @@ NOTE: If you haven't created a superuser yet, you will need to do so through ter
 TIP: Save time by only adding the content needed to fix the issue you are working on.
 
 # Test and Production Servers
-We have two UW servers hosting the ML website: https://makeabilitylab-test.cs.washington.edu (test) and https://makeabilitylab.cs.washington.edu (production). They have different PostgresSQL backends so adding content to -test will not affect the production server and vice versa. 
+We have two UW servers hosting the ML website: 
+1. **Test server:** https://makeabilitylab-test.cs.washington.edu
+2. **Production server:** https://makeabilitylab.cs.washington.edu (production).
+
+They have different PostgresSQL and file storage backends so adding content to -test will _not_ affect the production server and vice versa. 
 
 # Deploying Code to UW Servers
 The Makeability Lab website auto-deploys from GitHub to the department's Docker infrastructure using webhooks:
@@ -147,7 +151,9 @@ Because the log files are so large, use the `tail` command to view the end of th
 You can also view `buildlog.text`, `httpd-access.log`, and `httpd-error.log` at https://makeabilitylab-test.cs.washington.edu/logs/ and https://makeabilitylab.cs.washington.edu/logs/.
 
 # Makeability Lab Data
-There are two types of Makeability Lab data: (i) uploaded files like PDFs, PowerPoint files, images, etc. and (ii) data that goes into the PostgreSQL database. Although we have both a test (makeability-test.cs) and a production server (makeability.cs), they are linked to the same backend data for both (i) and (ii).
+There are two types of Makeability Lab data:
+1. uploaded files like PDFs, PowerPoint files, images, etc. and
+2. data that goes into the PostgreSQL database.
 
 ## Uploaded Files
 All data/files uploaded to the Makeability Lab website via the admin interface (e.g., talks, publications) goes into the `/media` folder, which is mapped to:
@@ -169,85 +175,4 @@ We use the following process for contributing code:
 Tasks that include changes to the user/admin interface should always include mockups. This is so we can collectively agree on how we want the site to look. A good example is [here](https://github.com/jonfroehlich/makeabilitylabwebsite/issues/287). Pull requests should also include before/after images, when applicable.
 
 # Troubleshooting
-
-## Cannot start service website: OCI runtime create failed
-If you receive an error like this
-
-```
-jonfroehlich@jonfhome:~/git/makeabilitylabwebsite$ docker-compose up
-makeabilitylabwebsite_db_1 is up-to-date
-Starting makeabilitylabwebsite_website_1 ... error
-
-ERROR: for makeabilitylabwebsite_website_1  Cannot start service website: OCI runtime create failed: container_linux.go:380: starting container process caused: exec: "./docker-entrypoint.sh": permission denied: unknown
-
-ERROR: for website  Cannot start service website: OCI runtime create failed: container_linux.go:380: starting container process caused: exec: "./docker-entrypoint.sh": permission denied: unknown
-ERROR: Encountered errors while bringing up the project.
-```
-
-Then you need to update some permissions on your configuration files. Try:
-
-```
-chmod 755 docker-entrypoint.sh
-```
-
-## standard_init_linux.go:228: exec user process caused: no such file or directory
-
-If you receive an error like:
-
-```
-website_1  | standard_init_linux.go:228: exec user process caused: no such file or directory
-```
-
-Then the line endings in the shell script are set to CRLF rather than LF (see [StackOverflow post](https://stackoverflow.com/a/52665687/388117)). 
-
-To fix this, open `docker-entrypoint.sh` in VSCode and set the line endings to LF.
-
-## WSL2
-If you receive a `PermissionError: [Errno 13] Permission denied: '/code/media/debug.log'` error on localhost, see this [StackOverflow post](https://stackoverflow.com/questions/69575151/permissionerror-errno-13-permission-denied-on-windows-with-wsl2-and-docker).
-
-```
-makeabilitylabwebsite-website-1  | ****************** STEP 1/5: docker-entrypoint.sh ************************
-makeabilitylabwebsite-website-1  | 1. Collecting static files
-makeabilitylabwebsite-website-1  | ******************************************
-makeabilitylabwebsite-website-1  | Traceback (most recent call last):
-makeabilitylabwebsite-website-1  |   File "/usr/local/lib/python3.8/logging/config.py", line 563, in configure
-makeabilitylabwebsite-website-1  |     handler = self.configure_handler(handlers[name])
-makeabilitylabwebsite-website-1  |   File "/usr/local/lib/python3.8/logging/config.py", line 744, in configure_handler
-makeabilitylabwebsite-website-1  |     result = factory(**kwargs)
-makeabilitylabwebsite-website-1  |   File "/usr/local/lib/python3.8/logging/handlers.py", line 148, in __init__
-makeabilitylabwebsite-website-1  |     BaseRotatingHandler.__init__(self, filename, mode, encoding, delay)
-makeabilitylabwebsite-website-1  |   File "/usr/local/lib/python3.8/logging/handlers.py", line 55, in __init__
-makeabilitylabwebsite-website-1  |     logging.FileHandler.__init__(self, filename, mode, encoding, delay)
-makeabilitylabwebsite-website-1  |   File "/usr/local/lib/python3.8/logging/__init__.py", line 1147, in __init__
-makeabilitylabwebsite-website-1  |     StreamHandler.__init__(self, self._open())
-makeabilitylabwebsite-website-1  |   File "/usr/local/lib/python3.8/logging/__init__.py", line 1176, in _open
-makeabilitylabwebsite-website-1  |     return open(self.baseFilename, self.mode, encoding=self.encoding)
-makeabilitylabwebsite-website-1  | PermissionError: [Errno 13] Permission denied: '/code/media/debug.log'
-```
-
-Interestingly, after fixing this by doing the following (per the instructions above)
-
-```
-chmod 777 media
-mkdir static
-chmod -R 777 static/
-mkdir website/migrations
-chmod -R 777 website/
-```
-
-I had to rerun `docker build . -t make_lab` and that broke things again.
-
-So, I ended up opening up a new terminal inside the Docker container as root and resetting the directory permissions (from [Stackoverflow](https://stackoverflow.com/a/49529946/388117)):
-
-```
-> docker exec -u root -t -i container_id /bin/bash
-root@c6ee57d8d824:/code# chmod -R 777 media
-```
-
-Then, from Linux (Ubuntu using WSL2), I had to copy over the media directory:
-
-```
-> docker cp media c6ee57d8d824:/code
-```
-
-And that changed media from `drwxr-xr-x  2 root root  4096 Sep 15 23:36 media` to `drwxrwxrwx  2 root root  4096 Sep 15 23:36 media`
+See our Troubleshooting wiki.
