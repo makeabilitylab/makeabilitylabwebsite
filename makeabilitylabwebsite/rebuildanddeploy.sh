@@ -5,14 +5,11 @@ cd ../
 
 #if we're on a test system, lets mount the test volume
 if [[ $(hostname -s) == *"test"* ]] ; then
-   sed -i 's,makelab/www:,makelab/www-test:,' docker-compose.yml
    export DJANGO_ENV=TEST
+   docker-compose -f docker-compose.yml -f docker-compose-test.yml build website
+   docker-compose -f docker-compose.yml -f docker-compose-test.yml up -d
 else
    export DJANGO_ENV=PROD
+   docker-compose -f docker-compose.yml -f docker-compose-prod.yml build website
+   docker-compose -f docker-compose.yml -f docker-compose-prod.yml up -d
 fi
-
-#First, build the website image
-docker-compose build website
-
-#second bring up any containers that are down, recreating any that have a newer image.
-docker-compose up -d
