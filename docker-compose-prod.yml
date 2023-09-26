@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  website:    
+  environment:
+      - DJANGO_ENV=PROD
+    volumes:
+      - /cse/web/research/makelab/www:/code/media
+      - /cse/web/research/makelab/secret/config.ini:/code/config.ini # for loading vars into ConfigParser in Django
