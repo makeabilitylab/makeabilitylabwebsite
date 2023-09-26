@@ -21,9 +21,11 @@ def member(request, member_id):
     publications = person.publication_set.order_by('-date')
     talks = person.talk_set.order_by('-date')
     project_roles = person.projectrole_set.order_by('start_date')
-    projects = person.get_projects()
+    projects = person.get_projects
 
     # filter projects to those that have a thumbnail and have been published
+    # TODO: might consider moving this to ml_utils so we have consistent determination
+    # of what projects to show publicly
     filtered_projects = list()
     for proj in projects:
         if proj.gallery_image is not None and proj.has_publication():

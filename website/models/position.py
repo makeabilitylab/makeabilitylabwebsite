@@ -158,7 +158,8 @@ class Position(models.Model):
 
     def is_professor(self):
         """Returns true if professor"""
-        return self.title == Position.FULL_PROF or self.title == Position.ASSOCIATE_PROF or self.title == Position.ASSISTANT_PROF
+        return self.title == Position.FULL_PROF or self.title == Position.ASSOCIATE_PROF \
+            or self.title == Position.ASSISTANT_PROF
 
     def is_grad_student(self):
         """Returns true if grad student"""

@@ -2,11 +2,14 @@ from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_save, m2m_changed, post_delete
 from django.core.files import File
+import website.utils.fileutils as ml_fileutils
 
-import os
+# For caching properties, see: https://docs.djangoproject.com/en/4.2/ref/utils/#django.utils.functional.cached_property
+from django.utils.functional import cached_property 
+
+
 import re
 from datetime import date, datetime, timedelta
-from random import choice
 
 from image_cropping import ImageRatioField
 
@@ -53,9 +56,10 @@ class Person(models.Model):
     cropping = ImageRatioField('image', '245x245', size_warning=True)
     easter_egg_crop = ImageRatioField('easter_egg', '245x245', size_warning=True)
 
+    @cached_property
     def get_current_title(self):
-        """Returns the title for person's current position"""
-        latest_position = self.get_latest_position()
+        """Returns the title for person's current position. A cached property."""
+        latest_position = self.get_latest_position
         if latest_position is not None:
             return latest_position.title
         else:
@@ -63,17 +67,19 @@ class Person(models.Model):
 
     get_current_title.short_description = "Title"
 
+    @cached_property
     def get_current_title_index(self):
-        """Returns the title index for person's current position"""
-        latest_position = self.get_latest_position()
+        """Returns the title index for person's current position. A cached property."""
+        latest_position = self.get_latest_position
         if latest_position is not None:
             return latest_position.get_title_index()
         else:
             return Position.TITLE_ORDER_MAPPING[Position.UNKNOWN]
 
+    @cached_property
     def get_current_department(self):
-        """Returns current department for person"""
-        latest_position = self.get_latest_position()
+        """Returns current department for person. A cached property."""
+        latest_position = self.get_latest_position
         if latest_position is not None:
             return latest_position.department
         else:
@@ -81,9 +87,10 @@ class Person(models.Model):
 
     get_current_title.short_description = "Department"
 
+    @cached_property
     def get_current_school(self):
-        """Returns current school for person"""
-        latest_position = self.get_latest_position()
+        """Returns current school for person. A cached property."""
+        latest_position = self.get_latest_position
         if latest_position is not None:
             return latest_position.school
         else:
@@ -91,9 +98,10 @@ class Person(models.Model):
 
     get_current_school.short_description = "School"
 
+    @cached_property
     def get_current_role(self):
-        """Returns current role for person"""
-        latest_position = self.get_latest_position()
+        """Returns current role for person. A cached property."""
+        latest_position = self.get_latest_position
         if latest_position is not None:
             return latest_position.role
         else:
@@ -101,9 +109,10 @@ class Person(models.Model):
 
     get_current_role.short_description = "Role"
 
+    @cached_property
     def get_time_in_current_position(self):
-        """Returns time in current position (as a timedelta object)"""
-        latest_position = self.get_latest_position()
+        """Returns time in current position (as a timedelta object). A cached property."""
+        latest_position = self.get_latest_position
         if latest_position is not None:
             return latest_position.get_time_in_this_position()
         else:
@@ -111,32 +120,36 @@ class Person(models.Model):
 
     get_time_in_current_position.short_description = "Time in Current Position"
 
+    @cached_property
     def is_professor(self):
-        """Returns true if a professor in current position"""
-        latest_position = self.get_latest_position()
+        """Returns true if a professor in current position. A cached property."""
+        latest_position = self.get_latest_position
         if latest_position is not None:
             return latest_position.is_professor()
         else:
             return False
 
+    @cached_property
     def is_grad_student(self):
-        """Returns true if a grad student in current position"""
-        latest_position = self.get_latest_position()
+        """Returns true if a grad student in current position. A cached property."""
+        latest_position = self.get_latest_position
         if latest_position is not None:
             return latest_position.is_grad_student()
         else:
             return False
 
+    @cached_property
     def is_active(self):
-        """Returns True is person is current member of lab or current collaborator"""
+        """Returns True is person is current member of lab or current collaborator. A cached property."""
         # print(self.get_full_name() + " is active? " + str(self.is_current_member()) + " " +
         # str(self.is_current_collaborator()))
         return self.is_current_member() or self.is_current_collaborator()
 
     is_active.short_description = "Is Active?"
 
+    @cached_property
     def get_total_time_in_role(self, role):
-        """Returns the total time as in the specified role across all positions"""
+        """Returns the total time as in the specified role across all positions. A cached property."""
         totalTimeInRole = timedelta(0)
         for position in self.position_set.all():
             if position.role == role:
@@ -145,46 +158,50 @@ class Person(models.Model):
 
     get_total_time_in_role.short_description = "Total Time In Role"
 
+    @cached_property
     def get_total_time_as_member(self):
-        """Returns the total time as a member across all positions"""
+        """Returns the total time as a member across all positions. A cached property."""
         return self.get_total_time_in_role(Position.MEMBER)
 
     get_total_time_as_member.short_description = "Total Time As Member"
 
+    @cached_property
     def is_current_member(self):
         """Returns True if person is current member of the lab. False otherwise"""
-        latest_position = self.get_latest_position()
+        latest_position = self.get_latest_position
         if latest_position is not None:
             return latest_position.is_current_member()
         else:
             return False
 
+    @cached_property
     def is_alumni_member(self):
-        """Returns True if person is an alumni member of the lab. False otherwise"""
-        is_alumni_member = False
+        """
+        Returns True if person is an alumni member of the lab. False otherwise. 
+        Note that some members of our lab have been alumni and are also current members
+        That is, they may have started as high school students then left the lab
+        then returned as a grad student. A cached property."""
+        
+        # Check all previous positions
         for position in self.position_set.all():
             if position.is_member() is True:
-                is_alumni_member = True
+                return True
 
-        latest_position = self.get_latest_position()
-        if latest_position is not None:
-            if latest_position.is_current_member():
-                is_alumni_member = False
+        return False
 
-        return is_alumni_member
-
+    @cached_property
     def is_current_collaborator(self):
-        """Returns True if person is current collaborator of the lab. False otherwise"""
-        latest_position = self.get_latest_position()
+        """Returns True if person is current collaborator of the lab. False otherwise. A cached property."""
+        latest_position = self.get_latest_position
         if latest_position is not None:
-            # print('Checkpoint 1: ' + str(latest_position.is_current_collaborator()))
             return latest_position.is_current_collaborator()
         else:
             return False
 
+    @cached_property
     def is_past_collaborator(self):
-        """Returns True if person is a past collaborator of the lab. False otherwise"""
-        latest_position = self.get_latest_position()
+        """Returns True if person is a past collaborator of the lab. False otherwise. A cached property."""
+        latest_position = self.get_latest_position
         if latest_position is not None:
             return latest_position.is_past_collaborator()
         else:
@@ -221,16 +238,19 @@ class Person(models.Model):
 
             return next_position
 
+    @cached_property
     def get_latest_position(self):
-        """Gets the latest Position for the person or None if none exists"""
+        """Gets the latest Position for the person or None if none exists. A cached property."""
         if self.position_set.exists() is False:
             return None
         else:
             return self.position_set.latest('start_date')
-
+        
+    @cached_property
     def get_start_date(self):
-        """Returns the start date of current position. Used in Admin Interface. See PersonAdmin in admin.py"""
-        latest_position = self.get_latest_position()
+        """Returns the start date of current position. A cached property.
+           Used in Admin Interface. See PersonAdmin in admin.py"""
+        latest_position = self.get_latest_position
         if latest_position is not None:
             return latest_position.start_date
         else:
@@ -238,9 +258,11 @@ class Person(models.Model):
 
     get_start_date.short_description = "Start Date"  # This short description is used in the admin interface
 
+    @cached_property
     def get_end_date(self):
-        """Returns the end date of current position. Used in Admin Interface. See PersonAdmin in admin.py"""
-        latest_position = self.get_latest_position()
+        """Returns the end date of current position. A cached property.
+        Used in Admin Interface. See PersonAdmin in admin.py"""
+        latest_position = self.get_latest_position
         if latest_position is not None:
             return latest_position.end_date
         else:
@@ -250,7 +272,7 @@ class Person(models.Model):
 
     def get_full_name(self, include_middle=True):
         """
-        Gets this person's full name as a string
+        Gets this person's full name as a string.
         :param include_middle: If true, includes the middle name. Defaults to True.
         :return: the person's full name as a string
         """
@@ -262,6 +284,7 @@ class Person(models.Model):
     get_full_name.short_description = "Full Name"
 
     def get_citation_name(self, include_middle=True, full_name=True):
+        """Returns name formatted for a citation"""
         citation_name = self.last_name
 
         if full_name:
@@ -281,9 +304,11 @@ class Person(models.Model):
         """Gets the URL name for this person. Format: firstlast"""
         return self.url_name
 
+    @cached_property
     def get_projects(self):
         """
         Gets a set of all the projects this person is involved in ordered by most recent start date first
+        Note: a cached property
         :return: a set of all the projects this person is involved in ordered by most recent start date first
         """
         project_roles = self.projectrole_set.order_by('-start_date')
@@ -344,13 +369,8 @@ class Person(models.Model):
         return self.get_full_name()
 
     def save(self, *args, **kwargs):
-        dir = os.path.abspath('.')
-        # requires the volume mount from docker
-        dir = os.path.join('media', 'images', 'StarWarsFiguresFullSquare', 'Rebels')
-        star_wars_dir = os.path.join(dir, get_random_starwars(dir))
-        image_choice = File(open(star_wars_dir, 'rb'))
-        # automatically set url_name field
-
+        
+        # First, automatically set the url_name field
         # Substitute any common special characters. I haven't found a better automatic way to do
         # this, so we are manually mapping 'common' special characters.
         url_name_cleaned = (self.first_name + self.last_name).lower()
@@ -362,10 +382,18 @@ class Person(models.Model):
         url_name_cleaned = re.sub('[^a-zA-Z]', '', url_name_cleaned)
         self.url_name = url_name_cleaned
 
+        # Check if their headshot image is not set. If not, set to random star war image
         if not self.image:
-            self.image = image_choice
-        if self.pk is None:
-            self.easter_egg = image_choice
+            rand_star_wars_filename = ml_fileutils.get_path_to_random_starwars_image()
+            rand_star_wars_image = File(open(rand_star_wars_filename, 'rb'))
+            self.image = rand_star_wars_image
+
+        # Check if their easter egg image is not set. If not, set to random star war image
+        if self.easter_egg is None: 
+            rand_star_wars_filename = ml_fileutils.get_path_to_random_starwars_image()
+            rand_star_wars_image = File(open(rand_star_wars_filename, 'rb'))
+            self.easter_egg = rand_star_wars_image
+
         super(Person, self).save(*args, **kwargs)
 
     class Meta:
@@ -377,20 +405,3 @@ class Person(models.Model):
 def person_delete(sender, instance, **kwargs):
     if instance.image:
         instance.image.delete(False)
-
-# Simple check to seee if a file is an image. Not strictly necessary but included for safety
-def isimage(filename):
-    """true if the filename's extension is in the content-type lookup"""
-    ext2conttype = {"jpg": "image/jpeg",
-                    "jpeg": "image/jpeg",
-                    "png": "image/png",
-                    "gif": "image/gif"}
-    filename = filename.lower()
-    return filename[filename.rfind(".") + 1:] in ext2conttype
-
-
-# Randomly selects an image from the given directory
-def get_random_starwars(direc):
-    """Gets a random star wars picture to assign to new author"""
-    images = [f for f in os.listdir(direc) if isimage(f)]
-    return choice(images)

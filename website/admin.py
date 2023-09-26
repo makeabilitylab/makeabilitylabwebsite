@@ -43,18 +43,20 @@ class PositionInline(admin.StackedInline):
     extra = 0
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        print("PositionInline.formfield_for_foreignkey: db_field: {} db_field.name {} request: {}".format(db_field, db_field.name, request))
+        print(f"PositionInline.formfield_for_foreignkey: db_field: {db_field} db_field.name {db_field.name} request: {request}")
 
         if db_field.name == "advisor" or db_field.name == "co_advisor":
             # Filters advisors to professors and sorts by first name
             # Based on: http://stackoverflow.com/a/30627555
-            professor_ids = [person.id for person in Person.objects.all() if person.is_professor()]
+            professor_ids = [person.id for person in Person.objects.all() if person.is_professor]
             filtered_persons = Person.objects.filter(id__in=professor_ids).order_by('first_name')
             print(filtered_persons)
             kwargs["queryset"] = filtered_persons
         elif db_field.name == "grad_mentor":
             # Filters grad mentor list to current grad students (either member or collaborator)
-            grad_ids = [person.id for person in Person.objects.all() if person.is_grad_student() and (person.is_current_member() or person.is_current_collaborator())]
+            grad_ids = [person.id for person in Person.objects.all() if person.is_grad_student \
+                        and (person.is_current_member or person.is_current_collaborator)]
+            
             filtered_persons = Person.objects.filter(id__in=grad_ids).order_by('first_name')
             print(filtered_persons)
             kwargs["queryset"] = filtered_persons
@@ -76,7 +78,7 @@ class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         # print("NewsAdmin.formfield_for_foreignkey: db_field: {} db_field.name {} request: {}".format(db_field, db_field.name, request))
         if db_field.name == "author":
-            current_member_ids = [person.id for person in Person.objects.all() if person.is_current_member()]
+            current_member_ids = [person.id for person in Person.objects.all() if person.is_current_member]
             filtered_persons = Person.objects.filter(id__in=current_member_ids).order_by('first_name')
             print(filtered_persons)
             kwargs["queryset"] = filtered_persons

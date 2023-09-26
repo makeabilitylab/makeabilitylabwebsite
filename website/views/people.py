@@ -23,7 +23,7 @@ def people(request):
     latest_position_start_time = time.perf_counter()
     non_null_position_count = 0
     for person in persons:
-        position = person.get_latest_position()
+        position = person.get_latest_position
 
         if position is not None:
             non_null_position_count = non_null_position_count + 1

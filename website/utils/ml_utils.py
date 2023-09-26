@@ -4,7 +4,8 @@ Hosts general utility functions for Makeability Lab Django website
 
 import datetime
 import random 
-from django.conf import settings # for access to settings variables, see https://docs.djangoproject.com/en/4.0/topics/settings/#using-settings-in-python-code
+# for access to settings variables, see https://docs.djangoproject.com/en/4.0/topics/settings/#using-settings-in-python-code
+from django.conf import settings 
 from operator import itemgetter
 
 def get_video_embed(video_url):
