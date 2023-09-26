@@ -94,8 +94,8 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': '/code/media/debug.log',
-            'maxBytes': 1024*1024*10,  # 10 MB
-            'backupCount': 5,
+            'maxBytes': 1024*1024*5,  # 5 MB
+            'backupCount': 6,
             'formatter': 'verbose',  # can switch between verbose and simple
         },
         'console': {
