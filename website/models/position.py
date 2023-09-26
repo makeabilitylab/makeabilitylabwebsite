@@ -92,8 +92,8 @@ class Position(models.Model):
     def get_end_date_short(self):
         return self.end_date.strftime('%b %Y') if self.end_date is not None else "Present"
 
-    # Returns an abbreviated version of the department field
     def get_department_abbreviated(self):
+        """Returns an abbreviated version of the department field"""
         dept_low = self.department.lower();
 
         if "computer science" in dept_low and "engineering" in dept_low:
@@ -117,22 +117,21 @@ class Position(models.Model):
         else:
             return ""
         
-
-    # Static method returns a sorted list of title names
     def get_sorted_titles():
+        """Static method returns a sorted list of title names"""
         return ("Professor", Position.RESEARCH_SCIENTIST, Position.POST_DOC, 
                 Position.SOFTWARE_DEVELOPER, Position.DESIGNER, Position.PHD_STUDENT, 
                 Position.MS_STUDENT, Position.UGRAD, Position.HIGH_SCHOOL, Position.UNKNOWN)
 
-    # Returns the index from TITLE_ORDER_MAPPING for the current title
     def get_title_index(self):
+        """Returns the index from TITLE_ORDER_MAPPING for the current title"""
         if self.title in self.TITLE_ORDER_MAPPING:
             return self.TITLE_ORDER_MAPPING[self.title]
         else:
             return self.TITLE_ORDER_MAPPING[self.UNKNOWN]
 
-    # Returns a timedelta object of total time in this position
     def get_time_in_this_position(self):
+        """Returns a timedelta object of total time in this position"""
         if self.end_date is not None and self.start_date is not None:
             return self.end_date - self.start_date
         elif self.end_date is None and self.start_date is not None:
@@ -140,8 +139,8 @@ class Position(models.Model):
         else:
             return None
 
-    # Returns the start and end dates as strings
     def get_date_range_as_str(self):
+        """Returns the start and end dates as strings"""
         if self.start_date is not None and self.end_date is None:
             return "{}-".format(self.start_date.year)
         elif self.start_date is not None and self.end_date is not None and self.start_date.year == self.end_date.year:
@@ -149,52 +148,52 @@ class Position(models.Model):
         else:
             return "{}-{}".format(self.start_date.year, self.end_date.year)
 
-    # Returns true if collaborator
     def is_collaborator(self):
+        """Returns true if collaborator"""
         return self.role == Position.COLLABORATOR
 
-    # Returns true if member
     def is_member(self):
+        """Returns true if member"""
         return self.role == Position.MEMBER
 
-    # Returns true if professor
     def is_professor(self):
+        """Returns true if professor"""
         return self.title == Position.FULL_PROF or self.title == Position.ASSOCIATE_PROF or self.title == Position.ASSISTANT_PROF
 
-    # Returns true if grad student
     def is_grad_student(self):
+        """Returns true if grad student"""
         return self.title == Position.MS_STUDENT or self.title == Position.PHD_STUDENT
 
-    # Returns true if high school student
     def is_high_school(self):
+        """Returns true if high school student"""
         return self.title == Position.HIGH_SCHOOL
 
-    # Returns true if member is current based on end date
     def is_current_member(self):
+        """Returns true if member is current based on end date"""
         return self.is_member() and \
                self.start_date is not None and self.start_date <= date.today() and \
                (self.end_date is None or (self.end_date is not None and self.end_date >= date.today()))
 
-    # Returns true if member is current based on end date
     def is_current_collaborator(self):
+        """Returns true if member is current based on end date"""
         return self.is_collaborator() and \
                (self.start_date is not None and self.start_date <= date.today() and \
                 self.end_date is None or (self.end_date is not None and self.end_date >= date.today()))
 
-    # Returns true if collaborator is a past collaborator (used to differentiate between future collaborators)
     def is_past_collaborator(self):
+        """Returns true if collaborator is a past collaborator (used to differentiate between future collaborators)"""
         return self.is_collaborator() and \
                self.start_date < date.today() and \
                self.end_date != None and self.end_date < date.today()
 
-    # Returns true if member is an alumni member (used to differentiate between future members)
     def is_alumni_member(self):
+        """Returns true if member is an alumni member (used to differentiate between future members)"""
         return self.is_member() and \
                self.start_date < date.today() and \
                self.end_date != None and self.end_date < date.today()
 
-    # Automatically called by Django when saving data to validate the data
     def clean(self):
+        """Automatically called by Django when saving data to validate the data"""
         if self.end_date is not None and self.start_date > self.end_date:
             raise ValidationError('The start date must be before the end date')
 
