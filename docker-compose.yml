@@ -2,7 +2,7 @@ version: '3'
 
 services:
   db:
-     image: 'postgres' # We use the official Docker postgres image: https://hub.docker.com/_/postgres
+     image: "${POSTGRES_IMAGE:-postgres}" # Can be set in rebuildanddeploy.sh, or defaults to: https://hub.docker.com/_/postgres
      restart: always
      ports:
        # if you want to expose the postgres instance to a tool on localhost, use this instead:
@@ -14,7 +14,7 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
      volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
   website:    
     build:
       context: .
@@ -24,10 +24,14 @@ services:
       - '127.0.0.1:8571:8000'
     volumes:
       - .:/code
+      - ${MEDIA_PATH:-./media}:/code/media
+      - ${CONFIG_PATH:-./config-dev.ini}:/code/config.ini # for loading vars into ConfigParser in Django
     depends_on:
       - db
     command: ["./docker-entrypoint.sh", "db", "python", "manage.py"]
     links:
       - "db:database"
 volumes:
-    postgres-data:   
+    db-data:
+        external:
+            name: "makeabilitylabcswashingtonedu_${POSTGRES_VOLUME:-postgres-data}"
