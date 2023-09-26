@@ -1,15 +1,25 @@
 #!/bin/bash
 
+PROD_HOST=grabthar
+TEST_HOST=docker-test2
+
 #navigate to the root directory
 cd ../
 
 #if we're on a test system, lets mount the test volume
-if [[ $(hostname -s) == *"test"* ]] ; then
+if [[ $(hostname -s) == $TEST_HOST ]] ; then
    export DJANGO_ENV=TEST
-   docker-compose -f docker-compose.yml -f docker-compose-test.yml build website
-   docker-compose -f docker-compose.yml -f docker-compose-test.yml up -d
-else
+   export MEDIA_PATH=/cse/web/research/makelab/www-test
+   export CONFIG_PATH=/cse/web/research/makelab/secret/config-test.ini
+   export POSTGRES_IMAGE=postgres:16
+   export POSTGRES_VOLUME=postgres16-data
+elif [[ $(hostname -s) == $PROD_HOST ]] ; then
    export DJANGO_ENV=PROD
-   docker-compose -f docker-compose.yml -f docker-compose-prod.yml build website
-   docker-compose -f docker-compose.yml -f docker-compose-prod.yml up -d
+   export MEDIA_PATH=/cse/web/research/makelab/www
+   export CONFIG_PATH=/cse/web/research/makelab/secret/config.ini
+else
+   export DJANGO_ENV=DEBUG
 fi
+
+docker-compose build website
+docker-compose up -d

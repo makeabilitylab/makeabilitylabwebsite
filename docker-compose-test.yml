@@ -1,8 +1,0 @@
-version: '3'
-
-services:
-  environment:
-      - DJANGO_ENV=TEST
-  website:    
-      - /cse/web/research/makelab/www-test:/code/media
-      - /cse/web/research/makelab/secret/config-test.ini:/code/config.ini # for loading vars into ConfigParser in Django
