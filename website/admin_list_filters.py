@@ -141,7 +141,7 @@ class PositionTitleListFilter(admin.SimpleListFilter):
 
         filtered_person_ids = []
         for person in Person.objects.all():
-            cur_position = person.get_latest_position()
+            cur_position = person.get_latest_position
             if self.value() is None:
                 filtered_person_ids.append(person.id)
             elif cur_position is not None and cur_position.title == self.value() or \
