@@ -2,18 +2,15 @@ version: '3'
 
 services:
   db:
-     image: "${POSTGRES_IMAGE:-postgres}" # Can be set in rebuildanddeploy.sh, or defaults to: https://hub.docker.com/_/postgres
-     restart: always
-     ports:
-       # if you want to expose the postgres instance to a tool on localhost, use this instead:
-       # see: https://stackoverflow.com/a/55259785
-       # - '6543:5432'
-       - '5432'
-     environment:
+    image: "${POSTGRES_IMAGE:-postgres}" # Can be set in rebuildanddeploy.sh, or defaults to: https://hub.docker.com/_/postgres
+    restart: always
+    ports:
+      - '127.0.0.1:8623:5432'
+    environment:
       - POSTGRES_DB=makeability
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
-     volumes:
+    volumes:
       - db-data:/var/lib/postgresql/data
   website:    
     build:
@@ -32,6 +29,6 @@ services:
     links:
       - "db:database"
 volumes:
-    db-data:
-        external:
-            name: "makeabilitylabcswashingtonedu_${POSTGRES_VOLUME:-postgres-data}"
+  db-data:
+    external:
+      name: "makeabilitylabcswashingtonedu_${POSTGRES_VOLUME:-postgres-data}"
