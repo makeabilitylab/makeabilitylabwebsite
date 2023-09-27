@@ -17,6 +17,8 @@ elif [[ $(hostname -s) == $PROD_HOST ]] ; then
    export DJANGO_ENV=PROD
    export MEDIA_PATH=/cse/web/research/makelab/www
    export CONFIG_PATH=/cse/web/research/makelab/secret/config.ini
+   export POSTGRES_IMAGE=postgres:16
+   export POSTGRES_VOLUME=postgres16-data
 else
    export DJANGO_ENV=DEBUG
 fi
