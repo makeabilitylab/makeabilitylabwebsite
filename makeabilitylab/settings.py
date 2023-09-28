@@ -33,7 +33,7 @@ if "DJANGO_ENV" in os.environ:
        config_file = os.path.join(BASE_DIR, 'config.ini')
        config.read(config_file)
        CONFIG_FILE = config_file
-else
+else:
     CONFIG_FILE = "No config file set"
 
 # Quick-start development settings - unsuitable for production
