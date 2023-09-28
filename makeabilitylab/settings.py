@@ -21,6 +21,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # of the django project.
 config = ConfigParser()
 
+print("Environmental variables:")
+for k, v in os.environ.items():
+    print(f'\t{k}={v}')
+
 OS_ENVIRONMENT = os.environ
 if "DJANGO_ENV" in os.environ:
     # We set this variable in makeabilitylabwebsite/rebuildanddeploy.sh via the webhook
@@ -29,12 +33,14 @@ if "DJANGO_ENV" in os.environ:
        config_file = os.path.join(BASE_DIR, 'config-test.ini')
        config.read(config_file)
        CONFIG_FILE = config_file
-    else:
+    elif os.environ.get('DJANGO_ENV') == 'PROD':
        config_file = os.path.join(BASE_DIR, 'config.ini')
        config.read(config_file)
        CONFIG_FILE = config_file
-else:
-    CONFIG_FILE = "No config file set"
+    else:
+       CONFIG_FILE = "No config file set"
+
+print(f"CONFIG_FILE: {CONFIG_FILE}")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
@@ -56,10 +62,17 @@ if os.environ.get('DJANGO_ENV') == 'PROD':
 elif config.has_option('Django', 'DEBUG'):
     DEBUG = config.getboolean('Django', 'DEBUG')
     DEBUG_SET = f"DEBUG was set by {CONFIG_FILE} file"
-else:
+elif os.environ.get('DJANGO_ENV') == 'DEBUG':
     DEBUG = True
-    DEBUG_SET = "Debug set to True because we appear not to be on production or using an .ini file"
+    DEBUG_SET = f"DEBUG set by DJANGO_ENV variable, which is DJANGO_ENV={DJANGO_ENV}"
+else:
+    DEBUG = False
+    # DEBUG_SET = "Debug set to True because we appear not to be on production or using an .ini file"
+    DEBUG_SET = "Debug set to False as a default (appear not to be on production or using an .ini file)"
 
+print(f"DJANGO_ENV: {DJANGO_ENV}")
+print(f"DEBUG_SET: {DEBUG_SET}")
+print(f"DEBUG: {DEBUG}")
 
 if config.has_option('Django', 'ALLOWED_HOSTS'):
     USE_X_FORWARDED_HOST = True
