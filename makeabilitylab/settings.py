@@ -44,7 +44,11 @@ else:
 if config.has_option('Django', 'DEBUG'):
     DEBUG = config.getboolean('Django', 'DEBUG')
 else:
-    DEBUG = True
+    DEBUG = False
+
+# Double check to ensure that we are not setting DEBUG to True in production
+if os.environ.get('DJANGO_ENV') == 'PROD':
+    DEBUG = False
 
 if config.has_option('Django', 'ALLOWED_HOSTS'):
     USE_X_FORWARDED_HOST = True
