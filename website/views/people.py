@@ -13,6 +13,7 @@ _logger = logging.getLogger(__name__)
 
 def people(request):
     func_start_time = time.perf_counter()
+    _logger.debug(f"Starting views/people at {func_start_time:0.4f}")
 
     persons = Person.objects.all()
     map_status_to_title_to_people = dict()

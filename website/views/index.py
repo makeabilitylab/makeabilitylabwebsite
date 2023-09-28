@@ -12,6 +12,7 @@ _logger = logging.getLogger(__name__)
 
 def index(request):
     func_start_time = time.perf_counter()
+    _logger.debug(f"Starting views/index at {func_start_time:0.4f}")
 
     news_items_num = 7  # Defines the number of news items that will be selected
     papers_num = 10  # Defines the number of papers which will be selected

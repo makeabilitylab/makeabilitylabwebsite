@@ -41,14 +41,14 @@ else:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # we will default to True if not overriden in the config file
-if config.has_option('Django', 'DEBUG'):
-    DEBUG = config.getboolean('Django', 'DEBUG')
-else:
-    DEBUG = False
-
-# Double check to ensure that we are not setting DEBUG to True in production
+# this is to support localdev
 if os.environ.get('DJANGO_ENV') == 'PROD':
     DEBUG = False
+elif config.has_option('Django', 'DEBUG'):
+    DEBUG = config.getboolean('Django', 'DEBUG')
+else:
+    DEBUG = True
+
 
 if config.has_option('Django', 'ALLOWED_HOSTS'):
     USE_X_FORWARDED_HOST = True

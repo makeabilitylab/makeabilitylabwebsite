@@ -26,6 +26,8 @@ def project(request, project_name):
     :return:
     """
     func_start_time = time.perf_counter()
+    _logger.debug(f"Starting project {project_name} at {func_start_time:0.4f}")
+
     project = get_object_or_404(Project, short_name__iexact=project_name)
     all_banners = project.banner_set.all()
     displayed_banners = ml_utils.choose_banners(all_banners)
@@ -42,7 +44,8 @@ def project(request, project_name):
     project_roles = project.projectrole_set.order_by('start_date')
 
     # Sort project roles by start date and then title (e.g., professors first) and then last name
-    project_roles = sorted(project_roles, key=lambda pr: (pr.start_date, pr.get_pi_status_index(), pr.person.get_current_title_index(), pr.person.last_name))
+    project_roles = sorted(project_roles, key=lambda pr: (pr.start_date, pr.get_pi_status_index(), 
+                                                          pr.person.get_current_title_index, pr.person.last_name))
 
     project_roles_current = []
     project_roles_past = []
@@ -61,7 +64,7 @@ def project(request, project_name):
     for project_role in project_roles:
         person = project_role.person
 
-        position = person.get_latest_position()
+        position = person.get_latest_position
         if position is not None:
             title = position.title
             if "Professor" in position.title:  # necessary to collapse all prof categories to 1

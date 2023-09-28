@@ -77,4 +77,4 @@ class ProjectRole(models.Model):
     def __str__(self):
         return "Project: '{}' Name={}, StartDate={} EndDate={} PI/Co-PI={}, PI Status Index={} Title Index={}".format(
             self.project.name, self.person.get_full_name(), self.start_date, self.end_date,
-            self.pi_member, self.get_pi_status_index(), self.person.get_current_title_index())
+            self.pi_member, self.get_pi_status_index(), self.person.get_current_title_index)
