@@ -51,10 +51,13 @@ else:
 DJANGO_ENV = os.environ.get('DJANGO_ENV')
 if os.environ.get('DJANGO_ENV') == 'PROD':
     DEBUG = False
+    DEBUG_SET = "Debug set to False because we're on production"
 elif config.has_option('Django', 'DEBUG'):
     DEBUG = config.getboolean('Django', 'DEBUG')
+    DEBUG_SET = f"DEBUG was set by {CONFIG_FILE} file"
 else:
     DEBUG = True
+    DEBUG_SET = "Debug set to True because we appear not to be on production or using an .ini file"
 
 
 if config.has_option('Django', 'ALLOWED_HOSTS'):
