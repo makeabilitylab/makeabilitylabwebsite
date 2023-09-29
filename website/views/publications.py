@@ -14,7 +14,7 @@ _logger = logging.getLogger(__name__)
 
 def publications(request):
     func_start_time = time.perf_counter()
-    _logger.debug(f"Starting views/publications {project_name} at {func_start_time:0.4f}")
+    _logger.debug(f"Starting views/publications at {func_start_time:0.4f}")
 
     all_banners = Banner.objects.filter(page=Banner.PUBLICATIONS)
     displayed_banners = ml_utils.choose_banners(all_banners)
