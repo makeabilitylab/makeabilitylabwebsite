@@ -12,7 +12,9 @@ services:
       - POSTGRES_PASSWORD=password
     volumes:
       - db-data:/var/lib/postgresql/data
-  website:    
+  website:
+    environment:
+      - DJANGO_ENV=${DJANGO_ENV:-TEST}
     build:
       context: .
       dockerfile: Dockerfile
