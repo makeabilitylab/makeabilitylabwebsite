@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  db:
+     image: 'postgres:16' # We use the official Docker postgres image: https://hub.docker.com/_/postgres
+     restart: always
+     ports:
+       # if you want to expose the postgres instance to a tool on localhost, use this instead:
+       # see: https://stackoverflow.com/a/55259785
+       # - '6543:5432'
+       - '5432'
+     environment:
+      - POSTGRES_DB=makeability
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+     volumes:
+      - postgres-data:/var/lib/postgresql/data
+  website:    
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - '127.0.0.1:8571:8000'
+    volumes:
+      - .:/code
+      # you must comment out the following line for local host development
+      #- /cse/web/research/makelab/www:/code/media
+      #- /cse/web/research/makelab/secret/config.ini:/code/config.ini # for loading vars into ConfigParser in Django
+      #- /cse/web/research/makelab/secret/config-test.ini:/code/config-test.ini # for loading vars into ConfigParser in Django
+    depends_on:
+      - db
+    command: ["./docker-entrypoint.sh", "db", "python", "manage.py"]
+    links:
+      - "db:database"
+volumes:
+    postgres-data:   
