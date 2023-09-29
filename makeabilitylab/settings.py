@@ -26,19 +26,12 @@ for k, v in os.environ.items():
     print(f'\t{k}={v}')
 
 OS_ENVIRONMENT = os.environ
-if "DJANGO_ENV" in os.environ:
-    # We set this variable in makeabilitylabwebsite/rebuildanddeploy.sh via the webhook
-    # it should be set to DEBUG if on the debug environment
-    if os.environ.get('DJANGO_ENV') == 'TEST':
-       config_file = os.path.join(BASE_DIR, 'config-test.ini')
-       config.read(config_file)
-       CONFIG_FILE = config_file
-    elif os.environ.get('DJANGO_ENV') == 'PROD':
-       config_file = os.path.join(BASE_DIR, 'config.ini')
-       config.read(config_file)
-       CONFIG_FILE = config_file
-    else:
-       CONFIG_FILE = "No config file set"
+config_file = os.path.join(BASE_DIR, 'config.ini')
+config.read(config_file)
+if not config:
+    CONFIG_FILE = "No config file set"
+else:
+    CONFIG_FILE = config_file
 
 print(f"CONFIG_FILE: {CONFIG_FILE}")
 
