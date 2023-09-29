@@ -48,6 +48,12 @@ echo ""
 # chown -R apache /code
 
 # Collect static files
+echo "****************** STEP 0/5: docker-entrypoint.sh ************************"
+echo "0. Printing environment variables visible to Django"
+echo "******************************************"
+python manage.py print_environment_vars
+
+# Collect static files
 echo "****************** STEP 1/5: docker-entrypoint.sh ************************"
 echo "1. Collecting static files"
 echo "******************************************"

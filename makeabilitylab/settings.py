@@ -21,10 +21,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # of the django project.
 config = ConfigParser()
 
-print("Environmental variables:")
-for k, v in os.environ.items():
-    print(f'\t{k}={v}')
-
 OS_ENVIRONMENT = os.environ
 config_file = os.path.join(BASE_DIR, 'config.ini')
 config.read(config_file)
