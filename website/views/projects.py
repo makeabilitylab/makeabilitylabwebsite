@@ -21,11 +21,11 @@ def projects(request):
 
     all_banners = Banner.objects.filter(page=Banner.PROJECTS)
     displayed_banners = ml_utils.choose_banners(all_banners)
-    projects = Project.objects.all()
+    projects_query_result = Project.objects.all()
 
     # Only show projects that have a thumbnail, description, and a publication
     # we used to only filter out incomplete projects if DEBUG = TRUE; if not settings.DEBUG:
-    projects = ml_utils.filter_incomplete_projects(projects)
+    projects = ml_utils.filter_incomplete_projects(projects_query_result)
 
     # if we are in debug mode, we include all projects even if they have no artifacts
     # as long as they have a start date
@@ -37,7 +37,7 @@ def projects(request):
                'debug': settings.DEBUG}
     
     func_end_time = time.perf_counter()
-    _logger.debug(f"Rendered {projects.count()} projects for views/projects in {func_end_time - func_start_time:0.4f} seconds")
+    _logger.debug(f"Rendered {len(projects)} projects for views/projects in {func_end_time - func_start_time:0.4f} seconds")
     context['render_time'] = func_end_time - func_start_time
     
      # Render is a Django helper function. It combines a given template—in this case projects.html—with
