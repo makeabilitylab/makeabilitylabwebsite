@@ -26,7 +26,7 @@ def project(request, project_name):
     :return:
     """
     func_start_time = time.perf_counter()
-    _logger.debug(f"Starting project {project_name} at {func_start_time:0.4f}")
+    _logger.debug(f"Starting views/project {project_name} at {func_start_time:0.4f}")
 
     project = get_object_or_404(Project, short_name__iexact=project_name)
     all_banners = project.banner_set.all()

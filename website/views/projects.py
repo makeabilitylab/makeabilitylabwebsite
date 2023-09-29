@@ -17,7 +17,7 @@ def projects(request):
     :return:
     """
     func_start_time = time.perf_counter()
-    _logger.debug(f"Starting project {project_name} at {func_start_time:0.4f}")
+    _logger.debug(f"Starting views/projects at {func_start_time:0.4f}")
 
     all_banners = Banner.objects.filter(page=Banner.PROJECTS)
     displayed_banners = ml_utils.choose_banners(all_banners)
@@ -37,7 +37,7 @@ def projects(request):
                'debug': settings.DEBUG}
     
     func_end_time = time.perf_counter()
-    _logger.debug(f"Rendered {projects.count()} projects in {func_end_time - func_start_time:0.4f} seconds")
+    _logger.debug(f"Rendered {projects.count()} projects for views/projects in {func_end_time - func_start_time:0.4f} seconds")
     context['render_time'] = func_end_time - func_start_time
     
      # Render is a Django helper function. It combines a given template—in this case projects.html—with
