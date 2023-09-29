@@ -6,7 +6,6 @@ import website.utils.ml_utils as ml_utils
 # for render https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
 from django.shortcuts import render
 
-
 def faq(request):
     all_banners = Banner.objects.filter(page=Banner.PEOPLE)
     displayed_banners = ml_utils.choose_banners(all_banners)

@@ -123,6 +123,7 @@ def project(request, project_name):
 
     func_end_time = time.perf_counter()
     _logger.debug(f"Rendered '{project.name}' in {func_end_time - func_start_time:0.4f} seconds")
+    context['render_time'] = func_end_time - func_start_time
 
     # Render is a Django helper function. It combines a given template—in this case project.html—with
     # a context dictionary and returns an HttpResponse object with that rendered text.

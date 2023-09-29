@@ -7,6 +7,12 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
+    {% load ml_tags %}
+    {% var_exists 'render_time' as render_time_exists %}
+    {% if render_time_exists %}
+      <!--  Took {{ render_time|floatformat:3 }} secs for Django to render this page -->
+    {% endif %}
+    
     {% load static %}
     {% load cropping %}
 

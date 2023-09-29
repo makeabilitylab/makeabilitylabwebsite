@@ -6,8 +6,18 @@ from django.shortcuts import render
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils.timezone import utc
 
+# For logging
+import time
+import logging
+
+# This retrieves a Python logging instance (or creates it)
+_logger = logging.getLogger(__name__)
+
 # This method and the news functionality in general was written by Johnson Kuang
 def news_listing(request):
+    func_start_time = time.perf_counter()
+    _logger.debug(f"Starting views/news_listing at {func_start_time:0.4f}")
+
     all_banners = Banner.objects.filter(page=Banner.FRONTPAGE)
     displayed_banners = ml_utils.choose_banners(all_banners)
     
@@ -36,6 +46,10 @@ def news_listing(request):
                'groupby': groupby,
                'time_now': now,
                'debug': settings.DEBUG}
+    
+    func_end_time = time.perf_counter()
+    _logger.debug(f"Rendered views/news_listing in {func_end_time - func_start_time:0.4f} seconds")
+    context['render_time'] = func_end_time - func_start_time
 
     # Render is a Django helper function. It combines a given template—in this case news-listing.html—with
     # a context dictionary and returns an HttpResponse object with that rendered text.

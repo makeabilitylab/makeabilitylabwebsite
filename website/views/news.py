@@ -5,8 +5,18 @@ import website.utils.ml_utils as ml_utils
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
+# For logging
+import time
+import logging
+
+# This retrieves a Python logging instance (or creates it)
+_logger = logging.getLogger(__name__)
+
 # This method and the news functionality in general was written by Johnson Kuang
 def news(request, news_id):
+    func_start_time = time.perf_counter()
+    _logger.debug(f"Starting views/news for news_id={news_id} at {func_start_time:0.4f}")
+
     all_banners = Banner.objects.filter(page=Banner.NEWSLISTING)
     displayed_banners = ml_utils.choose_banners(all_banners)
     news = get_object_or_404(News, pk=news_id)
@@ -35,6 +45,10 @@ def news(request, news_id):
                'author_news': author_news[:max_extra_items],
                'project_news': project_news,
                'debug': settings.DEBUG}
+    
+    func_end_time = time.perf_counter()
+    _logger.debug(f"Rendered views/news for news_id={news_id} in {func_end_time - func_start_time:0.4f} seconds")
+    context['render_time'] = func_end_time - func_start_time
 
     # Render is a Django helper function. It combines a given template—in this case news.html—with
     # a context dictionary and returns an HttpResponse object with that rendered text.

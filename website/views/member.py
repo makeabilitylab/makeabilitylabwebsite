@@ -3,7 +3,17 @@ from website.models import Banner, Person
 import website.utils.ml_utils as ml_utils 
 from django.shortcuts import render, get_object_or_404
 
+# For logging
+import time
+import logging
+
+# This retrieves a Python logging instance (or creates it)
+_logger = logging.getLogger(__name__)
+
 def member(request, member_id):
+    func_start_time = time.perf_counter()
+    _logger.debug(f"Starting views/member member_id={member_id} at {func_start_time:0.4f}")
+
     news_items_num = 5  # Defines the number of news items that will be selected
     all_banners = Banner.objects.filter(page=Banner.PEOPLE)
     displayed_banners = ml_utils.choose_banners(all_banners)
@@ -41,6 +51,10 @@ def member(request, member_id):
                'banners': displayed_banners,
                'debug': settings.DEBUG,
                'page_title': person.get_full_name()}
+    
+    func_end_time = time.perf_counter()
+    _logger.debug(f"Rendered person={person} in {func_end_time - func_start_time:0.4f} seconds")
+    context['render_time'] = func_end_time - func_start_time
 
     # Render is a Django shortcut (aka helper function). It combines a given template—in this case
     # member.html—with a context dictionary and returns an HttpResponse object with that rendered text.

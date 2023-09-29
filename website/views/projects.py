@@ -3,12 +3,22 @@ from website.models import Banner, Project
 import website.utils.ml_utils as ml_utils 
 from django.shortcuts import render # for render https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
 
+# For logging
+import time
+import logging
+
+# This retrieves a Python logging instance (or creates it)
+_logger = logging.getLogger(__name__)
+
 def projects(request):
     """
     Creates the render context for the project gallery page.
     :param request:
     :return:
     """
+    func_start_time = time.perf_counter()
+    _logger.debug(f"Starting project {project_name} at {func_start_time:0.4f}")
+
     all_banners = Banner.objects.filter(page=Banner.PROJECTS)
     displayed_banners = ml_utils.choose_banners(all_banners)
     projects = Project.objects.all()
@@ -25,6 +35,10 @@ def projects(request):
                'banners': displayed_banners,
                'filter': filter,
                'debug': settings.DEBUG}
+    
+    func_end_time = time.perf_counter()
+    _logger.debug(f"Rendered {projects.count()} projects in {func_end_time - func_start_time:0.4f} seconds")
+    context['render_time'] = func_end_time - func_start_time
     
      # Render is a Django helper function. It combines a given template—in this case projects.html—with
     # a context dictionary and returns an HttpResponse object with that rendered text.
