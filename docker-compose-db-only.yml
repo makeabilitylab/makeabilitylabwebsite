@@ -1,0 +1,18 @@
+services:
+  db:
+    image: 'postgres:16' # We use the official Docker postgres image: https://hub.docker.com/_/postgres
+    restart: always
+    ports:
+      # if you want to expose the postgres instance to a tool on localhost, use this instead:
+      # see: https://stackoverflow.com/a/55259785
+      # - '6543:5432'
+      - '5432'  
+    environment:
+    - POSTGRES_DB=makeability
+    - POSTGRES_USER=admin
+    - POSTGRES_PASSWORD=password
+    volumes:
+    - .:/usr/app/
+    - postgres-data:/var/lib/postgresql/data
+volumes:
+  postgres-data:   
