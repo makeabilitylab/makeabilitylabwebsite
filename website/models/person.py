@@ -147,9 +147,8 @@ class Person(models.Model):
 
     is_active.short_description = "Is Active?"
 
-    @cached_property
     def get_total_time_in_role(self, role):
-        """Returns the total time as in the specified role across all positions. A cached property."""
+        """Returns the total time as in the specified role across all positions."""
         totalTimeInRole = timedelta(0)
         for position in self.position_set.all():
             if position.role == role:
