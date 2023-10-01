@@ -143,7 +143,7 @@ class Person(models.Model):
         """Returns True is person is current member of lab or current collaborator. A cached property."""
         # print(self.get_full_name() + " is active? " + str(self.is_current_member()) + " " +
         # str(self.is_current_collaborator()))
-        return self.is_current_member() or self.is_current_collaborator()
+        return self.is_current_member or self.is_current_collaborator
 
     is_active.short_description = "Is Active?"
 
