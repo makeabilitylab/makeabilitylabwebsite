@@ -63,22 +63,23 @@ class PositionRoleListFilter(admin.SimpleListFilter):
 
         filtered_person_ids = []
         for person in Person.objects.all():
-            if person.is_current_member() is True:
-                print("{} is_current_member(): {} | self.value(): {} | equals? {} | type(member): {} | type(self.value): {}".format(person.get_full_name(),
-                                                                                      person.is_current_member(), self.value(),
-                                                                                      person.is_current_member() is self.value(),
-                                                                                      type(person.is_current_member()),
-                                                                                      type(self.value())))
-            if person.is_current_member() is True and self.value() is None:
+            if person.is_current_member is True:
+                print("{} is_current_member(): {} | self.value(): {} | equals? {} |\
+                      type(member): {} | type(self.value): {}".format(person.get_full_name(),
+                                                                    person.is_current_member, self.value(),
+                                                                    person.is_current_member is self.value(),
+                                                                    type(person.is_current_member),
+                                                                    type(self.value())))
+            if person.is_current_member is True and self.value() is None:
                 filtered_person_ids.append(person.id)
-            elif person.is_alumni_member() is True and person.is_current_member() is False and self.value() == "past_member":
+            elif person.is_alumni_member is True and person.is_current_member() is False and self.value() == "past_member":
                 filtered_person_ids.append(person.id)
-            elif person.is_current_collaborator() is True and self.value() == "current_collaborator":
+            elif person.is_current_collaborator is True and self.value() == "current_collaborator":
                 filtered_person_ids.append(person.id)
-            elif person.is_past_collaborator() is True and self.value() == "past_collaborator":
+            elif person.is_past_collaborator is True and self.value() == "past_collaborator":
                 filtered_person_ids.append(person.id)
-            elif person.is_current_member() is False and person.is_alumni_member() is False and\
-                    person.is_current_collaborator() is False and person.is_past_collaborator() is False and\
+            elif person.is_current_member is False and person.is_alumni_member is False and\
+                    person.is_current_collaborator is False and person.is_past_collaborator is False and\
                     self.value() == "other":
                 filtered_person_ids.append(person.id)
             elif self.value() == "all":
