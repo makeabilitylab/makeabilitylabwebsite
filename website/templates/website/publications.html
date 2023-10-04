@@ -81,10 +81,10 @@
     var onScrollHandler = function (event) {
 
         /* End event listener after visitor scrolls past 500px */
-        if (window.pageYOffset > 200) {
+        if (window.pageYOffset >= 100) {
           document.getElementById("js-toc").style.top = "100px";
         }else{
-          document.getElementById("js-toc").style.top = "150px";
+          document.getElementById("js-toc").style.top = "170px";
         }
         /* console.log("window scroll event:", window.pageYOffset); */
       };
