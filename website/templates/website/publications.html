@@ -37,8 +37,9 @@
 
 {% block content %}
   {% comment %} <nav class="toc toc-right js-toc"></nav> {% endcomment %}
-  <div id="content" class="container" style="margin-top:100px">
-    <nav class="js-toc"></nav>
+  
+  <div id="content" class="container" style="margin-top:80px">
+    <nav id="js-toc" class="js-toc toc"></nav>
     <div id="makelab-recent-publications" class="makelab-content-container">
       {# We need to have headers like years #}
       {# Consider also uses tocbot to make navigation easier #}
@@ -70,7 +71,26 @@
         headingSelector: 'h2, h3',
         // For headings inside relative or absolute positioned containers within content.
         hasInnerContainers: true,
+        // Makes it so that we scroll down so that the header shows rather than just beneath it
+        scrollSmoothOffset:-50,
+        
+        headingsOffset: 200,
         });
+
+    /* Track scrolling to show/hide the tocbot navigation bar on right side */
+    var onScrollHandler = function (event) {
+
+        /* End event listener after visitor scrolls past 500px */
+        if (window.pageYOffset > 200) {
+          document.getElementById("js-toc").style.top = "100px";
+        }else{
+          document.getElementById("js-toc").style.top = "150px";
+        }
+        /* console.log("window scroll event:", window.pageYOffset); */
+      };
+
+      /* Listen for scroll events */
+      window.addEventListener('scroll', onScrollHandler, false);
 </script>
 {% endblock %}
   
