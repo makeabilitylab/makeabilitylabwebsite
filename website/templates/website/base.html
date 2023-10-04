@@ -84,7 +84,7 @@
         });
 
         // allow for smooth scrolling to anchor links
-        $(document).click(function (event) {
+        {% comment %} $(document).click(function (event) {
             var target = event.originalEvent.target;
             if (target.className === "scroll" || target.parentElement.className === "scroll") {
                 //prevent the default action for the click event
@@ -104,7 +104,7 @@
                 //http://api.jquery.com/animate/
                 $('html, body').animate({scrollTop: target_top}, 500);
             }
-        });
+        }); {% endcomment %}
 
     </script>
 
