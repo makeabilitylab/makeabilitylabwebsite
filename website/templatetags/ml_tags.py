@@ -1,6 +1,7 @@
 # Read more about custom tags and filters here: https://docs.djangoproject.com/en/dev/howto/custom-template-tags/#writing-custom-template-filters
 from django import template
 from django.template.defaultfilters import stringfilter
+from django.conf import settings # so that get_settings_value works
 import re
 
 from django.template.defaulttags import register
@@ -8,6 +9,12 @@ from django.template.defaulttags import register
 from website.models import Publication
 
 register = template.Library()
+
+# Convenience method to help return a settings variable in a template
+# From: https://stackoverflow.com/a/7716141/388117
+@register.simple_tag
+def get_settings_value(name):
+    return getattr(settings, name, "")
 
 # This helps remove the "KeyError" from our log files when there is no variable in the template
 # context. For example, we use to look for `page_title` and by {% if page_title %} but
