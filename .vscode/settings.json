@@ -5,4 +5,8 @@
         "**/templates/**/*": "django-txt",
         "**/requirements{/**,*}.{txt,in}": "pip-requirements"
     },
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "python.formatting.provider": "none",
 }

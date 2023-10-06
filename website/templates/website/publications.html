@@ -2,9 +2,7 @@
 
 {% block pagetitle %}Publications{% endblock %}
 
-{% load static %}
-{% load thumbnail %}
-{% load cropping %}
+{% load static %} {# https://docs.djangoproject.com/en/4.2/howto/static-files/#configuring-static-files #}
 
 {% block stylesheets %}
   <link rel="stylesheet" href="{% static 'website/css/publications.css' %}">

@@ -14,6 +14,7 @@ from datetime import date, datetime, timedelta
 from image_cropping import ImageRatioField
 
 from .position import Position
+from django.apps import apps # to solve circular import with importing Publications
 
 # Special character mappings
 special_chars = {
@@ -24,7 +25,14 @@ special_chars = {
     'û': 'u', 'ü': 'u', 'ù': 'u'
 }
 
+PERSON_THUMBNAIL_SIZE = (245, 245)
+
 class Person(models.Model):
+    
+    @staticmethod  # use as decorator
+    def get_thumbnail_size_as_str():
+        return f"{PERSON_THUMBNAIL_SIZE[0]}x{PERSON_THUMBNAIL_SIZE[1]}"
+
     first_name = models.CharField(max_length=40)
     middle_name = models.CharField(max_length=50, blank=True, null=True)
     last_name = models.CharField(max_length=50)
@@ -34,27 +42,44 @@ class Person(models.Model):
     github = models.URLField(blank=True, null=True)
     twitter = models.URLField(blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
+
     next_position = models.CharField(max_length=255, blank=True, null=True)
     next_position.help_text = "This is a field to track the next position held by alumni of the lab. This field stores text information about their position and the next field stores a url for that position."
     next_position_url = models.URLField(blank=True, null=True)
 
-    # Note: the ImageField requires the pillow library, which can be installed using pip
-    # pip3 install Pillow
+    # Note: the ImageField requires the pillow library
     # We use the get_unique_path function because otherwise if two people use the same
     # filename (something generic like picture.jpg), one will overwrite the other.
     image = models.ImageField(blank=True, upload_to="person", max_length=255)
-
-    # image_cropped = models.ImageField(editable=False)
     image.help_text = 'You must select "Save and continue editing" at the bottom of the page after uploading a new image for cropping.'
 
-    easter_egg = models.ImageField(blank=True, null=True, upload_to="person", max_length=255)
-
-    # LS: Added image cropping to fixed ratio
+    # We use the ImageRatioField to allow us to crop the image in the admin interface
+    # The first parameter must refer to the associated ImageField
     # See https://github.com/jonasundderwolf/django-image-cropping
-    # size is "width x height"
-    # TODO: update with desired aspect ratio and maximum resolution
-    cropping = ImageRatioField('image', '245x245', size_warning=True)
-    easter_egg_crop = ImageRatioField('easter_egg', '245x245', size_warning=True)
+    cropping = ImageRatioField('image', get_thumbnail_size_as_str(), size_warning=True)
+
+    # This is the hover image
+    easter_egg = models.ImageField(blank=True, null=True, upload_to="person", max_length=255)
+    easter_egg_crop = ImageRatioField('easter_egg', get_thumbnail_size_as_str(), size_warning=True)
+
+    @cached_property
+    def is_graduated_phd_student(self):
+        """Returns True if person is a graduated PhD student. False otherwise. A cached property."""
+        return self.get_dissertation is not None
+
+    @cached_property
+    def get_dissertation(self):
+        """Returns the Publication object for this person's dissertation. A cached property."""
+        pubModel = apps.get_model('website', 'Publication')
+
+        # Don't use a `get` query here because if there are no results that match the 
+        # query, get() will raise a DoesNotExist exception
+        # See: https://docs.djangoproject.com/en/4.2/topics/db/queries/#retrieving-a-single-object-with-get
+        # return pubModel.objects.get(pub_venue_type=pubModel.PHD_DISSERTATION, authors=self)
+        dissertation = pubModel.objects.filter(pub_venue_type=pubModel.PHD_DISSERTATION, authors=self)
+        if dissertation.exists():
+            return dissertation[0]
+
 
     @cached_property
     def get_current_title(self):
@@ -85,7 +110,7 @@ class Person(models.Model):
         else:
             return None
 
-    get_current_title.short_description = "Department"
+    get_current_department.short_description = "Department"
 
     @cached_property
     def get_current_school(self):
@@ -205,6 +230,15 @@ class Person(models.Model):
             return latest_position.is_past_collaborator()
         else:
             return False
+
+    @cached_property
+    def get_latest_phd_student_position(self):
+        """Returns the latest position for this person that is a PhD student. A cached property."""
+        return self.get_latest_position_in_title(Position.PHD_STUDENT)
+
+    def get_latest_position_in_title(self, title):
+        """Returns the latest position in the specified role. A cached property."""
+        return self.position_set.filter(title=title).latest('start_date')
 
     def get_earliest_position_in_role(self, role, contiguous_constraint=True):
         """Gets the earliest Position for this person in the given role

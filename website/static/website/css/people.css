@@ -7,3 +7,51 @@
   padding-left: 0;
   padding-right: 20px;
 }
+
+.current-research-group-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-gap: 5px;
+  text-align: center;
+  row-gap: 20px;
+}
+
+.graduated-phds-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  text-align: left;
+  grid-gap: 15px;
+  row-gap: 20px;
+}
+
+.graduated-phds-grid img{
+  float: left;
+  margin-right: 8px;
+}
+
+.graduated-phd-name{  
+  margin-top: 2px;
+  font-weight: bold;
+  font-size: larger;
+}
+
+.dissertation{
+  text-align: left;
+  font-size: smaller;
+  margin-top: 6px;
+}
+
+.next-position{
+  text-align: left;
+  font-size: smaller;
+  margin-top: 6px;
+}
+
+.person-name{
+  margin-top: 2px;
+  font-weight:bolder;
+}
+
+.person img{
+  border-radius:50%;
+}

@@ -43,14 +43,14 @@ class PositionInline(admin.StackedInline):
     extra = 0
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        print(f"PositionInline.formfield_for_foreignkey: db_field: {db_field} db_field.name {db_field.name} request: {request}")
+        # print(f"PositionInline.formfield_for_foreignkey: db_field: {db_field} db_field.name {db_field.name} request: {request}")
 
         if db_field.name == "advisor" or db_field.name == "co_advisor":
             # Filters advisors to professors and sorts by first name
             # Based on: http://stackoverflow.com/a/30627555
             professor_ids = [person.id for person in Person.objects.all() if person.is_professor]
             filtered_persons = Person.objects.filter(id__in=professor_ids).order_by('first_name')
-            print(filtered_persons)
+            # print(filtered_persons, filtered_persons)
             kwargs["queryset"] = filtered_persons
         elif db_field.name == "grad_mentor":
             # Filters grad mentor list to current grad students (either member or collaborator)
@@ -58,7 +58,7 @@ class PositionInline(admin.StackedInline):
                         and (person.is_current_member or person.is_current_collaborator)]
             
             filtered_persons = Person.objects.filter(id__in=grad_ids).order_by('first_name')
-            print(filtered_persons)
+            # print(filtered_persons, filtered_persons)
             kwargs["queryset"] = filtered_persons
 
         return super(PositionInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
@@ -80,7 +80,7 @@ class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
         if db_field.name == "author":
             current_member_ids = [person.id for person in Person.objects.all() if person.is_current_member]
             filtered_persons = Person.objects.filter(id__in=current_member_ids).order_by('first_name')
-            print(filtered_persons)
+            #print("filtered_persons", filtered_persons)
             kwargs["queryset"] = filtered_persons
         return super(NewsAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -153,7 +153,7 @@ class TalkAdmin(admin.ModelAdmin):
     # Based on: https://stackoverflow.com/a/17457828
     # Update: we no longer do this because sometimes we want to add a talk by a former member or collaborator
     def formfield_for_manytomany(self, db_field, request, **kwargs):
-        print("TalkAdmin.formfield_for_manytomany: db_field: {} db_field.name {} request: {}".format(db_field, db_field.name, request))
+        # print("TalkAdmin.formfield_for_manytomany: db_field: {} db_field.name {} request: {}".format(db_field, db_field.name, request))
         if db_field.name == "projects":
             kwargs["widget"] = widgets.FilteredSelectMultiple("projects", is_stacked=False)
         if db_field.name == "project_umbrellas":
@@ -177,7 +177,7 @@ class PosterAdmin(admin.ModelAdmin):
     search_fields = ['title', 'date']
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
-        print("PosterAdmin.formfield_for_manytomany: db_field: {} db_field.name {} request: {}".format(db_field, db_field.name, request))
+        # print("PosterAdmin.formfield_for_manytomany: db_field: {} db_field.name {} request: {}".format(db_field, db_field.name, request))
         if db_field.name == "projects":
             kwargs["widget"] = widgets.FilteredSelectMultiple("projects", is_stacked=False)
         if db_field.name == "authors":

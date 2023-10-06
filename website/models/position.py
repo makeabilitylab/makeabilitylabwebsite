@@ -3,6 +3,8 @@ from django.core.exceptions import ValidationError
 
 from datetime import date, datetime, timedelta
 
+import website.utils.ml_utils as ml_utils # for department abbreviations
+
 # from .person import Person
 
 class Position(models.Model):
@@ -82,7 +84,7 @@ class Position(models.Model):
     CURRENT_COLLABORATOR = "Current Collaborator"
     PAST_COLLABORATOR = "Past Collaborator"
 
-    department = models.CharField(max_length=50, blank=True, default="Computer Science")
+    department = models.CharField(max_length=50, blank=True, default="Allen School of Computer Science and Engineering")
     school = models.CharField(max_length=60, default="University of Washington")
 
     def get_start_date_short(self):
@@ -91,32 +93,15 @@ class Position(models.Model):
 
     def get_end_date_short(self):
         return self.end_date.strftime('%b %Y') if self.end_date is not None else "Present"
+    
+    def get_school_abbreviated(self):
+        """Returns an abbreviated version of the school field"""
+        return ml_utils.get_school_abbreviated(self.school)
 
     def get_department_abbreviated(self):
         """Returns an abbreviated version of the department field"""
-        dept_low = self.department.lower();
+        return ml_utils.get_department_abbreviated(self.department)
 
-        if "computer science" in dept_low and "engineering" in dept_low:
-            return 'CSE'
-        elif "computer science" in dept_low:
-            return 'CS'
-        elif 'computer engineering' in dept_low:
-            return 'CprE'
-        elif "information" in dept_low or "ischool" in dept_low:
-            return 'iSchool'
-        elif "hcde" in dept_low or "human centered design" in dept_low and "engineering" in dept_low:
-            return 'HCDE'
-        elif "building science" in dept_low:
-            return 'BuildSci'
-        elif "architecture" in dept_low:
-            return 'Arch'
-        elif "bioengineering" in dept_low:
-            return 'BioE'
-        elif self.department is not None:
-            return self.department[:3]
-        else:
-            return ""
-        
     def get_sorted_titles():
         """Static method returns a sorted list of title names"""
         return ("Professor", Position.RESEARCH_SCIENTIST, Position.POST_DOC, 
