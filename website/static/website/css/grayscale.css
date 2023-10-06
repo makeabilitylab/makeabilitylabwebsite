@@ -8,9 +8,11 @@
   margin-bottom: 0;
   border-bottom: 1px solid rgba(255,255,255,.3);
   text-transform: uppercase;
-  font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  /* font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif; */
+  font-family: roboto;
   background-color: #000;
   min-height: 44px;
+  font-variant: normal;
 }
 
 .navbar-custom .lab-text {
@@ -84,7 +86,8 @@
 }
 
 .navbar-white .navbar-brand img {
-  content: url("/static/website/img/logos/makelab_logo_black_no_text_100x67.png");
+  /* content: url("/static/website/img/logos/makelab_logo_black_no_text_100x67.png"); */
+  content: url("/static/website/img/logos/makelab_logo_v3_white_with_colors_no_text_100x68.png");
 }
 
 .navbar-white .navbar-toggle {
@@ -127,4 +130,43 @@
   .navbar-white.top-nav-collapse .navbar-brand img {
     content: url("/static/website/img/logos/makelab_logo_white_no_text_100x67.png");
   }
+}
+
+
+.navbar-custom .navbar-brand {
+  font-weight: normal;
+  font-size: 14px;
+}
+
+.navbar-custom .nav li a {
+  padding-left: 10px;
+  padding-right: 10px;
+  font-size: 14px;
+}
+
+.navbar-filter {
+  margin-bottom: 0;
+  min-height: 30px;
+}
+
+@media screen and (max-width: 767px) {
+  .navbar-nav {
+    float: left !important;
+  }
+}
+
+.navbar-filter .navbar-nav > li > a:hover,.navbar-filter .navbar-nav > li > a:focus {
+  background-color: transparent;
+  color: #23527c;
+  text-decoration: underline;
+}
+
+
+
+.navbar-white {
+  background-color: white;
+}
+
+.navbar-white .lab-text,.navbar-white a {
+  color: black;
 }

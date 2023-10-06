@@ -11,7 +11,7 @@
 .current-research-group-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-  grid-gap: 5px;
+  grid-gap: 15px;
   text-align: center;
   row-gap: 20px;
 }
@@ -48,8 +48,17 @@
 }
 
 .person-name{
-  margin-top: 2px;
-  font-weight:bolder;
+  margin-top: 4px;
+  font-weight: bolder;
+  margin-bottom: 0px;
+}
+
+.person-title{
+  font-size: 90%;
+}
+
+.person-affiliation{
+  font-size: 90%;
 }
 
 .person img{
