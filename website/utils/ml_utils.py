@@ -8,6 +8,53 @@ import random
 from django.conf import settings 
 from operator import itemgetter
 
+def get_school_abbreviated(school_name):
+    """Returns the school abbreviation for a given school name"""
+    school_low = school_name.lower()
+
+    if "washington" in school_low:
+        return "UW"
+    elif "maryland" in school_low:
+        return "UMD"
+    else:
+        school_low = school_low.replace(" of ", " ")
+        return create_acronym(school_low).upper()
+
+def create_acronym(name):
+    """Returns the acronym for a given name"""
+    acronym = ""
+    for word in name.split():
+        acronym += word[0]
+    return acronym
+
+
+def get_department_abbreviated(dept_name):
+    """Returns the department abbreviation for a given department name"""
+    dept_low = dept_name.lower()
+
+    if ("computer science" in dept_low and "engineering" in dept_low) or \
+        "allen school" in dept_low:
+        return 'CSE'
+    elif "computer science" in dept_low:
+        return 'CS'
+    elif 'computer engineering' in dept_low:
+        return 'CprE'
+    elif "information" in dept_low or "ischool" in dept_low:
+        return 'iSchool'
+    elif "hcde" in dept_low or ("human centered design" in dept_low and "engineering" in dept_low) or \
+        "human-centered design" in dept_low:
+        return 'HCDE'
+    elif "building science" in dept_low:
+        return 'BuildSci'
+    elif "architecture" in dept_low:
+        return 'Arch'
+    elif "bioengineering" in dept_low:
+        return 'BioE'
+    elif dept_name is not None:
+        return dept_name[:3]
+    else:
+        return "Unknown"
+
 def get_video_embed(video_url):
     """Returns proper embed code for a video url"""
 
@@ -43,6 +90,7 @@ def filter_incomplete_projects(projects):
     return filtered
 
 def sort_projects_by_most_recent_pub(projects, include_projects_with_no_artifacts=False):
+    """Sorts projects by most recent publications"""
     return sort_projects_by_most_recent_artifact(projects, include_projects_with_no_artifacts,
                                                  only_look_at_pubs=True)
 

@@ -32,6 +32,7 @@ class PositionRoleListFilter(admin.SimpleListFilter):
         """
         return (
             (None, _('Current member')), #default, see https://stackoverflow.com/a/16556771
+            ('graduated_phd_student', _('Graduated PhD student')),
             ('past_member', _('Past member')),
             ('current_collaborator', _('Current collaborator')),
             ('past_collaborator', _('Past collaborator')),
@@ -56,7 +57,7 @@ class PositionRoleListFilter(admin.SimpleListFilter):
         `self.value()`.
         """
 
-        print("queryset: self.value() = {} with type = {}".format(self.value(), type(self.value())))
+        # print("queryset: self.value() = {} with type = {}".format(self.value(), type(self.value())))
 
         # Compare the requested value (either True or False)
         # to decide how to filter the queryset.
@@ -83,6 +84,10 @@ class PositionRoleListFilter(admin.SimpleListFilter):
                     self.value() == "other":
                 filtered_person_ids.append(person.id)
             elif self.value() == "all":
+                filtered_person_ids.append(person.id)
+
+            # also check for graduated phd students
+            if self.value() == "graduated_phd_student" and person.is_graduated_phd_student:
                 filtered_person_ids.append(person.id)
 
         return queryset.filter(id__in = filtered_person_ids)
@@ -138,7 +143,7 @@ class PositionTitleListFilter(admin.SimpleListFilter):
         `self.value()`.
         """
 
-        print("queryset: self.value() = {} with type = {}".format(self.value(), type(self.value())))
+        # print("queryset: self.value() = {} with type = {}".format(self.value(), type(self.value())))
 
         filtered_person_ids = []
         for person in Person.objects.all():
@@ -185,7 +190,7 @@ class PubVenueTypeListFilter(admin.SimpleListFilter):
         `self.value()`.
         """
 
-        print("queryset: self.value() = {} with type = {}".format(self.value(), type(self.value())))
+        # print("queryset: self.value() = {} with type = {}".format(self.value(), type(self.value())))
 
         filtered_pub_ids = []
         for pub in Publication.objects.all():
@@ -238,12 +243,12 @@ class PubVenueListFilter(admin.SimpleListFilter):
         `self.value()`.
         """
 
-        print("queryset: self.value() = {} with type = {}".format(self.value(), type(self.value())))
+        # print("queryset: self.value() = {} with type = {}".format(self.value(), type(self.value())))
 
         filtered_pub_ids = []
 
         for pub in Publication.objects.all():
-            print("queryset: pub.book_title_short.lower() = {} self.value() = {}".format(pub.book_title_short.lower(), self.value()))
+            # print("queryset: pub.book_title_short.lower() = {} self.value() = {}".format(pub.book_title_short.lower(), self.value()))
             if self.value() is None:
                 filtered_pub_ids.append(pub.id)
             elif pub.book_title_short != None and self.value().lower() in pub.book_title_short.lower():
