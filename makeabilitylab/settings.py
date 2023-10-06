@@ -153,14 +153,14 @@ INSTALLED_APPS = [
     # python manage.py shell_plus
     # https://opensourcehacker.com/2014/08/13/turbocharge-your-python-prompt-and-django-shell-with-ipython-notebook/
     'django_extensions',
-    'image_cropping',
-    'easy_thumbnails',
+    'image_cropping', # for cropping uploaded images: https://github.com/jonasundderwolf/django-image-cropping
+    'easy_thumbnails', # for dynamically creating thumbnails: https://github.com/SmileyChris/easy-thumbnails
     'sortedm2m',
     'ckeditor',
     'ckeditor_uploader',
     
     # Removed sortedm2m_filter_horizontal_widget as incompatible with Django 4
-    # 'sortedm2m_filter_horizontal_widget',
+    # 'sortedm2m_filter_horizontal_widget', # https://github.com/svleeuwen/sortedm2m-filter-horizontal-widget
     'rest_framework',
 
     # Adding django-debug-toolbar, which is recommended by Django

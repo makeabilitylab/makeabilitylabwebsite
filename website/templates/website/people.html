@@ -8,129 +8,87 @@
 {% load ml_tags %}
 
 {% block stylesheets %}
-
     <link rel="stylesheet" href="{% static 'website/css/people.css' %}">
-
 {% endblock %}
 
-{% block external_scripts %}
-    <script src="{% static 'website/js/peopleHeightFix.js' %}"></script>
-    <script src="{% static 'website/js/peopleMouseoverFix.js' %}"></script>
-    <script src="{% static 'website/js/isotope/isotope-init.js' %}?version=3"></script>
-    <script src="{% static 'website/js/isotope/isotope-filterBar.js' %}?version=2"></script>
-    <script src="{% static 'website/js/isotope/isotope-filtering.js' %}"></script>
-    <script src="{% static 'website/js/isotope.pkgd.min.js' %}"></script>
-{% endblock %}
 
 {% block maincarousel %}
-    {% include "snippets/display_short_carousel_snippet.html" %}
+    {% comment %} Keep this empty to not have a carousel {% endcomment %}
 {% endblock %}
 
 {% block content %}
-    <div class="isotope_data">
-        <div class= "isotope_data_container" id="isotope_data_container_current_members" style="display:none">
-            sortFilterContainer(.sortingAndFiltering,str)
-            gridName(.grid_current_members,str)
-            filteringKeywordContainer(#filterKeywords_Current_Members,str)
-            sideBarContainer(#filterBar_Current_Members,str)
-            scrollTop(.currentteam,str)
+  <div id="content" class="container" style="margin-top:80px">
+    <div id="makelab-people" class="makelab-content-container">
+      <h1>People</h1>
+      <div class="current-research-group-grid" style="margin-top:20px">
+        {% for position in current_members %}
+          <div class="person">
+            <img src="{% thumbnail position.person.image position.person.get_thumbnail_size_as_str box=position.person.cropping crop detail upscale %}" 
+                 alt="{{ position.person.get_full_name }}" width=90%"/>
+            
+            <div class="person-name">{{ position.person.get_full_name }}</div>
+            {% if position.person.last_name == "Froehlich" %}
+              <div class="person-title">Lab Director</div>
+            {% else %}
+              <div class="person-title">{{ position.title }}</div>
+            {% endif %}
+            {% comment %} <div class="person-affiliation">{{ position.get_department_abbreviated }}</div> {% endcomment %}
+            <div class="person-affiliation">{{ position.get_school_abbreviated }} {{ position.get_department_abbreviated }} </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      {% comment %} {% if graduated_phd_students %}
+        <h2>Graduated PhD Students</h2>
+        <div class="current-research-group-grid" style="margin-top:20px">
+          {% for person in graduated_phd_students %}
+            <div class="person">
+              <img src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop detail upscale %}" 
+                  alt="{{ person.get_full_name }}" width=90%"/>
+              
+              <div class="person-name">{{ person.get_full_name }}</div>
+              
+              {% with position=person.get_latest_phd_student_position %} 
+                {% with dissertation=person.get_dissertation %}  
+                <div class="person-title">
+                  PhD {{ position.get_school_abbreviated }} {{ position.get_department_abbreviated }}, {{ dissertation.date.year }}
+                </div>
+              
+                <div class="dissertation">Dissertation: <a href="{{ dissertation.pdf_file }}">{{ dissertation }}</a></div>
+                <div class="next-position">First Position: <a href="{{ person.next_position_url }}">{{ person.next_position }}</a></div>
+                {% endwith %}
+              {% endwith %}
+            </div>
+          {% endfor %}
         </div>
-        <div class= "isotope_data_container" id="isotope_data_container_collaborators" style="display:none">
-            sortFilterContainer(.sortingAndFiltering,str)
-            gridName(.grid_collaborators,str)
-            filteringKeywordContainer(#filterKeywords_Collaborators,str)
-            sideBarContainer(#filterBar_Collaborators,str)
-            scrollTop(.collaborators,str)
+      {% endif %} {% endcomment %}
+
+      {% if graduated_phd_students %}
+        <h2 style="margin-top:40px">Graduated PhD Students</h2>
+        <div class="graduated-phds-grid" style="margin-top:20px">
+          {% for person in graduated_phd_students %}
+            <div class="person graduated-phd">
+              <img src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop detail upscale %}" 
+                  alt="{{ person.get_full_name }}" width=50%"/>
+              
+              <div class="graduated-phd-name">Dr. {{ person.get_full_name }}</div>
+              
+              {% with position=person.get_latest_phd_student_position %} 
+                {% with dissertation=person.get_dissertation %}  
+                <div class="person-title">
+                  PhD {{ position.get_school_abbreviated }} {{ position.get_department_abbreviated }}, {{ dissertation.date.year }}
+                </div>
+              
+                <div class="dissertation">Dissertation: <a href="{{ dissertation.pdf_file }}">{{ dissertation }}</a></div>
+                <div class="next-position">First Position: <a href="{{ person.next_position_url }}">{{ person.next_position }}</a></div>
+                {% endwith %}
+              {% endwith %}
+              {% comment %} <div class="person-title">{{ position.get_department_abbreviated }} {{ position.title }}</div>
+              <div class="person-affiliation">{{ position.get_school_abbreviated }}</div> {% endcomment %}
+            </div>
+          {% endfor %}
         </div>
-        <div class= "isotope_data_container" id="isotope_data_container_alumni" style="display:none">
-            sortFilterContainer(.sortingAndFiltering,str)
-            gridName(.grid_alumni,str)
-            filteringKeywordContainer(#filterKeywords_Alumni,str)
-            sideBarContainer(#filterBar_Alumni,str)
-            scrollTop(.alumni,str)
-        </div>
-        <div class= "isotope_data_container" id="isotope_data_container_past_collaborators" style="display:none">
-            sortFilterContainer(.sortingAndFiltering,str)
-            gridName(.grid_past_collaborators,str)
-            filteringKeywordContainer(#filterKeywords_Past_Collaborators,str)
-            sideBarContainer(#filterBar_Past_Collaborators,str)
-            scrollTop(.pastcollaborators,str)
-        </div>
+      {% endif %}
     </div>
-
-
-    <div id="content" class="container" data-spy="scroll" data-target="#navbar-scroll" data-offset="50" style="width:100%; max-width: 1170px">
-        <div class="navbar navbar-filter" role="navigation">
-            <ol class="navbar-right breadcrumb">
-                {% if map_status_to_headers|get_item:"Current Member"|get_item:"headerText"|length > 0 %}
-                    <li><a href="#currentteam" class="scroll">Current Team</a></li> {% endif %}
-                {% if map_status_to_headers|get_item:"Past Member"|get_item:"headerText"|length > 0 %}
-                    <li><a href="#alumni" class="scroll">Alumni</a></li> {% endif %}
-                {% if map_status_to_headers|get_item:"Current Collaborator"|get_item:"headerText"|length > 0 %}
-                    <li><a href="#collaborators" class="scroll">Collaborators</a></li> {% endif %}
-                {% if map_status_to_headers|get_item:"Past Collaborator"|get_item:"headerText"|length > 0 %}
-                    <li><a href="#pastcollaborators" class="scroll">Past Collaborators</a></li> {% endif %}
-            </ol>
-        </div>
-
-        {% if map_status_to_headers|get_item:"Current Member"|get_item:"headerText"|length > 0 %}
-            <div class="content" style="width:100%">
-                <h1 class= "currentteam" name="currentteam" style="margin-top:0">Current Team</h1>
-                <div id="filterBar_Current_Members" style="margin-bottom: 7px">
-                    <div id="filterKeywords_Current_Members">
-                        {% include "snippets/display_people_header_snippet.html" with member_status="Current Member" %}
-                    </div>
-                </div>
-            </div>
-
-            <div class = "grid_current_members">
-                {% include "snippets/display_people_snippet.html" with member_status="Current Member" %}
-            </div>
-        {% endif %}
-
-        {% if map_status_to_headers|get_item:"Current Collaborator"|get_item:"headerText"|length > 0 %}
-            <div class="content" style="width:100%">
-                <h1 class= "collaborators" name="collaborators">Current Collaborators</h1>
-                <div id="filterBar_Collaborators" style="margin-bottom: 7px">
-                    <div id="filterKeywords_Collaborators">
-                        {% include "snippets/display_people_header_snippet.html" with member_status="Current Collaborator" %}
-                    </div>
-                </div>
-            </div>
-            <div class = "grid_collaborators" style="width:100%">
-                 {% include "snippets/display_people_snippet.html" with member_status="Current Collaborator" %}
-            </div>
-        {% endif %}
-
-        {% if map_status_to_headers|get_item:"Past Member"|get_item:"headerText"|length > 0 %}
-            <div class="content" style="width:100%">
-                <h1 class= "alumni" name="alumni">Alumni</h1>
-                <div id="filterBar_Alumni" style="margin-bottom: 7px">
-                    <div id="filterKeywords_Alumni">
-                        {% include "snippets/display_people_header_snippet.html" with member_status="Past Member" %}
-                    </div>
-                </div>
-            </div>
-
-            <div class = "grid_alumni">
-                {% include "snippets/display_people_snippet.html" with member_status="Past Member" %}
-            </div>
-        {% endif %}
-
-        {% if map_status_to_headers|get_item:"Past Collaborator"|get_item:"headerText"|length > 0 %}
-            <div class="content" style="width:100%">
-                <h1 class= "pastcollaborators" name="pastcollaborators">Past Collaborators</h1>
-                <div id="filterBar_Past_Collaborators" style="margin-bottom: 7px">
-                    <div id="filterKeywords_Past_Collaborators">
-                        {% include "snippets/display_people_header_snippet.html" with member_status="Past Collaborator" %}
-                    </div>
-                </div>
-            </div>
-
-            <div class = "grid_past_collaborators">
-                {% include "snippets/display_people_snippet.html" with member_status="Past Collaborator" %}
-            </div>
-        {% endif %}
-
-    </div>
+  </div>
 {% endblock %}
