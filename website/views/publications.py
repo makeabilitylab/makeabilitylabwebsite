@@ -39,7 +39,8 @@ def publications(request):
                'banners': displayed_banners,
                'filter': filter,
                'groupby': groupby,
-               'debug': settings.DEBUG}
+               'debug': settings.DEBUG,
+               'navbar_white': True}
     
     func_end_time = time.perf_counter()
     _logger.debug(f"Rendered {publications.count()} publications in {func_end_time - func_start_time:0.4f} seconds")

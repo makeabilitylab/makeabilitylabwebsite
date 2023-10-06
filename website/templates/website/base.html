@@ -138,31 +138,23 @@
 {% block navbar %}
     <!-- Navigation -->
     <nav class="navbar navbar-custom
-            {% with request.resolver_match.url_name as url_name %}{% if url_name == 'member' or url_name == 'news' %}navbar-white{% endif %}{% endwith %} navbar-fixed-top"
-         role="navigation">
+            {% var_exists 'navbar_white' as navbar_white_exists %}
+            {% if navbar_white_exists and navbar_white%}navbar-white{% endif %}
+            navbar-fixed-top" role="navigation">
         <div class="container-fluid" style="width:100%; max-width:1170px; margin:auto">
             <div class="row">
                 <div class="col-xs-12" style="padding:0px">
 
                     <div class="navbar-header">
-
                         <button style="" type="button" class="navbar-toggle" data-toggle="collapse"
                                 data-target=".navbar-main-collapse">
                             <i class="fa fa-bars"></i>
                         </button>
 
                         <a class="navbar-brand page-scroll" href="{% url 'website:index' %}">
-                            <!-- <i class="fa fa-gears"></i>  <span style="font-family: roboto-bold">make</span>ability</span> lab-->
-                            <!-- <img src="{% static 'website/img/logos/makelab_logo_bolder_white_no_text_100x68.png' %}" height="20" /> -->
-                            {# TODO: the text following the logo does not look vertically centered. Should be fixed. #}
-                            <img src="{% static 'website/img/logos/makelab_logo_white_no_text_100x67.png' %}"
-                                 height="20"/>
-
-                            <div class="lab-text"><span style="font-family: roboto-bold; margin-left: 2px;">Make</span>ability</span>
-                                Lab
-                            </div>
+                            <img src="{% static 'website/img/logos/makelab_logo_white_no_text_100x67.png' %}" height="20"/>
+                            <div class="lab-text"><span style="font-family: roboto-bold; margin-left: 2px;">Make</span>ability</span>Lab</div>
                         </a>
-
                     </div>
 
                     <div class="collapse navbar-collapse navbar-main-collapse">
@@ -196,13 +188,8 @@
                         </ul>
                     </div>
                 </div>
-
-                <!-- Collect the nav links, forms, and other content for toggling -->
-                <!-- /.navbar-collapse -->
             </div>
         </div>
-
-        <!-- /.container -->
     </nav>
 {% endblock %}
 

@@ -40,7 +40,8 @@ def people(request):
     context = {
         'current_members': current_members,
         'graduated_phd_students': list_of_graduated_phd_students,
-        'debug': settings.DEBUG
+        'debug': settings.DEBUG,
+        'navbar_white': True
     }
 
     # People rendering
