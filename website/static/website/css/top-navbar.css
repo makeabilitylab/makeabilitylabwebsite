@@ -1,5 +1,4 @@
 /*!
- * Start Bootstrap - Grayscale Bootstrap Theme (http://startbootstrap.com)
  * The code below is based on the Grayscale Bootstrap Theme (http://startbootstrap.com)
  * Only the navbar styles were preserved and even then some of these styles have been modified
  */
@@ -13,6 +12,10 @@
   background-color: #000;
   min-height: 44px;
   font-variant: normal;
+}
+
+.navbar-white{
+  font-weight:600;
 }
 
 .navbar-custom .lab-text {
@@ -66,7 +69,8 @@
 }
 
 .navbar-white .nav li a:hover {
-  color: rgba(0,0,0,.6);
+  color: rgba(0,0,0,1);
+  text-decoration: underline;
 }
 
 .navbar-custom .nav li a:focus,.navbar-custom .nav li a:active {
@@ -91,6 +95,15 @@
 }
 
 .navbar-white .navbar-toggle {
+  color: black;
+}
+
+.navbar-white .nav li.active a:hover {
+  color: rgba(0,0,0,1);
+  text-decoration: underline;
+}
+
+.navbar-white .nav li.active a {
   color: black;
 }
 

@@ -16,12 +16,30 @@
   row-gap: 20px;
 }
 
+@media screen and (max-width: 992px) {
+  .current-research-group-grid {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .current-research-group-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
 .graduated-phds-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   text-align: left;
   grid-gap: 15px;
   row-gap: 20px;
+}
+
+@media screen and (max-width: 992px) {
+  .graduated-phds-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .graduated-phds-grid img{
