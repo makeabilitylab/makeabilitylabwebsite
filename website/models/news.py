@@ -13,18 +13,17 @@ from .project import Project
 
 class News(models.Model):
     title = models.CharField(max_length=255)
-    #date = models.DateTimeField(default=timezone.now)
-    date = models.DateField(default=date.today)  # check this line, might be diff
+    
+    date = models.DateField(default=date.today) 
     author = models.ForeignKey(Person, null=True, on_delete=models.SET_NULL)
     content = RichTextUploadingField(config_name='default')
+
     # Following the scheme of above thumbnails in other models
     image = models.ImageField(blank=True, upload_to=UniquePathAndRename("news", True), max_length=255)
-    image.help_text = 'You must select "Save and continue editing" at the bottom of the page after uploading a new image for cropping. Please note that since we are using a responsive design with fixed height banners, your selected image may appear differently on various screens.'
+    image.help_text = 'You must select "Save and continue editing" at the bottom of the page after\
+          uploading a new image for cropping. '
 
     # Copied from person model
-    # LS: Added image cropping to fixed ratio
-    # See https://github.com/jonasundderwolf/django-image-cropping
-    # size is "width x height"
     # TODO: update with desired aspect ratio and maximum resolution
     cropping = ImageRatioField('image', '245x245', size_warning=True)
 

@@ -24,9 +24,19 @@
   }
 }
 
+.news-image{
+  overflow: hidden;
+}
+
 .news-card img{
   border-radius: 5%;
   border: 1px solid lightgray;
+  width: 100%;
+  transition: transform .2s;
+}
+
+.news-card img:hover {
+  transform: scale(1.1);
 }
 
 .news-card-headline {

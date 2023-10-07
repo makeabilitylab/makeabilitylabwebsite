@@ -24,18 +24,21 @@
 {% block content %}
   <div id="content" class="container">
     <div id="makelab-news" class="makelab-content-container">
+      {% comment %} TODO: add zoom in image on hover {% endcomment %}
       <h1>Latest News</h1>
       <div class="news-grid">
         {% for n in news %}
           <div class="news-card">
-            <a href="{% url 'website:news' news_id=n.id %}">
-              {% if n.image %}
-                <img src="{% thumbnail n.image 363x217 box=news.cropping crop detail upscale %}" style="width:100%" />
-              {% else %}
-                <img src="{% static 'website/img/news_icon.png' %}" style="max-height:217px; width:100%; overflow: hidden;" />
-              {% endif %}
-            </a>
-
+            <div class="news-image">
+              <a href="{% url 'website:news' news_id=n.id %}">
+                {% if n.image %}
+                  <img src="{% thumbnail n.image 363x217 box=news.cropping crop detail upscale %}" alt="{{n.alt_text}}"/>
+                {% else %}
+                  <img src="{% static 'website/img/news_icon.png' %}" style="max-height:217px;" 
+                    alt="This is a default news page icon for when there are no thumbnails; it looks like a newspaper" />
+                {% endif %}
+              </a>
+            </div>
             <h3 class="news-card-headline"><a href="{% url 'website:news' news_id=n.id %}">{{ n.title }}</a></h3>
             <div class="news-card-byline">
               <span class="news-card-author">BY <a href="{% url 'website:member' member_id=n.author.id %}">{{ n.author }}</a></span>
