@@ -1,9 +1,8 @@
-{#	TODO: limit keywords/projects by page size to avoid overflow #}
-{#	TODO: auto-add using bibtex #}
+{% extends 'website/base.html' %}
 
-{% extends "website/base.html" %}
-
-{% block pagetitle %}News{% endblock %}
+{% block pagetitle %}
+  News
+{% endblock %}
 
 {% load static %}
 {% load thumbnail %}
@@ -11,109 +10,60 @@
 {% load ml_tags %}
 
 {% block stylesheets %}
-
-<link rel="stylesheet" href="{% static 'website/css/news-listing.css' %}?version=1">
-<link rel="stylesheet" href="{% static 'website/css/fixed_side_bar.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/jquery-ui.min.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/jquery-ui.theme.min.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/news-listing.css' %}?version=1" />
+  {% comment %} <link rel="stylesheet" href="{% static 'website/css/news-listing-old.css' %}?version=1" /> {% endcomment %}
+  <link rel="stylesheet" href="{% static 'website/css/jquery-ui.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'website/css/jquery-ui.theme.min.css' %}" />
 {% endblock %}
 
-{#{% block external_scripts %}#}
-{#    <script src="{% static 'website/js/isotope.pkgd.min.js' %}"></script>#}
-{#    <script src="{% static 'website/js/fixedSideBar.js' %}"></script>#}
-{#    <script src="{% static 'website/js/filterBar.js' %}"></script>#}
-{#    <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>#}
-{#    <script src="{% static 'website/js/citationPopover.js' %}"></script>#}
-{#{% endblock %}#}
-
-{#{% block scripts %}#}
-{#    var newslisting = [#}
-{#        {% for n in news %}#}
-{#        {#}
-{#            "id": "A.###",#}
-{#            "title": "{{ n.title }}",#}
-{#            "author": {#}
-{#                "name": "{{ n.author.get_full_name }}",#}
-{#                "first_name": "{{ n.author.first_name }}",#}
-{#                "middle_name": "{{ n.author.middle_name }}",#}
-{#                "last_name": "{{ n.author.last_name }}",#}
-{#                "link": "{% url 'website:member' n.author.id %}"#}
-{#            },#}
-{#            "date": new Date("{{ n.date }}"),#}
-{#            "content": "Fixed Content",#}
-{#            "link": {% url 'website:news' n.id %}#}
-{#            "projects": [#}
-{#                {% for p in n.project.all %}#}
-{#                    "{{ p.short_name }}",#}
-{#                {% endfor %}#}
-{#            ]#}
-{#        },#}
-{#        {% endfor %}#}
-{#    ];#}
-{##}
-{#    initialFilter = "{{ filter }}";#}
-{#    initialGroupBy = "{{ groupby }}";#}
-{##}
-{#{% endblock %}#}
-
 {% block maincarousel %}
-    {% include "snippets/display_short_carousel_snippet.html" %}
+  {% comment %}Remove the carousel{% endcomment %}
+  {% comment %} {% include 'snippets/display_short_carousel_snippet.html' %} {% endcomment %}
 {% endblock %}
 
 {% block content %}
-<div id="content" class="container">
-
-	<div class="news-listing-list" id="main-content">
+  <div id="content" class="container">
+    <div id="makelab-news" class="makelab-content-container">
+      <h1>Latest News</h1>
+      <div class="news-grid">
         {% for n in news %}
-	    <div class="news-listing-template">
-                <div class="news-listing-image">
-                    <a href="{% url 'website:news' news_id=n.id %}">
-                    {% if n.image %}
-                        <img src="{% thumbnail n.image 200x200 box=news.cropping crop detail %}" class="news-listing-image-image img-responsive"/>
-                    {% else %}
-                        <img src="{% static 'website/img/news_icon.png' %}" class="big-news-image" style="width: 110px">
-                    {% endif %}
-                    </a>
-                </div>
-                <div class="news-listing-info">
-                    <p class="news-listing-artifact-title"><a href="{% url 'website:news' news_id=n.id %}">{{ n.title }}</a></p>
-                    <p class="news-listing-author-outside" style="margin-bottom: 10px;">
-                        <span class="news-listing-author"><a href="{% url 'website:member' member_id=n.author.id %}">{{ n.author }}</a> &mdash;</span>
-                            <span class="news-listing-author-last">{{ n.short_date }}</span>
-                    </p>
-                    <p class="news-listing-content">
-                        {% autoescape off %}
-                            {{ n.get_shortened_content }}
-                        {% endautoescape %}
-                        <p><a href="{% url 'website:news' news_id=n.id %}">[read more]</a></p>
-                    </p>
-                </div>
+          <div class="news-card">
+            <a href="{% url 'website:news' news_id=n.id %}">
+              {% if n.image %}
+                <img src="{% thumbnail n.image 363x217 box=news.cropping crop detail upscale %}" style="width:100%" />
+              {% else %}
+                <img src="{% static 'website/img/news_icon.png' %}" style="max-height:217px; width:100%; overflow: hidden;" />
+              {% endif %}
+            </a>
 
+            <h3 class="news-card-headline"><a href="{% url 'website:news' news_id=n.id %}">{{ n.title }}</a></h3>
+            <div class="news-card-byline">
+              <span class="news-card-author">BY <a href="{% url 'website:member' member_id=n.author.id %}">{{ n.author }}</a></span>
+              <span class="news-card-date">• {{ n.short_date }}</span>
             </div>
+          </div>
         {% endfor %}
-        </div>
-        <div class="container">
-            <div class="news-listing-pagination">
-            {% if news.has_other_pages %}
-                      <ul class="pagination" style="margin-right: auto; margin-left: auto">
-                            {% if news.has_previous %}
-                                <li><a href="?page={{ news.previous_page_number }}">Newer</a></li>
-                            {% else %}
-                            {% endif %}
-                            {% for i in news.paginator.page_range %}
-                                {% if news.number == i %}
-                                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
-                                {% else %}
-                                    <li><a href="?page={{ i }}">{{ i }}</a></li>
-                                {% endif %}
-                            {% endfor %}
-                                {% if news.has_next %}
-                                    <li><a href="?page={{ news.next_page_number }}">Older</a></li>
-                                {% else %}
-                            {% endif %}
-                      </ul>
-                {% endif %}
-                </div>
-            </div>
+      </div>
     </div>
+
+    <div class="news-pagination">
+      {% if news.has_other_pages %}
+        <ul class="pagination">
+          {% if news.has_previous %}
+            <li><a href="?page={{ news.previous_page_number }}">Newer</a></li>
+          {% endif %}
+          {% for i in news.paginator.page_range %}
+            {% if news.number == i %}
+              <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+            {% else %}
+              <li><a href="?page={{ i }}">{{ i }}</a></li>
+            {% endif %}
+          {% endfor %}
+          {% if news.has_next %}
+            <li><a href="?page={{ news.next_page_number }}">Older</a></li>
+          {% endif %}
+        </ul>
+      {% endif %}
+    </div>
+  </div>
 {% endblock %}
