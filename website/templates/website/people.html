@@ -19,49 +19,28 @@
 {% block content %}
   <div id="content" class="container" style="margin-top:80px">
     <div id="makelab-people" class="makelab-content-container">
-      <h1>People</h1>
+      <h1>People</h1>  
       <div class="current-research-group-grid" style="margin-top:20px">
         {% for position in current_members %}
-          <div class="person">
-            <img src="{% thumbnail position.person.image position.person.get_thumbnail_size_as_str box=position.person.cropping crop detail upscale %}" 
-                 alt="{{ position.person.get_full_name }}" width=90%"/>
-            
-            <div class="person-name">{{ position.person.get_full_name }}</div>
-            {% if position.person.last_name == "Froehlich" %}
-              <div class="person-title">Lab Director</div>
-            {% else %}
-              <div class="person-title">{{ position.title }}</div>
-            {% endif %}
-            {% comment %} <div class="person-affiliation">{{ position.get_department_abbreviated }}</div> {% endcomment %}
-            <div class="person-affiliation">{{ position.get_school_abbreviated }} {{ position.get_department_abbreviated }} </div>
-          </div>
-        {% endfor %}
-      </div>
-
-      {% comment %} {% if graduated_phd_students %}
-        <h2>Graduated PhD Students</h2>
-        <div class="current-research-group-grid" style="margin-top:20px">
-          {% for person in graduated_phd_students %}
+          {% with person=position.person %}
             <div class="person">
-              <img src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop detail upscale %}" 
-                  alt="{{ person.get_full_name }}" width=90%"/>
+              <img class="swap-image" onmouseover="swapImage(this)" onmouseout="swapImage(this)"
+                  src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop detail upscale %}" 
+                  alt="{{ person.get_full_name }}" 
+                  data-alt-src="{% thumbnail person.easter_egg person.get_thumbnail_size_as_str box=person.easter_egg_crop crop detail upscale %}" 
+                  width=90%"/>
               
               <div class="person-name">{{ person.get_full_name }}</div>
-              
-              {% with position=person.get_latest_phd_student_position %} 
-                {% with dissertation=person.get_dissertation %}  
-                <div class="person-title">
-                  PhD {{ position.get_school_abbreviated }} {{ position.get_department_abbreviated }}, {{ dissertation.date.year }}
-                </div>
-              
-                <div class="dissertation">Dissertation: <a href="{{ dissertation.pdf_file }}">{{ dissertation }}</a></div>
-                <div class="next-position">First Position: <a href="{{ person.next_position_url }}">{{ person.next_position }}</a></div>
-                {% endwith %}
-              {% endwith %}
+              {% if person.last_name == "Froehlich" %}
+                <div class="person-title">Lab Director</div>
+              {% else %}
+                <div class="person-title">{{ position.title }}</div>
+              {% endif %}
+              <div class="person-affiliation">{{ position.get_school_abbreviated }} {{ position.get_department_abbreviated }} </div>
             </div>
-          {% endfor %}
-        </div>
-      {% endif %} {% endcomment %}
+          {% endwith %}
+        {% endfor %}
+      </div>
 
       {% if graduated_phd_students %}
         <h2 style="margin-top:40px">Graduated PhD Students</h2>
@@ -91,4 +70,23 @@
       {% endif %}
     </div>
   </div>
+
+  <script>
+    {% comment %} window.onload = function() {
+      var images = document.getElementsByClassName('swap-image');
+      for (var i = 0; i < images.length; i++) {
+          images[i].addEventListener('mouseover', swapImage, false);
+          images[i].addEventListener('mouseout', swapImage, false);
+      }
+    } {% endcomment %}
+    
+    function swapImage(imgElement) {
+      let temp = imgElement.src;
+      imgElement.src = imgElement.dataset.altSrc;
+      imgElement.dataset.altSrc = temp;
+      console.log("temp", temp);
+      console.log("imgElement.dataset", imgElement.dataset);
+      console.log("imgElement.dataset.altSrc", imgElement.dataset.altSrc);
+    }
+  </script>
 {% endblock %}
