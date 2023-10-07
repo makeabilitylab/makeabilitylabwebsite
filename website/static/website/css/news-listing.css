@@ -24,6 +24,11 @@
   }
 }
 
+.news-card img{
+  border-radius: 5%;
+  border: 1px solid lightgray;
+}
+
 .news-card-headline {
   font-size: 16px;
   margin-top: 5px;
