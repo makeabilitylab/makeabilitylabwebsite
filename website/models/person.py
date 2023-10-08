@@ -7,6 +7,7 @@ import website.utils.fileutils as ml_fileutils
 # For caching properties, see: https://docs.djangoproject.com/en/4.2/ref/utils/#django.utils.functional.cached_property
 from django.utils.functional import cached_property 
 
+from django.utils.safestring import mark_safe # for the html we use in help_text
 
 import re
 from datetime import date, datetime, timedelta
@@ -15,6 +16,11 @@ from image_cropping import ImageRatioField
 
 from .position import Position
 from django.apps import apps # to solve circular import with importing Publications
+
+import logging # for logging
+
+# This retrieves a Python logging instance (or creates it)
+_logger = logging.getLogger(__name__)
 
 # Special character mappings
 special_chars = {
@@ -58,9 +64,16 @@ class Person(models.Model):
     # See https://github.com/jonasundderwolf/django-image-cropping
     cropping = ImageRatioField('image', get_thumbnail_size_as_str(), size_warning=True)
 
-    # This is the hover image
+    # This is the hover image (aka easter egg)
     easter_egg = models.ImageField(blank=True, null=True, upload_to="person", max_length=255)
+    easter_egg.help_text = mark_safe("You do not have to set this field. It defaults to a Star Wars\
+            Rebels LEGO character from <a href='https://github.com/makeabilitylab/makeabilitylabwebsite/tree/master/media/images/StarWarsFiguresFullSquare/Rebels'>here</a>\
+            but you can use whatever you want. This image is shown on mouseover on the people.html page.")
+    
     easter_egg_crop = ImageRatioField('easter_egg', get_thumbnail_size_as_str(), size_warning=True)
+    easter_egg_crop.help_text = mark_safe("This image defaults to a Star Wars LEGO figure from\
+        <a href='https://brickipedia.fandom.com/wiki/Star_Wars'>Brickipedia's Star War page</a>\
+        but you can set it to anything you want and crop it appropriately here")
 
     @cached_property
     def is_graduated_phd_student(self):
@@ -416,16 +429,25 @@ class Person(models.Model):
         self.url_name = url_name_cleaned
 
         # Check if their headshot image is not set. If not, set to random star war image
+       
         if not self.image:
+            _logger.debug(f"{self.get_full_name()} has NO image set. Setting to random star wars image")
             rand_star_wars_filename = ml_fileutils.get_path_to_random_starwars_image()
             rand_star_wars_image = File(open(rand_star_wars_filename, 'rb'))
             self.image = rand_star_wars_image
+            _logger.debug(f"{self.get_full_name()}'s image has been set to {rand_star_wars_filename} with image: {self.image}")
+        else:
+            _logger.debug(f"{self.get_full_name()} has the image: {self.image} with cropping: {self.cropping}")
 
         # Check if their easter egg image is not set. If not, set to random star war image
-        if self.easter_egg is None: 
+        if not self.easter_egg: 
+            _logger.debug(f"{self.get_full_name()} has no hover (easter egg) image set. Setting to random star wars image")
             rand_star_wars_filename = ml_fileutils.get_path_to_random_starwars_image()
             rand_star_wars_image = File(open(rand_star_wars_filename, 'rb'))
             self.easter_egg = rand_star_wars_image
+            _logger.debug(f"{self.get_full_name()}'s hover image has been set to {rand_star_wars_filename} with image: {self.easter_egg}")
+        else:
+            _logger.debug(f"{self.get_full_name()} has the hover (easter egg) image: {self.easter_egg} with cropping: {self.easter_egg_crop}")
 
         super(Person, self).save(*args, **kwargs)
 
