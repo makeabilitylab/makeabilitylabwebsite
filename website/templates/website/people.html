@@ -17,7 +17,7 @@
 {% endblock %}
 
 {% block content %}
-  <div id="content" class="container" style="margin-top:80px">
+  <div id="content" class="container">
     <div id="makelab-people" class="makelab-content-container">
       <h1>People</h1>  
       <div class="current-research-group-grid" style="margin-top:20px">
@@ -48,7 +48,10 @@
           {% for person in graduated_phd_students %}
             <div class="person graduated-phd">
               <img src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop detail upscale %}" 
-                  alt="{{ person.get_full_name }}" width=50%"/>
+                  alt="{{ person.get_full_name }}"/> 
+
+              <img class="hover" src="{% thumbnail person.easter_egg person.get_thumbnail_size_as_str box=person.easter_egg_crop crop detail upscale %}" 
+                  alt="{{ person.get_full_name }}"/>
               
               <div class="graduated-phd-name">Dr. {{ person.get_full_name }}</div>
               
