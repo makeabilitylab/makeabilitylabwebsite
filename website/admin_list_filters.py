@@ -65,12 +65,13 @@ class PositionRoleListFilter(admin.SimpleListFilter):
         filtered_person_ids = []
         for person in Person.objects.all():
             if person.is_current_member is True:
-                print("{} is_current_member(): {} | self.value(): {} | equals? {} |\
-                      type(member): {} | type(self.value): {}".format(person.get_full_name(),
-                                                                    person.is_current_member, self.value(),
-                                                                    person.is_current_member is self.value(),
-                                                                    type(person.is_current_member),
-                                                                    type(self.value())))
+                # print("{} is_current_member(): {} | self.value(): {} | equals? {} |\
+                #       type(member): {} | type(self.value): {}".format(person.get_full_name(),
+                #                                                     person.is_current_member, self.value(),
+                #                                                     person.is_current_member is self.value(),
+                #                                                     type(person.is_current_member),
+                #                                                     type(self.value())))
+                pass
             if person.is_current_member is True and self.value() is None:
                 filtered_person_ids.append(person.id)
             elif person.is_alumni_member is True and person.is_current_member is False and self.value() == "past_member":
