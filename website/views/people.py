@@ -74,7 +74,6 @@ def people(request):
         if title in map_title_to_past_member_positions:
             titles_in_order.append(title)
 
-
     context = {
         'current_members': current_member_positions,
         'graduated_phd_students': list_of_graduated_phd_students,
