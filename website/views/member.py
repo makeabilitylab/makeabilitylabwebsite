@@ -50,6 +50,7 @@ def member(request, member_id):
                'projects' : projects,
                'banners': displayed_banners,
                'debug': settings.DEBUG,
+               'navbar_white': True,
                'page_title': person.get_full_name()}
     
     func_end_time = time.perf_counter()
