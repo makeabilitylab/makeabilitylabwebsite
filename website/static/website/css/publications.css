@@ -132,6 +132,10 @@
   }
 }
 
+.publication-title{
+  font-weight: 600;
+}
+
 .artifact-title {
   color: #464D59;
   /*font-size: 16px;*/
@@ -182,7 +186,7 @@
 }
 
 .award-icon {
-  borders: none;
+  border: none;
   width: 20px;
   height: auto;
   align: left;

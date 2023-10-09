@@ -30,6 +30,10 @@
   display: none;
 }
 
+#makelab-people h2 {
+  margin-top: 40px;
+}
+
 @media screen and (max-width: 992px) {
   .current-research-group-grid {
     grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -55,6 +59,7 @@
   text-align: left;
   grid-gap: 25px;
   row-gap: 20px;
+  margin-top:20px
 }
 
 @media screen and (max-width: 992px) {
@@ -122,4 +127,17 @@
 .past-member-grid-item {
   padding: 0px;
   margin: 0px;
+}
+
+.past-member-name {
+  font-weight: 600;
+}
+
+.past-member-name a {
+  color: rgb(90, 90, 90); 
+}
+
+.past-members-section{
+  /* TODO: at some point, I'd love for this to be a full width spanning background that alternates every other subsection */
+  background: inherit;
 }

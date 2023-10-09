@@ -20,17 +20,20 @@
   <div id="content" class="container">
     <div id="makelab-people" class="makelab-content-container">
       <h1>People</h1>  
-      <div class="current-research-group-grid" style="margin-top:20px">
+      <div class="current-research-group-grid">
         {% for position in current_members %}
           {% with person=position.person %}
             <div class="person">
-              <img class="swap-image" onmouseover="swapImage(this)" onmouseout="swapImage(this)"
-                  src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop detail upscale %}" 
-                  alt="{{ person.get_full_name }}" 
-                  data-alt-src="{% thumbnail person.easter_egg person.get_thumbnail_size_as_str box=person.easter_egg_crop crop detail upscale %}" 
-                  width=90%"/>
-              
-              <div class="person-name">{{ person.get_full_name }}</div>
+              <a href="{% url 'website:member' person.url_name %}">
+                <img class="swap-image" onmouseover="swapImage(this)" onmouseout="swapImage(this)"
+                    src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop detail upscale %}" 
+                    alt="{{ person.get_full_name }}" 
+                    data-alt-src="{% thumbnail person.easter_egg person.get_thumbnail_size_as_str box=person.easter_egg_crop crop detail upscale %}" 
+                    width=90%"/>
+              </a>
+              <a href="{% url 'website:member' person.url_name %}">
+                <div class="person-name">{{ person.get_full_name }}</div>
+              </a>
               {% if person.last_name == "Froehlich" %}
                 <div class="person-title">Lab Director</div>
               {% else %}
@@ -42,53 +45,69 @@
         {% endfor %}
       </div>
 
+      
       {% if graduated_phd_students %}
-        <h2 style="margin-top:40px">Graduated PhD Students</h2>
-        <div class="graduated-phds-grid" style="margin-top:20px">
-          {% for person in graduated_phd_students %}
-            <div class="person graduated-phd">
-              <img src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop detail upscale %}" 
-                  alt="{{ person.get_full_name }}"/> 
-
-              <img class="hover" src="{% thumbnail person.easter_egg person.get_thumbnail_size_as_str box=person.easter_egg_crop crop detail upscale %}" 
-                  alt="{{ person.get_full_name }}"/>
-              
-              <div class="graduated-phd-name">Dr. {{ person.get_full_name }}</div>
-              
-              {% with position=person.get_latest_phd_student_position %} 
-                {% with dissertation=person.get_dissertation %}  
-                <div class="person-title">
-                  PhD {{ position.get_school_abbreviated }} {{ position.get_department_abbreviated }}, {{ dissertation.date.year }}
-                </div>
-              
-                <div class="dissertation">Dissertation: <a href="{{ dissertation.pdf_file }}">{{ dissertation }}</a></div>
-                <div class="next-position">First Position: <a href="{{ person.next_position_url }}">{{ person.next_position }}</a></div>
+        <div class="graduated-phd-section">
+          <h2>Graduated PhD Students</h2>
+          <div class="graduated-phds-grid">
+            {% for person in graduated_phd_students %}
+              <div class="person graduated-phd">
+                <a href="{% url 'website:member' person.url_name %}">
+                  <img class="swap-image" onmouseover="swapImage(this)" onmouseout="swapImage(this)"
+                        src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop detail upscale %}" 
+                        alt="{{ person.get_full_name }}" 
+                        data-alt-src="{% thumbnail person.easter_egg person.get_thumbnail_size_as_str box=person.easter_egg_crop crop detail upscale %}" 
+                        width=90%"/>
+                </a>
+                <a href="{% url 'website:member' person.url_name %}">
+                  <div class="graduated-phd-name">Dr. {{ person.get_full_name }}</div>
+                </a>
+                {% with position=person.get_latest_phd_student_position %} 
+                  {% with dissertation=person.get_dissertation %}  
+                  <div class="person-title">
+                    PhD {{ position.get_school_abbreviated }} {{ position.get_department_abbreviated }}, {{ dissertation.date.year }}
+                  </div>
+                
+                  <div class="dissertation">Dissertation: <a href="{{ dissertation.pdf_file }}">{{ dissertation }}</a></div>
+                  <div class="next-position">First Position: <a href="{{ person.next_position_url }}">{{ person.next_position }}</a></div>
+                  {% endwith %}
                 {% endwith %}
-              {% endwith %}
-              {% comment %} <div class="person-title">{{ position.get_department_abbreviated }} {{ position.title }}</div>
-              <div class="person-affiliation">{{ position.get_school_abbreviated }}</div> {% endcomment %}
+                {% comment %} <div class="person-title">{{ position.get_department_abbreviated }} {{ position.title }}</div>
+                <div class="person-affiliation">{{ position.get_school_abbreviated }}</div> {% endcomment %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+       
+      {% if map_title_to_past_members %}
+        <div class="past-members-section">
+          <h2>Past Members</h2>
+          {% for title in sorted_past_member_titles %}
+            <h3>{{ title }}s</h3>
+            <div class="past-members-grid">
+              {% for position in map_title_to_past_members|get_item:title %}
+                <div class="past-member-grid-item">
+                  {% comment %} TODO check if high school student and don't print out department {% endcomment %}
+                  <span class="past-member-name"> 
+                    <a href="{% url 'website:member' position.person.url_name %}">{{ position.person.get_full_name }}</a>,
+                  </span>
+                  {% if position.is_high_school %}
+                    {{ position.school }}, {{position.get_date_range_as_str}}
+                  {% else %}
+                    {{ position.get_school_abbreviated }} {{ position.get_department_abbreviated }}, {{position.get_date_range_as_str}}
+                  {% endif %}
+                </div>
+              {% endfor %}
             </div>
           {% endfor %}
         </div>
       {% endif %}
     </div>
 
-    <h2 style="margin-top:40px">Past Members</h2>
-    {% for title in sorted_past_member_titles %}
-      <h3>{{ title }}s</h3>
-      <div class="past-members-grid">
-        
-          {% for position in map_title_to_past_members|get_item:title %}
-          <div class="past-member-grid-item">
-            {% comment %} TODO check if high school student and don't print out department {% endcomment %}
-            {{ position.person.get_full_name }}, {{ position.get_school_abbreviated }} {{ position.get_department_abbreviated }}, {{position.get_date_range_as_str}}
-          </div>
-          {% endfor %}
-        
-      </div>
-    {% endfor %}
-
   </div>
+
+    
 
   <script>
     {% comment %} window.onload = function() {
