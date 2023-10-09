@@ -6,6 +6,7 @@ from django.shortcuts import render # for render https://docs.djangoproject.com/
 
 from django.db.models import Q # allow for complex queries, see: http://docs.djangoproject.com/en/4.2/topics/db/queries/#complex-lookups-with-q-objects
 from django.db.models import Count # allows us to run aggregation methods with Django, see https://docs.djangoproject.com/en/4.2/topics/db/aggregation/
+from django.db.models import Case, When # allows us to custom Case and When conditionals
 
 from datetime import date
 
@@ -28,11 +29,20 @@ def people(request):
     # we need to use Q objects. See: https://docs.djangoproject.com/en/4.2/topics/db/queries/#complex-lookups-with-q-objects
     # We want to get all current members ordered by start date (ascending)
     # I'm putting this whole thing in parans, so I can comment each line, see: https://stackoverflow.com/a/67912159/388117
+    # current_member_positions = (Position.objects.filter(Q(start_date__lte=date.today()), # start date is in the past
+    #                         Q(end_date__isnull=True) | Q(end_date__gte=date.today()), # end date is in the future or null
+    #                         Q(role=Position.MEMBER)) # must be a member of the lab
+    #                         .distinct('person__id', 'start_date') # don't repeat people
+    #                         .order_by('person__id', 'start_date')) # orderby must include same fields as distinct in Django
+    
+    map_title_to_order = Position.get_map_title_to_order();
     current_member_positions = (Position.objects.filter(Q(start_date__lte=date.today()), # start date is in the past
                             Q(end_date__isnull=True) | Q(end_date__gte=date.today()), # end date is in the future or null
                             Q(role=Position.MEMBER)) # must be a member of the lab
-                            .distinct('person__id', 'start_date') # don't repeat people
-                            .order_by('person__id', 'start_date')) # orderby must include same fields as distinct in Django
+                            .order_by( # Order by title (in specified order) followed by start date
+                               Case(*[When(title=title, then=priority_order) for (title, priority_order) in map_title_to_order.items()]),
+                               'start_date' 
+                            ))
 
     # I believe in Django, the pk and id fields are the same
     exclude_member_ids = []

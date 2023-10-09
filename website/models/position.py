@@ -194,6 +194,13 @@ class Position(models.Model):
                 AbstractedTitle.GRADUATE_STUDENT.value, Position.UGRAD, Position.HIGH_SCHOOL, Position.UNKNOWN)
 
     @staticmethod
+    def get_map_abstracted_title_to_order():
+        """Static method returns a map of abstracted titles to their order"""
+        sorted_abstracted_titles = Position.get_sorted_abstracted_titles()
+        map_title_to_order = {j: i for i, j in enumerate(sorted_abstracted_titles)}
+        return map_title_to_order
+
+    @staticmethod
     def get_abstracted_title(position):
         """Static method returns an abstracted title for a given position
            For example, if you pass "Assistant Professor" it will return "Professor"
@@ -211,14 +218,21 @@ class Position(models.Model):
             return AbstractedTitle.PROFESSIONAL.value
         else:
             return position
-        
 
     @staticmethod
     def get_sorted_titles():
         """Static method returns a sorted list of title names"""
-        return (AbstractedTitle.PROFESSOR, Position.RESEARCH_SCIENTIST, Position.POST_DOC, 
-            Position.PHD_STUDENT, Position.MS_STUDENT, Position.SOFTWARE_DEVELOPER, 
-            Position.DESIGNER, Position.UGRAD, Position.HIGH_SCHOOL, Position.UNKNOWN)
+        return (Position.FULL_PROF, Position.ASSOCIATE_PROF, Position.ASSISTANT_PROF, 
+                Position.RESEARCH_SCIENTIST, Position.POST_DOC, Position.PHD_STUDENT, 
+                Position.MS_STUDENT, Position.SOFTWARE_DEVELOPER, Position.DESIGNER, 
+                Position.UGRAD, Position.HIGH_SCHOOL, Position.UNKNOWN)
+    
+    @staticmethod
+    def get_map_title_to_order():
+        """Static method returns a map of titles to their order"""
+        sorted_titles = Position.get_sorted_titles()
+        map_title_to_order = {j: i for i, j in enumerate(sorted_titles)}
+        return map_title_to_order
 
     @staticmethod
     def is_graduate_student_position(position):

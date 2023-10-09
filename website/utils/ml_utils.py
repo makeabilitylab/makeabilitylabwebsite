@@ -54,6 +54,8 @@ def get_department_abbreviated(dept_name):
         return 'MechE'
     elif "electrical" in dept_low:
         return "EE"
+    elif "mhci" in dept_low or "hci+d" in dept_low or "hcid" in dept_low:
+        return "MHCI+D"
     elif dept_name is not None:
         return dept_name[:5]
     else:

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap');
+
 #makelab-people{
   margin-top: 80px;
 }
@@ -58,6 +60,10 @@
   margin-bottom: 0px;
 }
 
+.person-name a{
+  color: inherit; /* TODO this should be the main website color text */
+}
+
 .person-title{
   font-size: 90%;
 }
@@ -94,7 +100,7 @@
 
 .graduated-phds-grid img{
   float: left;
-  margin-right: 8px;
+  margin-right: 10px;
   width: 50%;
 }
 
@@ -104,16 +110,52 @@
   font-size: larger;
 }
 
+.graduated-phd-name a{
+  color: inherit; /* TODO this should be the main website color text */
+}
+
 .dissertation{
   text-align: left;
   font-size: smaller;
   margin-top: 6px;
+  font-family: 'Roboto', sans-serif;
+  color: rgb(100, 100, 100);
 }
 
-.next-position{
+.dissertation a{
+  color:inherit;
+}
+
+.dissertation-header{
+  font-weight: 500;
+}
+
+.dissertation-title{
+  font-style: italic;
+  font-weight: 300;
+  color: rgb(120, 120, 120); /* TODO need to have a light'ish gray font as part of a css var */
+}
+
+.first-position{
   text-align: left;
   font-size: smaller;
   margin-top: 6px;
+  font-family: 'Roboto', sans-serif;
+  color: rgb(100, 100, 100);
+}
+
+.first-position-header{
+  font-weight: 500;
+}
+
+.first-position-content{
+  font-style: italic;
+  font-weight: 300;
+  color: rgb(120, 120, 120); /* TODO need to have a light'ish gray font as part of a css var */
+}
+
+.first-position-content a{
+  color: inherit;
 }
 
 /** PAST MEMBER SECTION **/
