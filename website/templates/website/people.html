@@ -72,6 +72,22 @@
         </div>
       {% endif %}
     </div>
+
+    <h2 style="margin-top:40px">Past Members</h2>
+    {% for title in sorted_past_member_titles %}
+      <h3>{{ title }}s</h3>
+      <div class="past-members-grid">
+        
+          {% for position in map_title_to_past_members|get_item:title %}
+          <div class="past-member-grid-item">
+            {% comment %} TODO check if high school student and don't print out department {% endcomment %}
+            {{ position.person.get_full_name }}, {{ position.get_school_abbreviated }} {{ position.get_department_abbreviated }}, {{position.get_date_range_as_str}}
+          </div>
+          {% endfor %}
+        
+      </div>
+    {% endfor %}
+
   </div>
 
   <script>

@@ -69,6 +69,25 @@
   }
 }
 
+.person-name{
+  margin-top: 4px;
+  font-weight: bolder;
+  margin-bottom: 0px;
+}
+
+.person-title{
+  font-size: 90%;
+}
+
+.person-affiliation{
+  font-size: 90%;
+}
+
+.person img{
+  border-radius:50%;
+}
+
+/** GRADUATED PHD STUDENT SECTION **/
 .graduated-phds-grid img{
   float: left;
   margin-right: 8px;
@@ -93,20 +112,14 @@
   margin-top: 6px;
 }
 
-.person-name{
-  margin-top: 4px;
-  font-weight: bolder;
-  margin-bottom: 0px;
+/** PAST MEMBER SECTION **/
+.past-members-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 10px;
 }
 
-.person-title{
-  font-size: 90%;
-}
-
-.person-affiliation{
-  font-size: 90%;
-}
-
-.person img{
-  border-radius:50%;
+.past-member-grid-item {
+  padding: 0px;
+  margin: 0px;
 }

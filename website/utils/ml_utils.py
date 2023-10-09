@@ -50,8 +50,12 @@ def get_department_abbreviated(dept_name):
         return 'Arch'
     elif "bioengineering" in dept_low:
         return 'BioE'
+    elif "mech" in dept_low:
+        return 'MechE'
+    elif "electrical" in dept_low:
+        return "EE"
     elif dept_name is not None:
-        return dept_name[:3]
+        return dept_name[:4]
     else:
         return "Unknown"
 
