@@ -28,7 +28,9 @@
 		    {% if news.image %}
 		    <img src="{% thumbnail news.image 250x250 box=news.cropping crop detail %}" class="big-news-image" alt="{{news.alt_text}}">
 		    {% else %}
-		    <img src="{% static 'website/img/news_icon.png' %}" class="big-news-image">
+			<img src="{% static 'website/img/news-thumbnails/MakeabilityLab-News-LaserCut3-DALLE3-15x9.jpg' %}" class="big-news-image" 
+                    alt="This is a default news page icon for when there are no thumbnails; it looks like a newspaper" />
+		    {% comment %} <img src="{% static 'website/img/news_icon.png' %}" class="big-news-image"> {% endcomment %}
 		    {% endif %}
 		</div>
 		<div class="col-xs-12 col-sm-8">

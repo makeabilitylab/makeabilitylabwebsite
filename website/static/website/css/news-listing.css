@@ -41,15 +41,26 @@
 
 .news-card-headline {
   font-size: 16px;
+  font-weight: 600;
   margin-top: 6px;
   margin-bottom: 4px;
   text-align: left;
+  line-height: normal;
+}
+
+.news-card-headline a{
+  color: inherit
 }
 
 .news-card-byline{
   font-size: 10px;
   text-align: left;
   text-transform: uppercase;
+  color: rgb(120, 120, 120)
+}
+
+.news-card-byline a{
+  color: inherit
 }
 
 .news-pagination {

@@ -25,7 +25,12 @@
   <div id="content" class="container">
     <div id="makelab-news" class="makelab-content-container">
       {% comment %} TODO: add zoom in image on hover {% endcomment %}
-      <h1>Latest News</h1>
+      {% if news.number == 1 %}
+        <h1>Latest News</h1>
+      {% else %}
+        <h1>News</h1>
+      {% endif %}
+
       <div class="news-grid">
         {% for n in news %}
           <div class="news-card">
@@ -34,7 +39,7 @@
                 {% if n.image %}
                   <img src="{% thumbnail n.image 363x217 box=news.cropping crop detail upscale %}" alt="{{n.alt_text}}"/>
                 {% else %}
-                  <img src="{% static 'website/img/news_icon.png' %}" style="max-height:217px;" 
+                  <img src="{% static 'website/img/news-thumbnails/MakeabilityLab-News-LaserCut3-DALLE3-15x9.jpg' %}" style="max-height:217px;" 
                     alt="This is a default news page icon for when there are no thumbnails; it looks like a newspaper" />
                 {% endif %}
               </a>
