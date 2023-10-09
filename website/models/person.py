@@ -59,9 +59,10 @@ class Person(models.Model):
     image = models.ImageField(blank=True, upload_to="person", max_length=255)
     image.help_text = 'You must select "Save and continue editing" at the bottom of the page after uploading a new image for cropping.'
 
-    # We use the ImageRatioField to allow us to crop the image in the admin interface
-    # The first parameter must refer to the associated ImageField
-    # See https://github.com/jonasundderwolf/django-image-cropping
+    # We use the django-image-cropping ImageRatioField https://github.com/jonasundderwolf/django-image-cropping
+    # that simply stores the boundaries of a cropped image. You must pass it the corresponding ImageField
+    # and the desired size of the cropped image as arguments. The size passed in defines both the aspect ratio
+    # and the minimum size for the final image
     cropping = ImageRatioField('image', get_thumbnail_size_as_str(), size_warning=True)
 
     # This is the hover image (aka easter egg)

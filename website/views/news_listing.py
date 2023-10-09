@@ -13,8 +13,9 @@ import logging
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
 
-# This method and the news functionality in general was written by Johnson Kuang
 def news_listing(request):
+    """The news listing page. This page lists all news items in reverse chronological order."""
+
     func_start_time = time.perf_counter()
     _logger.debug(f"Starting views/news_listing at {func_start_time:0.4f}")
     

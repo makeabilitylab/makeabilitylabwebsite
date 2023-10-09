@@ -37,10 +37,10 @@
             <div class="news-image">
               <a href="{% url 'website:news' news_id=n.id %}">
                 {% if n.image %}
-                  <img src="{% thumbnail n.image 363x217 box=news.cropping crop detail upscale %}" alt="{{n.alt_text}}"/>
+                  <img src="{% thumbnail n.image 362x217 box=news.cropping crop detail upscale %}" alt="{{n.alt_text}}"/>
                 {% else %}
-                  <img src="{% static 'website/img/news-thumbnails/MakeabilityLab-News-LaserCut3-DALLE3-15x9.jpg' %}" style="max-height:217px;" 
-                    alt="This is a default news page icon for when there are no thumbnails; it looks like a newspaper" />
+                  <img src="{% static n.default_news_image_filename %}" style="max-height:217px;" 
+                    alt="This is a default news page icon for when there are no thumbnails" />
                 {% endif %}
               </a>
             </div>

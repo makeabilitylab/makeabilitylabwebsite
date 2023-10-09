@@ -13,23 +13,23 @@
 {% endblock %}
 
 {% block maincarousel %}
-    <div style="min-height: 40px">&nbsp;
+    {% comment %} <div style="min-height: 40px">&nbsp; {% endcomment %}
         {# Uncomment the following if you want to have a carousel on the people page #}
         {# {% include "snippets/display_short_carousel_snippet.html" %} #}
-    </div>
+    {% comment %} </div> {% endcomment %}
 {% endblock %}
 
 {% block content %}
-<div class="container content-container">
+<div class="container content-container" style="margin-top: 80px">
     <div class="row">
 	<div class="col-xs-12 col-md-10 main-content">
 	    <div class="row">
 		<div class="col-sm-4 hideden-xs">
 		    {% if news.image %}
-		    <img src="{% thumbnail news.image 250x250 box=news.cropping crop detail %}" class="big-news-image" alt="{{news.alt_text}}">
+		    	<img src="{% thumbnail news.image 250x250 box=news.cropping crop detail %}" class="big-news-image" alt="{{news.alt_text}}">
 		    {% else %}
-			<img src="{% static 'website/img/news-thumbnails/MakeabilityLab-News-LaserCut3-DALLE3-15x9.jpg' %}" class="big-news-image" 
-                    alt="This is a default news page icon for when there are no thumbnails; it looks like a newspaper" />
+				<img src="{% static news.default_news_image_filename %}" class="big-news-image" 
+						alt="This is a default news page icon for when there are no thumbnails" />
 		    {% comment %} <img src="{% static 'website/img/news_icon.png' %}" class="big-news-image"> {% endcomment %}
 		    {% endif %}
 		</div>
