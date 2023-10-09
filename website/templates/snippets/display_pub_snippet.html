@@ -133,18 +133,20 @@
                     </span>
                 {% endif %}
             </p>
-            <p class="publication-keywords hidden-xs">
-                keywords:
-                <span class="publication-keyword"><span class="publication-keyword-text">
-				{% for keyword in pub.keywords.all %}
-                    {% if forloop.last %}
-                        {{ keyword.keyword }}
-                    {% else %}
-                        {{ keyword.keyword }},
-                    {% endif %}
-                {% endfor %}
-			    </span></span>
-            </p>
+            {% if pub.keywords and pub.keywords.count > 0 %}
+                <p class="publication-keywords hidden-xs">
+                    keywords:
+                    <span class="publication-keyword"><span class="publication-keyword-text">
+                    {% for keyword in pub.keywords.all %}
+                        {% if forloop.last %}
+                            {{ keyword.keyword }}
+                        {% else %}
+                            {{ keyword.keyword }},
+                        {% endif %}
+                    {% endfor %}
+                    </span></span>
+                </p>
+            {% endif %}
 
             {% if pub.pdf_file %}
                 <p class="pub-download-links">

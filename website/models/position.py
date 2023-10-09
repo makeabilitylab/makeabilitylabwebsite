@@ -4,8 +4,14 @@ from django.core.exceptions import ValidationError
 from datetime import date, datetime, timedelta
 
 import website.utils.ml_utils as ml_utils # for department abbreviations
+from enum import Enum
 
 # from .person import Person
+class AbstractedTitle(Enum):
+    """Enum class for abstracted titles"""
+    GRADUATE_STUDENT = "Graduate Student"
+    PROFESSOR = "Professor"
+    PROFESSIONAL = "Research Scientist, Engineer, or Designer"
 
 class Position(models.Model):
 
@@ -102,12 +108,6 @@ class Position(models.Model):
         """Returns an abbreviated version of the department field"""
         return ml_utils.get_department_abbreviated(self.department)
 
-    def get_sorted_titles():
-        """Static method returns a sorted list of title names"""
-        return ("Professor", Position.RESEARCH_SCIENTIST, Position.POST_DOC, 
-                Position.SOFTWARE_DEVELOPER, Position.DESIGNER, Position.PHD_STUDENT, 
-                Position.MS_STUDENT, Position.UGRAD, Position.HIGH_SCHOOL, Position.UNKNOWN)
-
     def get_title_index(self):
         """Returns the index from TITLE_ORDER_MAPPING for the current title"""
         if self.title in self.TITLE_ORDER_MAPPING:
@@ -186,3 +186,71 @@ class Position(models.Model):
     def __str__(self):
         return "Name={}, Role={}, Title={}, Start={} End={}".format(
             self.person.get_full_name(), self.role, self.title, self.start_date, self.end_date)
+    
+    @staticmethod
+    def get_sorted_abstracted_titles():
+        """Static method returns a sorted list of abstracted title names"""
+        return (AbstractedTitle.PROFESSOR.value, AbstractedTitle.PROFESSIONAL.value, Position.POST_DOC,
+                AbstractedTitle.GRADUATE_STUDENT.value, Position.UGRAD, Position.HIGH_SCHOOL, Position.UNKNOWN)
+
+    @staticmethod
+    def get_abstracted_title(position):
+        """Static method returns an abstracted title for a given position
+           For example, if you pass "Assistant Professor" it will return "Professor"
+           or if you pass "PhD Student" it will return "Graduate Student"
+        """
+
+        if(type(position) is Position):
+            position = position.title # get the title str from position object
+
+        if Position.is_graduate_student_position(position):
+            return AbstractedTitle.GRADUATE_STUDENT.value
+        elif Position.is_professorial_position(position):
+            return AbstractedTitle.PROFESSOR.value
+        elif Position.is_professional_position(position):
+            return AbstractedTitle.PROFESSIONAL.value
+        else:
+            return position
+        
+
+    @staticmethod
+    def get_sorted_titles():
+        """Static method returns a sorted list of title names"""
+        return (AbstractedTitle.PROFESSOR, Position.RESEARCH_SCIENTIST, Position.POST_DOC, 
+            Position.PHD_STUDENT, Position.MS_STUDENT, Position.SOFTWARE_DEVELOPER, 
+            Position.DESIGNER, Position.UGRAD, Position.HIGH_SCHOOL, Position.UNKNOWN)
+
+    @staticmethod
+    def is_graduate_student_position(position):
+        """Static method returns true if position is a graduated student"""
+        if(type(position) is Position):
+            return position.title == Position.PHD_STUDENT or position.title == Position.MS_STUDENT
+        elif(type(position) is str):
+            return position == Position.PHD_STUDENT or position == Position.MS_STUDENT
+        else:
+            raise TypeError("position must be of type Position or str")
+
+    @staticmethod
+    def is_professorial_position(position):
+        """Static method returns true if position is a professor"""
+        if(type(position) is Position):
+            return (position.title == Position.FULL_PROF or position.title == Position.ASSOCIATE_PROF 
+                    or position.title == Position.ASSISTANT_PROF)
+        elif(type(position) is str):
+            return (position == Position.FULL_PROF or position == Position.ASSOCIATE_PROF  
+                    or position == Position.ASSISTANT_PROF)  
+        else:
+            raise TypeError("position must be of type Position or str")
+        
+    @staticmethod
+    def is_professional_position(position):
+        """Static method returns true if position is a professional"""
+        if(type(position) is Position):
+            return (position.title == Position.RESEARCH_SCIENTIST or position.title == Position.SOFTWARE_DEVELOPER 
+                    or position.title == Position.DESIGNER)
+        elif(type(position) is str):
+            return (position.title == Position.RESEARCH_SCIENTIST or position == Position.SOFTWARE_DEVELOPER 
+                    or position == Position.DESIGNER)
+        else:
+            raise TypeError("position must be of type Position or str")
+    

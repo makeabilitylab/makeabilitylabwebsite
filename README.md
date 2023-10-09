@@ -28,7 +28,7 @@ This repository contains the [Makeability Lab's website](https://makeabilitylab.
 
 3. Build the docker images. Run `docker build .` or `docker build . -t <tag>`--the latter allows you to tag your build with a name (we recommend tagging it as `makelab_image` for easy access). This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
 
-4. Running the container. Once the image has built, run `docker-compose up`, this will bring up both the postgres container for the database and the website containers. For future reference, running `docker-compose up -d` will allow you to continue using the same terminal and none of the output messages will be displayed.
+4. Running the container. Once the image has built, run `docker-compose -f docker-compose-local-dev.yml up`, this will bring up both the postgres container for the database and the website containers. For future reference, running `docker-compose up -d` will allow you to continue using the same terminal and none of the output messages will be displayed.
 
 5. Create the superuser. In another terminal, navigate to the project home directory using the `cd` command and open an interactive bash terminal in the website container using `docker exec -it makeabilitylabwebsite_website_1 bash`. Once inside the bash terminal, run `python manage.py createsuperuser`.
 
@@ -43,7 +43,7 @@ After running the `docker-compose up` command, you will not need to rebuild or r
 git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git
 cd makeabilitylabwebsite/
 docker build . -t makelab_image
-docker-compose up
+docker-compose -f docker-compose-local-dev.yml up
 ```
 You should then be able to visit the server at `http://localhost:8571/`.
 
@@ -75,11 +75,9 @@ On Windows, [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install) provide
     chmod -R 777 website/
     ```
 
-1. Edit the `docker-compose.yml` file, commenting out the last two lines in the "volumes" section in the "website" service (there is a comment explaining which lines to comment out).
-
 1. Build the docker images. Run `docker build .` or `docker build . -t <tag>`--the latter allows you to tag your build with a name (we recommend tagging it as `makelab_image` for easy access). This step may take a while (~2-3 min). If you don't add an explicit tag to your build, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
 
-1. Running the container. Once the image has built, run `docker-compose up`, this will bring up both the PostgreSQL container for the database and the website containers. With the new changes we made to docker-compose, I use `docker-compose -f docker-compose-local-dev.yml up`
+1. Running the container. Once the image has built, run `docker-compose -f docker-compose-local-dev.yml up`, this will bring up both the PostgreSQL container for the database and the website containers. 
 
 1. At this point, you can visit the website at `localhost:8571` as specified in the `docker-compose.yml` file. However, to add content, you need to add an admin users. For this, follow the next step to create a "superuser."
 
