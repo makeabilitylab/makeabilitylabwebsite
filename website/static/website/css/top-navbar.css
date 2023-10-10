@@ -1,7 +1,12 @@
-/*!
+/*
  * The code below is based on the Grayscale Bootstrap Theme (http://startbootstrap.com)
  * Only the navbar styles were preserved and even then some of these styles have been modified
  */
+
+ :root {
+  --navbar-bg-color: rgba(0,0,0,0.6);
+  --navbar-text-color: white;
+ }
 
 .navbar-custom {
   margin-bottom: 0;
@@ -14,7 +19,7 @@
 }
 
 .navbar-white{
-  font-weight:600;
+  font-weight:300;
 }
 
 .navbar-custom .lab-text {
@@ -83,9 +88,9 @@
 
 .navbar-custom .nav li.active a {
   /*background-color: rgba(255,255,255,.3);*/
-  font-weight: bold;
+  font-weight: 500;
   /*font-family: helvetica-neue-lt-bold;*/
-  font-family: roboto-bold;
+  /* font-family: roboto-bold; */
 }
 
 .navbar-white .navbar-brand img {
@@ -102,9 +107,9 @@
   text-decoration: underline;
 }
 
-.navbar-white .nav li.active a {
+/* .navbar-white .nav li.active a {
   color: black;
-}
+} */
 
 .navbar-white .nav .top-nav-collapse li.active a {
   color: white;
@@ -143,7 +148,6 @@
     content: url("/static/website/img/logos/makelab_logo_white_no_text_100x67.png");
   }
 }
-
 
 .navbar-custom .navbar-brand {
   font-weight: normal;
