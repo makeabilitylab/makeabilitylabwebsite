@@ -4,8 +4,25 @@
  */
 
  :root {
-  --navbar-bg-color: rgba(0,0,0,0.6);
-  --navbar-text-color: white;
+  --navbar-dark-bg-color: rgba(0,0,0,0.6);
+  --navbar-dark-bg-scrolled-color: black;
+  --navbar-dark-text-color: white;
+  --navbar-dark-font-weight: 300;
+  --navbar-dark-active-font-weight: 500;
+  --navbar-dark-ml-logo-src: url("/static/website/img/logos/makelab_logo_white_no_text_100x67.png");
+
+  --navbar-light-bg-color: white;
+  --navbar-light-text-color: black;
+  --navbar-light-font-weight: 300;
+  --navbar-light-active-font-weight: 500;
+  --navbar-light-ml-logo-src: url("/static/website/img/logos/makelab_logo_v3_white_with_colors_no_text_100x68.png");
+
+  --navbar-bg-color: var(--navbar-dark-bg-color);
+  --navbar-bg-scrolled-color: var(--navbar-dark-bg-scrolled-color);
+  --navbar-text-color: var(--navbar-dark-text-color);
+  --navbar-font-weight: var(--navbar-dark-font-weight);
+  --navbar-active-font-weight: var(--navbar-dark-active-font-weight);
+  --navbar-ml-logo-src: var(--navbar-dark-ml-logo-src);
  }
 
 .navbar-custom {
@@ -18,13 +35,14 @@
   font-variant: normal;
 }
 
-.navbar-white{
-  font-weight:300;
-}
-
-.navbar-custom .lab-text {
+.navbar-custom .makeabilitylab-text {
   display: inline;
   vertical-align: text-top;
+}
+
+.makeabilitylab-make-text {
+  font-weight: 300;
+  margin-left: 2px;
 }
 
 .navbar-custom .navbar-brand>img {
@@ -32,7 +50,6 @@
 }
 
 .navbar-custom .navbar-brand {
-  font-weight: 700;
   padding-top: 10px;
   padding-bottom: 10px;
   padding-left: 15px;
@@ -63,18 +80,14 @@
   transition: background .3s ease-in-out;
 }
 
-.navbar-custom .nav li a:hover,.navbar-white .nav li a:hover {
+.navbar-custom .nav li a:hover, .nav li a:hover {
   outline: 0;
   background-color: transparent;
+  text-decoration: underline;
 }
 
 .navbar-custom .nav li a:hover {
   color: rgba(255,255,255,.8);
-}
-
-.navbar-white .nav li a:hover {
-  color: rgba(0,0,0,1);
-  text-decoration: underline;
 }
 
 .navbar-custom .nav li a:focus,.navbar-custom .nav li a:active {
@@ -87,32 +100,7 @@
 }
 
 .navbar-custom .nav li.active a {
-  /*background-color: rgba(255,255,255,.3);*/
   font-weight: 500;
-  /*font-family: helvetica-neue-lt-bold;*/
-  /* font-family: roboto-bold; */
-}
-
-.navbar-white .navbar-brand img {
-  /* content: url("/static/website/img/logos/makelab_logo_black_no_text_100x67.png"); */
-  content: url("/static/website/img/logos/makelab_logo_v3_white_with_colors_no_text_100x68.png");
-}
-
-.navbar-white .navbar-toggle {
-  color: black;
-}
-
-.navbar-white .nav li.active a:hover {
-  color: rgba(0,0,0,1);
-  text-decoration: underline;
-}
-
-/* .navbar-white .nav li.active a {
-  color: black;
-} */
-
-.navbar-white .nav .top-nav-collapse li.active a {
-  color: white;
 }
 
 @media (min-width:789px) {
@@ -175,14 +163,4 @@
   background-color: transparent;
   color: #23527c;
   text-decoration: underline;
-}
-
-
-
-.navbar-white {
-  background-color: white;
-}
-
-.navbar-white .lab-text,.navbar-white a {
-  color: black;
 }
