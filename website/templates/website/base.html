@@ -30,16 +30,17 @@
 
     <link rel="stylesheet" type="text/css" href="{% static 'website/css/bootstrap.min.css' %}"/>
 
-    <link rel="stylesheet" type="text/css" href="{% static 'website/css/top-navbar.css' %}"/>
-
     <!-- Our custom style sheets -->
     <link rel="stylesheet" href="{% static 'website/css/carousel_fade.css' %}"/>
     <link rel="stylesheet" href="{% static 'website/css/base.css' %}"/>
     <link rel="stylesheet" href="{% static 'website/css/autocomplete.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'website/css/top-navbar.css' %}"/>
 
     {% block stylesheets %}
 
     {% endblock %}
+
+    {% comment %} Load all required JavaScript libraries used in base and all Makeability Lab pages {% endcomment %}
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
@@ -138,11 +139,11 @@
     <!-- Navigation -->
     <nav class="navbar navbar-custom
             {% var_exists 'navbar_white' as navbar_white_exists %}
-            {% if navbar_white_exists and navbar_white%}navbar-white{% endif %}
+            {% if navbar_white_exists and navbar_white%}light-navbar-theme{% endif %}
             navbar-fixed-top" role="navigation">
-        <div class="container-fluid" style="width:100%; max-width:1170px; margin:auto">
+        <div class="container-fluid navbar-container">
             <div class="row">
-                <div class="col-xs-12" style="padding:0px">
+                <div class="col-xs-12">
 
                     <div class="navbar-header">
                         <button style="" type="button" class="navbar-toggle" data-toggle="collapse"
@@ -152,7 +153,9 @@
 
                         <a class="navbar-brand page-scroll" href="{% url 'website:index' %}">
                             <img src="{% static 'website/img/logos/makelab_logo_white_no_text_100x67.png' %}" height="20"/>
-                            <div class="lab-text"><span style="font-family: roboto-bold; margin-left: 2px;">Make</span>ability</span>Lab</div>
+                            <span class="makeabilitylab-text">
+                                <span class="makeabilitylab-make-text">Make</span>ability Lab</span>
+                            </span>
                         </a>
                     </div>
 
@@ -438,9 +441,10 @@
             </div>
 
             <div class="col-xs-2 makelab-footer-col">
-                <p style="margin-top:0px">
-                    We design, build, and evaluate interactive tools and techniques to address pressing societal
-                    challenges in accessibility, sustainability, education, and beyond.
+                <p style="margin-top:0px; font-size:smaller">
+                    In the Makeability Lab, we design, build, and evaluate interactive tools and techniques to address pressing societal
+                    challenges. <strong>Make</strong>ability refers both to how our technological innovations make new abilities possible for humans as well as emphasizes
+                    our educational mission to help our students gain new abilities as they design new interactive technologies.
                 </p>
 
                 <div class="makelab-footer-connect-links">

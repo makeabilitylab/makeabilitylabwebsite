@@ -6,12 +6,19 @@
  * For details, see http://www.apache.org/licenses/LICENSE-2.0.
  */
 
+$(document).ready(function() {
+    // Your code here
+    console.log("LOADING TOP NAVBAR JS!!!");
+    console.log("navbar-white", "{{navbar_white}}");
+});
+  
+
 // jQuery to collapse the navbar on scroll
 $(window).scroll(function() {
     if ($(".navbar").offset().top > 50) {
-        $(".navbar-fixed-top").addClass("top-nav-collapse");
+        $(".navbar-fixed-top").addClass("top-nav-scrolled");
     } else {
-        $(".navbar-fixed-top").removeClass("top-nav-collapse");
+        $(".navbar-fixed-top").removeClass("top-nav-scrolled");
     }
 });
 
