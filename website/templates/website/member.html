@@ -90,7 +90,7 @@
                     {% with person.get_latest_position as position %}
                         {% if position %}
                             <p class="person-title-text">
-                                {{ position.title }}{% if not position.is_high_school %}, {{ position.get_department_abbreviated }}{% endif %}
+                                {{ position.title }}{% if not position.is_high_school %}, {{ position.department }}{% endif %}
                                 <br/>
                                 {{ position.school }}
                             </p>
