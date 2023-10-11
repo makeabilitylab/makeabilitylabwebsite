@@ -5,74 +5,86 @@
 
  :root {
   --navbar-dark-bg-color: rgba(0,0,0,0.6);
-  --navbar-dark-bg-scrolled-color: black;
+  --navbar-dark-bg-color-scrolled: black;
   --navbar-dark-text-color: white;
+  --navbar-dark-text-color-hover: rgba(255,255,255,.5);
   --navbar-dark-font-weight: 300;
-  --navbar-dark-active-font-weight: 500;
+  --navbar-dark-font-weight-active: 500;
   --navbar-dark-ml-logo-src: url("/static/website/img/logos/makelab_logo_white_no_text_100x67.png");
 
   --navbar-light-bg-color: white;
   --navbar-light-text-color: black;
+  --navbar-light-text-color-hover: rgba(0,0,0,.5);
   --navbar-light-font-weight: 300;
-  --navbar-light-active-font-weight: 500;
+  --navbar-light-font-weight-active: 500;
   --navbar-light-ml-logo-src: url("/static/website/img/logos/makelab_logo_v3_white_with_colors_no_text_100x68.png");
 
   --navbar-bg-color: var(--navbar-dark-bg-color);
-  --navbar-bg-scrolled-color: var(--navbar-dark-bg-scrolled-color);
+  --navbar-bg-color-scrolled: var(--navbar-dark-bg-scrolled-color);
   --navbar-text-color: var(--navbar-dark-text-color);
+  --navbar-text-color-hover: red; /* var(--navbar-dark-text-hover-color); */
   --navbar-font-weight: var(--navbar-dark-font-weight);
-  --navbar-active-font-weight: var(--navbar-dark-active-font-weight);
+  --navbar-font-weight-active: var(--navbar-dark-font-weight-active);
   --navbar-ml-logo-src: var(--navbar-dark-ml-logo-src);
  }
 
+ .navbar-container{
+  width:100%; 
+  max-width:1170px;
+  margin:auto;
+ }
+
+.navbar-custom .navbar-toggle {
+  padding: 0px; /* default in bootstrap.css is 9px 10px */
+  margin-top: 0px; /* default in bootstrap.css is 2px */
+  margin-bottom: 0px; /* default in bootstrap.css is 2px */
+}
+
 .navbar-custom {
-  margin-bottom: 0;
-  border-bottom: 1px solid rgba(255,255,255,.3);
-  text-transform: uppercase;
+  text-transform: uppercase; /* TODO consider removing all uppercase */
   font-family: Roboto;
-  background-color: #000;
-  min-height: 44px;
+  background-color: var(--navbar-bg-color);
   font-variant: normal;
+  color: var(--navbar-text-color);
+  letter-spacing: 1.1px;
+  border-width: 0px;
+  margin: 0px;
+
+  min-height: 10px;   /* default in bootstrap.css is 50px */
+  border-radius: 0px; /* default in bootstrap.css is 4px */
+  margin-bottom: 0px; /* default in bootstrap.css is 20px */
+  /* max-height: 40px; */
+  height: 40px;
+  padding: 10px 0px 0px 0px;
 }
 
-.navbar-custom .makeabilitylab-text {
-  display: inline;
-  vertical-align: text-top;
+.navbar-custom a {
+  color: inherit;
+  padding: 0px;
 }
 
-.makeabilitylab-make-text {
-  font-weight: 300;
-  margin-left: 2px;
+/* Overriding Bootstrap 3 defaults for navbar */
+.navbar-nav>li>a{
+  padding-top: 0px; /* default in bootstrap.css is 15px */
+  padding-bottom: 0px; /* default in bootstrap.css is 15px */
 }
 
-.navbar-custom .navbar-brand>img {
-  display: inline;
+.nav>li>a{
+  padding-left: 12px; /* default in bootstrap.css is 15px */
+  padding-right: 12px; /* default in bootstrap.css is 15px */
 }
 
-.navbar-custom .navbar-brand {
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 15px;
-  height: auto;
+@media only screen and (max-width: 900px) {
+  .nav>li>a{
+    padding-left: 5px; /* default in bootstrap.css is 15px */
+    padding-right: 5px; /* default in bootstrap.css is 15px */
+  }
 }
 
-.navbar-custom .navbar-brand:focus {
-  outline: 0;
-}
-
-.navbar-custom .navbar-brand .navbar-toggle {
-  padding: 4px 6px;
-  font-size: 16px;
-  color: #fff;
-}
-
-.navbar-custom .navbar-brand .navbar-toggle:focus,.navbar-custom .navbar-brand .navbar-toggle:active {
-  outline: 0;
-}
-
-.navbar-custom a,.navbar-custom .nav li.active a:hover,.navbar-toggle {
-  color: #fff;
-}
+/* This sets the navbrand hover state */
+/* .navbar-brand a:hover{
+  color: var(--navbar-text-color-hover);
+} */
 
 .navbar-custom .nav li a {
   -webkit-transition: background .3s ease-in-out;
@@ -80,87 +92,51 @@
   transition: background .3s ease-in-out;
 }
 
-.navbar-custom .nav li a:hover, .nav li a:hover {
-  outline: 0;
+.navbar-custom a:hover, .nav>li>a:hover{
+  background-color: transparent; /* default in bootstrap.css is #eee */
+  text-decoration: underline; /* default in bootstrap.css is none */
+  color: var(--navbar-text-color-hover);
+}
+
+.navbar-custom .nav li a:focus, .navbar-custom .nav li a:active {
+  /* outline: 0; */
   background-color: transparent;
-  text-decoration: underline;
-}
-
-.navbar-custom .nav li a:hover {
-  color: rgba(255,255,255,.8);
-}
-
-.navbar-custom .nav li a:focus,.navbar-custom .nav li a:active {
-  outline: 0;
-  background-color: transparent;
-}
-
-.navbar-custom .nav li.active {
-  outline: 0;
 }
 
 .navbar-custom .nav li.active a {
-  font-weight: 500;
+  font-weight: var(--navbar-font-weight-active);
 }
 
-@media (min-width:789px) {
-  .navbar-custom {
-    border-bottom: 0;
-    letter-spacing: 1px;
-    background: rgba(0,0,0,0.6);
-    -webkit-transition: background .5s ease-in-out,padding .5s ease-in-out;
-    -moz-transition: background .5s ease-in-out,padding .5s ease-in-out;
-    transition: background .5s ease-in-out,padding .5s ease-in-out;
-  }
+/***********************************************************************************/
+/***** BRANDING SECTION: The Makeability Lab img logo and text on left side of navbar ********/
 
-  .navbar-custom.top-nav-collapse {
-    padding: 0;
-    border-bottom: 1px solid rgba(255,255,255,.3);
-    background: #000;
-  }
+.navbar-custom .makeabilitylab-text {
+  display: inline;
+  /* vertical-align: text-top; */
+}
 
-  .navbar-white.top-nav-collapse li a:hover {
-    color: rgba(255,255,255,.8);
-  }
+/* This is the "MAKE" part of the text in the MAKEABILITYLAB text in the navbar */
+.makeabilitylab-make-text {
+  font-weight: 300;
+  margin-left: 2px;
+}
 
-  .navbar-nav>li>a {
-    padding-top: 10px;
-    padding-bottom: 10px;
-  }
+.navbar-brand img{
+  content: var(--navbar-ml-logo-src);
+}
 
-  .navbar-white.top-nav-collapse.lab-text, .navbar-white.top-nav-collapse a, .navbar-white.top-nav-collapse a:active {
-    color: white;
-  }
-
-  .navbar-white.top-nav-collapse .navbar-brand img {
-    content: url("/static/website/img/logos/makelab_logo_white_no_text_100x67.png");
-  }
+/* .navbar-custom .navbar-brand > img is a selector that targets img elements that are 
+   direct children of an element with the class navbar-brand, which itself is a descendant of an 
+   element with the class navbar-custom. 
+   > is a child combinator. It selects only direct children of an element. */
+.navbar-custom .navbar-brand>img {
+  display: inline;
 }
 
 .navbar-custom .navbar-brand {
-  font-weight: normal;
-  font-size: 14px;
+  padding-left: 0px;
+  height: auto;
+  font-size: inherit; /* default in bootstrap.css is 18px */
 }
 
-.navbar-custom .nav li a {
-  padding-left: 10px;
-  padding-right: 10px;
-  font-size: 14px;
-}
 
-.navbar-filter {
-  margin-bottom: 0;
-  min-height: 30px;
-}
-
-@media screen and (max-width: 767px) {
-  .navbar-nav {
-    float: left !important;
-  }
-}
-
-.navbar-filter .navbar-nav > li > a:hover,.navbar-filter .navbar-nav > li > a:focus {
-  background-color: transparent;
-  color: #23527c;
-  text-decoration: underline;
-}
