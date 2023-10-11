@@ -4,7 +4,7 @@
  */
 
  :root {
-  --navbar-dark-bg-color: rgba(0,0,0,0.6);
+  --navbar-dark-bg-color: rgba(0,0,0,0.75);
   --navbar-dark-bg-color-scrolled: black;
   --navbar-dark-text-color: white;
   --navbar-dark-text-color-hover: rgba(255,255,255,.5);
