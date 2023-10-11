@@ -44,6 +44,7 @@ def news(request, news_id):
                'news': news,
                'author_news': author_news[:max_extra_items],
                'project_news': project_news,
+               'navbar_white': True,
                'debug': settings.DEBUG}
     
     func_end_time = time.perf_counter()
