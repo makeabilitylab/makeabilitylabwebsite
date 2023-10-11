@@ -70,7 +70,7 @@ else:
     ALLOWED_HOSTS = ['*']
 
 # Makeability Lab Global Variables
-ML_WEBSITE_VERSION = "1.3 (fixed navbar, added v3 ML logo)"
+ML_WEBSITE_VERSION = "1.3.1 (fixed navbar, added v3 ML logo, added rounded corners to talk thumbnails)"
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 

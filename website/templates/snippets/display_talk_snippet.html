@@ -7,10 +7,11 @@
 <div class="col-ts-12 col-xs-6 col-sm-4 col-lg-3 talk-column" style="margin-bottom:20px">
     <div style="width: 100%; height: 300px; contain: content;">
         <div class="talk2-thumbnail"> {# Add in style="border:thin; border-color:lightgrey; border-style: solid;" for a border #}
-            {#  TODO: I don't get this thumbnail stuff; need to talk to Lee about it  #}
+            {#  TODO: Update to use .css rather than inline styles  #}
             <a href="../../media/{{ talk.pdf_file }}" target="_blank">
                 <div style="background: white; width:100%; height: 180px; contain: content;">
-                    <img style="border: 1px solid #dddddd; width:100%; height: auto; position: relative;top: 50%; left: 50%;transform: translate(-50%,-50%);object-fit: cover" src="{% thumbnail talk.thumbnail 420x0 detail %}" class="talk2-thumbnail-image img-responsive">
+                    <img style="border: 1px solid #dddddd; border-radius: 5%; width:100%; height: auto; position: relative;top: 50%; left: 50%;transform: translate(-50%,-50%);object-fit: cover" 
+                    src="{% thumbnail talk.thumbnail 420x0 detail %}" class="talk2-thumbnail-image img-responsive">
                 </div>
             </a>
         </div>
