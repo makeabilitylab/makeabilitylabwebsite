@@ -12,7 +12,7 @@
   --navbar-dark-font-weight-active: 500;
   --navbar-dark-ml-logo-src: url("/static/website/img/logos/makelab_logo_white_no_text_100x67.png");
 
-  --navbar-light-bg-color: white;
+  --navbar-light-bg-color: rgba(255, 255, 255, 0.9);
   --navbar-light-text-color: black;
   --navbar-light-text-color-hover: rgba(0,0,0,.5);
   --navbar-light-font-weight: 300;
@@ -22,10 +22,30 @@
   --navbar-bg-color: var(--navbar-dark-bg-color);
   --navbar-bg-color-scrolled: var(--navbar-dark-bg-scrolled-color);
   --navbar-text-color: var(--navbar-dark-text-color);
-  --navbar-text-color-hover: red; /* var(--navbar-dark-text-hover-color); */
+  --navbar-text-color-hover: var(--navbar-dark-text-hover-color);
   --navbar-font-weight: var(--navbar-dark-font-weight);
   --navbar-font-weight-active: var(--navbar-dark-font-weight-active);
   --navbar-ml-logo-src: var(--navbar-dark-ml-logo-src);
+ }
+
+ .dark-navbar-theme {
+  --navbar-bg-color: var(--navbar-dark-bg-color);
+  --navbar-bg-color-scrolled: var(--navbar-dark-bg-scrolled-color);
+  --navbar-text-color: var(--navbar-dark-text-color);
+  --navbar-text-color-hover: var(--navbar-dark-text-hover-color);
+  --navbar-font-weight: var(--navbar-dark-font-weight);
+  --navbar-font-weight-active: var(--navbar-dark-font-weight-active);
+  --navbar-ml-logo-src: var(--navbar-dark-ml-logo-src);
+ }
+
+ .light-navbar-theme {
+  --navbar-bg-color: var(--navbar-light-bg-color);
+  --navbar-bg-color-scrolled: var(--navbar-light-bg-scrolled-color);
+  --navbar-text-color: var(--navbar-light-text-color);
+  --navbar-text-color-hover: var(--navbar-light-text-hover-color);
+  --navbar-font-weight: var(--navbar-light-font-weight);
+  --navbar-font-weight-active: var(--navbar-light-font-weight-active);
+  --navbar-ml-logo-src: var(--navbar-light-ml-logo-src);
  }
 
  .navbar-container{
@@ -43,6 +63,7 @@
 .navbar-custom {
   text-transform: uppercase; /* TODO consider removing all uppercase */
   font-family: Roboto;
+  font-weight: var(--navbar-font-weight);
   background-color: var(--navbar-bg-color);
   font-variant: normal;
   color: var(--navbar-text-color);
@@ -81,11 +102,6 @@
   }
 }
 
-/* This sets the navbrand hover state */
-/* .navbar-brand a:hover{
-  color: var(--navbar-text-color-hover);
-} */
-
 .navbar-custom .nav li a {
   -webkit-transition: background .3s ease-in-out;
   -moz-transition: background .3s ease-in-out;
@@ -98,17 +114,12 @@
   color: var(--navbar-text-color-hover);
 }
 
-.navbar-custom .nav li a:focus, .navbar-custom .nav li a:active {
-  /* outline: 0; */
-  background-color: transparent;
-}
-
 .navbar-custom .nav li.active a {
   font-weight: var(--navbar-font-weight-active);
 }
 
-/***********************************************************************************/
-/***** BRANDING SECTION: The Makeability Lab img logo and text on left side of navbar ********/
+/******************************************************************************************/
+/***** BRANDING SECTION: The Makeability Lab img logo and text on left side of navbar *****/
 
 .navbar-custom .makeabilitylab-text {
   display: inline;
