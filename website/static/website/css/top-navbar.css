@@ -118,6 +118,10 @@
   font-weight: var(--navbar-font-weight-active);
 }
 
+.navbar-collapse ul {
+  background-color: var(--navbar-bg-color);
+}
+
 /******************************************************************************************/
 /***** BRANDING SECTION: The Makeability Lab img logo and text on left side of navbar *****/
 
