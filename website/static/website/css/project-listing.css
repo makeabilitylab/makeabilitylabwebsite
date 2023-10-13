@@ -2,6 +2,10 @@
   margin-top: 80px;
 }
 
+#makelab-projects h2{
+  margin-top: 40px;
+}
+
 .project-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -47,7 +51,7 @@ lg class is defined for larger desktops with size >= 1200 px. */
 }
 
 .project-image img:hover {
-  transform: scale(1.1);
+  transform: scale(1.2);
   transition: transform .4s;
 }
 
