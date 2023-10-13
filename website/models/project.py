@@ -11,13 +11,19 @@ from .publication import Publication
 from .talk import Talk
 from .video import Video
 
+PROJECT_THUMBNAIL_SIZE = (500, 400) # 15 : 9 aspect ratio
 
 class Project(models.Model):
+
+    @staticmethod  # use as decorator
+    def get_thumbnail_size_as_str():
+        return f"{PROJECT_THUMBNAIL_SIZE[0]}x{PROJECT_THUMBNAIL_SIZE[1]}"
+    
     name = models.CharField(max_length=255)
 
     # Short name is used for urls, and should be name.lower().replace(" ", "")
     short_name = models.CharField(max_length=255)
-    short_name.help_text = "This should be the same as your name but lower case with no spaces. It is used in the url of the project"
+    short_name.help_text = "This should be the same as name but lower case with no spaces. It is used in the url of the project"
 
     # Sponsors is currently a simple list of sponsors but could be updated to a many to many field if a sponsors model is desired.
     sponsors = models.ManyToManyField('Sponsor', blank=True)
@@ -31,14 +37,15 @@ class Project(models.Model):
     # pis = models.ManyToOneField(Person, blank=True, null=True)
     # TODO: consider switching gallery_image var name to thumbnail
     gallery_image = models.ImageField(upload_to='projects/images', blank=True, null=True, max_length=255)
-    gallery_image.help_text = "This is the image which will show up on the project gallery page. It is not displayed anywhere else. You must select 'Save and continue editing' at the bottom of the page after uploading a new image for cropping. Please note that since we are using a responsive design with fixed height banners, your selected image may appear differently on various screens."
+    gallery_image.help_text = "This is the image which will show up on the project gallery page.\
+                               It is not displayed anywhere else. You must select 'Save and continue editing' at the\
+                               bottom of the page after uploading a new image for cropping."
 
-    # Copied from person model
-    # LS: Added image cropping to fixed ratio
-    # See https://github.com/jonasundderwolf/django-image-cropping
-    # size is "width x height"
-    # TODO: update with desired aspect ratio and maximum resolution
-    cropping = ImageRatioField('gallery_image', '500x400', size_warning=True)
+    # We use the django-image-cropping ImageRatioField https://github.com/jonasundderwolf/django-image-cropping
+    # that simply stores the boundaries of a cropped image. You must pass it the corresponding ImageField
+    # and the desired size of the cropped image as arguments. The size passed in defines both the aspect ratio
+    # and the minimum size for the final image
+    cropping = ImageRatioField('gallery_image', get_thumbnail_size_as_str(), size_warning=True)
 
     about = models.TextField(null=True, blank=True)
 

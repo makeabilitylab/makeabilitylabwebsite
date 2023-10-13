@@ -70,16 +70,16 @@
 
     <div id="makelab-recent-projects" class="container-fluid makelab-content-container">
         <h1 class="section-header" style="margin-top:25px">Recent Projects</h1>
-        <div class="section">
+        <div class="project-grid">
             {% for project in projects|slice:"8" %}
                 {% include "snippets/display_project_snippet.html" %}
-            {% endfor %}
-            <div class="row justify-content-end">
-                <div class="col-xs-12 see-all-artifacts">
-                    <div class="col-xs-12" style="display:none"></div>
-                    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 see-all-artifacts pull-right">
-                        <a href="{% url 'website:projects' %}">See All Projects ></a>
-                    </div>
+            {% endfor %}    
+        </div>
+        <div class="row justify-content-end">
+            <div class="col-xs-12 see-all-artifacts">
+                <div class="col-xs-12" style="display:none"></div>
+                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 see-all-artifacts pull-right">
+                    <a href="{% url 'website:projects' %}">See All Projects ></a>
                 </div>
             </div>
         </div>

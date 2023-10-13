@@ -32,7 +32,7 @@
   border-radius: 5%;
   border: 1px solid lightgray;
   width: 100%;
-  transition: transform .2s;
+  transition: transform .4s;
 }
 
 .news-card img:hover {

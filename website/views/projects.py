@@ -34,13 +34,14 @@ def projects(request):
     context = {'projects': ordered_projects,
                'banners': displayed_banners,
                'filter': filter,
-               'debug': settings.DEBUG}
+               'debug': settings.DEBUG,
+               'navbar_white': True}
     
     func_end_time = time.perf_counter()
     _logger.debug(f"Rendered {len(projects)} projects for views/projects in {func_end_time - func_start_time:0.4f} seconds")
     context['render_time'] = func_end_time - func_start_time
     
-     # Render is a Django helper function. It combines a given template—in this case projects.html—with
+    # Render is a Django helper function. It combines a given template—in this case projects.html—with
     # a context dictionary and returns an HttpResponse object with that rendered text.
     # See: https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
     return render(request, 'website/projects.html', context)
