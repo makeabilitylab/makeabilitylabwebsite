@@ -33,7 +33,7 @@ def projects(request):
                 .distinct('id'))
     
     # Now get all project umbrellas for interactive project filtering
-    map_projectumbrella_to_projects = {}
+    map_project_umbrella_to_projects = {}
 
     project_umbrellas_with_projects = (ProjectUmbrella.objects.annotate(
         num_projects=Count('project')).filter(num_projects__gt=0)) # Get all project umbrellas with at least one project
@@ -42,12 +42,12 @@ def projects(request):
     for project_umbrella in project_umbrellas_with_projects:
         # Get the list of associated Project instances
         projects = project_umbrella.project_set.all()
-        map_projectumbrella_to_projects[project_umbrella.short_name] = [project.name for project in projects]
+        map_project_umbrella_to_projects[project_umbrella.short_name] = [project.name for project in projects]
 
 
     context = {'active_projects': active_projects,
                'completed_projects': completed_projects,
-               'map_projectumbrella_to_projects': map_projectumbrella_to_projects,
+               'map_project_umbrella_to_projects': map_project_umbrella_to_projects,
                'debug': settings.DEBUG,
                'navbar_white': True}
     

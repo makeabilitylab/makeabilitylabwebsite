@@ -6,6 +6,7 @@
   margin-top: 40px;
 }
 
+/***************************** PROJECT GRID ******************************/
 .project-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -66,4 +67,38 @@ lg class is defined for larger desktops with size >= 1200 px. */
 
 .project-info{
   text-align: left;
+}
+
+/************************* SIDEBAR FILTER *************************/
+#filter-sidebar {
+  position: fixed;
+  top: 120px;
+  transform: translateX(-120px);
+  color: black;
+  font-family: Roboto;
+  font-weight: 300;
+  max-width: 110px;
+}
+
+#filter-sidebar h2{
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 3px;
+}
+
+#filter-sidebar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+}
+
+.reset-filter{
+  font-size: smaller;
+  margin-top: 5px;
+  display: none;
+}
+
+.active-filter{
+  font-weight: bold;
 }
