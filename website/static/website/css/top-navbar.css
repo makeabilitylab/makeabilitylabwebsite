@@ -118,8 +118,11 @@
   font-weight: var(--navbar-font-weight-active);
 }
 
-.navbar-collapse ul {
-  background-color: var(--navbar-bg-color);
+@media only screen and (max-width: 789px) {
+  /* From experimentation, I believe the Bootstrap 3 navbar only collapses at 789px wide */
+  .navbar-collapse ul {
+    background-color: var(--navbar-bg-color);
+  }
 }
 
 /******************************************************************************************/
