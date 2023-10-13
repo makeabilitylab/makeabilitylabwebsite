@@ -1,6 +1,8 @@
 {% extends 'website/base.html' %}
 
-{% block pagetitle %}Makeability Lab Projects{% endblock %}
+{% block pagetitle %}
+  Makeability Lab Projects
+{% endblock %}
 
 {% load static %}
 {% load cropping %}
@@ -8,30 +10,82 @@
 {% load ml_tags %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{% static 'website/css/jquery-ui.min.css' %}">
-    <link rel="stylesheet" href="{% static 'website/css/jquery-ui.theme.min.css' %}">
-    <link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/project-listing.css' %}" />
+  {% comment %} <link rel="stylesheet" href="{% static 'website/css/jquery-ui.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'website/css/jquery-ui.theme.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}" /> {% endcomment %}
 {% endblock %}
 
 {% block external_scripts %}
-    <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
+  {% comment %} <script src="{% static 'website/js/jquery-ui.min.js' %}"></script> {% endcomment %}
 {% endblock %}
 
 {% block maincarousel %}
-    {% include "snippets/display_short_carousel_snippet.html" %}
+  {% comment %} {% include 'snippets/display_short_carousel_snippet.html' %} {% endcomment %}
 {% endblock %}
 
 {% block content %}
-    <div id="makelab-projects" class="container-fluid makelab-content-container">
-        <div class="section" style="margin-top: 50px;">
-            {% for project in projects %}
-                {% if project.has_thumbnail and project.has_publication %}
-                    {% include "snippets/display_project_snippet.html" %}
-                {% endif %}
-            {% endfor %}
-        </div>
+  
+  <div id="content" class="container">
+    <div id="filter-sidebar">
+      {% comment %} TODO: order sidebar filters either alphabetically or by number of projects {% endcomment %}
+      <h2>Project Filter</h2>
+      <ul>
+        {% for project_umbrella_name, project_list in map_project_umbrella_to_projects.items %}
+            <li>
+              <a class="filter" data-filter="{{project_umbrella_name}}" href="#" onclick="onFilterClick(this);">
+                {{project_umbrella_name|truncatechars:14}}</a>&nbsp;({{ project_list|length }})
+            </li>
+        {% endfor %}
+        <li class="reset-filter">
+          <a class="filter" href="#" onclick="resetFilter();">Reset Filter</a>
+      </ul>
     </div>
+
+    <div id="makelab-projects" class="makelab-content-container">
+      <h1>Projects</h1>
+
+      <!-- We only display projects that have a thumbnail and at least one publication -->
+      <div class="project-grid">
+        {% for project in active_projects %}
+          {% if project.has_thumbnail and project.has_publication %}
+            {% include 'snippets/display_project_snippet.html' %}
+          {% endif %}
+        {% endfor %}
+      </div>
+      <h2>Completed Projects</h2>
+      <div class="project-grid">
+        {% for project in completed_projects %}
+          {% if project.has_thumbnail and project.has_publication %}
+            {% include 'snippets/display_project_snippet.html' %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function onFilterClick(activeFilter) {
+      if ($(activeFilter).hasClass('active-filter')) {
+        // If we're here, the user clicked on an already active filter, so we should clear the filter
+        resetFilter();
+      }else{
+        // Otherwise, setup the filter
+        $('.filter').removeClass('active-filter');
+        $(activeFilter).addClass('active-filter');
+        $('.reset-filter').show();
+
+        let color = $(activeFilter).data('filter');
+        $('.project-card').not('[data-project-keywords~="' + color + '"]').fadeOut();
+        //$('.project-card').fadeOut();
+        $('.project-card[data-project-keywords~="' + color + '"]').fadeIn();
+      }
+    }
+
+    function resetFilter(){
+      $('.filter').removeClass('active-filter');
+      $('.project-card').fadeIn(1000);
+      $('.reset-filter').hide();
+    }
+  </script>
 {% endblock %}
-
-
-

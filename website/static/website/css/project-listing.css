@@ -1,0 +1,105 @@
+#makelab-projects{
+  margin-top: 80px;
+}
+
+#makelab-projects h2{
+  margin-top: 40px;
+}
+
+/***************************** PROJECT GRID ******************************/
+.project-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-gap: 30px;
+  text-align: center;
+  row-gap: 35px;
+  margin-top: 20px;
+  min-width: 250px;
+  min-height: 200px;
+}
+
+/* In Bootstrap, xs class is meant for phones with size <768 px.
+sm class is for tablets with size >= 768 px and <992 px.
+md class is used for desktops with size >=992 px and <1200 px.
+lg class is defined for larger desktops with size >= 1200 px. */
+@media screen and (max-width: 1200px) {
+  .project-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .project-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .project-grid  {
+    grid-template-columns: 1fr;
+  }
+}
+
+.project-image{
+  overflow: hidden;
+  position: relative;
+}
+
+.project-thumbnail{
+  border-radius: 5%;
+  border: 1px solid lightgray;
+  width: 100%;
+  overflow: hidden;
+}
+
+.project-image img:hover {
+  transform: scale(1.2);
+  transition: transform .4s;
+}
+
+.project-award-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 40px;
+  width: 40px;
+  z-index: 20;
+}
+
+.project-info{
+  text-align: left;
+}
+
+/************************* SIDEBAR FILTER *************************/
+#filter-sidebar {
+  position: fixed;
+  top: 120px;
+  transform: translateX(-120px);
+  color: black;
+  font-family: Roboto;
+  font-weight: 300;
+  max-width: 110px;
+}
+
+#filter-sidebar h2{
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 3px;
+}
+
+#filter-sidebar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+}
+
+.reset-filter{
+  font-size: smaller;
+  margin-top: 5px;
+  display: none;
+}
+
+.active-filter{
+  font-weight: bold;
+}
