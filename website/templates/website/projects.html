@@ -76,14 +76,15 @@
         $('.reset-filter').show();
 
         let color = $(activeFilter).data('filter');
-        $('.project-card').hide();
-        $('.project-card[data-project-keywords~="' + color + '"]').show();
+        $('.project-card').not('[data-project-keywords~="' + color + '"]').fadeOut();
+        //$('.project-card').fadeOut();
+        $('.project-card[data-project-keywords~="' + color + '"]').fadeIn();
       }
     }
 
     function resetFilter(){
       $('.filter').removeClass('active-filter');
-      $('.project-card').show();
+      $('.project-card').fadeIn(1000);
       $('.reset-filter').hide();
     }
   </script>

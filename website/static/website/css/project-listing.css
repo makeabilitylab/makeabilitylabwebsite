@@ -15,6 +15,7 @@
   row-gap: 35px;
   margin-top: 20px;
   min-width: 250px;
+  min-height: 200px;
 }
 
 /* In Bootstrap, xs class is meant for phones with size <768 px.
