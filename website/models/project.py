@@ -40,6 +40,7 @@ class Project(models.Model):
     gallery_image.help_text = "This is the image which will show up on the project gallery page.\
                                It is not displayed anywhere else. You must select 'Save and continue editing' at the\
                                bottom of the page after uploading a new image for cropping."
+    thumbnail_alt_text = models.CharField(max_length=1024, blank=True, null=True)
 
     # We use the django-image-cropping ImageRatioField https://github.com/jonasundderwolf/django-image-cropping
     # that simply stores the boundaries of a cropped image. You must pass it the corresponding ImageField
@@ -50,6 +51,12 @@ class Project(models.Model):
     about = models.TextField(null=True, blank=True)
 
     updated = models.DateField(auto_now=True)
+
+    def get_thumbnail_alt_text(self):
+        if not self.thumbnail_alt_text:
+            return "This is the thumbnail image for the project " + self.name
+        else:
+            return self.thumbnail_alt_text
 
     def get_pis(self):
         """Returns the PIs for the project (as a Person object)"""

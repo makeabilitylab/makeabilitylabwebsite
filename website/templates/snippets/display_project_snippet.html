@@ -31,7 +31,9 @@
 <div class="project-card">
   <div class="project-image">
     <a href="{% url 'website:project' project.short_name %}">
-      <img class="project-thumbnail" src="{% thumbnail project.gallery_image '300x180' crop='center' %}" />
+      <img class="project-thumbnail" 
+           src="{% thumbnail project.gallery_image '300x180' crop='center' %}" 
+           alt="{{project.get_thumbnail_alt_text}}"/>
       {% if project.has_award %}
         <img class="project-award-banner" src="/static/website/img/awardoverlay.png" />
       {% endif %}
