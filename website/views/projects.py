@@ -1,6 +1,6 @@
 from django.conf import settings # for access to settings variables, see https://docs.djangoproject.com/en/4.0/topics/settings/#using-settings-in-python-code
-from website.models import Banner, Project
-import website.utils.ml_utils as ml_utils 
+from website.models import Banner, Project, ProjectUmbrella
+from django.db.models import Count # for Count https://docs.djangoproject.com/en/4.2/topics/db/aggregation/
 from django.shortcuts import render # for render https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
 
 # For logging
@@ -31,9 +31,23 @@ def projects(request):
     completed_projects = (Project.objects.filter(publication__isnull=False, gallery_image__isnull=False, end_date__isnull=False)
                 .order_by('id', '-publication__date')
                 .distinct('id'))
+    
+    # Now get all project umbrellas for interactive project filtering
+    map_projectumbrella_to_projects = {}
+
+    project_umbrellas_with_projects = (ProjectUmbrella.objects.annotate(
+        num_projects=Count('project')).filter(num_projects__gt=0)) # Get all project umbrellas with at least one project
+
+    # Iterate over the queryset
+    for project_umbrella in project_umbrellas_with_projects:
+        # Get the list of associated Project instances
+        projects = project_umbrella.project_set.all()
+        map_projectumbrella_to_projects[project_umbrella.short_name] = [project.name for project in projects]
+
 
     context = {'active_projects': active_projects,
                'completed_projects': completed_projects,
+               'map_projectumbrella_to_projects': map_projectumbrella_to_projects,
                'debug': settings.DEBUG,
                'navbar_white': True}
     

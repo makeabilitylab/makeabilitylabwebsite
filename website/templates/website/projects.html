@@ -29,6 +29,9 @@
   <div id="content" class="container">
     <div id="makelab-projects" class="makelab-content-container">
       <h1>Projects</h1>
+      {% for key, value in map_project_umbrella_to_projects.items %}
+          <p>{{ key }}: {{ value }}</p>
+      {% endfor %}
       <!-- We only display projects that have a thumbnail and at least one publication -->
       <div class="project-grid">
         {% for project in active_projects %}

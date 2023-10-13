@@ -28,7 +28,8 @@
   </p>
 </div> {% endcomment %}
 
-<div class="project-card">
+<div class="project-card" 
+     data-project-keywords="{% for project_umbrella in project.project_umbrellas.all %}{{ project_umbrella.short_name }} {% endfor %}">
   <div class="project-image">
     <a href="{% url 'website:project' project.short_name %}">
       <img class="project-thumbnail" 
@@ -50,6 +51,11 @@
       {% else %}
         – Present
       {% endif %}
+      
+      {% comment %} <p></p>
+      {% for project_umbrella in project.project_umbrellas.all %}
+        {{ project_umbrella.short_name }} 
+      {% endfor %} {% endcomment %}
   </div>
   {% comment %} <h3 class="news-card-headline"><a href="{% url 'website:news' news_id = n.id %}">{{ n.title }}</a></h3>
   <div class="news-card-byline">
