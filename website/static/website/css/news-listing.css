@@ -12,6 +12,11 @@
   min-width: 250px;
 }
 
+/* In Bootstrap, xs class is meant for phones with size <768 px.
+sm class is for tablets with size >= 768 px and <992 px.
+md class is used for desktops with size >=992 px and <1200 px.
+lg class is defined for larger desktops with size >= 1200 px. */
+
 @media screen and (max-width: 700px) {
   .news-grid {
     grid-template-columns: 1fr 1fr;

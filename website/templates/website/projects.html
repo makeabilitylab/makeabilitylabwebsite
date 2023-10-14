@@ -11,17 +11,11 @@
 
 {% block stylesheets %}
   <link rel="stylesheet" href="{% static 'website/css/project-listing.css' %}" />
-  {% comment %} <link rel="stylesheet" href="{% static 'website/css/jquery-ui.min.css' %}" />
-  <link rel="stylesheet" href="{% static 'website/css/jquery-ui.theme.min.css' %}" />
-  <link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}" /> {% endcomment %}
 {% endblock %}
 
-{% block external_scripts %}
-  {% comment %} <script src="{% static 'website/js/jquery-ui.min.js' %}"></script> {% endcomment %}
-{% endblock %}
 
 {% block maincarousel %}
-  {% comment %} {% include 'snippets/display_short_carousel_snippet.html' %} {% endcomment %}
+
 {% endblock %}
 
 {% block content %}
@@ -44,7 +38,7 @@
 
     <div id="makelab-projects" class="makelab-content-container">
       <h1>Projects</h1>
-
+      Hello<br
       <!-- We only display projects that have a thumbnail and at least one publication -->
       <div class="project-grid">
         {% for project in active_projects %}
