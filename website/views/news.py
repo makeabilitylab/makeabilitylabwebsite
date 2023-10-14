@@ -3,6 +3,7 @@ from website.models import News
 
 import website.utils.ml_utils as ml_utils 
 from django.shortcuts import render, get_object_or_404
+from django.http import Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # For logging
@@ -14,11 +15,19 @@ _logger = logging.getLogger(__name__)
 
 # This method and the news functionality in general was written by Johnson Kuang
 # def news(request, news_id):
-def news(request, slug):
+def news(request, slug=None, id=None):
     func_start_time = time.perf_counter()
+
+    if slug is not None:
+        news = get_object_or_404(News, slug=slug)
+    elif id is not None:
+        news = get_object_or_404(News, id=id)
+    else:
+        raise Http404("No News matches the given query.")
+    
     _logger.debug(f"Starting views/news for news.slug={slug} at {func_start_time:0.4f}")
 
-    news = get_object_or_404(News, slug=slug)
+    # news = get_object_or_404(News, slug=slug)
     # news = get_object_or_404(News, pk=news_id)
 
     max_extra_items = 4  # Maximum number of authors

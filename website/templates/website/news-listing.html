@@ -35,7 +35,8 @@
         {% for news_item in news %}
           <div class="news-card">
             <div class="news-image">
-              <a href="{% url 'website:news' slug=news_item.slug %}">
+              {% comment %} The 'news_item_by_slug' refers to the name in urls.py for the path pattern to use here {% endcomment %}
+              <a href="{% url 'website:news_item_by_slug' slug=news_item.slug %}">
                 {% if news_item.image %}
                   <img src="{% thumbnail news_item.image 362x217 box=news_item.cropping crop detail upscale %}" 
                     alt="{{news_item.alt_text}}"/>
@@ -45,7 +46,7 @@
                 {% endif %}
               </a>
             </div>
-            <h3 class="news-card-headline"><a href="{% url 'website:news' slug=news_item.slug %}">{{ news_item.title }}</a></h3>
+            <h3 class="news-card-headline"><a href="{% url 'website:news_item_by_slug' slug=news_item.slug %}">{{ news_item.title }}</a></h3>
             <div class="news-card-byline">
               <span class="news-card-author">BY <a href="{% url 'website:member' member_id=news_item.author.id %}">{{ news_item.author }}</a></span>
               <span class="news-card-date">• {{ news_item.short_date }}</span>

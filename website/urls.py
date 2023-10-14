@@ -25,8 +25,11 @@ urlpatterns = [
     re_path(r'^projects/(?P<project_name>[a-zA-Z ]+)/$', views.project, name='project'),
     re_path(r'^project/(?P<project_name>[a-zA-Z ]+)/$', views.project, name='project'),
     re_path(r'^news/$', views.news_listing, name='news_listing'),
-    path('news/<slug:slug>/', views.news, name='news'),
-    re_path(r'^news/(?P<news_id>[0-9]+)/$', views.news, name='news'),
+
+    # First try to match on the news id (for historical compatibility) then match on the slug
+    path('news/<int:id>/', views.news, name='news_item_by_id'),
+    path('news/<slug:slug>/', views.news, name='news_item_by_slug'),
+    
     re_path(r'^faq/$', views.faq, name='faq'),
     
     
