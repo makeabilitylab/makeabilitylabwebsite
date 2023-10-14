@@ -8,6 +8,20 @@ import random
 from django.conf import settings 
 from operator import itemgetter
 
+from django.utils.text import slugify
+
+# In this function, slugify_max, we first generate the slug using slugify. Then 
+# we check if its length is less than or equal to max_length. If it is, we return the 
+# slug as is. If it’s longer, we truncate it to max_length characters. The rsplit('-', 1)[0] part 
+# ensures that we don’t cut off in the middle of a word
+def slugify_max(text, max_length=100):
+    """Returns a slugified version of a given text up to a max length"""
+    slug = slugify(text)
+    if len(slug) <= max_length:
+        return slug
+    trimmed_slug = slug[:max_length].rsplit('-', 1)[0]
+    return trimmed_slug
+
 def get_school_abbreviated(school_name):
     """Returns the school abbreviation for a given school name"""
     school_low = school_name.lower()
