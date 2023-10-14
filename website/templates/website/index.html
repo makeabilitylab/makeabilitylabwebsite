@@ -47,7 +47,7 @@
             <div style="width: 200px">
                 {% for news_item in news|slice:"5" %}
                     <p class="line-clamp" style="margin-bottom:15px; color:white; font-family:Roboto;">
-                        <a href="{% url 'website:news' news_item.id %}">
+                        <a href="{% url 'website:news_item_by_slug' slug=news_item.slug %}">
                             <span style="color:rgb(245,245,245);"><span style="font-family: roboto-bold; font-weight: 700;">{{ news_item.date }}.</span> {{ news_item.title }}</span>
                         </a>
                     </p>

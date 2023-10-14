@@ -32,22 +32,24 @@
       {% endif %}
 
       <div class="news-grid">
-        {% for n in news %}
+        {% for news_item in news %}
           <div class="news-card">
             <div class="news-image">
-              <a href="{% url 'website:news' news_id=n.id %}">
-                {% if n.image %}
-                  <img src="{% thumbnail n.image 362x217 box=news.cropping crop detail upscale %}" alt="{{n.alt_text}}"/>
+              {% comment %} The 'news_item_by_slug' refers to the name in urls.py for the path pattern to use here {% endcomment %}
+              <a href="{% url 'website:news_item_by_slug' slug=news_item.slug %}">
+                {% if news_item.image %}
+                  <img src="{% thumbnail news_item.image 362x217 box=news_item.cropping crop detail upscale %}" 
+                    alt="{{news_item.alt_text}}"/>
                 {% else %}
-                  <img src="{% static n.default_news_image_filename %}" style="max-height:217px;" 
+                  <img src="{% static news_item.default_news_image_filename %}" style="max-height:217px;" 
                     alt="This is a default news page icon for when there are no thumbnails" />
                 {% endif %}
               </a>
             </div>
-            <h3 class="news-card-headline"><a href="{% url 'website:news' news_id=n.id %}">{{ n.title }}</a></h3>
+            <h3 class="news-card-headline"><a href="{% url 'website:news_item_by_slug' slug=news_item.slug %}">{{ news_item.title }}</a></h3>
             <div class="news-card-byline">
-              <span class="news-card-author">BY <a href="{% url 'website:member' member_id=n.author.id %}">{{ n.author }}</a></span>
-              <span class="news-card-date">• {{ n.short_date }}</span>
+              <span class="news-card-author">BY <a href="{% url 'website:member' member_id=news_item.author.id %}">{{ news_item.author }}</a></span>
+              <span class="news-card-date">• {{ news_item.short_date }}</span>
             </div>
           </div>
         {% endfor %}

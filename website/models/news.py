@@ -6,6 +6,8 @@ from ckeditor_uploader.fields import RichTextUploadingField
 from website.utils.fileutils import UniquePathAndRename
 from image_cropping import ImageRatioField
 
+from django.utils.text import slugify
+
 from datetime import date, datetime, timedelta
 
 from .person import Person
@@ -29,9 +31,16 @@ class News(models.Model):
         return f"{NEWS_THUMBNAIL_SIZE[0]}x{NEWS_THUMBNAIL_SIZE[1]}"
     
     title = models.CharField(max_length=255)
+    title.help_text = "The news title will be displayed on the landing page, news listing page, and the news item page."
     
+    # A slug is a short label for something, containing only letters, numbers, underscores, or hyphrases. 
+    # They’re generally used in URLs. We'll use the slug to let people visit our news pages by
+    # the title of the news story rather than just the news.id
+    slug = models.SlugField(null=True, unique=True, max_length=255)
+
     date = models.DateField(default=date.today) 
     author = models.ForeignKey(Person, null=True, on_delete=models.SET_NULL)
+
     content = RichTextUploadingField(config_name='default')
 
     # Following the scheme of above thumbnails in other models
@@ -74,6 +83,15 @@ class News(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+            num = 2
+            while News.objects.filter(slug=self.slug).exists():
+                self.slug = f"{slugify(self.title)}-{num}"
+                num += 1
+        return super().save(*args, **kwargs)
 
     class Meta:
         # These names are used in the admin display, see https://docs.djangoproject.com/en/1.9/ref/models/options/#verbose-name
