@@ -191,7 +191,9 @@
 
         {# Check to see if a project has ended. If so, just list all project members. If the project is #}
         {# active then split members into current and past #}
-        {% if project.has_ended and project_roles %}
+
+        {% comment %} TODO JEF (OCT 13, 2023): Commenting this out for now until we have a new strategy for listing members {% endcomment %}
+        {% comment %} {% if project.has_ended and project_roles %}
             <div class="row row-eq-height row-adjust-margins people-row">
                 <h3 class="news-type-label">Project Members</h3>
                 <div class="grid_members">
@@ -203,7 +205,6 @@
         {% else %}
             {% if project_roles_current %}
                 <div class="row row-eq-height row-adjust-margins people-row">
-                    {# Check to see if there are past project members, if so, change the header slightly #}
                     {% if project_roles_past %}
                         <h3 class="news-type-label">Current Project Members</h3>
                     {%  else %}
@@ -225,7 +226,7 @@
                     </div>
                 </div>
             {% endif %}
-        {% endif %}
+        {% endif %} {% endcomment %}
     </div>
 </div>
 {% endblock %}
