@@ -5,6 +5,7 @@ from website.admin_list_filters import PositionRoleListFilter, PositionTitleList
 # from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
 import django
 from django import forms
+from django.db.models import Count
 
 # so we can print debug
 from django.conf import settings
@@ -125,11 +126,10 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
     # The list display lets us control what is shown in the default persons table at Home > Website > People
     # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
-    list_display = ('get_full_name', 'get_current_title', 'get_current_role', 'is_active', 'get_start_date', 'get_end_date', 'get_time_in_current_position', 'get_total_time_as_member')
+    list_display = ('get_full_name', 'get_current_title', 'get_current_role', 'is_active', 
+                    'get_start_date', 'get_end_date', 'get_project_count', 'get_pub_count',
+                    'get_talk_count', 'get_time_in_current_position', 'get_total_time_as_member')
 
-    #TODO setup filter here that has diff categories (like active members, past, etc.):
-    #https://www.elements.nl/2015/03/16/getting-the-most-out-of-django-admin-filters/
-    #related to: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/238
     list_filter = (PositionRoleListFilter, PositionTitleListFilter)
 
 class VideoAdmin(admin.ModelAdmin):

@@ -350,6 +350,27 @@ class Person(models.Model):
     def get_url_name(self):
         """Gets the URL name for this person. Format: firstlast"""
         return self.url_name
+    
+    @cached_property
+    def get_project_count(self):
+        """Gets the number of projects for this person. A cached property."""
+        return self.projectrole_set.count()
+    
+    get_project_count.short_description = "Projects"
+
+    @cached_property
+    def get_pub_count(self):
+        """Gets the number of publications for this person. A cached property."""
+        return self.publication_set.count()
+    
+    get_pub_count.short_description = "Pubs"
+    
+    @cached_property
+    def get_talk_count(self):
+        """Gets the number of talks for this person. A cached property."""
+        return self.talk_set.count()
+    
+    get_talk_count.short_description = "Talks"
 
     @cached_property
     def get_projects(self):
