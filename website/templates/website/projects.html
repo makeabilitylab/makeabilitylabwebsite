@@ -68,10 +68,10 @@
         $(activeFilter).addClass('active-filter');
         $('.reset-filter').show();
 
-        let color = $(activeFilter).data('filter');
-        $('.project-card').not('[data-project-keywords~="' + color + '"]').fadeOut();
+        let filterKeywords = $(activeFilter).data('filter');
+        $('.project-card').not('[data-project-keywords~="' + filterKeywords + '"]').fadeOut();
         //$('.project-card').fadeOut();
-        $('.project-card[data-project-keywords~="' + color + '"]').fadeIn();
+        $('.project-card[data-project-keywords~="' + filterKeywords + '"]').fadeIn();
       }
     }
 
