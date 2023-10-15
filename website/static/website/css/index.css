@@ -10,6 +10,12 @@
   top: 100px;    
 }
 
+@media (max-width: 768px) {
+  .news-banner-overlay-container{
+    display: none;
+  }
+}
+
 .news-banner-listing {
   z-index: 15;
   position: relative; 
