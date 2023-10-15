@@ -1,5 +1,5 @@
 from django.contrib import admin
-from website.models import Person, Position, Publication
+from website.models import Person, Position, Publication, Project
 
 # For lazy translations: https://docs.djangoproject.com/en/4.1/topics/i18n/translation/#lazy-translations
 from django.utils.translation import gettext_lazy as _
@@ -62,16 +62,10 @@ class PositionRoleListFilter(admin.SimpleListFilter):
         # Compare the requested value (either True or False)
         # to decide how to filter the queryset.
 
+        #TODO update this filtering to use Django ORM queries rather than Python
+
         filtered_person_ids = []
         for person in Person.objects.all():
-            if person.is_current_member is True:
-                # print("{} is_current_member(): {} | self.value(): {} | equals? {} |\
-                #       type(member): {} | type(self.value): {}".format(person.get_full_name(),
-                #                                                     person.is_current_member, self.value(),
-                #                                                     person.is_current_member is self.value(),
-                #                                                     type(person.is_current_member),
-                #                                                     type(self.value())))
-                pass
             if person.is_current_member is True and self.value() is None:
                 filtered_person_ids.append(person.id)
             elif person.is_alumni_member is True and person.is_current_member is False and self.value() == "past_member":
@@ -256,3 +250,46 @@ class PubVenueListFilter(admin.SimpleListFilter):
                 filtered_pub_ids.append(pub.id)
 
         return queryset.filter(id__in=filtered_pub_ids)
+    
+class ActiveProjectsFilter(admin.SimpleListFilter):
+    """
+    This filter allows admin user to filter by whether a project is active or not
+    """
+
+    # Human-readable title which will be displayed in the
+    # right admin sidebar just above the filter options.
+    title = 'project status'
+
+    # Parameter for the filter that will be used in the URL query.
+    parameter_name = 'active_project_status'
+
+    # TODO: make Active the default when we load; it's not working currently
+    default_value = 'Active'
+
+    def lookups(self, request, model_admin):
+        """
+        Returns a list of tuples. The first element in each
+        tuple is the coded value for the option that will
+        appear in the URL query. The second element is the
+        human-readable name for the option that will appear
+        in the right sidebar.
+        """
+        return (
+            ('Active', _('Active')),
+            ('Archived', _('Archived')),
+        )
+
+    def queryset(self, request, queryset):
+        """
+        Returns the filtered queryset based on the value
+        provided in the query string and retrievable via
+        `self.value()`.
+        """
+        print("queryset: self.value() = {} with type = {}".format(self.value(), type(self.value())))
+        
+        if self.value() == 'Active':
+            return queryset.filter(end_date__isnull=True)
+        elif self.value() == 'Archived':
+            return queryset.filter(end_date__isnull=False)
+        else:
+            return queryset

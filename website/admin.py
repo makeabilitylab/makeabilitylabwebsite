@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import widgets
 from .models import Person, Publication, Position, Talk, Project, Poster, Keyword, News, Banner, Video, ProjectHeader, Photo, ProjectUmbrella, ProjectRole, Sponsor
-from website.admin_list_filters import PositionRoleListFilter, PositionTitleListFilter, PubVenueTypeListFilter, PubVenueListFilter
+from website.admin_list_filters import PositionRoleListFilter, PositionTitleListFilter, PubVenueTypeListFilter, PubVenueListFilter, ActiveProjectsFilter
 # from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
 import django
 from django import forms
@@ -105,6 +105,8 @@ class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
                     'get_current_member_count', 'get_past_member_count',
                     'get_most_recent_artifact_date', 'get_most_recent_artifact_type',
                     'get_publication_count', 'get_video_count', 'get_talk_count')
+    
+    list_filter = (ActiveProjectsFilter, )
 
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
         if db_field.name == "sponsors":
