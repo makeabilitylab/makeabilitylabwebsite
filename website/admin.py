@@ -32,7 +32,6 @@ class BannerAdmin(ImageCroppingMixin, admin.ModelAdmin):
     list_display = ('title', 'project', 'page', 'favorite', 'image')
     # readonly_fields = ["image_preview"]
 
-
 class PositionInline(admin.StackedInline):
     model = Position
 
@@ -187,9 +186,12 @@ class PosterAdmin(admin.ModelAdmin):
         return super(PosterAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 class ProjectUmbrellaAdmin(admin.ModelAdmin):
+    list_display = ('name', 'short_name', 'project_count')
+
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
         if db_field.name == "keywords":
             kwargs["widget"] = widgets.FilteredSelectMultiple("keywords", is_stacked=False)
+
         return super(ProjectUmbrellaAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 #from https://stackoverflow.com/questions/9602217/define-an-order-for-manytomanyfield-with-django

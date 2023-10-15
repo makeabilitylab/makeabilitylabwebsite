@@ -9,6 +9,11 @@ class ProjectUmbrella(models.Model):
     
     keywords = models.ManyToManyField(Keyword, blank=True)
 
+    def project_count(self):
+        return self.project_set.count()
+
+    project_count.short_description = 'Project Count'
+
     def __str__(self):
         return self.name
 
