@@ -70,6 +70,10 @@ class ProjectHeaderInline(ImageCroppingMixin, admin.StackedInline):
     model = ProjectHeader
     extra = 0
 
+class BannerInline(admin.TabularInline):
+    model = Banner
+    extra = 0  # Number of extra "empty" forms to show at the bottom
+
 # Uses format as per https://github.com/jonasundderwolf/django-image-cropping to add cropping to the admin page
 class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
     # Filters authors only to current members and sorts by firstname
@@ -93,7 +97,7 @@ class PhotoAdmin(ImageCroppingMixin, admin.ModelAdmin):
     list_display = ('__str__', 'admin_thumbnail')
 
 class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
-    inlines = [ProjectHeaderInline]
+    inlines = [ProjectHeaderInline, BannerInline]
 
     # The list display lets us control what is shown in the Project table at Home > Website > Project
     # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
@@ -193,7 +197,7 @@ class ProjectInline(admin.TabularInline):  # or admin.StackedInline
 class ProjectUmbrellaAdmin(admin.ModelAdmin):
     list_display = ('name', 'short_name', 'project_count')
     inlines = [ProjectInline]
-    
+
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
         if db_field.name == "keywords":
             kwargs["widget"] = widgets.FilteredSelectMultiple("keywords", is_stacked=False)
