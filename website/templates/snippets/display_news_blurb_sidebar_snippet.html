@@ -1,4 +1,4 @@
-{# This is a reusable template for displaying a person #}
+{# This is a reusable template for displaying a news blurb #}
 {# See: https://docs.djangoproject.com/en/dev/ref/templates/builtins/#include #}
 
 {% load static %}
@@ -22,7 +22,7 @@
     <div class="news_info">
         <!-- https://css-tricks.com/line-clampin/ This seems to be a good way to do multi line wrapping, also referenced in relevant news.css file -->
         <div class="news_title line-clamp">
-            <a href="{% url 'website:news' news_item.id %}">
+            <a href="{% url 'website:news_item_by_slug' slug=news_item.slug %}">
                 <p>{{ news_item.title }}</p>
             </a>
         </div>
