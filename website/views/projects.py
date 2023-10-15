@@ -12,11 +12,6 @@ import logging
 _logger = logging.getLogger(__name__)
 
 def projects(request):
-    """
-    Creates the render context for the project gallery page.
-    :param request:
-    :return:
-    """
     func_start_time = time.perf_counter()
     _logger.debug(f"Starting views/projects at {func_start_time:0.4f}")
 
@@ -30,7 +25,8 @@ def projects(request):
                 .annotate(most_recent_publication=Subquery(latest_publication_dates.values('date')[:1]))
                 .order_by('-most_recent_publication', 'id').distinct())
     
-    # Get completed projects that have at least one publication, a gallery image, and
+    # Get completed projects that have at least one publication, a gallery image, and have an end date
+    # ordered by most recent pub date
     completed_projects = (Project.objects.filter(publication__isnull=False, gallery_image__isnull=False, end_date__isnull=False)
                 .annotate(most_recent_publication=Subquery(latest_publication_dates.values('date')[:1]))
                 .order_by('-most_recent_publication', 'id').distinct())
