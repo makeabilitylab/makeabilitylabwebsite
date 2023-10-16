@@ -16,6 +16,29 @@
   }
 }
 
+.project-grid.landing-page-project-grid {
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+@media (max-width: 950px) {
+  .project-grid.landing-page-project-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .project-grid.landing-page-project-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .project-grid.landing-page-project-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
 .news-banner-listing {
   z-index: 15;
   position: relative; 
