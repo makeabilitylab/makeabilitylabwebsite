@@ -76,12 +76,17 @@ python manage.py makemigrations website
 python manage.py migrate website
 
 echo "****************** STEP 4/5: docker-entrypoint.sh ************************"
-echo "4. Running 'python manage.py delete_unused_files' to delete unused files in file system"
+echo "4.0 Running 'python manage.py delete_unused_files' to delete unused files in file system"
 echo "******************************************"
 python manage.py delete_unused_files
 
 echo "****************** STEP 4.1/5: docker-entrypoint.sh ************************"
-echo "4.1 Running 'python manage.py generate_slugs_for_old_news_items' to generate slugs for old news items"
+echo "4.1 Running 'python manage.py thumbnail_cleanup' to delete unused thumbnails"
+echo "******************************************"
+python manage.py thumbnail_cleanup
+
+echo "****************** STEP 4.2/5: docker-entrypoint.sh ************************"
+echo "4.2 Running 'python manage.py generate_slugs_for_old_news_items' to generate slugs for old news items"
 echo "******************************************"
 python manage.py generate_slugs_for_old_news_items
 
