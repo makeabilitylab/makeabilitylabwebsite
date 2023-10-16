@@ -362,9 +362,8 @@ m2m_changed.connect(update_file_name_publication , sender=Publication.authors.th
 
 @receiver(pre_delete, sender=Publication)
 def publication_delete(sender, instance, **kwards):
+    """Deletes the pdf file and thumbnail when a publication is deleted"""
     if instance.thumbnail:
         instance.thumbnail.delete(True)
     if instance.pdf_file:
         instance.pdf_file.delete(True)
-    if instance.thumbnail:
-        instance.thumbnail.delete(True)
