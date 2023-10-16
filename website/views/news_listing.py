@@ -44,4 +44,4 @@ def news_listing(request):
     # Render is a Django helper function. It combines a given template—in this case news-listing.html—with
     # a context dictionary and returns an HttpResponse object with that rendered text.
     # See: https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
-    return render(request, 'website/news-listing.html', context)
+    return render(request, 'website/news_listing.html', context)
