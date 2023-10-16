@@ -43,10 +43,13 @@ def projects(request):
         projects = project_umbrella.project_set.all()
         map_project_umbrella_to_projects[project_umbrella.short_name] = [project.name for project in projects]
 
+    # Sort the dictionary by project count
+    sorted_map_project_umbrella_to_projects = {k: v for k, v in sorted(map_project_umbrella_to_projects.items(), 
+                                                                       key=lambda item: len(item[1]), reverse=True)}
 
     context = {'active_projects': active_projects,
                'completed_projects': completed_projects,
-               'map_project_umbrella_to_projects': map_project_umbrella_to_projects,
+               'map_project_umbrella_to_projects': sorted_map_project_umbrella_to_projects,
                'debug': settings.DEBUG,
                'navbar_white': True}
     
