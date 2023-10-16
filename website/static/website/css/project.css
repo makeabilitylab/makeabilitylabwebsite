@@ -109,6 +109,10 @@
   margin: 0;
 }
 
+.project-gallery-col img {
+  border-radius: 8%;
+}
+
 .overlay-image {
   bottom: 0;
   left: 0;

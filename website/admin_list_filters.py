@@ -285,7 +285,7 @@ class ActiveProjectsFilter(admin.SimpleListFilter):
         provided in the query string and retrievable via
         `self.value()`.
         """
-        print("queryset: self.value() = {} with type = {}".format(self.value(), type(self.value())))
+        # print("queryset: self.value() = {} with type = {}".format(self.value(), type(self.value())))
         
         if self.value() == 'Active':
             return queryset.filter(end_date__isnull=True)

@@ -11,7 +11,7 @@ from .publication import Publication
 from .talk import Talk
 from .video import Video
 
-PROJECT_THUMBNAIL_SIZE = (500, 400) # 15 : 9 aspect ratio
+PROJECT_THUMBNAIL_SIZE = (500, 300) # 15 : 9 aspect ratio
 
 class Project(models.Model):
 
@@ -49,6 +49,8 @@ class Project(models.Model):
     cropping = ImageRatioField('gallery_image', get_thumbnail_size_as_str(), size_warning=True)
 
     about = models.TextField(null=True, blank=True)
+    about.help_text = "Keep the word count to roughly 150-300 words. This is an HTML-compatible field. You can use HTML tags to format the text.\
+                       For example, you can use <b>bold</b>, <i>italics</i>, <a href='https://makeabilitylab.cs.washington.edu'>links</a>"
 
     updated = models.DateField(auto_now=True)
 
@@ -62,15 +64,12 @@ class Project(models.Model):
         """Returns the PIs for the project (as a Person object)"""
         pis_queryset = self.projectrole_set.filter(pi_member="PI")
         pis_list = [pi.person for pi in pis_queryset]
-        print("queryset: ", pis_queryset)
-        print(pis_list)
         return pis_list
 
     def get_co_pis(self):
         """Returns the PIs for ths project (as a list of Person objects)"""
         copis_queryset = self.projectrole_set.filter(pi_member="Co-PI")
         copis_list = [copi.person for copi in copis_queryset]
-        print(copis_list)
         return copis_list
 
     def has_award(self):

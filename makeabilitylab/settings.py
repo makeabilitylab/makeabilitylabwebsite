@@ -154,6 +154,12 @@ INSTALLED_APPS = [
     # python manage.py shell_plus
     # https://opensourcehacker.com/2014/08/13/turbocharge-your-python-prompt-and-django-shell-with-ipython-notebook/
     'django_extensions',
+
+    # In Django, both easy-thumbnails and django-image-cropping serve different purposes 
+    # and can be used together for different functionalities. So, while easy-thumbnails can handle 
+    # resizing and scaling of images, if you need specific cropping functionality where users can 
+    # select a part of the image to crop, you would use django-image-cropping in conjunction with 
+    # easy-thumbnails. This combination provides a more comprehensive image handling solution
     'image_cropping', # for cropping uploaded images: https://github.com/jonasundderwolf/django-image-cropping
     'easy_thumbnails', # for dynamically creating thumbnails: https://github.com/SmileyChris/easy-thumbnails
     'sortedm2m',
@@ -311,3 +317,12 @@ from easy_thumbnails.conf import Settings as thumbnail_settings
 THUMBNAIL_PROCESSORS = (
     'image_cropping.thumbnail_processors.crop_corners',
 ) + thumbnail_settings.THUMBNAIL_PROCESSORS
+
+# https://easy-thumbnails.readthedocs.io/en/latest/ref/settings/#easy_thumbnails.conf.Settings.THUMBNAIL_DEFAULT_OPTIONS
+THUMBNAIL_DEFAULT_OPTIONS = {
+    # The default quality level for JPG images on a scale from 1 (worst) to 95 (best). 
+    # Technically, values up to 100 are allowed, but this is not recommended.
+    'quality': 90, # default is 85
+    
+    # 'bw': True, Would set all images to b&w
+}

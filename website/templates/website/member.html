@@ -77,7 +77,7 @@
             <div class="row" id="about-header">
                 <div class="col-sm-6 col-md-3 hidden-xs">
                     <div class="easter-egg-col">
-                        <img src="{% thumbnail person.image 245x245 box=person.cropping crop detail upscale %}"
+                        <img src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True %}" 
                              class="img-responsive"/>
                         <div class="overlay-easter-egg">
                             <img src="{% thumbnail person.easter_egg 245x245 box=person.easter_egg_crop crop detail upscale %}"

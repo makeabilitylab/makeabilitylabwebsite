@@ -178,12 +178,14 @@
         <div class="row row-adjust-margins">
             <h3 class="news-type-label">Photo Gallery</h3>
             {% for image in photos %}
-            <div class="col-md-4 project-gallery-col" id="slide{{ forloop.counter }}">
-            <img src="{% thumbnail image.picture 368x245 box=image.cropping crop detail %}" alt="{{image.alt_text}}" class="project-gallery">
-            <div class="overlay-image">
-                <div class="image-gallery-caption">{{image.caption}}</div>
-            </div>
-            </div>
+              <div class="col-md-4 project-gallery-col" id="slide{{ forloop.counter }}">
+                <img class="project-gallery" 
+                    src="{% thumbnail image.picture image.get_cropping_size_as_str box=image.cropping crop=True detail=True upscale=True %}" 
+                    alt="{{image.alt_text}}" >
+                <div class="overlay-image">
+                    <div class="image-gallery-caption">{{image.caption}}</div>
+                </div>
+              </div>
             {% endfor %}
         </div>
         {% include "snippets/display_project_gallery_lightbox.html" %}

@@ -2,7 +2,7 @@
 {# See: https://docs.djangoproject.com/en/dev/ref/templates/builtins/#include #}
 
 {% load static %}
-{% load thumbnail %}
+{% load thumbnail %} {% comment %} For https://easy-thumbnails.readthedocs.io/en/latest/usage/#templates {% endcomment %}
 {% load cropping %}
 {% load ml_tags %}
 
@@ -11,7 +11,30 @@
   <div class="project-image">
     <a href="{% url 'website:project' project.short_name %}">
       <img class="project-thumbnail" 
-           src="{% thumbnail project.gallery_image '300x180' crop='center' %}" 
+           {% comment %}
+              We use easy-thumbnails to create thumbnail image: https://easy-thumbnails.readthedocs.io/en/latest/usage/#templates
+              The basic syntax is: {% thumbnail [source] [size] [options] %}
+              You can pass:
+                - size: It can be a number of things. 
+                        (1) the name of an alias, which is a specific set of thumbnail options. 
+                        See: https://easy-thumbnails.readthedocs.io/en/latest/usage/#thumbnail-aliases
+                        (2) a string in the format "widthxheight", where width and height are integers. 
+                        (3) a tuple of (width, height).
+              For [options], there are a variety of possibilities.
+                See the full list: https://easy-thumbnails.readthedocs.io/en/latest/usage/#thumbnail-options 
+                - crop: This can be either True or False, or a string specifying a crop option. 
+                        If True, the image will be cropped to fit the specified size. If False, it will be 
+                        scaled. Some possible string values are 'smart', 'scale', and 'center'.
+                - upscale: This can be either True or False. If True, the image will be upscaled if it is smaller 
+                           than the specified size.
+                - quality: This can be an integer between 1 and 100. It specifies the JPEG quality of the output image.
+                           The docs say that 95 is really the highest. It defaults to 90, which is set in settings.py
+                           See: THUMBNAIL_DEFAULT_OPTIONS in settings.py
+                - detail: is used to increase the sharpness of the cropped image. It does this by applying a 
+                          sharpening algorithm to the image. Note: I (JEF) could not find much documentation on this
+                - box: specifies the x, y, width, height of the crop for this image
+           {% endcomment %}
+           src="{% thumbnail project.gallery_image project.get_thumbnail_size_as_str box=project.cropping crop=True upscale=True %}" 
            alt="{{project.get_thumbnail_alt_text}}"/>
       {% if project.has_award %}
         <img class="project-award-banner" src="/static/website/img/awardoverlay.png" />

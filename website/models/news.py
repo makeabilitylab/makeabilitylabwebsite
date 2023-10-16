@@ -15,7 +15,7 @@ from .project import Project
 
 import random # for random news images
 
-NEWS_THUMBNAIL_SIZE = (362, 217) # 15 : 9 aspect ratio
+NEWS_THUMBNAIL_SIZE = (500, 300) # 15 : 9 aspect ratio
 
 DEFAULT_NEWS_IMAGE_FILENAMES = ["MakeabilityLab-News2-DALLE3-Edits2-15x9.jpg",
                                 "MakeabilityLab-News-DALLE3-Edits-15x9.jpg",
