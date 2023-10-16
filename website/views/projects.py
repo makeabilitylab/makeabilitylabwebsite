@@ -61,4 +61,4 @@ def projects(request):
     # Render is a Django helper function. It combines a given template—in this case projects.html—with
     # a context dictionary and returns an HttpResponse object with that rendered text.
     # See: https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
-    return render(request, 'website/projects.html', context)
+    return render(request, 'website/project-listing.html', context)
