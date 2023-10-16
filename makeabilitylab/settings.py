@@ -149,12 +149,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # To use IPython-enabled Django shell through Django extensions
-    # pip3 install django_extensions
-    # python manage.py shell_plus
-    # https://opensourcehacker.com/2014/08/13/turbocharge-your-python-prompt-and-django-shell-with-ipython-notebook/
-    'django_extensions',
-
     # In Django, both easy-thumbnails and django-image-cropping serve different purposes 
     # and can be used together for different functionalities. So, while easy-thumbnails can handle 
     # resizing and scaling of images, if you need specific cropping functionality where users can 
@@ -162,18 +156,24 @@ INSTALLED_APPS = [
     # easy-thumbnails. This combination provides a more comprehensive image handling solution
     'image_cropping', # for cropping uploaded images: https://github.com/jonasundderwolf/django-image-cropping
     'easy_thumbnails', # for dynamically creating thumbnails: https://github.com/SmileyChris/easy-thumbnails
-    'sortedm2m',
-    'ckeditor',
+    'sortedm2m', # Used for SortedManyToManyFields in admin interface: https://pypi.org/project/django-sortedm2m-filter-horizontal-widget/
+    'ckeditor', # Used for news page editing in admin interface: https://pypi.org/project/django-ckeditor/
     'ckeditor_uploader',
     
     # Removed sortedm2m_filter_horizontal_widget as incompatible with Django 4
-    # 'sortedm2m_filter_horizontal_widget', # https://github.com/svleeuwen/sortedm2m-filter-horizontal-widget
+    # TODO
+    'sortedm2m_filter_horizontal_widget', # https://github.com/svleeuwen/sortedm2m-filter-horizontal-widget
     'rest_framework',
 
     # Adding django-debug-toolbar, which is recommended by Django
     # https://docs.djangoproject.com/en/4.2/topics/performance/#performance-benchmarking
     # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html
     "debug_toolbar",
+
+    # JEF (Oct 16, 2023) I tried adding django_select2 to help provide easier way to add multiple others in order 
+    # using PublicationAdmin interface; however, I was not that impressed with the interface, so I'm taking it out again.
+    # See: https://django-select2.readthedocs.io/en/latest/
+    #'django_select2',
 ]
 
 # JEF: Added 9/22/2023

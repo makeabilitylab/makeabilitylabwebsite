@@ -6,25 +6,27 @@
 # 3. Now you're in the Docker container, run: apache@eee162a179fd:/code$ pip3 list
 # 4. Confirm that all of the packages that you expect to be installed are there.
 
-#django==3.2.15
-django==4.2.5 # trying to upgrade on 9/25/2023
+django==4.2.5 # upgraded on 9/25/2023
 
-django-debug-toolbar==4.2.0
-psycopg2==2.9.5
-djangorestframework==3.14
-beautifulsoup4==4.11.1
-wand==0.6.10
-bibtexparser==1.4.0
-Pillow==9.3.0
-django-extensions==3.2.1
-django-image-cropping==1.7
-django-sortedm2m==3.1.1
-easy_thumbnails==2.8.3
-xmltodict==0.13.0
+django-debug-toolbar==4.2.0 # Used for debugging: https://django-debug-toolbar.readthedocs.io/en/latest/
+psycopg2==2.9.5 # Psycopg is the most popular PostgreSQL database adapter for Python. https://pypi.org/project/psycopg2/
+wand==0.6.10 # Used for generating thumbnails of PDFs and other image manipulation: https://pypi.org/project/Wand/
+Pillow==9.3.0 # Used for image manipulation: https://pypi.org/project/Pillow/
+
+django-image-cropping==1.7 # Used for cropping images https://pypi.org/project/django-image-cropping/
+easy_thumbnails==2.8.3 # Used in concert with django-image-cropping to generate thumbnails https://pypi.org/project/easy-thumbnails/
+django-sortedm2m==3.1.1 # Used for SortedManyToManyFields: https://pypi.org/project/django-sortedm2m/
+
 pyOpenSSL==22.1.0
 requests==2.31.0
 
-# Seems incompatible with Django 4+ because no more force_text
-# django-sortedm2m-filter-horizontal-widget==1.3.2 # 
+django-sortedm2m-filter-horizontal-widget==2.0.1 # Used for SortedManyToManyFields in admin interface: https://pypi.org/project/django-sortedm2m-filter-horizontal-widget/
+django-ckeditor==6.5.1 # Used for news editor https://pypi.org/project/django-ckeditor/
 
-django-ckeditor==6.5.1
+# I experimented with django-select2 but I was not that impressed. I don't think we need it.
+# django-select2==8.1.2
+# bibtexparser==1.4.0 # We used to use this for importing data: https://pypi.org/project/bibtexparser/
+# beautifulsoup4==4.11.1 # JEF (Oct 16, 2023); not sure why/when we used this
+# django-extensions==3.2.1 # JEF (Oct 16, 2023); not sure why we want this
+# xmltodict==0.13.0 # JEF (Oct 16, 2023); we used to use this for importing data but no longer need it
+# djangorestframework==3.14 # JEF (Oct 16, 2023); we used to use this but not anymore

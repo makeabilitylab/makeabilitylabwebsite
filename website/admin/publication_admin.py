@@ -2,9 +2,17 @@ from django.contrib import admin
 from django.contrib.admin import widgets
 from website.models import Publication, Poster, Video, Talk
 from website.admin_list_filters import PubVenueTypeListFilter, PubVenueListFilter
+# from django.select2.fields import Select2MultipleField
+# from django_select2 import forms
+from sortedm2m.fields import SortedManyToManyField
+from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
 
 @admin.register(Publication)
 class PublicationAdmin(admin.ModelAdmin):
+    # formfield_overrides = {
+    #     SortedManyToManyField: {'widget': forms.Select2MultipleWidget},
+    # }
+
     fieldsets = [
         (None,                      {'fields': ['title', 'authors', 'date']}),
         ('Files',                   {'fields': ['pdf_file']}),
@@ -53,8 +61,8 @@ class PublicationAdmin(admin.ModelAdmin):
         return form
 
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
-        #if db_field.name == "authors":
-        #    kwargs['widget'] = SortedFilteredSelectMultiple() # removed due to incompatibility with Django 4
+        if db_field.name == "authors":
+           kwargs['widget'] = SortedFilteredSelectMultiple() # removed due to incompatibility with Django 4
         if db_field.name == "projects":
             kwargs["widget"] = widgets.FilteredSelectMultiple("projects", is_stacked=False)
         elif db_field.name == "project_umbrellas":
