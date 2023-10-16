@@ -11,7 +11,7 @@ import logging
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
 
-def projects(request):
+def project_listing(request):
     func_start_time = time.perf_counter()
     _logger.debug(f"Starting views/projects at {func_start_time:0.4f}")
 
@@ -55,10 +55,10 @@ def projects(request):
     
     func_end_time = time.perf_counter()
     num_projects = len(active_projects) + len(completed_projects)
-    _logger.debug(f"Rendered {num_projects} projects for views/projects in {func_end_time - func_start_time:0.4f} seconds")
+    _logger.debug(f"Prepared {num_projects} projects for views/projects in {func_end_time - func_start_time:0.4f} seconds")
     context['render_time'] = func_end_time - func_start_time
     
     # Render is a Django helper function. It combines a given template—in this case projects.html—with
     # a context dictionary and returns an HttpResponse object with that rendered text.
     # See: https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
-    return render(request, 'website/project-listing.html', context)
+    return render(request, 'website/project_listing.html', context)

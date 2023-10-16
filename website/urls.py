@@ -21,14 +21,14 @@ urlpatterns = [
     re_path(r'^publications/$', views.publications, name='publications'),
     re_path(r'^talks/$', views.talks, name='talks'),
     re_path(r'^videos/$', views.videos, name='videos'),
-    re_path(r'^projects/$', views.projects, name='projects'),
+    re_path(r'^projects/$', views.project_listing, name='projects'),
     re_path(r'^projects/(?P<project_name>[a-zA-Z ]+)/$', views.project, name='project'),
     re_path(r'^project/(?P<project_name>[a-zA-Z ]+)/$', views.project, name='project'),
     re_path(r'^news/$', views.news_listing, name='news_listing'),
 
     # First try to match on the news id (for historical compatibility) then match on the slug
-    path('news/<int:id>/', views.news, name='news_item_by_id'),
-    path('news/<slug:slug>/', views.news, name='news_item_by_slug'),
+    path('news/<int:id>/', views.news_item, name='news_item_by_id'),
+    path('news/<slug:slug>/', views.news_item, name='news_item_by_slug'),
     
     re_path(r'^faq/$', views.faq, name='faq'),
     

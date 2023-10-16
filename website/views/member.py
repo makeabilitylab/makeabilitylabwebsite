@@ -54,7 +54,7 @@ def member(request, member_id):
                'page_title': person.get_full_name()}
     
     func_end_time = time.perf_counter()
-    _logger.debug(f"Rendered person={person} in {func_end_time - func_start_time:0.4f} seconds")
+    _logger.debug(f"Prepared person={person} in {func_end_time - func_start_time:0.4f} seconds")
     context['render_time'] = func_end_time - func_start_time
 
     # Render is a Django shortcut (aka helper function). It combines a given template—in this case

@@ -43,7 +43,7 @@ def publications(request):
                'navbar_white': True}
     
     func_end_time = time.perf_counter()
-    _logger.debug(f"Rendered {publications.count()} publications in {func_end_time - func_start_time:0.4f} seconds")
+    _logger.debug(f"Prepared {publications.count()} publications in {func_end_time - func_start_time:0.4f} seconds")
     context['render_time'] = func_end_time - func_start_time
 
     # Render is a Django shortcut (aka helper function). It combines a given template with a 

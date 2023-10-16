@@ -38,7 +38,7 @@ def news_listing(request):
                'navbar_white': True}
     
     func_end_time = time.perf_counter()
-    _logger.debug(f"Rendered views/news_listing in {func_end_time - func_start_time:0.4f} seconds")
+    _logger.debug(f"Prepared views/news_listing in {func_end_time - func_start_time:0.4f} seconds")
     context['render_time'] = func_end_time - func_start_time
 
     # Render is a Django helper function. It combines a given template—in this case news-listing.html—with

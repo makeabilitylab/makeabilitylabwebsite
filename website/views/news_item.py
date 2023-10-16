@@ -13,9 +13,7 @@ import logging
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
 
-# This method and the news functionality in general was written by Johnson Kuang
-# def news(request, news_id):
-def news(request, slug=None, id=None):
+def news_item(request, slug=None, id=None):
     func_start_time = time.perf_counter()
 
     if slug is not None:
@@ -56,10 +54,10 @@ def news(request, slug=None, id=None):
                'debug': settings.DEBUG}
     
     func_end_time = time.perf_counter()
-    _logger.debug(f"Rendered views/news for news.slug={slug} in {func_end_time - func_start_time:0.4f} seconds")
+    _logger.debug(f"Prepared views/news for news.slug={slug} in {func_end_time - func_start_time:0.4f} seconds")
     context['render_time'] = func_end_time - func_start_time
 
     # Render is a Django helper function. It combines a given template—in this case news.html—with
     # a context dictionary and returns an HttpResponse object with that rendered text.
     # See: https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
-    return render(request, 'website/news.html', context)
+    return render(request, 'website/news_item.html', context)
