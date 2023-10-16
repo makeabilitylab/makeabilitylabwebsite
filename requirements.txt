@@ -16,6 +16,7 @@ Pillow==9.3.0 # Used for image manipulation: https://pypi.org/project/Pillow/
 django-image-cropping==1.7 # Used for cropping images https://pypi.org/project/django-image-cropping/
 easy_thumbnails==2.8.3 # Used in concert with django-image-cropping to generate thumbnails https://pypi.org/project/easy-thumbnails/
 django-sortedm2m==3.1.1 # Used for SortedManyToManyFields: https://pypi.org/project/django-sortedm2m/
+djangorestframework==3.14 # JEF (Oct 16, 2023); we use this in urls.py but not sure if we need to. Needs to be checked
 
 pyOpenSSL==22.1.0
 requests==2.31.0
@@ -29,4 +30,4 @@ django-ckeditor==6.5.1 # Used for news editor https://pypi.org/project/django-ck
 # beautifulsoup4==4.11.1 # JEF (Oct 16, 2023); not sure why/when we used this
 # django-extensions==3.2.1 # JEF (Oct 16, 2023); not sure why we want this
 # xmltodict==0.13.0 # JEF (Oct 16, 2023); we used to use this for importing data but no longer need it
-# djangorestframework==3.14 # JEF (Oct 16, 2023); we used to use this but not anymore
+
