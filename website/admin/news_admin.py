@@ -4,6 +4,10 @@ from image_cropping import ImageCroppingMixin
 
 @admin.register(News)
 class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
+
+    # Exclude the slug field since it is auto-generated
+    exclude = ('slug',)
+
     # Filters authors only to current members and sorts by firstname
     # Based on: http://stackoverflow.com/a/30627555
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
