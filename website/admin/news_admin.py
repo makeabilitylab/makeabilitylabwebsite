@@ -1,6 +1,7 @@
 from django.contrib import admin
 from website.models import News, Person
 from image_cropping import ImageCroppingMixin
+from django.contrib.admin import widgets
 
 @admin.register(News)
 class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
