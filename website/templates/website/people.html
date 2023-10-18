@@ -141,18 +141,10 @@
     
 
   <script>
-    {% comment %} window.onload = function() {
-      var images = document.getElementsByClassName('swap-image');
-      for (var i = 0; i < images.length; i++) {
-          images[i].addEventListener('mouseover', swapImage, false);
-          images[i].addEventListener('mouseout', swapImage, false);
-      }
-    } {% endcomment %}
-    
     function swapImage(imgElement) {
       let temp = imgElement.src;
       imgElement.src = imgElement.dataset.altSrc;
       imgElement.dataset.altSrc = temp;
-    }
+    }  
   </script>
 {% endblock %}
