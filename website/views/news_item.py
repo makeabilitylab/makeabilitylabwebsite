@@ -1,5 +1,6 @@
 from django.conf import settings # for access to settings variables, see https://docs.djangoproject.com/en/4.0/topics/settings/#using-settings-in-python-code
-from website.models import News
+from django.db.models import Prefetch # fore prefetching
+from website.models import News, Project
 
 import website.utils.ml_utils as ml_utils 
 from django.shortcuts import render, get_object_or_404
@@ -34,6 +35,16 @@ def news_item(request, slug=None, id=None):
 
     recent_ml_news = News.objects.order_by('-date')[:MAX_RECENT_MAKEABILITY_LAB_NEWS]
 
+    # Define a Prefetch object for the 'project' field with a custom queryset
+    # The Prefetch object in Django is used to optimize database queries when dealing with related objects. 
+    # In this case, each News item has a ManyToMany relationship with Project. Without prefetching, if you were 
+    # to access the related Project objects for each News item in a loop, Django would have to make a separate 
+    # database query for each News item, leading to a large number of queries. This is often referred to as the “N+1 query problem”.
+    prefetch = Prefetch('news_set', queryset=News.objects.order_by('-date'))
+
+    # Use the prefetch_related method with the Prefetch object
+    project_news_items = news.project.all().prefetch_related(prefetch)[:3]
+
     # max_extra_items = 4  # Maximum number of authors
     # all_author_news = news.author.news_set.order_by('-date')
     # author_news = []
@@ -55,6 +66,7 @@ def news_item(request, slug=None, id=None):
     print(recent_ml_news);
     context = {'news_item': news,
                'recent_ml_news': recent_ml_news,
+               'project_news_items': project_news_items,
                'navbar_white': True,
                'debug': settings.DEBUG}
     
