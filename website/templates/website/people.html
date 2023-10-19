@@ -139,10 +139,19 @@
   </div>
 
   <script>
+    var _swapImageEnabled = true;
+    console.log("Hi console friends 👋🏽,\n\nTo turn off our 'easter egg' swap, in the console window, type 'toggleSwapImage()'.")
+
     function swapImage(imgElement) {
-      let temp = imgElement.src;
-      imgElement.src = imgElement.dataset.altSrc;
-      imgElement.dataset.altSrc = temp;
-    }  
+      if(_swapImageEnabled){
+        let temp = imgElement.src;
+        imgElement.src = imgElement.dataset.altSrc;
+        imgElement.dataset.altSrc = temp;
+      }
+    }
+    
+    function toggleSwapImage() {
+      _swapImageEnabled = !_swapImageEnabled;
+    }
   </script>
 {% endblock %}
