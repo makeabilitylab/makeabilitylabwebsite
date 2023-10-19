@@ -1,0 +1,41 @@
+.makelab-container{
+  margin-top: 80px;
+}
+
+.news-item-title{
+  margin-bottom: 8px;
+}
+
+.news-byline{
+  display: flex;
+  font-family: Roboto;
+  font-size: 12px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+
+.news-byline-info{
+  margin-left: 5px;
+  margin-top: 4px;
+}
+
+.news-byline img{
+  max-width: 50px;
+  border-radius: 50%;
+}
+
+.news-byline-author{
+  font-weight: 500;
+  margin: 0px;
+}
+
+.news-byline-date{
+  color: rgb(150,150,150);
+  font-weight: 300;
+  margin: 0px;
+}
+
+.news-item-content{
+  margin-top: 30px;
+  font-size: 16px;
+}
