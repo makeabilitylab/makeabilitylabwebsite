@@ -17,14 +17,15 @@ _logger = logging.getLogger(__name__)
 MAX_RECENT_MAKEABILITY_LAB_NEWS = 3
 MAX_RECENT_NEWS_ITEMS_FOR_PROJECT = 3
 MAX_RECENT_NEWS_ITEMS_BY_AUTHOR = 3
+MAX_RECENT_NEWS_ITEMS_ABOUT_PEOPLE_MENTIONED = 3
 
 def news_item(request, slug=None, id=None):
     func_start_time = time.perf_counter()
 
     if slug is not None:
-        news = get_object_or_404(News, slug=slug)
+        cur_news_item = get_object_or_404(News, slug=slug)
     elif id is not None:
-        news = get_object_or_404(News, id=id)
+        cur_news_item = get_object_or_404(News, id=id)
     else:
         raise Http404("No News matches the given query.")
     
@@ -34,29 +35,42 @@ def news_item(request, slug=None, id=None):
     # news = get_object_or_404(News, pk=news_id)
 
     recent_ml_news = (News.objects
-                        .exclude(id=news.id) # exclude the current news item
+                        .exclude(id=cur_news_item.id) # exclude the current news item
                         .order_by('-date')[:MAX_RECENT_MAKEABILITY_LAB_NEWS])
 
-    # Define a Prefetch object for the 'project' field with a custom queryset
-    # The Prefetch object in Django is used to optimize database queries when dealing with related objects. 
-    # In this case, each News item has a ManyToMany relationship with Project. Without prefetching, if you were 
-    # to access the related Project objects for each News item in a loop, Django would have to make a separate 
-    # database query for each News item, leading to a large number of queries. This is often referred to as the “N+1 query problem”.
-    prefetch = Prefetch('news_set', queryset=News.objects.exclude(id=news.id).order_by('-date'))
 
-    # Use the prefetch_related method with the Prefetch object
-    project_news_items = news.project.all().prefetch_related(prefetch)[:MAX_RECENT_NEWS_ITEMS_FOR_PROJECT]
+    excluded_ids = list(recent_ml_news.values_list('id', flat=True))
+    related_projects = cur_news_item.project.all()
+    recent_news_about_projects_mentioned = (News.objects
+                                   .exclude(id=cur_news_item.id) # exclude the current news item
+                                   .exclude(id__in=excluded_ids) # don't want to repeat
+                                   .filter(project__in=related_projects)
+                                   .order_by('-date').distinct()[:MAX_RECENT_NEWS_ITEMS_BY_AUTHOR])
+    
+    
+    # Combine the IDs from recent_ml_news and recent_news_about_projects_mentioned
+    excluded_ids.extend(list(recent_news_about_projects_mentioned.values_list('id', flat=True)))
+    
+    people_mentioned = cur_news_item.people.all()
+    recent_news_about_people_mentioned = (News.objects
+                                          .exclude(id=cur_news_item.id)
+                                          .exclude(id__in=excluded_ids)
+                                          .filter(people__in=people_mentioned)
+                                          .order_by('-date').distinct()[:MAX_RECENT_NEWS_ITEMS_ABOUT_PEOPLE_MENTIONED])
 
-    recent_news_posts_by_author = (news.author.news_set
-                                   .exclude(id=news.id) # exclude the current news item
+    excluded_ids.extend(list(recent_news_about_people_mentioned.values_list('id', flat=True)))
+    recent_news_posts_by_author = (cur_news_item.author.authored_news
+                                   .exclude(id=cur_news_item.id) # exclude the current news item
+                                   .exclude(id__in=excluded_ids)
                                    .order_by('-date')[:MAX_RECENT_NEWS_ITEMS_BY_AUTHOR])
-
-    print("recent_ml_news", recent_ml_news)
-    print("recent_news_posts_by_author", recent_news_posts_by_author)
-
-    context = {'news_item': news,
+    
+    
+    context = {'news_item': cur_news_item,
+               'people_mentioned': people_mentioned,
+               'related_projects': related_projects,
                'recent_ml_news': recent_ml_news,
-               'project_news_items': project_news_items,
+               'recent_news_about_projects_mentioned': recent_news_about_projects_mentioned,
+               'recent_news_about_people_mentioned': recent_news_about_people_mentioned,
                'recent_news_posts_by_author': recent_news_posts_by_author,
                'navbar_white': True,
                'debug': settings.DEBUG}

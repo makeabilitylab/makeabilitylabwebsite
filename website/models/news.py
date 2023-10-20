@@ -39,7 +39,7 @@ class News(models.Model):
     slug = models.SlugField(null=True, unique=True, max_length=255)
 
     date = models.DateField(default=date.today) 
-    author = models.ForeignKey(Person, null=True, on_delete=models.SET_NULL)
+    author = models.ForeignKey(Person, null=True, on_delete=models.SET_NULL, related_name='authored_news')
 
     content = RichTextUploadingField(config_name='default')
 
@@ -54,11 +54,15 @@ class News(models.Model):
     # and the minimum size for the final image
     cropping = ImageRatioField('image', get_thumbnail_size_as_str(), size_warning=True)
 
-    # Optional caption and alt_text for the image
+    # Caption and alt_text for the image
     caption = models.CharField(max_length=1024, blank=True, null=True)
     alt_text = models.CharField(max_length=1024, blank=True, null=True)
 
-    project = models.ManyToManyField(Project, blank=True)
+    # Set related projects to this news post
+    project = models.ManyToManyField(Project, blank=True, null=True)
+    project.help_text = "Manually add any projects that are related to this news item, which allows the news item to show on the appropriate project pages"
+    people = models.ManyToManyField(Person, blank=True, null=True, related_name='related_news')
+    people.help_text = "Manually add any people that are related to this news item, which allows the news item to show on the appropriate people pages"
 
     @property
     def default_news_image_filename(self):
