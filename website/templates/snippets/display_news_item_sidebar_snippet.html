@@ -1,0 +1,21 @@
+{# This is a reusable template for displaying a news blurb #}
+{# See: https://docs.djangoproject.com/en/dev/ref/templates/builtins/#include #}
+
+{% load static %}
+{% load thumbnail %}
+{% load cropping %}
+{% load ml_tags %}
+
+<li>
+  {% if recent_news_item.image %}
+    <img src="{% thumbnail recent_news_item.image 50x50 box=recent_news_item.cropping crop=True upscale=True detail=True %}" 
+            alt="{{recent_news_item.alt_text}}">
+  {% else %}
+    <img src="{% static recent_news_item.default_news_image_filename %}"
+            alt="This is a default news page icon for when there are no thumbnails" />
+  {% endif %}
+  <div class="news-item-sidebar-title-and-date">
+      <div class="news-item-sidebar-title"><a href="#">{{recent_news_item.title}}</a></div>
+      <div class="news-item-sidebar-date">{{recent_news_item.short_date}}</div>
+  </div>
+</li>

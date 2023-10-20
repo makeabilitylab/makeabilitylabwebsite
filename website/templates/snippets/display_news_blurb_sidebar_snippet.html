@@ -1,0 +1,41 @@
+{# This is a reusable template for displaying a news blurb #}
+{# See: https://docs.djangoproject.com/en/dev/ref/templates/builtins/#include #}
+
+{% load static %}
+{% load thumbnail %}
+{% load cropping %}
+{% load ml_tags %}
+
+<!-- Create a row for each news item which has been passed in -->
+<div class="row news_header">
+    <a href="">
+        <!-- Use the items image if it exists, otherwise use the default icon -->
+        {% if news_item.image %}
+            <img src="{% thumbnail news_item.image 250x250 box=news_item.cropping crop detail %}"
+                 class="news_image" height="50" width="50"
+                 alt="{{ news_item.alt_text }}">
+        {% else %}
+            <img src="{% static 'website/img/news_icon.png' %}" class="news_image"
+                 height="50" width="50">
+        {% endif %}
+    </a>
+    <div class="news_info">
+        <!-- https://css-tricks.com/line-clampin/ This seems to be a good way to do multi line wrapping, also referenced in relevant news.css file -->
+        <div class="news_title line-clamp">
+            <a href="{% url 'website:news_item_by_slug' slug=news_item.slug %}">
+                <p>{{ news_item.title }}</p>
+            </a>
+        </div>
+        <p class="news_date">{{ news_item.short_date }} | <a
+                href="{% url 'website:member' news_item.author.url_name %}">{{ news_item.author.first_name }}</a>
+        </p><!--</p><p class="news_date">{{news_item.author}}</p>-->
+    </div>
+</div>
+<div class="row news_body">
+    <!-- Truncation now uses a set number of lines which can be modified in news.css content-clamp class by changing -webkit-line-clamp -->
+    <div class="news_content content-clamp">
+        {% autoescape off %}
+            <p>{{ news_item.content | removehtmltags }}</p>
+        {% endautoescape %}
+    </div>
+</div>
