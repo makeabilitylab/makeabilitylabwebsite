@@ -27,7 +27,7 @@ def member(request, member_id):
         person = get_object_or_404(Person, url_name__iexact=member_id)
 
     # Get objects relevant to this person
-    news = person.news_set.order_by('-date')[:news_items_num]
+    news = person.authored_news.all().order_by('-date')[:news_items_num]
     publications = person.publication_set.order_by('-date')
     talks = person.talk_set.order_by('-date')
     project_roles = person.projectrole_set.order_by('start_date')
