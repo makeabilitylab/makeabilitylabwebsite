@@ -43,30 +43,17 @@ def news_item(request, slug=None, id=None):
     prefetch = Prefetch('news_set', queryset=News.objects.order_by('-date'))
 
     # Use the prefetch_related method with the Prefetch object
-    project_news_items = news.project.all().prefetch_related(prefetch)[:3]
+    project_news_items = news.project.all().prefetch_related(prefetch)[:MAX_RECENT_NEWS_ITEMS_FOR_PROJECT]
 
-    # max_extra_items = 4  # Maximum number of authors
-    # all_author_news = news.author.news_set.order_by('-date')
-    # author_news = []
-    
-    # for item in all_author_news:
-    #     if item != news:
-    #         author_news.append(item)
+    recent_news_posts_by_author = news.author.news_set.order_by('-date')[:MAX_RECENT_NEWS_ITEMS_BY_AUTHOR]
 
-    # project_news = {}
+    print("recent_ml_news", recent_ml_news)
+    print("recent_news_posts_by_author", recent_news_posts_by_author)
 
-    # if news.project != None:
-    #     for project in news.project.all():
-    #         ind_proj_news = []
-    #         all_proj_news = project.news_set.order_by('-date')
-    #         for item in all_proj_news:
-    #             if item != news:
-    #                 ind_proj_news.append(item)
-    #         project_news[project] = ind_proj_news[:max_extra_items]
-    print(recent_ml_news);
     context = {'news_item': news,
                'recent_ml_news': recent_ml_news,
                'project_news_items': project_news_items,
+               'recent_news_posts_by_author': recent_news_posts_by_author,
                'navbar_white': True,
                'debug': settings.DEBUG}
     
