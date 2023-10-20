@@ -33,19 +33,23 @@ def news_item(request, slug=None, id=None):
     # news = get_object_or_404(News, slug=slug)
     # news = get_object_or_404(News, pk=news_id)
 
-    recent_ml_news = News.objects.order_by('-date')[:MAX_RECENT_MAKEABILITY_LAB_NEWS]
+    recent_ml_news = (News.objects
+                        .exclude(id=news.id) # exclude the current news item
+                        .order_by('-date')[:MAX_RECENT_MAKEABILITY_LAB_NEWS])
 
     # Define a Prefetch object for the 'project' field with a custom queryset
     # The Prefetch object in Django is used to optimize database queries when dealing with related objects. 
     # In this case, each News item has a ManyToMany relationship with Project. Without prefetching, if you were 
     # to access the related Project objects for each News item in a loop, Django would have to make a separate 
     # database query for each News item, leading to a large number of queries. This is often referred to as the “N+1 query problem”.
-    prefetch = Prefetch('news_set', queryset=News.objects.order_by('-date'))
+    prefetch = Prefetch('news_set', queryset=News.objects.exclude(id=news.id).order_by('-date'))
 
     # Use the prefetch_related method with the Prefetch object
     project_news_items = news.project.all().prefetch_related(prefetch)[:MAX_RECENT_NEWS_ITEMS_FOR_PROJECT]
 
-    recent_news_posts_by_author = news.author.news_set.order_by('-date')[:MAX_RECENT_NEWS_ITEMS_BY_AUTHOR]
+    recent_news_posts_by_author = (news.author.news_set
+                                   .exclude(id=news.id) # exclude the current news item
+                                   .order_by('-date')[:MAX_RECENT_NEWS_ITEMS_BY_AUTHOR])
 
     print("recent_ml_news", recent_ml_news)
     print("recent_news_posts_by_author", recent_news_posts_by_author)

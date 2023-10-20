@@ -42,6 +42,8 @@
 
 .news-item-sidebar{
   margin-top: 105px;
+  padding-left: 50px;
+  max-width: 350px;
 }
 
 .news-item-sidebar-header{
