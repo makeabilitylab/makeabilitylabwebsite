@@ -23,4 +23,6 @@ class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
         if db_field.name == "project":
             kwargs["widget"] = widgets.FilteredSelectMultiple("project", is_stacked=False)
+        if db_field.name == "people":
+            kwargs["widget"] = widgets.FilteredSelectMultiple("people", is_stacked=False)
         return super(NewsAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
