@@ -105,6 +105,26 @@ See: https://getbootstrap.com/docs/3.4/css/#overview-container
 					
 			{% endif %}
 
+			{% if project_recent_news_items %}
+				<h2 class="news-item-sidebar-header">Latest Related Project News</h2>
+				<ul class="news-item-sidebar-ul">
+				{% for recent_news_item in recent_news_about_projects_mentioned %}
+					{% include "snippets/display_news_item_sidebar_snippet.html" %}
+				{% endfor %}			
+			{% elif recent_news_about_people_mentioned %}
+				<h2 class="news-item-sidebar-header">Latest Related People News</h2>
+				<ul class="news-item-sidebar-ul">
+				{% for recent_news_item in recent_news_about_people_mentioned %}
+					{% include "snippets/display_news_item_sidebar_snippet.html" %}
+				{% endfor %}
+			{% elif recent_news_posts_by_author %}
+				<h2 class="news-item-sidebar-header">More News By {{ news_item.author }}</h2>
+				<ul class="news-item-sidebar-ul">
+				{% for recent_news_item in recent_news_posts_by_author %}
+					{% include "snippets/display_news_item_sidebar_snippet.html" %}
+				{% endfor %}
+			{% endif %}
+
 			{% if recent_ml_news %}
 				<h2 class="news-item-sidebar-header {% if not people_mentioned and not related_projects %}first-subsection{% endif %}">Recent Makeability Lab News</h2>
 				<ul class="news-item-sidebar-ul">
@@ -113,28 +133,6 @@ See: https://getbootstrap.com/docs/3.4/css/#overview-container
 					{% endfor %}
 			</ul>
 			{% endif %}
-
-			{% if recent_news_posts_by_author %}
-				<h2 class="news-item-sidebar-header">More News By {{ news_item.author }}</h2>
-				<ul class="news-item-sidebar-ul">
-				{% for recent_news_item in recent_news_posts_by_author %}
-					{% include "snippets/display_news_item_sidebar_snippet.html" %}
-				{% endfor %}
-			{% elif project_recent_news_items %}
-				<h2 class="news-item-sidebar-header">Latest Project News</h2>
-				<ul class="news-item-sidebar-ul">
-				{% for recent_news_item in recent_news_about_projects_mentioned %}
-					{% include "snippets/display_news_item_sidebar_snippet.html" %}
-				{% endfor %}
-			{% elif recent_news_about_people_mentioned %}
-				<h2 class="news-item-sidebar-header">Latest News About People Mentioned</h2>
-				<ul class="news-item-sidebar-ul">
-				{% for recent_news_item in recent_news_about_people_mentioned %}
-					{% include "snippets/display_news_item_sidebar_snippet.html" %}
-				{% endfor %}
-			{% endif %}
-
-			
 		</div>
 	</div>
 </div>
