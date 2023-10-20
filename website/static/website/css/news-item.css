@@ -41,7 +41,7 @@
 }
 
 .news-item-sidebar{
-  margin-top: 105px;
+  margin-top: 0px;
   padding-left: 50px;
   max-width: 350px;
 }
@@ -50,6 +50,10 @@
   font-family: Roboto;
   font-size: 14px;
   font-weight: 500;
+}
+
+.news-item-sidebar-header.first-subsection{
+  margin-top: 0px;
 }
 
 .news-item-sidebar-ul{

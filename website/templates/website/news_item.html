@@ -33,7 +33,6 @@ See: https://getbootstrap.com/docs/3.4/css/#overview-container
 		<!-- Main content area -->
 		<div class="col-md-8">
 			<div class="news-item-header">
-				
 				<h1 class="news-item-title">{{news_item.title}}</h1>
 				<div class="news-byline">
 					{% with author=news_item.author %}
@@ -47,12 +46,19 @@ See: https://getbootstrap.com/docs/3.4/css/#overview-container
 						</div>
 					{% endwith %}
 				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-md-8">
+			<div class="news-item-header">
 				<div class="news-item-header-image">
 					{% if news_item.image %}
 						<img class="img-responsive" src="{% thumbnail news_item.image 750x350 box=news_item.cropping crop=True upscale=True detail=True %}" 
 								alt="{{news_item.alt_text}}">
 					{% else %}
-						<img class="img-responsive" src="{% static news_item.default_news_image_filename %}" class="big-news-image" 
+						<img class="img-responsive" src="{% static news_item.default_news_image_filename %}" 
 								alt="This is a default news page icon for when there are no thumbnails" />
 					{% comment %} <img src="{% static 'website/img/news_icon.png' %}" class="big-news-image"> {% endcomment %}
 					{% endif %}
@@ -76,7 +82,7 @@ See: https://getbootstrap.com/docs/3.4/css/#overview-container
 		<!-- Sidebar for related news -->
 		<div class="col-md-4 news-item-sidebar">
 			{% if recent_ml_news %}
-				<h2 class="news-item-sidebar-header">Recent Makeability Lab News</h2>
+				<h2 class="news-item-sidebar-header first-subsection">Recent Makeability Lab News</h2>
 				<ul class="news-item-sidebar-ul">
 					{% for recent_news_item in recent_ml_news  %}
 						{% include "snippets/display_news_item_sidebar_snippet.html" %}
