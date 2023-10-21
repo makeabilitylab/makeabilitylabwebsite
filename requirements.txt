@@ -5,6 +5,10 @@
 # 2. From command line, run: > docker exec -it makeabilitylabwebsite-website-1 bash
 # 3. Now you're in the Docker container, run: apache@eee162a179fd:/code$ pip3 list
 # 4. Confirm that all of the packages that you expect to be installed are there.
+#
+# If you need to install new packages in the Docker container, you can try:
+# 1. docker ps // this gets a list of current processes/containers running
+# 2. docker exec -it -u root <container_id> /bin/bash
 
 django==4.2.5 # upgraded on 9/25/2023
 
