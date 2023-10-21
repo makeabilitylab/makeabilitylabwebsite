@@ -7,8 +7,8 @@ services:
      ports:
        # if you want to expose the postgres instance to a tool on localhost, use this instead:
        # see: https://stackoverflow.com/a/55259785
-       # - '6543:5432'
-       - '5432'
+       - '6543:5432'
+       # - '5432'
      environment:
       - POSTGRES_DB=makeability
       - POSTGRES_USER=admin
