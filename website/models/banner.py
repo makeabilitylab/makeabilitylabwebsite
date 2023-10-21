@@ -45,7 +45,7 @@ class Banner(models.Model):
     favorite = models.BooleanField(default=False)
     favorite.help_text = 'Check this box if this banner should appear before other (non-favorite) banner images on the same page.'
     
-    date_added = models.DateField(auto_now=True)
+    date_added = models.DateField(auto_now_add=True)
     date_added.help_text = "When there are many banners specified for a page, we prioritize more recently added banners"
 
     def admin_thumbnail(self):
