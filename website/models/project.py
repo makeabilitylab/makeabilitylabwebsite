@@ -161,6 +161,14 @@ class Project(models.Model):
 
     get_video_count.short_description = "Videos"
 
+    def get_banner_count(self):
+        """
+        Returns the number of banners associated with this project
+        """
+        return self.banner_set.count()
+    
+    get_banner_count.short_description = "Banners"
+
     def get_talk_count(self):
         """
         Returns the number of talks associated with this project

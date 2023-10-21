@@ -9,7 +9,7 @@ class ProjectHeaderInline(ImageCroppingMixin, admin.StackedInline):
     model = ProjectHeader
     extra = 0
 
-class BannerInline(admin.TabularInline):
+class BannerInline(admin.StackedInline):
     """This allows us to edit Banner from the Project page"""
     model = Banner
     extra = 0  # Number of extra "empty" forms to show at the bottom
@@ -29,7 +29,7 @@ class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
     list_display = ('name', 'start_date', 'end_date', 'has_ended', 'get_people_count',
                     'get_current_member_count', 'get_past_member_count',
                     'get_most_recent_artifact_date', 'get_most_recent_artifact_type',
-                    'get_publication_count', 'get_video_count', 'get_talk_count')
+                    'get_publication_count', 'get_video_count', 'get_talk_count', 'get_banner_count')
     
     list_filter = (ActiveProjectsFilter, )
 
