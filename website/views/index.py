@@ -21,10 +21,11 @@ def index(request):
     func_start_time = time.perf_counter()
     _logger.debug(f"Starting views/index at {func_start_time:0.4f}")
 
-    all_banners = Banner.objects.filter(page=Banner.FRONTPAGE)
+    # Get all banners for the landing page
+    banners = Banner.objects.filter(landing_page=True)
 
     # TODO: update how we choose banners using Django ORM vs. python
-    displayed_banners = ml_utils.choose_banners(all_banners)
+    # displayed_banners = ml_utils.choose_banners(all_banners)
 
     # Select recent news, papers, and talks. Note that using Python's array-slicing syntax is the appropriate
     # way of limiting results in Django. See: https://docs.djangoproject.com/en/4.2/topics/db/queries/#limiting-querysets
@@ -46,7 +47,7 @@ def index(request):
                 .order_by('-most_recent_publication', 'id').distinct())[:MAX_NUM_PROJECTS]
 
 
-    context = {'banners': displayed_banners,
+    context = {'banners': banners,
                'news': news_items,
                'publications': publications,
                'talks': talks,
