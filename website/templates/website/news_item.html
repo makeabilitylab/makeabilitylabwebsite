@@ -86,39 +86,48 @@ See: https://getbootstrap.com/docs/3.4/css/#overview-container
 				<ul class="news-item-sidebar-ul">
 					{% for project in related_projects %}
 						<li class="news-item-sidebar-li">
-							<a href="{% url 'website:project' project.short_name %}">
-								<img src="{% thumbnail project.gallery_image project.get_thumbnail_size_as_str box=project.cropping crop=True upscale=True detail=True%}" 
-									alt="{{project.get_thumbnail_alt_text}}"/>
-								{{ project.name }}
-							</a>
+              <a href="{% url 'website:project' project.short_name %}">
+                <img src="{% thumbnail project.gallery_image project.get_thumbnail_size_as_str box=project.cropping crop=True upscale=True detail=True%}" 
+                  alt="{{project.get_thumbnail_alt_text}}"/>				
+              </a>
+              <div class="news-item-sidebar-content">
+                <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>
+              </div>
 						</li>
 					{% endfor %}
 					{% for person in people_mentioned %}
-						<li class="news-item-sidebar-li">
-							<a href="{% url 'website:member' person.url_name %}">
-								<img src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}" 
-										alt="{{ person.get_full_name }}"/>
-								{{ person.get_full_name }}
-							</a>
+						<li class="news-item-sidebar-li">   
+              <a href="{% url 'website:member' person.url_name %}">
+                <img src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}" 
+                      alt="{{ person.get_full_name }}"/> 
+              </a>
+              <div class="news-item-sidebar-content">
+                <a href="{% url 'website:member' person.url_name %}">{{ person.get_full_name }}</a>
+              </div>
 						</li>
-					{% endfor %}
-					
+					{% endfor %}		
 			{% endif %}
 
 			{% if project_recent_news_items %}
-				<h2 class="news-item-sidebar-header">Latest Related Project News</h2>
+				<h2 class="news-item-sidebar-header {% if not people_mentioned and not related_projects %}first-subsection{% endif %}">
+          Latest Related Project News
+        </h2>
 				<ul class="news-item-sidebar-ul">
 				{% for recent_news_item in recent_news_about_projects_mentioned %}
 					{% include "snippets/display_news_item_sidebar_snippet.html" %}
 				{% endfor %}			
 			{% elif recent_news_about_people_mentioned %}
-				<h2 class="news-item-sidebar-header">Latest Related People News</h2>
+				<h2 class="news-item-sidebar-header {% if not people_mentioned and not related_projects %}first-subsection{% endif %}">
+          Latest Related People News
+        </h2>
 				<ul class="news-item-sidebar-ul">
 				{% for recent_news_item in recent_news_about_people_mentioned %}
 					{% include "snippets/display_news_item_sidebar_snippet.html" %}
 				{% endfor %}
 			{% elif recent_news_posts_by_author %}
-				<h2 class="news-item-sidebar-header">More News By {{ news_item.author }}</h2>
+				<h2 class="news-item-sidebar-header {% if not people_mentioned and not related_projects %}first-subsection{% endif %}">
+          More News By {{ news_item.author }}
+        </h2>
 				<ul class="news-item-sidebar-ul">
 				{% for recent_news_item in recent_news_posts_by_author %}
 					{% include "snippets/display_news_item_sidebar_snippet.html" %}
@@ -126,7 +135,7 @@ See: https://getbootstrap.com/docs/3.4/css/#overview-container
 			{% endif %}
 
 			{% if recent_ml_news %}
-				<h2 class="news-item-sidebar-header {% if not people_mentioned and not related_projects %}first-subsection{% endif %}">Recent Makeability Lab News</h2>
+				<h2 class="news-item-sidebar-header">Recent Makeability Lab News</h2>
 				<ul class="news-item-sidebar-ul">
 					{% for recent_news_item in recent_ml_news  %}
 						{% include "snippets/display_news_item_sidebar_snippet.html" %}
