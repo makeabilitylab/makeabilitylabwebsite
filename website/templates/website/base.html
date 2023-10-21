@@ -208,12 +208,20 @@
                         {# We only want to link to a project when we're not on a project page #}
                         <a href="{% url 'website:project' banner.project.short_name %}">
                     {% endif %}
-                    <div class="fill"
-                         style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})"
-                         aria-label="
-                                 {% if banner.alt_text %}{{ banner.alt_text }}{% else %}{{ banner.caption }}{% endif %}"
-                         title="{% if banner.alt_text %}{{ banner.alt_text }}{% else %}{{ banner.caption }}{% endif %}">
-                    </div>
+                    
+										{% if banner.video %}
+											<video class="fill" playsinline="playsinline" autoplay="autoplay" muted="muted" loop="loop">
+												{% comment %} TOOD: don't use hardcoded media path. Also, make it responsively fill/expand {% endcomment %}
+												<source src="media/{{ banner.video }}" type="video/mp4">
+											</video>
+										{% elif banner.image %}
+											<div class="fill"
+												style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})"
+												aria-label="
+																{% if banner.alt_text %}{{ banner.alt_text }}{% else %}{{ banner.caption }}{% endif %}"
+												title="{% if banner.alt_text %}{{ banner.alt_text }}{% else %}{{ banner.caption }}{% endif %}">
+											</div>
+										{% endif %}
                     <div class="overlay shadow-left" style="pointer-events: none;">
                         <div class="container carousel-container">
                             <div class="carousel-caption carousel-caption-left" style="pointer-events: auto;">
