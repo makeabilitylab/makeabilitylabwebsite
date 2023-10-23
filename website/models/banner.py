@@ -58,7 +58,7 @@ class Banner(models.Model):
     admin_thumbnail.allow_tags = True
 
     def __str__(self):
-        return "Title={} Project={} LandingPage={}".format(self.title, self.project, self.landing_page)
+        return f"Title={self.title} Project={self.project} LandingPage={self.landing_page} Favorite={self.favorite}"
 
 
 @receiver(pre_delete, sender=Banner)

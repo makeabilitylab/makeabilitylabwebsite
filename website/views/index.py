@@ -7,6 +7,7 @@ from django.db.models import OuterRef, Subquery
 # For logging
 import time
 import logging
+import random
 
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
@@ -22,10 +23,10 @@ def index(request):
     _logger.debug(f"Starting views/index at {func_start_time:0.4f}")
 
     # Get all banners for the landing page
-    banners = Banner.objects.filter(landing_page=True)
+    banners = get_landing_page_banners(6) #Banner.objects.filter(landing_page=True)
 
     # TODO: update how we choose banners using Django ORM vs. python
-    # displayed_banners = ml_utils.choose_banners(all_banners)
+    #displayed_banners = ml_utils.choose_banners(all_banners)
 
     # Select recent news, papers, and talks. Note that using Python's array-slicing syntax is the appropriate
     # way of limiting results in Django. See: https://docs.djangoproject.com/en/4.2/topics/db/queries/#limiting-querysets
@@ -64,3 +65,19 @@ def index(request):
     # index.html—with a context dictionary and returns an HttpResponse object with that rendered text.
     # See: https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
     return render(request, 'website/index.html', context)
+
+def get_landing_page_banners(max_num_banners=5):
+    # Get favorite banners that should appear on the landing page. Order by recency.
+    # The "?" allows us to randomize the order of banners added on the same day
+    fav_banners = list(Banner.objects.filter(favorite=True, landing_page=True).order_by('-date_added'))
+    random.shuffle(fav_banners)
+    banners = fav_banners[:max_num_banners]
+    
+    if len(banners) < max_num_banners:
+        other_banners = list(Banner.objects.filter(landing_page=True)
+                        .exclude(id__in=[b.id for b in banners]) # exclude banners in original list
+                        .order_by('-date_added', '?')[:max_num_banners-len(banners)])
+        random.shuffle(other_banners)
+        banners += other_banners;
+    
+    return banners
