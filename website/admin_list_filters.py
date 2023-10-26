@@ -275,9 +275,20 @@ class ActiveProjectsFilter(admin.SimpleListFilter):
         in the right sidebar.
         """
         return (
+            ('All', _('All')), 
             ('Active', _('Active')),
             ('Archived', _('Archived')),
         )
+    
+    def choices(self, cl):
+        for lookup, title in self.lookup_choices:
+            yield {
+                'selected': self.value() == lookup,
+                'query_string': cl.get_query_string({
+                    self.parameter_name: lookup,
+                }, []),
+                'display': title,
+            }
 
     def queryset(self, request, queryset):
         """
@@ -287,7 +298,7 @@ class ActiveProjectsFilter(admin.SimpleListFilter):
         """
         # print("queryset: self.value() = {} with type = {}".format(self.value(), type(self.value())))
         
-        if self.value() == 'Active':
+        if self.value() == 'Active' or self.value() == None:
             return queryset.filter(end_date__isnull=True)
         elif self.value() == 'Archived':
             return queryset.filter(end_date__isnull=False)
