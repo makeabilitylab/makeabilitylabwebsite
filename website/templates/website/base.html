@@ -230,11 +230,13 @@
                                         <div class="carousel-caption-title">
                                             {{ banner.title }}
                                         </div>
-                                        <div class="carousel-caption-text">
-                                            {{ banner.caption }}
-                                        </div>
+																				{% if banner.caption %}
+																					<div class="carousel-caption-text">
+																							{{ banner.caption }}
+																					</div>
+																				{% endif %}
                                     {% endautoescape %}
-                                {% else %}
+                                {% elif banner.project.name %}
                                     <div class="carousel-caption-title">
                                         {{ banner.project.name }}
                                     </div>
