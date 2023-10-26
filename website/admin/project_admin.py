@@ -9,7 +9,7 @@ class ProjectHeaderInline(ImageCroppingMixin, admin.StackedInline):
     model = ProjectHeader
     extra = 0
 
-class BannerInline(admin.TabularInline):
+class BannerInline(admin.StackedInline):
     """This allows us to edit Banner from the Project page"""
     model = Banner
     extra = 0  # Number of extra "empty" forms to show at the bottom
@@ -21,6 +21,7 @@ class PhotoInline(admin.TabularInline):
 
 @admin.register(Project)
 class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
+    search_fields = ['name']  # assuming 'name' is a field in your Project model
     inlines = [ProjectHeaderInline, BannerInline, PhotoInline]
 
     # The list display lets us control what is shown in the Project table at Home > Website > Project
@@ -28,9 +29,18 @@ class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
     list_display = ('name', 'start_date', 'end_date', 'has_ended', 'get_people_count',
                     'get_current_member_count', 'get_past_member_count',
                     'get_most_recent_artifact_date', 'get_most_recent_artifact_type',
-                    'get_publication_count', 'get_video_count', 'get_talk_count')
+                    'get_publication_count', 'get_video_count', 'get_talk_count', 'get_banner_count')
     
     list_filter = (ActiveProjectsFilter, )
+
+    def get_search_results(self, request, queryset, search_term):
+        """In this code, get_search_results is a method that Django calls to get the list of results 
+        for the autocomplete dropdown. By overriding this method, you can modify the queryset that 
+        Django uses to populate the dropdown. The line queryset = queryset.order_by('name') sorts 
+        the projects by name"""
+        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
+        queryset = queryset.order_by('name')
+        return queryset, use_distinct
 
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
         if db_field.name == "sponsors":

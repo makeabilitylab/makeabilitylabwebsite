@@ -1,9 +1,6 @@
 from django.conf import settings # for access to settings variables, see https://docs.djangoproject.com/en/4.0/topics/settings/#using-settings-in-python-code
-from website.models import Banner, Publication
-import website.utils.ml_utils as ml_utils 
+from website.models import Publication
 from django.shortcuts import render # for render https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
-
-import website.utils.ml_utils as ml_utils # for banner functionality
 
 # For logging
 import time
@@ -15,11 +12,6 @@ _logger = logging.getLogger(__name__)
 def publications(request):
     func_start_time = time.perf_counter()
     _logger.debug(f"Starting views/publications at {func_start_time:0.4f}")
-
-    all_banners = Banner.objects.filter(page=Banner.PUBLICATIONS)
-    displayed_banners = ml_utils.choose_banners(all_banners)
-    filter = request.GET.get('filter', None)
-    groupby = request.GET.get('groupby', "No-Group")
 
     # We want all pubs after I joined as a professor. This was a group decision.
     # See https://stackoverflow.com/a/4668703
@@ -36,9 +28,6 @@ def publications(request):
 
     context = {'publications': publications,
                'map_year_to_pub_list': map_year_to_pub_list,
-               'banners': displayed_banners,
-               'filter': filter,
-               'groupby': groupby,
                'debug': settings.DEBUG,
                'navbar_white': True}
     
