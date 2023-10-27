@@ -18,7 +18,7 @@ class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
     def display_people(self, obj):
         return ", ".join([person.get_full_name() for person in obj.people.all()])
-    display_people.short_description = 'Authors'
+    display_people.short_description = 'People'
 
     # Filters authors only to current members and sorts by firstname
     # Based on: http://stackoverflow.com/a/30627555
