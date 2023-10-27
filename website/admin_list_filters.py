@@ -263,7 +263,6 @@ class ActiveProjectsFilter(admin.SimpleListFilter):
     # Parameter for the filter that will be used in the URL query.
     parameter_name = 'active_project_status'
 
-    # TODO: make Active the default when we load; it's not working currently
     default_value = 'Active'
 
     def lookups(self, request, model_admin):

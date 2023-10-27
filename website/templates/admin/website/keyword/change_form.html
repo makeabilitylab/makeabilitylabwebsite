@@ -1,0 +1,19 @@
+{% extends 'admin/change_form.html' %}
+{% block after_field_sets %}
+  <fieldset>
+    <h2>Projects</h2>
+    <ul>
+      {% for project in projects %}
+        <li><strong>{{ project.name }}</strong>, {{project.start_date}}</li>
+      {% endfor %}
+    </ul>
+  </fieldset>
+  <fieldset>
+    <h2>Publications</h2>
+    <ul>
+      {% for publication in publications %}
+        <li><strong>{{ publication.title }}</strong>, {{publication.date}}</li>
+      {% endfor %}
+    </ul>
+  </fieldset>
+{% endblock %}
