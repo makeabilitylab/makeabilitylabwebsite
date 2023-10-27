@@ -6,8 +6,19 @@ from django.contrib.admin import widgets
 @admin.register(News)
 class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
+    list_display = ('title', 'author', 'date', 'display_projects', 'display_people') 
+
     # Exclude the slug field since it is auto-generated
     exclude = ('slug',)
+
+    def display_projects(self, obj):
+        return ", ".join([project.name for project in obj.project.all()])
+    
+    display_projects.short_description = 'Projects'
+
+    def display_people(self, obj):
+        return ", ".join([person.get_full_name() for person in obj.people.all()])
+    display_people.short_description = 'Authors'
 
     # Filters authors only to current members and sorts by firstname
     # Based on: http://stackoverflow.com/a/30627555
