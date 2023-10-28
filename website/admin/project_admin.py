@@ -9,7 +9,7 @@ class ProjectHeaderInline(ImageCroppingMixin, admin.StackedInline):
     model = ProjectHeader
     extra = 0
 
-class BannerInline(admin.StackedInline):
+class BannerInline(ImageCroppingMixin, admin.StackedInline):
     """This allows us to edit Banner from the Project page"""
     model = Banner
     extra = 0  # Number of extra "empty" forms to show at the bottom
@@ -21,7 +21,7 @@ class PhotoInline(admin.TabularInline):
 
 @admin.register(Project)
 class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
-    search_fields = ['name']  # assuming 'name' is a field in your Project model
+    search_fields = ['name']  # allows you to search by the name of the project
     inlines = [ProjectHeaderInline, BannerInline, PhotoInline]
 
     # The list display lets us control what is shown in the Project table at Home > Website > Project

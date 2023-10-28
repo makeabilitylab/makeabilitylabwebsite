@@ -116,7 +116,7 @@
                             {% if header.has_video %}
                                 <iframe class="about-video" src="{{ header.get_video_embed }}"
                                         frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
-                            {% else %}
+                            {% elif header.image %}
                                 <img class="about-media" src="{{ header.image.url }}"/>
                             {% endif %}
 

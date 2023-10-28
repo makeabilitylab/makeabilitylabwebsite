@@ -10,10 +10,13 @@ from .keyword import Keyword
 from .publication import Publication
 from .talk import Talk
 from .video import Video
+import os
 
 PROJECT_THUMBNAIL_SIZE = (500, 300) # 15 : 9 aspect ratio
 
 class Project(models.Model):
+    UPLOAD_DIR = 'projects/' # relative path
+    IMAGE_DIR = os.path.join(UPLOAD_DIR, 'images/') # relative path
 
     @staticmethod  # use as decorator
     def get_thumbnail_size_as_str():
@@ -36,7 +39,7 @@ class Project(models.Model):
 
     # pis = models.ManyToOneField(Person, blank=True, null=True)
     # TODO: consider switching gallery_image var name to thumbnail
-    gallery_image = models.ImageField(upload_to='projects/images', blank=True, null=True, max_length=255)
+    gallery_image = models.ImageField(upload_to=IMAGE_DIR, blank=True, null=True, max_length=255)
     gallery_image.help_text = "This is the image which will show up on the project gallery page.\
                                It is not displayed anywhere else. You must select 'Save and continue editing' at the\
                                bottom of the page after uploading a new image for cropping."
