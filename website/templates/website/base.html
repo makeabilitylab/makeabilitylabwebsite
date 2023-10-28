@@ -46,11 +46,12 @@
         <!-- Empty block but allows derivative templates to add in their own stylesheets-->
     {% endblock %}
 
+
     <!-- Load all required JavaScript libraries used in base and all Makeability Lab pages -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> <!-- jQuery: v1.9.1 required by Bootstrap's JavaScript plugins -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
             integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
             crossorigin="anonymous"></script>  <!-- Bootstrap: Latest compiled and minified JavaScript -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> <!-- jQuery: v1.9.1 required by Bootstrap's JavaScript plugins -->
     <script src="{% static 'website/js/jquery.easing.min.js' %}"></script>
     <script src="{% static 'website/js/top-navbar.js' %}"></script>
     {% comment %} <script src="{% static 'website/js/backtop.js' %}"></script> {% endcomment %}
@@ -189,7 +190,7 @@
 {% endblock %}
 
 {% block maincarousel %}
-    <div id="mainCarousel" class="carousel slide carousel-fade" data-ride="carousel" data-interval="10000"
+    <div id="main-carousel" class="carousel slide carousel-fade" data-ride="carousel" data-interval="10000"
          data-pause="true">
         <!-- <div class="overlay carousel-caption"></div> -->
         <!-- Wrapper for slides -->
@@ -245,7 +246,7 @@
         </div>
         <ol class="carousel-indicators" {% if banners|length < 2 %} style="display: none" {% endif %}>
             {% for banner in banners %}
-                <li data-target="#mainCarousel" data-slide-to="{{ forloop.counter0 }}"
+                <li data-target="#main-carousel" data-slide-to="{{ forloop.counter0 }}"
                     {% if forloop.first %}class="active"{% endif %}></li>
             {% endfor %}
         </ol>

@@ -40,6 +40,22 @@
     });
 {% endblock %}
 
+{% block maincarousel %}
+    {# Override main carouself if we don't have any banners defined to have a gradient background #}
+    {% if not banners or banners|length <= 0 %}
+        <div id="main-carousel" class="carousel slide carousel-fade">
+            <div class="container carousel-container">
+                <div class="carousel-caption carousel-caption-left" style="pointer-events: auto;">
+                    <div class="carousel-caption-title">
+                        {{ project.name }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}
 
 {% block content %}
 <div id="content" class="container content-container" data-spy="scroll">
