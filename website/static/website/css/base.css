@@ -137,6 +137,10 @@ h5 {
 
 /**********************************************************/
 /************** Carousel (Banner) styles ******************/
+#main-carousel{
+  background: rgb(13,0,36);
+  background: linear-gradient(90deg, rgba(13,0,36,1) 0%, rgba(95,9,121,1) 35%, rgba(239,0,255,1) 100%);
+}
 
 .carousel,.carousel-inner,.carousel-inner .item {
   height: 500px;

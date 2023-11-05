@@ -14,7 +14,7 @@ class BannerInline(ImageCroppingMixin, admin.StackedInline):
     model = Banner
     extra = 0  # Number of extra "empty" forms to show at the bottom
 
-class PhotoInline(admin.TabularInline):
+class PhotoInline(ImageCroppingMixin, admin.StackedInline):
     """This allows us to add Photos from the Project page"""
     model = Photo
     extra = 0  # Number of extra "empty" forms to show at the bottom
