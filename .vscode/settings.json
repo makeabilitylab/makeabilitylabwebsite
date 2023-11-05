@@ -6,10 +6,20 @@
         "**/requirements{/**,*}.{txt,in}": "pip-requirements"
     },
     "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter"
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.tabSize": 4
     },
-    "python.formatting.provider": "none",
     "emmet.includeLanguages": {
         "django-html": "html"
-    }
+    },
+    "beautify.language": {
+        "html": [
+            "htm",
+            "html",
+            "django-html"
+        ]
+    },
+    "[html]": {
+        "editor.tabSize": 2
+    },
 }
