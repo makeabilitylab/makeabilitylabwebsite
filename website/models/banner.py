@@ -24,7 +24,7 @@ class Banner(models.Model):
                       differently on various screens.'
     
     video = models.FileField(upload_to=UniquePathAndRename(VIDEO_UPLOAD_DIR, True), blank=True, null=True)
-    video.help_text = "Add in a background video. If both a video and image are specified, the video is prioritized. The image is fallback."
+    video.help_text = "Add in a background video. Ideally, video should be 10MB or less. If both a video and image are specified, the video is prioritized. The image is fallback."
     
     alt_text = models.CharField(max_length=1024, blank=True, null=True)
     alt_text.help_text = "Please set the alt text for the banner"
