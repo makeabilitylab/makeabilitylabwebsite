@@ -6,6 +6,7 @@ inspired from http://codepen.io/Rowno/pen/Afykb
 .carousel-fade .carousel-inner .item {
   opacity: 0;
   transition-property: opacity;
+  /* transition-duration: 2s; */
 }
 
 .carousel-fade .carousel-inner .active {
