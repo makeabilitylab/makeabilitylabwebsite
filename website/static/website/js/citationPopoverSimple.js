@@ -29,17 +29,30 @@
 
         let plainCitationElementList = $(".citation-text");
         let bibtexElementList = $(".bibtex-text");
-        
+        let that = this;  // Store the reference to the clicked element
         if(plainCitationElementList.length >= 0 && bibtexElementList.length >= 0){
             let citationText = plainCitationElementList[0].innerText;
             if(plainCitationElementList[0].style.display === 'none'){
                 citationText = bibtexElementList[0].innerText;
             }
 
-            console.log(citationText);
             if(navigator.clipboard) {
-                navigator.clipboard.writeText(citationText);
+                navigator.clipboard.writeText(citationText).then(function() {
+                    /* Tooltip code goes here */
+                    let tooltip = document.createElement("span");
+                    tooltip.innerText = "Copied to your clipboard!";
+                    tooltip.style.display = "inline-block";
+                    tooltip.style.marginLeft = "10px";
+                    $(that).append(tooltip);
+    
+                    setTimeout(function() {
+                        $(tooltip).remove();
+                    }, 1000);
+                }, function() {
+                    /* Handle error here */
+                });
             }
+            
         }
     }
 
@@ -77,14 +90,17 @@
     }
 
     $.fn.citationclick = function () {
-        console.log("citation click")
         $(".citation-text").css('display', 'block');
         $(".bibtex-text").css('display', 'none');
+        $("#citation-link").addClass("active");
+        $("#bibtex-link").removeClass("active");
     }
 
     $.fn.bibtexclick = function () {
         $(".bibtex-text").css('display', 'block');
         $(".citation-text").css('display', 'none');
+        $("#bibtex-link").addClass("active");
+        $("#citation-link").removeClass("active");
     }
 
     $.fn.updateCitationPopover = function () {

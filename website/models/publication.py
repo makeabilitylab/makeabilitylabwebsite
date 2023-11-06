@@ -10,6 +10,7 @@ from datetime import date, datetime, timedelta
 import os
 import os.path
 import logging
+import re # for regular expressions
 
 from .person import Person
 from .project_umbrella import ProjectUmbrella
@@ -215,15 +216,20 @@ class Publication(models.Model):
         if not forum[-1].isdigit():
             forum = forum + str(self.date.year)
 
-        bibtex_id += ":" + forum
+        title_words = self.title.split()
+        if len(title_words) > 0:
+            bibtex_id += title_words[0]
+
+        bibtex_id += forum
+
+        bibtex_id = re.sub(r'[^a-zA-Z0-9]', '', bibtex_id)
 
         # code to make acronym from: https://stackoverflow.com/a/4355337
         title_acronym = ''.join(w[0] for w in self.title.split() if w[0].isupper())
-        bibtex_id += ":" + title_acronym[:3]
-
-        if self.doi:
-            doi = self.doi.rsplit('/', 1)[-1]
-            bibtex_id += doi
+        
+        # if self.doi:
+        #     doi = self.doi.rsplit('/', 1)[-1]
+        #     bibtex_id += doi
 
         bibtex_id += ","
 
@@ -285,6 +291,11 @@ class Publication(models.Model):
                 bibtex += " doi={{<a href='{}'>{}</a>}},{}".format(self.doi, self.doi, newline)
             else:
                 bibtex += " doi={{{}}},{}".format(self.doi, newline)
+        elif self.official_url and "doi.org" in self.official_url:
+            parts = self.official_url.split("doi.org/")
+            if len(parts) > 1:
+                bibtex += " doi={{{}}},{}".format(parts[1], newline)
+
 
         if self.official_url:
             if use_hyperlinks:

@@ -29,9 +29,19 @@
 }
 
 .citation-links {
-  text-align: right;
+  text-align: left;
   margin-bottom: -5px;
   cursor: pointer;
+}
+
+.citation-links button {
+  border-width: 1px;
+  border-radius: 3px;
+}
+
+.citation-links button.active {
+  border-width: 1.5px;
+  color: black;
 }
 
 .citation-copy {
