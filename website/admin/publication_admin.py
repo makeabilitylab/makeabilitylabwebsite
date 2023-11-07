@@ -2,17 +2,12 @@ from django.contrib import admin
 from django.contrib.admin import widgets
 from website.models import Publication, Poster, Video, Talk
 from website.admin_list_filters import PubVenueTypeListFilter, PubVenueListFilter
-# from django.select2.fields import Select2MultipleField
-# from django_select2 import forms
+
 from sortedm2m.fields import SortedManyToManyField
 from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
 
 @admin.register(Publication)
 class PublicationAdmin(admin.ModelAdmin):
-    # formfield_overrides = {
-    #     SortedManyToManyField: {'widget': forms.Select2MultipleWidget},
-    # }
-
     fieldsets = [
         (None,                      {'fields': ['title', 'authors', 'date']}),
         ('Files',                   {'fields': ['pdf_file']}),
@@ -41,7 +36,7 @@ class PublicationAdmin(admin.ModelAdmin):
         """We custom style some of the admin UI, including expanding the width of the talk select interface"""
         form = super(PublicationAdmin, self).get_form(request, obj, **kwargs)
 
-        # we style the talks select2 widget so that it's wider, see:
+        # we style the talks widget so that it's wider, see:
         #   https://docs.djangoproject.com/en/2.2/ref/forms/widgets/#customizing-widget-instances
         # see also:
         #   https://stackoverflow.com/questions/10588275/django-change-field-size-of-modelmultiplechoicefield
@@ -62,7 +57,7 @@ class PublicationAdmin(admin.ModelAdmin):
 
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
         if db_field.name == "authors":
-           kwargs['widget'] = SortedFilteredSelectMultiple() # removed due to incompatibility with Django 4
+           kwargs['widget'] = SortedFilteredSelectMultiple()
         if db_field.name == "projects":
             kwargs["widget"] = widgets.FilteredSelectMultiple("projects", is_stacked=False)
         elif db_field.name == "project_umbrellas":

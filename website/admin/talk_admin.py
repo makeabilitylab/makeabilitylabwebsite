@@ -10,7 +10,6 @@ class TalkAdmin(admin.ModelAdmin):
 
     # search_fields are used for auto-complete, see:
     #   https://docs.djangoproject.com/en/3.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields
-    # for example, the PublicationAdmin uses auto-complete select2 for talks
     search_fields = ['title', 'forum_name']
 
     # Filters speakers only to current members and collaborators and sorts by first name

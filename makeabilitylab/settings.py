@@ -159,9 +159,6 @@ INSTALLED_APPS = [
     'sortedm2m', # Used for SortedManyToManyFields in admin interface: https://pypi.org/project/django-sortedm2m-filter-horizontal-widget/
     'ckeditor', # Used for news page editing in admin interface: https://pypi.org/project/django-ckeditor/
     'ckeditor_uploader',
-    
-    # Removed sortedm2m_filter_horizontal_widget as incompatible with Django 4
-    # TODO
     'sortedm2m_filter_horizontal_widget', # https://github.com/svleeuwen/sortedm2m-filter-horizontal-widget
     'rest_framework',
 
@@ -169,11 +166,6 @@ INSTALLED_APPS = [
     # https://docs.djangoproject.com/en/4.2/topics/performance/#performance-benchmarking
     # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html
     "debug_toolbar",
-
-    # JEF (Oct 16, 2023) I tried adding django_select2 to help provide easier way to add multiple others in order 
-    # using PublicationAdmin interface; however, I was not that impressed with the interface, so I'm taking it out again.
-    # See: https://django-select2.readthedocs.io/en/latest/
-    #'django_select2',
 ]
 
 # JEF: Added 9/22/2023

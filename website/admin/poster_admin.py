@@ -1,5 +1,6 @@
 from django.contrib import admin
 from website.models import Poster
+from django.contrib.admin import widgets
 
 @admin.register(Poster)
 class PosterAdmin(admin.ModelAdmin):
@@ -9,7 +10,6 @@ class PosterAdmin(admin.ModelAdmin):
     search_fields = ['title', 'date']
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
-        # print("PosterAdmin.formfield_for_manytomany: db_field: {} db_field.name {} request: {}".format(db_field, db_field.name, request))
         if db_field.name == "projects":
             kwargs["widget"] = widgets.FilteredSelectMultiple("projects", is_stacked=False)
         if db_field.name == "authors":

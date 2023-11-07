@@ -30,7 +30,6 @@ urlpatterns = [
     re_path(r'', include('website.urls')),
     re_path(r'^admin/', admin.site.urls),
     re_path(r'^ckeditor/', include('ckeditor_uploader.urls')),
-    # path("select2/", include("django_select2.urls")), I experimented with select2 and I was not that impressed
     path("__debug__/", include("debug_toolbar.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
