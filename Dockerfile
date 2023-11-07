@@ -6,7 +6,7 @@
 # See: https://hub.docker.com/_/django/
 # 
 # So, instead, we start from an official Docker-created base image of Python.
-FROM python:3.11.5
+FROM python:3.11.6
 
 # Echo out the start of the Dockerfile
 RUN echo "Running the Makeability Lab Dockerfile!"

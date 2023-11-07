@@ -10,7 +10,7 @@
 # 1. docker ps // this gets a list of current processes/containers running
 # 2. docker exec -it -u root <container_id> /bin/bash
 
-django==4.2.5 # upgraded on 9/25/2023
+django==4.2.7 # upgraded on 11/07/2023: https://www.djangoproject.com/download/
 
 django-debug-toolbar==4.2.0 # Used for debugging: https://django-debug-toolbar.readthedocs.io/en/latest/
 psycopg2==2.9.5 # Psycopg is the most popular PostgreSQL database adapter for Python. https://pypi.org/project/psycopg2/
@@ -28,8 +28,6 @@ requests==2.31.0
 django-sortedm2m-filter-horizontal-widget==2.0.1 # Used for SortedManyToManyFields in admin interface: https://pypi.org/project/django-sortedm2m-filter-horizontal-widget/
 django-ckeditor==6.5.1 # Used for news editor https://pypi.org/project/django-ckeditor/
 
-# I experimented with django-select2 but I was not that impressed. I don't think we need it.
-# django-select2==8.1.2
 # bibtexparser==1.4.0 # We used to use this for importing data: https://pypi.org/project/bibtexparser/
 # beautifulsoup4==4.11.1 # JEF (Oct 16, 2023); not sure why/when we used this
 # django-extensions==3.2.1 # JEF (Oct 16, 2023); not sure why we want this
