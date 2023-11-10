@@ -17,7 +17,6 @@ class PositionInline(admin.StackedInline):
     extra = 0
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        # TODO: use Django ORM
 
         # Check if we're loading the advisor/co-advisor widget. If so
         # we need to filter to professors
