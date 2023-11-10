@@ -220,6 +220,11 @@ class Position(models.Model):
             return position
 
     @staticmethod
+    def get_prof_titles():
+        """Returns an array of professor titles"""
+        return [Position.ASSISTANT_PROF, Position.ASSOCIATE_PROF, Position.FULL_PROF]
+
+    @staticmethod
     def get_sorted_titles():
         """Static method returns a sorted list of title names"""
         return (Position.FULL_PROF, Position.ASSOCIATE_PROF, Position.ASSISTANT_PROF, 

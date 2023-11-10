@@ -3,6 +3,9 @@ from website.models import Position, Person, ProjectRole
 from website.admin_list_filters import PositionRoleListFilter, PositionTitleListFilter
 from image_cropping import ImageCroppingMixin
 
+from django.db.models import Q
+from django.utils import timezone
+
 
 class PositionInline(admin.StackedInline):
     model = Position
@@ -16,22 +19,41 @@ class PositionInline(admin.StackedInline):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         # TODO: use Django ORM
 
+        # Check if we're loading the advisor/co-advisor widget. If so
+        # we need to filter to professors
         if db_field.name == "advisor" or db_field.name == "co_advisor":
-            # Filters advisors to professors and sorts by first name
-            # Based on: http://stackoverflow.com/a/30627555
-            professor_ids = [person.id for person in Person.objects.all() if person.is_professor]
-            filtered_persons = Person.objects.filter(id__in=professor_ids).order_by('first_name')
-            # print(filtered_persons, filtered_persons)
-            kwargs["queryset"] = filtered_persons
+           
+            # Query the Position model
+            prof_positions = Position.objects.filter(title__in=Position.get_prof_titles())
+
+            # Get the related Person instances
+            professors = Person.objects.filter(position__in=prof_positions).order_by('first_name').distinct()
+
+            kwargs["queryset"] = professors
 
         elif db_field.name == "grad_mentor":
+            # Define the titles we are interested in
+            titles = [Position.POST_DOC, Position.PHD_STUDENT, Position.MS_STUDENT, 
+                Position.RESEARCH_SCIENTIST, Position.SOFTWARE_DEVELOPER, Position.DESIGNER]
+
+            # Get today's date
+            today = timezone.now().date()
+
+            # Query the database
+            grad_mentors = (Person.objects.filter(
+                        Q(position__title__in=titles),
+                        Q(position__start_date__lte=today),
+                        Q(Q(position__end_date__gte=today) | Q(position__end_date__isnull=True)))
+                        .order_by('first_name').distinct())
+
             # Filters grad mentor list to current grad students (either member or collaborator)
-            grad_ids = [person.id for person in Person.objects.all() if person.is_grad_student \
-                        and (person.is_current_member or person.is_current_collaborator)]
+            # grad_ids = [person.id for person in Person.objects.all() if person.is_grad_student \
+            #             and (person.is_current_member or person.is_current_collaborator)]
             
-            filtered_persons = Person.objects.filter(id__in=grad_ids).order_by('first_name')
+            # filtered_persons = Person.objects.filter(id__in=grad_ids).order_by('first_name')
+            
             # print(filtered_persons, filtered_persons)
-            kwargs["queryset"] = filtered_persons
+            kwargs["queryset"] = grad_mentors
 
         return super(PositionInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
