@@ -41,18 +41,11 @@ class PositionInline(admin.StackedInline):
 
             # Query the database
             grad_mentors = (Person.objects.filter(
-                        Q(position__title__in=titles),
-                        Q(position__start_date__lte=today),
-                        Q(Q(position__end_date__gte=today) | Q(position__end_date__isnull=True)))
+                        Q(position__title__in=titles), # filter to appropriate titles
+                        Q(position__start_date__lte=today), # must have started
+                        Q(Q(position__end_date__gte=today) | Q(position__end_date__isnull=True))) # must not have ended
                         .order_by('first_name').distinct())
 
-            # Filters grad mentor list to current grad students (either member or collaborator)
-            # grad_ids = [person.id for person in Person.objects.all() if person.is_grad_student \
-            #             and (person.is_current_member or person.is_current_collaborator)]
-            
-            # filtered_persons = Person.objects.filter(id__in=grad_ids).order_by('first_name')
-            
-            # print(filtered_persons, filtered_persons)
             kwargs["queryset"] = grad_mentors
 
         return super(PositionInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
