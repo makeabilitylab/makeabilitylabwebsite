@@ -4,6 +4,10 @@ from django.db.models.signals import pre_delete, post_save, m2m_changed, post_de
 from django.core.files import File
 import website.utils.fileutils as ml_fileutils
 
+from django.db.models import F, Q, Sum, ExpressionWrapper, fields
+from django.utils import timezone
+from django.db.models.functions import Coalesce
+
 # For caching properties, see: https://docs.djangoproject.com/en/4.2/ref/utils/#django.utils.functional.cached_property
 from django.utils.functional import cached_property 
 
@@ -106,6 +110,7 @@ class Person(models.Model):
 
     get_current_title.short_description = "Title"
 
+
     @cached_property
     def get_current_title_index(self):
         """Returns the title index for person's current position. A cached property."""
@@ -180,19 +185,16 @@ class Person(models.Model):
     @cached_property
     def is_active(self):
         """Returns True is person is current member of lab or current collaborator. A cached property."""
-        # print(self.get_full_name() + " is active? " + str(self.is_current_member()) + " " +
-        # str(self.is_current_collaborator()))
         return self.is_current_member or self.is_current_collaborator
 
     is_active.short_description = "Is Active?"
 
+
     def get_total_time_in_role(self, role):
         """Returns the total time as in the specified role across all positions."""
-        totalTimeInRole = timedelta(0)
-        for position in self.position_set.all():
-            if position.role == role:
-                totalTimeInRole += position.get_time_in_this_position()
-        return totalTimeInRole
+        duration = ExpressionWrapper(Coalesce(F('end_date'), date.today()) - F('start_date'), output_field=fields.DurationField())
+        total_time_in_role = self.position_set.filter(role=role).aggregate(total=Sum(duration))['total']
+        return total_time_in_role
 
     get_total_time_in_role.short_description = "Total Time In Role"
 
@@ -220,12 +222,10 @@ class Person(models.Model):
         That is, they may have started as high school students then left the lab
         then returned as a grad student. A cached property."""
         
-        # Check all previous positions
-        for position in self.position_set.all():
-            if position.is_member() is True:
-                return True
-
-        return False
+        # we use Django’s Q objects to construct a complex query. We check if there exists any position 
+        # where the role was Position.MEMBER and the end date is less than the current time (i.e., in the past). 
+        # The exists() method returns True if such a position exists, and False otherwise.
+        return self.position_set.filter(Q(role=Position.MEMBER) & Q(end_date__lt=timezone.now())).exists()
 
     @cached_property
     def is_current_collaborator(self):
@@ -329,6 +329,7 @@ class Person(models.Model):
             return u"{0} {1}".format(self.first_name, self.last_name)
 
     get_full_name.short_description = "Full Name"
+    get_full_name.admin_order_field = 'first_name'  # Allows column order sorting based on full name
 
     def get_citation_name(self, include_middle=True, full_name=True):
         """Returns name formatted for a citation"""
