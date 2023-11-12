@@ -59,6 +59,7 @@ class Command(BaseCommand):
                         person.image.name = os.path.join(person.UPLOAD_DIR, os.path.basename(new_filename_with_full_path))
                         _logger.debug(f"Renamed person image from {old_filename_with_full_path} to {new_filename_with_full_path}")
                         _logger.debug(f"Old person.image.name={old_filename_with_local_path} and new={person.image.name}")
+                        person.save()
                 else:
                     _logger.debug(f"Skipping {person.get_full_name()} because {old_filename_with_full_path} did not need to be renamed")
 
@@ -88,10 +89,11 @@ class Command(BaseCommand):
                         person.easter_egg.name = os.path.join(person.UPLOAD_DIR, os.path.basename(new_ee_filename_with_full_path))
                         _logger.debug(f"Renamed person easter egg image from {old_ee_filename_with_full_path} to {new_ee_filename_with_full_path}")
                         _logger.debug(f"Old person.image.name={old_ee_filename_with_local_path} and new={person.easter_egg.name}")
+                        person.save()
                 else:
                     _logger.debug(f"Skipping {person.get_full_name()}'s easter egg rename because {old_ee_filename_with_full_path} did not need to be renamed")
                         
-                    person.save()
+            
 
         # Now remove all the old thumbnails and unused person files. Don't worry, the thumbnails will get auto-generated again on demand
         person_image_dir = os.path.normpath(os.path.normcase(os.path.join(settings.MEDIA_ROOT, Person.UPLOAD_DIR)))
