@@ -31,8 +31,7 @@
                   The basic syntax is: {% thumbnail [source] [size] [options] %}
 
                   If box is specified, then it will crop. Otherwise, you can also set crop=True
-                {% endcomment %}
-               
+                {% endcomment %}       
                 <img class="swap-image" onmouseover="swapImage(this)" onmouseout="swapImage(this)"
                     src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}" 
                     alt="{{ person.get_full_name }}" 

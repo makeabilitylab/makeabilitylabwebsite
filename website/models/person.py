@@ -13,6 +13,9 @@ from django.utils.functional import cached_property
 
 from django.utils.safestring import mark_safe # for the html we use in help_text
 
+import os # for joining paths
+from uuid import uuid4 # for generating unique filenames
+
 import re
 from datetime import date, datetime, timedelta
 
@@ -22,6 +25,7 @@ from .position import Position
 from django.apps import apps # to solve circular import with importing Publications
 
 import logging # for logging
+import string # for punctuation
 
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
@@ -37,8 +41,60 @@ special_chars = {
 
 PERSON_THUMBNAIL_SIZE = (245, 245)
 
-class Person(models.Model):
+def get_unique_filename_for_person(person, original_filename, append_str=None, force_unique=True):
+    """Gets a unique filename with path for the person"""
+    # get the extension of the uploaded file
+    file_ext = os.path.splitext(original_filename)[1].lower()
+
+    new_filename_without_ext = person.get_full_name(True).lower() # get full filename with middle name
+    new_filename_without_ext = new_filename_without_ext.translate(str.maketrans('', '', string.punctuation)) # remove punctuation from filename
+    new_filename_without_ext = new_filename_without_ext.replace(" ", "_") # replace spaces with underscores
+
+    if append_str is not None:
+        new_filename_without_ext += append_str
+
+    new_filename_with_path = os.path.join(Person.UPLOAD_DIR, new_filename_without_ext + file_ext)
+
+    # Check to see if we want to force unique filenames
+    if force_unique:
+        while os.path.exists(new_filename_with_path):
+            _logger.debug(f"This filename with path exists {new_filename_with_path}, trying to generate a unique one")
+            
+            # The uuid4().hex generates a random UUID (Universally Unique Identifier), which is then appended to the filename. 
+            # This makes the probability of generating a duplicate filename extremely low. 
+            new_filename_with_path = os.path.join(Person.UPLOAD_DIR, new_filename_without_ext + uuid4().hex + file_ext)
+            _logger.debug(f"Here's the new filename with path {new_filename_with_path}")
     
+    _logger.debug(f"original_filename: {original_filename} new_filename_with_path: {new_filename_with_path}")
+    return new_filename_with_path
+
+def get_upload_to_for_person(person, original_filename, force_unique=True):
+    """
+    Constructs a new filename from the person’s name and the original file extension. This function is passed to the 
+    upload_to parameter of the ImageField. When an image is uploaded, Django will call this function to determine the 
+    name and path of the file to store on the filesystem.
+    """
+    return get_unique_filename_for_person(person, original_filename, None, force_unique)
+
+def get_upload_to_for_person_easter_egg(person, original_filename, force_unique=True):
+    """
+    Constructs a new filename from the person’s name and the original file extension. This function is passed to the 
+    upload_to parameter of the ImageField. When an image is uploaded, Django will call this function to determine the 
+    name and path of the file to store on the filesystem.
+    """
+
+    append_str = "_easteregg"
+    original_filename = original_filename.lower()
+    if 'starwars' in original_filename:
+        filename = os.path.basename(original_filename)
+        filename_without_extension = os.path.splitext(filename)[0]
+        append_str += "_" + "starwars" + "_" + filename_without_extension
+
+    return get_unique_filename_for_person(person, original_filename, append_str, force_unique)
+
+class Person(models.Model):
+    UPLOAD_DIR = 'person/' # relative path
+
     @staticmethod  # use as decorator
     def get_thumbnail_size_as_str():
         return f"{PERSON_THUMBNAIL_SIZE[0]}x{PERSON_THUMBNAIL_SIZE[1]}"
@@ -60,7 +116,7 @@ class Person(models.Model):
     # Note: the ImageField requires the pillow library
     # We use the get_unique_path function because otherwise if two people use the same
     # filename (something generic like picture.jpg), one will overwrite the other.
-    image = models.ImageField(blank=True, upload_to="person", max_length=255)
+    image = models.ImageField(blank=True, upload_to=get_upload_to_for_person, max_length=255)
     image.help_text = 'You must select "Save and continue editing" at the bottom of the page after uploading a new image for cropping.'
 
     # We use the django-image-cropping ImageRatioField https://github.com/jonasundderwolf/django-image-cropping
@@ -70,7 +126,7 @@ class Person(models.Model):
     cropping = ImageRatioField('image', get_thumbnail_size_as_str(), size_warning=True)
 
     # This is the hover image (aka easter egg)
-    easter_egg = models.ImageField(blank=True, null=True, upload_to="person", max_length=255)
+    easter_egg = models.ImageField(blank=True, null=True, upload_to=get_upload_to_for_person_easter_egg, max_length=255)
     easter_egg.help_text = mark_safe("You do not have to set this field. It defaults to a Star Wars\
             Rebels LEGO character from <a href='https://github.com/makeabilitylab/makeabilitylabwebsite/tree/master/media/images/StarWarsFiguresFullSquare/Rebels'>here</a>\
             but you can use whatever you want. This image is shown on mouseover on the people.html page.")
@@ -262,6 +318,10 @@ class Person(models.Model):
             contiguous_constraint: if True, then we look only at continguous dates
         :return: the earliest Position for this person
         """
+
+        # Note: given the complicated logic with the continguous_constraint, we don't use 
+        # Django's ORM to do this query. Instead, we do it manually, which is slower but
+        # the code is more readable (and I struggled to come up with an ORM equivalent)
         if not contiguous_constraint:
             # The result of a QuerySet is a QuerySet so you can chain them together...
             return self.position_set.filter(role=role).earliest('start_date')
@@ -452,7 +512,6 @@ class Person(models.Model):
         self.url_name = url_name_cleaned
 
         # Check if their headshot image is not set. If not, set to random star war image
-       
         if not self.image:
             _logger.debug(f"{self.get_full_name()} has NO image set. Setting to random star wars image")
             rand_star_wars_filename = ml_fileutils.get_path_to_random_starwars_image()
@@ -473,6 +532,7 @@ class Person(models.Model):
             _logger.debug(f"{self.get_full_name()} has the hover (easter egg) image: {self.easter_egg} with cropping: {self.easter_egg_crop}")
 
         super(Person, self).save(*args, **kwargs)
+
 
     class Meta:
         ordering = ['last_name', 'first_name']

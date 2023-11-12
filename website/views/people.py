@@ -67,7 +67,7 @@ def people(request):
     past_member_positions = (Position.objects.filter(Q(start_date__lte=date.today()), # start date is in the past
                             Q(end_date__isnull=False) | Q(end_date__lt=date.today()), # end date is not null
                             Q(role=Position.MEMBER)) # must be a member of the lab
-                            .exclude(person__id__in=exclude_member_ids) # exclude current members
+                            .exclude(person__id__in=exclude_member_ids) # exclude current members and graduated phd students
                             .annotate(total=Count('title')).order_by('-end_date'))
 
     # Setup past members by title

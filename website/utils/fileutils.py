@@ -45,24 +45,27 @@ def is_image(filename):
     filename = filename.lower()
     return filename[filename.rfind(".") + 1:] in ext2conttype
 
-
 def get_path_to_random_starwars_image(starwars_side = 'Rebels'):
     """Gets a random star wars image path to assign"""
     
     if not starwars_side or starwars_side not in ['Rebels', 'Neither', 'DarkSide', 'Unfiled']:
         starwars_side = 'Rebels'
 
-
-    print("settings.MEDIA_ROOT: ", settings.MEDIA_ROOT);
+    #print("settings.MEDIA_ROOT: ", settings.MEDIA_ROOT);
 
     # requires the volume mount from docker
     # Django doesn't like when we use absolute paths, so we need to get the relative path to the media folder
     local_media_folder = os.path.relpath(settings.MEDIA_ROOT)
     star_wars_path = os.path.join(local_media_folder, 'images', 'StarWarsFiguresFullSquare', starwars_side)
-    print("star_wars_path: ", star_wars_path);
+    # print("star_wars_path: ", star_wars_path);
 
     all_images_in_dir = [f for f in os.listdir(star_wars_path) if is_image(f)]
-    print("all_images_in_dir: ", all_images_in_dir);
+    # print("all_images_in_dir: ", all_images_in_dir);
 
     # Return a randoms single path
     return os.path.join(star_wars_path, random.choice(all_images_in_dir))
+
+def get_files_in_directory(dir_path):
+    """Returns a list of files in the given directory"""
+    return [os.path.join(dir_path, f) for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))]
+ 
