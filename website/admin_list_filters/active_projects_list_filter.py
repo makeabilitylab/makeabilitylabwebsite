@@ -1,5 +1,8 @@
 from django.contrib import admin
 
+# For lazy translations: https://docs.djangoproject.com/en/4.1/topics/i18n/translation/#lazy-translations
+from django.utils.translation import gettext_lazy as _
+
 class ActiveProjectsFilter(admin.SimpleListFilter):
     """
     This filter allows admin user to filter by whether a project is active or not
