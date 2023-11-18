@@ -6,6 +6,8 @@ from django.utils.text import get_valid_filename
 
 from sortedm2m.fields import SortedManyToManyField
 
+import website.utils.fileutils as ml_fileutils
+
 import os
 import os.path
 import logging
@@ -125,32 +127,28 @@ def update_file_name_talks(sender, instance, action, reverse, **kwargs):
 
     # from: https://docs.djangoproject.com/en/2.1/ref/signals/
     if action == 'post_add' and not reverse:
-        initial_path = instance.pdf_file.path
+        
+        # Setup filename
         person = instance.get_person()
         name = person.last_name
         year = instance.date.year
         title = ''.join(x for x in instance.title.title() if not x.isspace())
         title = ''.join(e for e in title if e.isalnum())
 
+        forum = instance.forum_name.replace(" ", "")
+
         # Convert metadata into a filename
-        new_filename = name + '_' + title + '_' + instance.forum_name + '_' + str(year) + '.pdf'
-
-        # Use Django helper function to ensure a clean filename
-        new_filename = get_valid_filename(new_filename)
-
-        # Change the pdf_file path to point to the renamed file
-        instance.pdf_file.name = os.path.join(Talk.UPLOAD_DIR, new_filename)
-
-        # Add in the media directory
-        new_path = os.path.join(settings.MEDIA_ROOT, instance.pdf_file.name)
+        new_filename_no_ext = name + '_' + title + '_' + forum + str(year)
         
-        # Actually rename the existing file (aka initial_path) but only if it exists (it should!)
-        if os.path.exists(initial_path):
-            os.rename(initial_path, new_path)
-            instance.save()
-        else:
-            _logger.error(f'The file {initial_path} does not exist and cannot be renamed to {new_path}')
-
+        if instance.pdf_file:
+            new_pdf_filename_with_path = ml_fileutils.rename(instance.pdf_file, new_filename_no_ext)
+            if new_pdf_filename_with_path is not None:
+                instance.save()
+        
+        if instance.raw_file:
+            new_raw_filename_with_path = ml_fileutils.rename(instance.raw_file, new_filename_no_ext)
+            if new_raw_filename_with_path is not None:
+                instance.save()
         
 m2m_changed.connect(update_file_name_talks, sender=Talk.speakers.through)
 
