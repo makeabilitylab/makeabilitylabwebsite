@@ -26,28 +26,46 @@ class Talk(models.Model):
 
     # A talk can be about more than one project
     projects = models.ManyToManyField('Project', blank=True)
+    projects.help_text = "Most conference talks are associated with only one project but "\
+                         "keynotes, guest lectures, etc. might be associated with multiple projectss"
     project_umbrellas = SortedManyToManyField('ProjectUmbrella', blank=True)
 
     # TODO: remove the null = True from all of the following objects
     # including forum_name, forum_url, location, speakers, date, slideshare_url
     keywords = models.ManyToManyField(Keyword, blank=True)
+    keywords.help_text = "The keywords associated with this talk"
+
     forum_name = models.CharField(max_length=255, null=True)
+    forum_name.help_text = "What is the name of the speaking venue?"
+
     forum_url = models.URLField(blank=True, null=True)
+    forum_url.help_text = "A hyperlink to the speaking forum (<i>e.g.,</i> if CHI, put https://chi2024.acm.org/)"
+
     location = models.CharField(max_length=255, null=True)
+    location.help_text = "The geographic location of the talk"
 
     # Most of the time talks are given by one person, but sometimes they are given by two people
     speakers = models.ManyToManyField(Person)
+    speakers.help_text = "Most of the time, talks are given by one person but there are exceptions"
 
     date = models.DateField(null=True)
+    date.help_text = "The date of the talk"
+
     slideshare_url = models.URLField(blank=True, null=True)
+    slideshare_url.help_text = "Slideshare is no longer a popular way of sharing talks"
 
     # add in video field to address https://github.com/jonfroehlich/makeabilitylabwebsite/issues/539
     video = models.ForeignKey(Video, blank=True, null=True, on_delete=models.DO_NOTHING)
+    video.help_text = "If there is a video recording of the talk, add it here."
 
     # The PDF and raw files (e.g., keynote, pptx) are required
     # TODO: remove null=True from these two fields
     pdf_file = models.FileField(upload_to=UPLOAD_DIR, null=True, default=None, max_length=255)
+    pdf_file.help_text = "The PDF of the talk"
+    
     raw_file = models.FileField(upload_to=UPLOAD_DIR, blank=True, null=True, default=None, max_length=255)
+    raw_file.help_text = "The raw file (e.g., pptx, keynote) for the talk. While not required, this is "\
+        "<b>highly</b> recommended as it creates a better archive of the work"
 
     INVITED_TALK = "Invited Talk"
     CONFERENCE_TALK = "Conference Talk"
@@ -55,6 +73,7 @@ class Talk(models.Model):
     PHD_DEFENSE = "PhD Defense"
     GUEST_LECTURE = "Guest Lecture"
     QUALS_TALK = "Quals Talk"
+    KEYNOTE_TALK = "Keynote Talk"
 
     TALK_TYPE_CHOICES = (
         (INVITED_TALK, INVITED_TALK),
@@ -63,9 +82,11 @@ class Talk(models.Model):
         (PHD_DEFENSE, PHD_DEFENSE),
         (GUEST_LECTURE, GUEST_LECTURE),
         (QUALS_TALK, QUALS_TALK),
+        (KEYNOTE_TALK, KEYNOTE_TALK),
     )
 
     talk_type = models.CharField(max_length=50, choices=TALK_TYPE_CHOICES, null=True)
+    talk_type.help_text = "If this is a conference talk (e.g., for CHI, ASSETS, UIST, IMWUT), please select 'Conference Talk'"
 
     # The thumbnail should have null=True because it is added automatically later by a post_save signal
     # TODO: decide if we should have this be editable=True and if user doesn't add one him/herself, then

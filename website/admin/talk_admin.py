@@ -12,6 +12,16 @@ class TalkAdmin(admin.ModelAdmin):
     #   https://docs.djangoproject.com/en/3.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields
     search_fields = ['title', 'forum_name']
 
+    # fieldsets control how the "add/change" admin views look
+    fieldsets = [
+        (None,                      {'fields': ['title', 'speakers', 'date']}),
+        ('Files',                   {'fields': ['pdf_file', 'raw_file']}),
+        ('Talk Venue Info',         {'fields': ['talk_type', 'forum_name', 'forum_url', 'location']}),
+        ('Links',                   {'fields': ['video', 'slideshare_url']}),
+        ('Project Info',            {'fields': ['projects', 'project_umbrellas']}),
+        ('Keyword Info',            {'fields': ['keywords']}),
+    ]
+
     # Filters speakers only to current members and collaborators and sorts by first name
     # Based on: https://stackoverflow.com/a/17457828
     # Update: we no longer do this because sometimes we want to add a talk by a former member or collaborator
