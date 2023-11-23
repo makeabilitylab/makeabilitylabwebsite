@@ -75,6 +75,21 @@ def get_files_in_directory(dir_path):
     """Returns a list of files in the given directory"""
     return [os.path.join(dir_path, f) for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))]
 
+def get_filename_without_ext_for_artifact(last_name, title, forum_name, date):
+    """Generates a filename from the provided content"""
+
+    last_name = last_name.replace(" ", "")
+    year = date.year
+    title = ''.join(x for x in title.title() if not x.isspace())
+    title = ''.join(e for e in title if e.isalnum())
+
+    forum_name = forum_name.replace(" ", "")
+
+    # Convert metadata into a filename
+    new_filename_no_ext = last_name + '_' + title + '_' + forum_name + str(year)
+    return get_valid_filename(new_filename_no_ext)
+    
+
 def ensure_filename_is_unique(filename_with_full_path):
     """Will return a filename with full path that is guaranteed to be unique"""
     while os.path.exists(filename_with_full_path):
@@ -91,6 +106,8 @@ def ensure_filename_is_unique(filename_with_full_path):
     return filename_with_full_path
 
 def rename(artifact, new_filename_no_ext):
+    """Renames the artifact in the database and filesystem"""
+
     old_filename_with_full_path = artifact.path
     old_local_path = os.path.dirname(artifact.name)
     old_full_path = os.path.dirname(old_filename_with_full_path)

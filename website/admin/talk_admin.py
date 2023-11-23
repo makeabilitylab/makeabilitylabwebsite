@@ -12,6 +12,8 @@ class TalkAdmin(admin.ModelAdmin):
     #   https://docs.djangoproject.com/en/3.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields
     search_fields = ['title', 'forum_name']
 
+    autocomplete_fields = ['video']
+
     # fieldsets control how the "add/change" admin views look
     fieldsets = [
         (None,                      {'fields': ['title', 'speakers', 'date']}),

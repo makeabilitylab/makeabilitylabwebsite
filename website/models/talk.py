@@ -2,7 +2,6 @@ from django.db import models
 from django.conf import settings
 from django.db.models.signals import pre_delete, post_save, m2m_changed, post_delete
 from django.dispatch import receiver
-from django.utils.text import get_valid_filename
 
 from sortedm2m.fields import SortedManyToManyField
 
@@ -127,24 +126,19 @@ def update_file_name_talks(sender, instance, action, reverse, **kwargs):
 
     # from: https://docs.djangoproject.com/en/2.1/ref/signals/
     if action == 'post_add' and not reverse:
-        
-        # Setup filename
-        person = instance.get_person()
-        name = person.last_name
-        year = instance.date.year
-        title = ''.join(x for x in instance.title.title() if not x.isspace())
-        title = ''.join(e for e in title if e.isalnum())
-
-        forum = instance.forum_name.replace(" ", "")
 
         # Convert metadata into a filename
-        new_filename_no_ext = name + '_' + title + '_' + forum + str(year)
+        new_filename_no_ext = ml_fileutils.get_filename_without_ext_for_artifact(
+            instance.get_person().last_name, instance.title, instance.forum_name,
+            instance.date)
         
+        # Rename the database entry and file on filesystem
         if instance.pdf_file:
             new_pdf_filename_with_path = ml_fileutils.rename(instance.pdf_file, new_filename_no_ext)
             if new_pdf_filename_with_path is not None:
                 instance.save()
         
+        # Rename the database entry and file on filesystem
         if instance.raw_file:
             new_raw_filename_with_path = ml_fileutils.rename(instance.raw_file, new_filename_no_ext)
             if new_raw_filename_with_path is not None:
