@@ -316,7 +316,7 @@ class Publication(models.Model):
         return self.title
 
     @staticmethod
-    def generate_file_name(instance, filename_extension = ".pdf", max_pub_title_length = -1):
+    def generate_filename(instance, filename_extension = ".pdf", max_pub_title_length = -1):
         """Generates a filename for this publication instance"""
         person = instance.get_person()
         last_name = person.last_name
@@ -355,7 +355,7 @@ def update_file_name_publication(sender, instance, action, reverse, **kwargs):
     # post_add: Sent after one or more objects are added to the relation
     if action == 'post_add' and not reverse:
         
-        new_filename = Publication.generate_file_name(instance)
+        new_filename = Publication.generate_filename(instance)
 
         # Change the path of the pdf file to point to the new file name
         instance.pdf_file.name = os.path.join(Publication.UPLOAD_DIR, new_filename)
@@ -364,8 +364,12 @@ def update_file_name_publication(sender, instance, action, reverse, **kwargs):
         initial_path = instance.pdf_file.path
         # Actually rename the existing file (aka initial_path) but only if it exists (it should!)
         if os.path.exists(initial_path):
-            os.rename(initial_path, new_path)
-            instance.save()
+            if initial_path != new_path:
+                _logger.debug(f"Renaming filename for pub {instance} from {initial_path} to {new_path}")
+                os.rename(initial_path, new_path)
+                instance.save()
+            else:
+                _logger.debug(f"The pub {instance} has the correct filename with path, which is: {initial_path} so will not be renamed")
         else:
             _logger.error(f'The file {initial_path} does not exist and cannot be renamed to {new_path}')      
 

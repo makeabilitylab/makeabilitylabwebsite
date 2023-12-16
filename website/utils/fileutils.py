@@ -5,6 +5,8 @@ from django.conf import settings
 import random
 import logging
 from django.utils.text import get_valid_filename
+import time # for generating unique filenames
+from wand.image import Image, Color # for creating thumbnails
 
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
@@ -75,8 +77,22 @@ def get_files_in_directory(dir_path):
     """Returns a list of files in the given directory"""
     return [os.path.join(dir_path, f) for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))]
 
-def get_filename_without_ext_for_artifact(last_name, title, forum_name, date):
+def get_filename_for_artifact(last_name, title, forum_name, date, ext, suffix=None):
+    """Generates a filename from the provided content."""
+    filename_without_ext = get_filename_without_ext_for_artifact(last_name, title, forum_name, date, suffix)
+
+    # Check if ext starts with a dot. If not, add it
+    if not ext.startswith('.'):
+        ext = '.' + ext
+
+    # Combine filename with extension
+    return filename_without_ext + ext
+
+def get_filename_without_ext_for_artifact(last_name, title, forum_name, date, suffix=None):
     """Generates a filename from the provided content"""
+
+    if last_name is None:
+        last_name = "None"
 
     last_name = last_name.replace(" ", "")
     year = date.year
@@ -86,7 +102,15 @@ def get_filename_without_ext_for_artifact(last_name, title, forum_name, date):
     forum_name = forum_name.replace(" ", "")
 
     # Convert metadata into a filename
-    new_filename_no_ext = last_name + '_' + title + '_' + forum_name + str(year)
+    new_filename_no_ext = last_name + '_' + title + '_'
+
+    # Add the suffix
+    if suffix is not None:
+        new_filename_no_ext += suffix + '_'
+    
+    # Add the rest of the metadata
+    new_filename_no_ext += forum_name + str(year)
+
     return get_valid_filename(new_filename_no_ext)
     
 
@@ -95,42 +119,108 @@ def ensure_filename_is_unique(filename_with_full_path):
     while os.path.exists(filename_with_full_path):
         _logger.debug(f"This filename with path exists {filename_with_full_path}, trying to generate a unique one")
 
-        # The uuid4().hex generates a random UUID (Universally Unique Identifier), which is then appended to the filename. 
-        # This makes the probability of generating a duplicate filename extremely low. 
+        # Use a timestamp, which given how often we are uploading files, should be totally fine
+        # and preferable to the long strings 
         full_path = os.path.dirname(filename_with_full_path)
         file_ext = os.path.splitext(os.path.basename(filename_with_full_path))[1]
         new_filename_without_ext = os.path.splitext(os.path.basename(filename_with_full_path))[0]
-        filename_with_full_path = os.path.join(full_path, new_filename_without_ext + "-" + uuid4().hex + file_ext)  
+        filename_with_full_path = os.path.join(full_path, new_filename_without_ext + "-" + str(time.time()) + file_ext)  
     
-    # Returns a guaranteed to be unique filename (with path)
+    # Returns a guaranteed-to-be-unique filename (with full path)
     return filename_with_full_path
 
-def rename(artifact, new_filename_no_ext):
-    """Renames the artifact in the database and filesystem"""
+def rename_artifact_on_filesystem(artifact, new_filename):
+    """Renames the artifact.name to the new filename. Careful: does not save it back to the database"""
+    rename_artifact_in_db_and_filesystem(None, artifact, new_filename, update_db=False)
+
+def rename_artifact_in_db_and_filesystem(model, artifact, new_filename, update_db=True):
+    """Renames the artifact in the database and filesystem. 
+       Guarantees that new_filename is unique by adding in a randomly generated unique id to the filename (if necessary)
+       If the new_filename does not have an extension, it will be added automatically using existing metadata
+    """
+
+    if os.path.dirname(new_filename):
+        raise ValueError(f"Filename {new_filename} should not contain a path.")
 
     old_filename_with_full_path = artifact.path
+    old_filename_with_local_path = artifact.name
     old_local_path = os.path.dirname(artifact.name)
     old_full_path = os.path.dirname(old_filename_with_full_path)
     old_filename_ext = os.path.splitext(old_filename_with_full_path)[1]
-    
-    # Make the new filename with the extension
-    new_filename = new_filename_no_ext + old_filename_ext
+
+    # Check if filename has an extension. If not, add one
+    if not os.path.splitext(new_filename)[1]:
+        # Add the extension to the new filename
+        new_filename = new_filename + old_filename_ext
 
     # Use Django helper function to ensure a clean filename
     new_filename = get_valid_filename(new_filename)
 
-    # Add in the media directory
+    # Add in the media directory to ensure that the filename is unique
     new_filename_with_full_path = os.path.join(old_full_path, new_filename)
     new_filename_with_full_path = ensure_filename_is_unique(new_filename_with_full_path)
 
-    # Change the pdf_file path to point to the renamed file
-    artifact.name = os.path.join(old_local_path, os.path.basename(new_filename_with_full_path))
-
     # Actually rename the existing file (aka initial_path) but only if it exists (it should!)
+    # We rename the file on the filesystem and in the database (these need to be in concordance!)
     if os.path.exists(old_filename_with_full_path):
         os.rename(old_filename_with_full_path, new_filename_with_full_path)
         _logger.debug(f"Renamed {old_filename_with_full_path} to {new_filename_with_full_path}")
+
+        # Change the pdf_file path to point to the renamed file and save the artifact
+        artifact.name = os.path.join(old_local_path, os.path.basename(new_filename_with_full_path))
+
+        # Save it out to the database
+        if update_db:
+            _logger.debug(f"Calling model.save() on model={model} with artifact.name={artifact.name}")
+            model.save()
+        else:
+            _logger.debug(f"Careful: update_db={update_db}, so we are not saving this new artifact.name={artifact.name} to the db.\
+                          The old artifact.name={old_filename_with_local_path}. You should call model.save() to save these changes")
+
         return new_filename_with_full_path
     else:
         _logger.error(f'The file {old_filename_with_full_path} does not exist and cannot be renamed to {new_filename_with_full_path}')
+        _logger.error(f"Thus, we did not rename the file or call model.save()")
         return None
+    
+def generate_thumbnail_for_pdf(pdf_file, thumbnail):
+    """ 
+    Generates a thumbnail for a given PDF file.
+
+    Parameters:
+    pdf_file (models.FileField): The PDF file for which the thumbnail is to be generated.
+    thumbnail (models.ImageField): The image field where the generated thumbnail will be saved.
+
+    Returns:
+    str: The path of the generated thumbnail.
+    """
+
+    # Check if the file is a PDF
+    if not pdf_file.name.endswith('.pdf'):
+        raise ValueError("The provided file is not a PDF.")
+    
+    # Get the thumbnail dir
+    thumbnail_dir = os.path.join(settings.MEDIA_ROOT, thumbnail.field.upload_to)
+
+    # make sure this dir exists
+    if not os.path.exists(thumbnail_dir):
+        os.makedirs(thumbnail_dir)
+
+    pdf_filename = os.path.basename(pdf_file.path)
+    pdf_filename_no_ext = os.path.splitext(pdf_filename)[0]
+    thumbnail_filename = "{}.{}".format(pdf_filename_no_ext, "jpg");
+    thumbnail_filename_with_path = os.path.join(thumbnail_dir, thumbnail_filename)
+    thumbnail_filename_with_path = ensure_filename_is_unique(thumbnail_filename_with_path)
+
+    with Image(filename="{}[0]".format(pdf_file.path), resolution=300) as img:
+        img.format = 'jpeg'
+        img.background_color = Color('white')
+        img.alpha_channel = 'remove'
+        img.save(filename=thumbnail_filename_with_path)
+
+    relative_thumbnail_path = os.path.join(thumbnail.field.upload_to, thumbnail_filename)
+    thumbnail.name = relative_thumbnail_path
+
+    return thumbnail_filename_with_path
+    
+   

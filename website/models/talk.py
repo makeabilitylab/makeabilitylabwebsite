@@ -20,6 +20,7 @@ from .video import Video
 _logger = logging.getLogger(__name__)
 
 class Talk(models.Model):
+    
     UPLOAD_DIR = 'talks/' # relative path
     THUMBNAIL_DIR = os.path.join(UPLOAD_DIR, 'images/') # relative path
 
@@ -37,7 +38,7 @@ class Talk(models.Model):
     keywords.help_text = "The keywords associated with this talk"
 
     forum_name = models.CharField(max_length=255, null=True)
-    forum_name.help_text = "What is the name of the speaking venue?"
+    forum_name.help_text = "What is the name of the speaking venue? Please use a short name like UIST, ASSETS, CHI, etc."
 
     forum_url = models.URLField(blank=True, null=True)
     forum_url.help_text = "A hyperlink to the speaking forum (<i>e.g.,</i> if CHI, put https://chi2024.acm.org/)"
@@ -61,6 +62,8 @@ class Talk(models.Model):
 
     # The PDF and raw files (e.g., keynote, pptx) are required
     # TODO: remove null=True from these two fields
+    # Note: we cannot setup the filename here with a custom upload_to function like we do in Person
+    # because the filename depends on the first speaker, which is a many-to-many relation
     pdf_file = models.FileField(upload_to=UPLOAD_DIR, null=True, default=None, max_length=255)
     pdf_file.help_text = "The PDF of the talk"
     
@@ -99,6 +102,13 @@ class Talk(models.Model):
     def get_person(self):
         """Gets the "first author" (or speaker in this case) for the talk"""
         return self.speakers.all()[0]
+    
+    def get_first_speaker_last_name(self):
+        speakers = self.speakers.all()
+        if speakers.exists():
+            return speakers.first().last_name
+        else:
+            return None
 
     def get_speakers_as_csv(self):
         """Gets the list of speakers as a csv string"""
@@ -116,41 +126,260 @@ class Talk(models.Model):
     get_speakers_as_csv.short_description = 'Speaker List'
 
     def __str__(self):
-        return "{}, {}, {} {}".format(self.get_person().get_full_name(), self.title, self.forum_name, self.date)
+        if self.id and self.speakers.exists():
+            return "{}, '{}', {} {}".format(self.get_person().get_full_name(), self.title, self.forum_name, self.date)
+        else:
+            return f"Unknown, '{self.title}', {self.forum_name}, {self.date}"
 
-#@receiver(post_save, sender=Talk)
-def update_file_name_talks(sender, instance, action, reverse, **kwargs):
+    def save(self, *args, **kwargs):
+        
+        _logger.debug(f"Started save for self={self} with talk id={self.pk} and args={args} and kwargs={kwargs}")
+        _logger.debug(f"The pdf_file is currently {self.pdf_file}")
+        if self.pdf_file:
+            # In Django, when you call save() on a model instance, the FileField doesn’t immediately have its full path set. 
+            # This is because the file hasn’t been saved to the storage system yet.
+            _logger.debug(f"The local pdf_file path is: {self.pdf_file.name}")
+
+            # This won't be correct until super.save() is called (the first time this Talk instance is created)
+            _logger.debug(f"The full pdf_file path is: {self.pdf_file.path}") 
+
+        _logger.debug(f"The raw_file is currently {self.raw_file}")
+
+        first_time_saved = self.id is None
+        _logger.debug(f"For talk.id={self.id}, first_time_saved={first_time_saved}")
+        
+        if not first_time_saved and kwargs.get('update_fields') is not None:
+            update_fields = kwargs['update_fields']
+            _logger.debug(f"update_fields={update_fields}, checking to see if we have to do some cleanup on files")
+            orig_talk = Talk.objects.get(pk=self.pk)
+
+            # Check if pdf_file is one of the updated fields and, if so, delete the old file
+            if 'pdf_file' in update_fields:
+                _logger.debug(f"pdf_file is in update_fields, attempting to delete old pdf_file and corresponding thumbnail")
+                if orig_talk.pdf_file:
+                    _logger.debug(f"orig_talk.pdf_file={orig_talk.pdf_file} exists, attempting to delete")
+                    if orig_talk.pdf_file.storage.exists(orig_talk.pdf_file.name):
+                        # The True argument in pdf_file.delete(True) is for the save parameter. This parameter determines 
+                        # whether to save the model after the file has been deleted. If save is True, the model will be 
+                        # saved after the file deletion. Since we're already in a save(), we don't want to call save
+                        deleted_path = orig_talk.pdf_file.path
+                        orig_talk.pdf_file.delete(False)
+                        _logger.debug(f"Deleted pdf_file={deleted_path} off filesystem")
+                    else:
+                        _logger.debug(f"Could not delete pdf_file={orig_talk.pdf_file} as it does not exist on filesystem")
+
+                if orig_talk.thumbnail:
+                    _logger.debug(f"orig_talk.thumbnail={orig_talk.thumbnail} exists, attempting to delete")
+                    if orig_talk.thumbnail.storage.exists(orig_talk.thumbnail.name):
+                        deleted_path = orig_talk.thumbnail.path
+                        orig_talk.thumbnail.delete(False)
+                        _logger.debug(f"Deleted thumbnail={deleted_path} off filesystem")
+                    else:
+                        _logger.debug(f"Could not delete thumbnail={orig_talk.thumbnail} as it does not exist on filesystem")
+            
+            if 'raw_file' in update_fields:
+                _logger.debug(f"raw_file is in update_fields, attempting to delete old raw_file")
+                if orig_talk.raw_file:
+                    _logger.debug(f"Attempting to delete raw_file={orig_talk.raw_file} off filesystem")
+                    if orig_talk.raw_file:
+                        if orig_talk.raw_file.storage.exists(orig_talk.raw_file.name):
+                            deleted_path = orig_talk.raw_file.path
+                            orig_talk.raw_file.delete(False)
+                            _logger.debug(f"Deleted raw_file={deleted_path} off filesystem")
+                        else:
+                            _logger.debug(f"Could not delete raw_file={orig_talk.raw_file} as it does not exist on filesystem")
+
+        if not first_time_saved:
+            # self.speakers is a many-to-many field in Django. This field is not set
+            # until after this model is first saved to the database (which is a bit funky)
+            # This means that self.speakers can't get set until after this save method completes the 
+            # first time (that is, after super().save is called)
+            # Hence, we have a flag "first_time_saved" that checks for this condition and
+            # then attempts to continue only when speaker values have been set
+            _logger.debug(f"The speakers for the talk are: {self.speakers.all()}")
+            if self.speakers.exists():
+                _logger.debug(f"A speaker exists, checking to see if filenames need to be renamed")
+                if Talk.do_filenames_need_updating(self):
+                    new_filename_no_ext = Talk.generate_filename(self)
+
+                    if self.pdf_file:
+                        old_pdf_filename = os.path.basename(self.pdf_file.name)
+                        old_pdf_filename_no_ext, ext = os.path.splitext(old_pdf_filename)
+                        if new_filename_no_ext != old_pdf_filename_no_ext:
+                            _logger.debug(f"The new_filename_no_ext={new_filename_no_ext} and old_pdf_filename_no_ext={old_pdf_filename_no_ext} don't match. Renaming...")
+                            ml_fileutils.rename_artifact_on_filesystem(self.pdf_file, new_filename_no_ext)
+                    
+                    if self.raw_file:
+                        old_raw_filename = os.path.basename(self.pdf_file.name)
+                        old_raw_filename_no_ext, ext = os.path.splitext(old_raw_filename)
+                        if new_filename_no_ext != old_raw_filename_no_ext:
+                            _logger.debug(f"The new_filename_no_ext={new_filename_no_ext} and old_raw_filename_no_ext={old_raw_filename_no_ext} don't match. Renaming...")
+                            ml_fileutils.rename_artifact_on_filesystem(self.raw_file, new_filename_no_ext)
+
+                    if self.thumbnail:
+                        old_thumbnail_filename = os.path.basename(self.pdf_file.name)
+                        old_thumbnail_filename_no_ext, ext = os.path.splitext(old_thumbnail_filename)
+                        if new_filename_no_ext != old_thumbnail_filename_no_ext:
+                            _logger.debug(f"The new_filename_no_ext={new_filename_no_ext} and old_thumbnail_filename_no_ext={old_thumbnail_filename_no_ext} don't match. Renaming...")
+                            ml_fileutils.rename_artifact_on_filesystem(self.thumbnail, new_filename_no_ext)
+            else:
+                _logger.debug("No speakers exist yet, so will wait for m2m speakers_changed to rename files")
+
+            # Generate a thumbnail if one does not already exist
+            pdf_filename = os.path.basename(self.pdf_file.name)
+            pdf_filename_no_ext, ext = os.path.splitext(pdf_filename)
+            thumbnail_filename = os.path.basename(pdf_filename_no_ext) + ".jpg" 
+            thumbnail_filename_with_local_path = os.path.join(self.thumbnail.field.upload_to, thumbnail_filename)
+            thumbnail_exists_in_storage = self.thumbnail.storage.exists(thumbnail_filename_with_local_path)
+            if not self.thumbnail or not thumbnail_exists_in_storage:
+                _logger.debug(f"The thumbnail for talk.id={self.id} does not exist at {thumbnail_filename_with_local_path}, generating...")
+                
+                # generate a thumbnail
+                if self.pdf_file.storage.exists(self.pdf_file.name):
+                    ml_fileutils.generate_thumbnail_for_pdf(self.pdf_file, self.thumbnail)
+                else:
+                    _logger.debug(f"Could not generate a thumbnail because the pdf {self.pdf_file.path} was not found in storage")
+            elif thumbnail_exists_in_storage:
+                _logger.debug(f"The thumbnail for talk.id={self.id} already exists at {thumbnail_filename_with_local_path}, so not generating")
+
+        _logger.debug(f"Calling super().save(*args, **kwargs)")
+
+        super().save(*args, **kwargs)
+
+        _logger.debug(f"Completed save for self={self} with talk id={self.pk} and args={args} and kwargs={kwargs}")
+
+    # def save(self, *args, **kwargs):
+    #     # Check if this is the first time the object is being saved
+    #     first_time_saved = self.pk is None
+
+    #     if first_time_saved:
+    #         # We check to see if this is the first time we've saved the talk because, if so, then 
+    #         # our automatic filenaming scheme won't work properly because the speaker
+    #         # is not yet set (as a ManyToMany field) until this save() function is complete. Yes, this is
+    #         # unnecessarily complicated.
+    #         _logger.debug(f"This appears to be the first time we've saved the talk with id={self.pk}")
+    #     else:
+    #         _logger.debug(f"We appear to be modifying the talk with talk id={self.pk}")
+
+    #         # TODO: check if this conditional actually works: that is, if we upload a new file,
+    #         # can we tell that it's a new file or not?
+    #         # If not, think about what to do...
+    #         orig_talk = Talk.objects.get(pk=self.pk)
+    #         if (orig_talk.pdf_file != self.pdf_file):
+    #             _logger.debug(f"In talk id={self.pk}, it appears the pdf file has changed from {orig_talk.pdf_file} to {self.pdf_file}")
+    #             # TODO think about what to do here. I think maybe we just need to destroy the old thumbnail so a new one will generate?
+
+    #         # Check if other fields like title, date, venue have changed. If so, then rename file
+    #         # Check that there is at least one speaker first, however, because as a ManyToMany field
+    #         # this is *not* set until after save is called
+    #         if self.speakers.exists():
+    #             # Check if fields we use in the filename have changed
+    #             if (orig_talk.title != self.title or
+    #                 orig_talk.speakers.exists() and (orig_talk.get_person() != self.get_person()) or
+    #                 orig_talk.date != self.date or
+    #                 orig_talk.forum_name != self.forum_name):
+
+    #                 _logger.debug(f"We detected changes in the metadata for talk id {orig_talk.pk} that requires renaming the associated files")
+    #                 _logger.debug(f"The original talk metadata person={orig_talk.get_person()},\
+    #                             title={orig_talk.title}, date={orig_talk.date}, forum_name={orig_talk.forum_name}")
+    #                 _logger.debug(f"The new talk metadata person={self.get_person()},\
+    #                             title={self.title}, date={self.date}, forum_name={self.forum_name}")
+                    
+    #                 new_filename_no_ext = Talk.generate_filename(self)
+    #                 ml_fileutils.rename_artifact_in_db_and_filesystem(self, self.pdf_file, new_filename_no_ext)
+    #             else:
+    #                 _logger.debug(f"The filename for talk id {orig_talk.pk} does not appear to need to change")
+    #         else:
+    #             _logger.debug(f"There are no speakers set yet for talk={self} with talk id={self.pk}")
+
+    #     super().save(*args, **kwargs)
+
+    @staticmethod
+    def do_filenames_need_updating(talk):
+        new_filename_no_ext = Talk.generate_filename(talk)
+
+        if talk.pdf_file:
+            # We get the old filename (without the local path)
+            old_pdf_filename = os.path.basename(talk.pdf_file.name)
+            old_pdf_filename_no_ext, ext = os.path.splitext(old_pdf_filename)
+            if new_filename_no_ext != old_pdf_filename_no_ext:
+                _logger.debug(f"The new_filename_no_ext={new_filename_no_ext} and old_pdf_filename_no_ext={old_pdf_filename_no_ext} don't match")
+                return True
+        
+        if talk.raw_file:
+            old_raw_filename = os.path.basename(talk.pdf_file.name)
+            old_raw_filename_no_ext, ext = os.path.splitext(old_raw_filename)
+            if new_filename_no_ext != old_raw_filename_no_ext:
+                _logger.debug(f"The new_filename_no_ext={new_filename_no_ext} and old_raw_filename_no_ext={old_raw_filename_no_ext} don't match")
+                return True
+        
+        if talk.thumbnail:
+            old_thumbnail_filename = os.path.basename(talk.pdf_file.name)
+            old_thumbnail_filename_no_ext, ext = os.path.splitext(old_thumbnail_filename)
+            if new_filename_no_ext != old_thumbnail_filename_no_ext:
+                _logger.debug(f"The new_filename_no_ext={new_filename_no_ext} and old_thumbnail_filename_no_ext={old_thumbnail_filename_no_ext} don't match")
+                return True
+
+        return False
+
+    @staticmethod
+    def generate_filename(talk, file_extension=None):
+        """Generates a filename for this talk instance"""
+        if file_extension is None:
+            return ml_fileutils.get_filename_without_ext_for_artifact(
+                    talk.get_first_speaker_last_name(), talk.title, 
+                    talk.forum_name, talk.date)
+        else:
+            return ml_fileutils.get_filename_for_artifact(
+                    talk.get_first_speaker_last_name(), talk.title, 
+                    talk.forum_name, talk.date, file_extension)
+
+def speakers_changed(sender, instance, action, reverse, **kwargs):
     #Reverse: Indicates which side of the relation is updated (i.e., if it is the forward or reverse relation that is being modified)
     #Action: A string indicating the type of update that is done on the relation.
     #post_add: Sent after one or more objects are added to the relation
 
-    # from: https://docs.djangoproject.com/en/2.1/ref/signals/
+    _logger.debug(f"Started speakers_changed with sender={sender}, instance={instance}, action={action}, reverse={reverse}, and kwargs={kwargs}")
+    
     if action == 'post_add' and not reverse:
+        # The speakers field is a many-to-many field, which is handled differently than other fields in Django
+        # When a talk object is first created and save called (to save the object back to the database),
+        # the speakers field is not yet set. It is not set until after super.save() is completed
+        # So, we use this speakers_changed signal to both listen for when the assigned speaker is
+        # initially setup and for when it is changed
+        if Talk.do_filenames_need_updating(instance):
+            _logger.debug("Filenames need to be updated, calling talk.save()")
+            instance.save()
 
-        # Convert metadata into a filename
-        new_filename_no_ext = ml_fileutils.get_filename_without_ext_for_artifact(
-            instance.get_person().last_name, instance.title, instance.forum_name,
-            instance.date)
+    _logger.debug(f"Completed speakers_changed")
         
-        # Rename the database entry and file on filesystem
-        if instance.pdf_file:
-            new_pdf_filename_with_path = ml_fileutils.rename(instance.pdf_file, new_filename_no_ext)
-            if new_pdf_filename_with_path is not None:
-                instance.save()
-        
-        # Rename the database entry and file on filesystem
-        if instance.raw_file:
-            new_raw_filename_with_path = ml_fileutils.rename(instance.raw_file, new_filename_no_ext)
-            if new_raw_filename_with_path is not None:
-                instance.save()
-        
-m2m_changed.connect(update_file_name_talks, sender=Talk.speakers.through)
+m2m_changed.connect(speakers_changed, sender=Talk.speakers.through)
 
 @receiver(post_delete, sender=Talk)
-def talk_delete(sender, instance, **kwargs):
+def talk_post_delete(sender, instance, **kwargs):
+    _logger.debug(f"Started talk_post_delete with sender={sender}, instance={instance}, kwargs={kwargs}")
+   
+    _logger.debug(f"Attempting to delete pdf_file={instance.pdf_file} off filesystem")
     if instance.pdf_file:
-        instance.pdf_file.delete(True)
+        if instance.pdf_file.storage.exists(instance.pdf_file.name):
+            instance.pdf_file.delete(True)
+            _logger.debug(f"Deleted pdf_file={instance.pdf_file} off filesystem")
+        else:
+            _logger.debug(f"Could not delete pdf_file={instance.pdf_file} as it does not exist on filesystem")
+    
+
+    _logger.debug(f"Attempting to delete raw_file={instance.raw_file} off filesystem")
     if instance.raw_file:
-        instance.raw_file.delete(True)
+        if instance.raw_file.storage.exists(instance.raw_file.name):
+            instance.raw_file.delete(True)
+            _logger.debug(f"Deleted raw_file={instance.raw_file} off filesystem")
+        else:
+            _logger.debug(f"Could not delete raw_file={instance.raw_file} as it does not exist on filesystem")
+
+    _logger.debug(f"Attempting to delete thumbnail={instance.thumbnail} off filesystem")
     if instance.thumbnail:
-        instance.thumbnail.delete(True)
+        if instance.thumbnail.storage.exists(instance.thumbnail.name):
+            instance.thumbnail.delete(True)
+            _logger.debug(f"Deleted thumbnail={instance.thumbnail} off filesystem")
+        else:
+            _logger.debug(f"Could not delete thumbnail={instance.thumbnail} as it does not exist on filesystem")

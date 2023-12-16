@@ -5,6 +5,7 @@ from wand.image import Image, Color
 from django.conf import settings
 import os
 from django.core.files import File
+import website.utils.fileutils as ml_fileutils
 
 import logging
 
@@ -26,7 +27,7 @@ _logger = logging.getLogger(__name__)
 
 # Called automatically by Django after Publication is saved using Django's
 # built-in signal dispatch functionality. We use this function to do some
-# post-processong on the uploaded Publication data like auto-generating a thumbnail
+# post-processing on the uploaded Publication data like auto-generating a thumbnail
 # For more info on Django signal dispatch, see: https://docs.djangoproject.com/en/1.9/topics/signals/
 @receiver(post_save, sender=Publication)
 def publication_post_save(sender, **kwargs):
@@ -34,7 +35,6 @@ def publication_post_save(sender, **kwargs):
     # http://stackoverflow.com/questions/1308386/programmatically-saving-image-to-django-imagefield
 
     # get the publication that was just saved and auto-generate a thumbnail
-
     pub = kwargs['instance']
     if pub.pdf_file:
         _logger.debug("Publication '{}' has just been saved with PDF={}, checking to see if we should auto-generate a thumbnail".format(pub.title, pub.pdf_file.path))
@@ -43,19 +43,34 @@ def publication_post_save(sender, **kwargs):
 
 # Called automatically by Django after Talk is saved using Django's
 # built-in signal dispatch functionality. We use this function to do some
-# post-processong on the uploaded Talk data like auto-generating a thumbnail
+# post-processing on the uploaded Talk data like auto-generating a thumbnail
 # For more info on Django signal dispatch, see: https://docs.djangoproject.com/en/1.9/topics/signals/
 @receiver(post_save, sender=Talk)
 def talk_post_save(sender, **kwargs):
-    # See: http://www.yaconiello.com/blog/auto-generating-pdf-covers/
-    # http://stackoverflow.com/questions/1308386/programmatically-saving-image-to-django-imagefield
+    _logger.debug(f"Started talk_post_save with sender={sender} and kwargs={kwargs}")
 
-    # get the talk that was just saved and auto-generate a thumbnail
+    # Note to the reader:
+    # I considered putting the talk file renaming code (currently in Talk.save()) here; however,
+    # this proved impossible because talk_post_save is called before Talk.speakers_changed and so
+    # we can't get access to the speaker (as a many-to-many foreign field) until after speakers_changed
+    # I just wanted to add this note for rationale for *why* it's not here in case a future brain 
+    # thinks it would be a better fit here.
+    #
+    # Note also that we used to do our PDF thumbnail generation here but I consolidated it
+    # in talk.save() to keep all of this code in one place
+  
     talk = kwargs['instance']
-    if talk.pdf_file:
-        _logger.debug("Talk '{}' has just been saved with PDF={}, checking to see if we should auto-generate a thumbnail".format(talk.title, talk.pdf_file.path))
-        thumbnail_res = 300
-        generate_and_save_thumbnail_from_pdf(talk, thumbnail_res)
+    _logger.debug(f"Speakers: {talk.speakers.all()}")
+
+    
+    # TODO Need to check to see if we need to generate a thumbnail and generate it
+    # Could we do this in .save() instead?
+    # if talk.pdf_file:
+        # _logger.debug("Talk '{}' has just been saved with PDF={}, checking to see if we should auto-generate a thumbnail".format(talk.title, talk.pdf_file.path))
+        # thumbnail_res = 300
+        # generate_and_save_thumbnail_from_pdf(talk, thumbnail_res)
+
+    _logger.debug(f"Completed talk_post_save with sender={sender} and kwargs={kwargs}")
 
 # Called automatically by Django after Talk is saved using Django's
 # built-in signal dispatch functionality. We use this function to do some
@@ -77,6 +92,8 @@ def poster_post_save(sender, **kwargs):
 #  an ImageField called thumbnail
 #  a FileField called pdf_file
 def generate_and_save_thumbnail_from_pdf(artifact, thumbnail_resolution):
+
+    # Get the thumbnail dir
     thumbnail_dir = os.path.normpath(os.path.normcase(os.path.join(settings.MEDIA_ROOT, artifact.thumbnail.field.upload_to)))
 
     # make sure this dir exists
@@ -84,8 +101,8 @@ def generate_and_save_thumbnail_from_pdf(artifact, thumbnail_resolution):
         os.makedirs(thumbnail_dir)
 
     pdf_filename = os.path.basename(artifact.pdf_file.path)
-    pdf_filename_no_extension = os.path.splitext(pdf_filename)[0]
-    thumbnail_filename = "{}.{}".format(pdf_filename_no_extension, "jpg");
+    pdf_filename_no_ext = os.path.splitext(pdf_filename)[0]
+    thumbnail_filename = "{}.{}".format(pdf_filename_no_ext, "jpg");
     thumbnail_path = os.path.join(thumbnail_dir, thumbnail_filename)
 
     _logger.debug("Checking for thumbnail at '{}', otherwise will auto-generate".format(thumbnail_path))
