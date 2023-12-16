@@ -47,8 +47,8 @@ class Talk(models.Model):
     location.help_text = "The geographic location of the talk"
 
     # Most of the time talks are given by one person, but sometimes they are given by two people
-    speakers = models.ManyToManyField(Person)
-    speakers.help_text = "Most of the time, talks are given by one person but there are exceptions"
+    authors = models.ManyToManyField(Person)
+    authors.help_text = "Most of the time, talks are given by one person but there are exceptions"
 
     date = models.DateField(null=True)
     date.help_text = "The date of the talk"
@@ -101,10 +101,10 @@ class Talk(models.Model):
     # print("In talk model!")
     def get_person(self):
         """Gets the "first author" (or speaker in this case) for the talk"""
-        return self.speakers.all()[0]
+        return self.authors.all()[0]
     
     def get_first_speaker_last_name(self):
-        speakers = self.speakers.all()
+        speakers = self.authors.all()
         if speakers.exists():
             return speakers.first().last_name
         else:
@@ -115,7 +115,7 @@ class Talk(models.Model):
         # iterate through all of the speakers and return the csv
         is_first_speaker = True
         list_of_speakers_as_csv = ""
-        for speaker in self.speakers.all():
+        for speaker in self.authors.all():
             if is_first_speaker != True:
                 # if not the first speaker, add in a comma in CSV string
                 list_of_speakers_as_csv += ", "
@@ -126,7 +126,7 @@ class Talk(models.Model):
     get_speakers_as_csv.short_description = 'Speaker List'
 
     def __str__(self):
-        if self.id and self.speakers.exists():
+        if self.id and self.authors.exists():
             return "{}, '{}', {} {}".format(self.get_person().get_full_name(), self.title, self.forum_name, self.date)
         else:
             return f"Unknown, '{self.title}', {self.forum_name}, {self.date}"
@@ -196,8 +196,8 @@ class Talk(models.Model):
             # first time (that is, after super().save is called)
             # Hence, we have a flag "first_time_saved" that checks for this condition and
             # then attempts to continue only when speaker values have been set
-            _logger.debug(f"The speakers for the talk are: {self.speakers.all()}")
-            if self.speakers.exists():
+            _logger.debug(f"The speakers for the talk are: {self.authors.all()}")
+            if self.authors.exists():
                 _logger.debug(f"A speaker exists, checking to see if filenames need to be renamed")
                 if Talk.do_filenames_need_updating(self):
                     new_filename_no_ext = Talk.generate_filename(self)
@@ -247,52 +247,6 @@ class Talk(models.Model):
         super().save(*args, **kwargs)
 
         _logger.debug(f"Completed save for self={self} with talk id={self.pk} and args={args} and kwargs={kwargs}")
-
-    # def save(self, *args, **kwargs):
-    #     # Check if this is the first time the object is being saved
-    #     first_time_saved = self.pk is None
-
-    #     if first_time_saved:
-    #         # We check to see if this is the first time we've saved the talk because, if so, then 
-    #         # our automatic filenaming scheme won't work properly because the speaker
-    #         # is not yet set (as a ManyToMany field) until this save() function is complete. Yes, this is
-    #         # unnecessarily complicated.
-    #         _logger.debug(f"This appears to be the first time we've saved the talk with id={self.pk}")
-    #     else:
-    #         _logger.debug(f"We appear to be modifying the talk with talk id={self.pk}")
-
-    #         # TODO: check if this conditional actually works: that is, if we upload a new file,
-    #         # can we tell that it's a new file or not?
-    #         # If not, think about what to do...
-    #         orig_talk = Talk.objects.get(pk=self.pk)
-    #         if (orig_talk.pdf_file != self.pdf_file):
-    #             _logger.debug(f"In talk id={self.pk}, it appears the pdf file has changed from {orig_talk.pdf_file} to {self.pdf_file}")
-    #             # TODO think about what to do here. I think maybe we just need to destroy the old thumbnail so a new one will generate?
-
-    #         # Check if other fields like title, date, venue have changed. If so, then rename file
-    #         # Check that there is at least one speaker first, however, because as a ManyToMany field
-    #         # this is *not* set until after save is called
-    #         if self.speakers.exists():
-    #             # Check if fields we use in the filename have changed
-    #             if (orig_talk.title != self.title or
-    #                 orig_talk.speakers.exists() and (orig_talk.get_person() != self.get_person()) or
-    #                 orig_talk.date != self.date or
-    #                 orig_talk.forum_name != self.forum_name):
-
-    #                 _logger.debug(f"We detected changes in the metadata for talk id {orig_talk.pk} that requires renaming the associated files")
-    #                 _logger.debug(f"The original talk metadata person={orig_talk.get_person()},\
-    #                             title={orig_talk.title}, date={orig_talk.date}, forum_name={orig_talk.forum_name}")
-    #                 _logger.debug(f"The new talk metadata person={self.get_person()},\
-    #                             title={self.title}, date={self.date}, forum_name={self.forum_name}")
-                    
-    #                 new_filename_no_ext = Talk.generate_filename(self)
-    #                 ml_fileutils.rename_artifact_in_db_and_filesystem(self, self.pdf_file, new_filename_no_ext)
-    #             else:
-    #                 _logger.debug(f"The filename for talk id {orig_talk.pk} does not appear to need to change")
-    #         else:
-    #             _logger.debug(f"There are no speakers set yet for talk={self} with talk id={self.pk}")
-
-    #     super().save(*args, **kwargs)
 
     @staticmethod
     def do_filenames_need_updating(talk):
@@ -353,7 +307,7 @@ def speakers_changed(sender, instance, action, reverse, **kwargs):
 
     _logger.debug(f"Completed speakers_changed")
         
-m2m_changed.connect(speakers_changed, sender=Talk.speakers.through)
+m2m_changed.connect(speakers_changed, sender=Talk.authors.through)
 
 @receiver(post_delete, sender=Talk)
 def talk_post_delete(sender, instance, **kwargs):
@@ -367,7 +321,6 @@ def talk_post_delete(sender, instance, **kwargs):
         else:
             _logger.debug(f"Could not delete pdf_file={instance.pdf_file} as it does not exist on filesystem")
     
-
     _logger.debug(f"Attempting to delete raw_file={instance.raw_file} off filesystem")
     if instance.raw_file:
         if instance.raw_file.storage.exists(instance.raw_file.name):
