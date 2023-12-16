@@ -1,3 +1,4 @@
+from .artifact import Artifact
 from .banner import Banner
 from .keyword import Keyword
 from .news import News

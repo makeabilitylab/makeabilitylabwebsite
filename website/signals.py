@@ -1,6 +1,6 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
-from website.models import Talk, Publication, Poster
+from website.models import Talk, Publication, Poster, Artifact
 from wand.image import Image, Color
 from django.conf import settings
 import os
@@ -19,11 +19,58 @@ _logger = logging.getLogger(__name__)
 #     from django.core.signals import request_finished
 #     request_finished.connect(my_callback)
 #
-# 2. You can use a receiver() decorator (the @receiver thing). This is the approach we are using.
+# 2. You can use a receiver() decorator (the @receiver construct). This is the approach we are using.
 #    In order for this to work, we must add in an import website.signals to the ready() function
 #    in apps.py, which we've done.
 # See : https://docs.djangoproject.com/en/1.9/topics/signals/#receiver-functions
 #
+
+@receiver(m2m_changed, sender=Poster.authors.through)
+@receiver(m2m_changed, sender=Talk.authors.through)
+@receiver(m2m_changed, sender=Publication.authors.through)
+def authors_changed(sender, instance, action, reverse, **kwargs):
+    """
+    Signal receiver for changes in the 'authors' field of Poster, Talk, and Publication models.
+
+    This function is triggered when the 'authors' field of an instance of any of the above models is modified.
+    It checks if the filenames of the instance need to be updated whenever authors are added and the change is not a reverse relation.
+
+    Parameters:
+    sender (Model): The model class that the authors field belongs to. It could be Poster, Talk, or Publication.
+    instance (Model instance): The actual instance of the sender model class that is being modified.
+    action (str): The type of operation performed on the many-to-many field. It can be one of the following:
+                  - "pre_add": Sent before one or more objects are added to the relation.
+                  - "post_add": Sent after one or more objects have been added to the relation.
+                  - "pre_remove": Sent before one or more objects are removed from the relation.
+                  - "post_remove": Sent after one or more objects have been removed from the relation.
+                  - "pre_clear": Sent before the relation is cleared.
+                  - "post_clear": Sent after the relation has been cleared.
+    reverse (bool): A flag indicating the direction of the relation:
+                    - If `False`, the modification was made from the instance side.
+                    - If `True`, the modification was made from the related object side.
+    **kwargs: Additional keyword arguments.
+
+    Returns:
+    None
+    """
+    _logger.debug(
+        f"Started authors_changed with sender={sender}, instance={instance}, "
+        f"action={action}, reverse={reverse}, and kwargs={kwargs}"
+    )
+    
+    if action == 'post_add' and not reverse:
+        # The authors field is a many-to-many field, which is handled differently than other fields in Django
+        # When an artifact object is first created and save called (to save the object back to the database),
+        # the authors field is not yet set. It won't be set until after super.save() is completed the first time
+        # So, we use this authors_changed signal to both listen for when the assigned author is
+        # initially setup and for when it is changed (e.g., if the first author changes)
+        if Artifact.do_filenames_need_updating(instance):
+            _logger.debug("Filenames need to be updated, calling instance.save()")
+            instance.save()
+
+    _logger.debug(f"Completed authors_changed")
+
+    
 
 # Called automatically by Django after Publication is saved using Django's
 # built-in signal dispatch functionality. We use this function to do some

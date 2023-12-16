@@ -129,11 +129,11 @@ def ensure_filename_is_unique(filename_with_full_path):
     # Returns a guaranteed-to-be-unique filename (with full path)
     return filename_with_full_path
 
-def rename_artifact_on_filesystem(artifact, new_filename):
+def rename_artifact_on_filesystem(file_field, new_filename):
     """Renames the artifact.name to the new filename. Careful: does not save it back to the database"""
-    rename_artifact_in_db_and_filesystem(None, artifact, new_filename, update_db=False)
+    rename_artifact_in_db_and_filesystem(None, file_field, new_filename, update_db=False)
 
-def rename_artifact_in_db_and_filesystem(model, artifact, new_filename, update_db=True):
+def rename_artifact_in_db_and_filesystem(model, file_field, new_filename, update_db=True):
     """Renames the artifact in the database and filesystem. 
        Guarantees that new_filename is unique by adding in a randomly generated unique id to the filename (if necessary)
        If the new_filename does not have an extension, it will be added automatically using existing metadata
@@ -142,9 +142,9 @@ def rename_artifact_in_db_and_filesystem(model, artifact, new_filename, update_d
     if os.path.dirname(new_filename):
         raise ValueError(f"Filename {new_filename} should not contain a path.")
 
-    old_filename_with_full_path = artifact.path
-    old_filename_with_local_path = artifact.name
-    old_local_path = os.path.dirname(artifact.name)
+    old_filename_with_full_path = file_field.path
+    old_filename_with_local_path = file_field.name
+    old_local_path = os.path.dirname(file_field.name)
     old_full_path = os.path.dirname(old_filename_with_full_path)
     old_filename_ext = os.path.splitext(old_filename_with_full_path)[1]
 
@@ -167,14 +167,14 @@ def rename_artifact_in_db_and_filesystem(model, artifact, new_filename, update_d
         _logger.debug(f"Renamed {old_filename_with_full_path} to {new_filename_with_full_path}")
 
         # Change the pdf_file path to point to the renamed file and save the artifact
-        artifact.name = os.path.join(old_local_path, os.path.basename(new_filename_with_full_path))
+        file_field.name = os.path.join(old_local_path, os.path.basename(new_filename_with_full_path))
 
         # Save it out to the database
         if update_db:
-            _logger.debug(f"Calling model.save() on model={model} with artifact.name={artifact.name}")
+            _logger.debug(f"Calling model.save() on model={model} with artifact.name={file_field.name}")
             model.save()
         else:
-            _logger.debug(f"Careful: update_db={update_db}, so we are not saving this new artifact.name={artifact.name} to the db.\
+            _logger.debug(f"Careful: update_db={update_db}, so we are not saving this new artifact.name={file_field.name} to the db.\
                           The old artifact.name={old_filename_with_local_path}. You should call model.save() to save these changes")
 
         return new_filename_with_full_path
