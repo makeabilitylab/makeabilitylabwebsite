@@ -90,10 +90,15 @@ echo "4.2 Running 'python manage.py generate_slugs_for_old_news_items' to genera
 echo "******************************************"
 python manage.py generate_slugs_for_old_news_items
 
-echo "****************** STEP 4.3/5: docker-entrypoint.sh ************************"
-echo "4.3 Running 'python manage.py rename_person_images' to rename person images"
-echo "******************************************"
-python manage.py rename_person_images
+# echo "****************** STEP 4.3/5: docker-entrypoint.sh ************************"
+# echo "4.3 Running 'python manage.py rename_person_images' to rename person images"
+# echo "******************************************"
+# python manage.py rename_person_images
+
+# echo "****************** STEP 4.4/5: docker-entrypoint.sh ************************"
+# echo "4.4 Running 'python manage.py rename_talk_files' to rename talk files"
+# echo "******************************************"
+# python manage.py rename_talk_files
 
 # Start server
 echo "Starting server"
