@@ -107,7 +107,7 @@ def talk_post_save(sender, **kwargs):
     # in talk.save() to keep all of this code in one place
   
     talk = kwargs['instance']
-    _logger.debug(f"Speakers: {talk.speakers.all()}")
+    _logger.debug(f"Speakers: {talk.authors.all()}")
 
     
     # TODO Need to check to see if we need to generate a thumbnail and generate it
