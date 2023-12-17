@@ -44,10 +44,10 @@ class PubVenueListFilter(admin.SimpleListFilter):
         Returns the filtered queryset based on the value provided in the pub_venue query string
         Either filtered down to a specific venue or not filtered at all. 
         So, for example: http://localhost:8571/admin/website/publication/?pub_venue=CHI
-        would return a filtered queryset of publications that have 'CHI' in their book_title_short
+        would return a filtered queryset of publications that have 'CHI' in their forum_name
         """
 
         if self.value() is None:
             return queryset
         else:
-            return queryset.filter(book_title_short__icontains=self.value())
+            return queryset.filter(forum_name__icontains=self.value())

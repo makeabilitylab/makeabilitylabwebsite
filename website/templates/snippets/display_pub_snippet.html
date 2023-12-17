@@ -19,7 +19,7 @@
             <span class="artifact-title line-clamp" style="margin-top: 0px;">{{ pub.title }}</span>
         </a>
         <p class="artifact-venue line-clamp-one-line">
-            {{ pub.book_title_short }}
+            {{ pub.forum_name }}
             {% if pub.to_appear %}
                 <span class="pub-to-appear-text">To Appear</span>
             {% endif %}
@@ -80,10 +80,10 @@
             </p>
             <p class="publication-stats">
                 <span class="publication-venue">
-                    {% if pub.is_extended_abstract and "Poster" not in pub.book_title_short and "Extended" not in pub.book_title_short %}
-                        Extended Abstract {{ pub.book_title_short }}
+                    {% if pub.is_extended_abstract and "Poster" not in pub.forum_name and "Extended" not in pub.forum_name %}
+                        Extended Abstract {{ pub.forum_name }}
                     {% else %}
-                        {{ pub.book_title_short }}
+                        {{ pub.forum_name }}
                     {% endif %}
                     {% if pub.to_appear %}
                         <span class="publication-to-appear-text">To Appear</span>

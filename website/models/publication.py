@@ -64,9 +64,13 @@ class Publication(models.Model):
     book_title.help_text = "This is the long-form proceedings title. For example, for UIST, this would be 'Proceedings of the 27th Annual ACM Symposium on User " \
                            "Interface Software and Technology.' For CHI, 'Proceedings of the 2017 CHI Conference on " \
                            "Human Factors in Computing Systems' "
-    book_title_short = models.CharField(max_length=255, null=True)
-    book_title_short.help_text = "This is a shorter version of book title. For UIST, 'Proceedings of UIST 2014' " \
+    forum_name = models.CharField(max_length=255, null=True)
+    forum_name.help_text = "This is a shorter version of book title. For UIST, 'Proceedings of UIST 2014' " \
                            "For CHI, 'Proceedings of CHI 2017'"
+    
+    # TODO: remove null=True from the following three
+    forum_url = models.URLField(blank=True, null=True)
+    forum_url.help_text = "The url to the publication venue (e.g., https://chi2021.acm.org/ or https://cscw.acm.org/2022/)"
 
     # The thumbnail should have null=True because it is added automatically later by a post_save signal
     # TODO: decide if we should have this be editable=True and if user doesn't add one him/herself, then
@@ -106,11 +110,7 @@ class Publication(models.Model):
     publisher_address = models.CharField(max_length=255, blank=True, null=True)
     acmid = models.CharField(max_length=255, blank=True, null=True)
 
-
-    # TODO: remove null=True from the following three
-    pub_venue_url = models.URLField(blank=True, null=True)
-    pub_venue_url.help_text = "The url to the publication venue (e.g., https://chi2021.acm.org/ or https://cscw.acm.org/2022/)"
-
+    
     pub_venue_type = models.CharField(max_length=50, choices=PubVenueType.choices, null=True)
     extended_abstract = models.BooleanField(null=True)
     extended_abstract.help_text = "If the paper is not a *full* paper, it's likely an extended abstract (like a poster, demo, etc.)"
@@ -175,7 +175,7 @@ class Publication(models.Model):
 
         citation += "({}). ".format(self.date.year)
         citation += self.title + ". "
-        citation += "<i>{}</i>. ".format(self.book_title_short)
+        citation += "<i>{}</i>. ".format(self.forum_name)
 
         if self.official_url:
             citation += "<a href={}>{}</a>".format(self.official_url, self.official_url)
@@ -186,7 +186,7 @@ class Publication(models.Model):
         """Generates and returns the bibtex id for this paper"""
         bibtex_id = self.get_person().last_name
 
-        forum = self.book_title_short.lower()
+        forum = self.forum_name.lower()
         if "proceedings of" in forum:
             forum = forum.replace('proceedings of', '')
 
@@ -245,7 +245,7 @@ class Publication(models.Model):
 
         bibtex += " title={{{}}},{}".format(self.title, newline)
         bibtex += " booktitle={{{}}},{}".format(self.book_title, newline)
-        bibtex += " booktitleshort={{{}}},{}".format(self.book_title_short, newline)
+        bibtex += " booktitleshort={{{}}},{}".format(self.forum_name, newline)
 
         if self.series:
             bibtex += " series = {" + self.series + "},"
@@ -305,7 +305,7 @@ class Publication(models.Model):
         pub_title = ''.join(e for e in pub_title if e.isalnum())
 
         # Get the publication venue but remove proceedings from it (if it exists)
-        forum = instance.book_title_short.lower()
+        forum = instance.forum_name.lower()
         if "proceedings of" in forum.lower():
             forum = forum.replace('proceedings of', '')
 
