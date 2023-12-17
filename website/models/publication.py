@@ -22,6 +22,33 @@ from .poster import Poster
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
 
+class PubAwardType(models.TextChoices):
+    BEST_ARTIFACT_AWARD = "Best Artifact Award"
+    BEST_ARTIFACT_RUNNERUP_AWARD = "Best Artifact Runner-up Award"
+    BEST_PAPER_AWARD = "Best Paper Award"
+    HONORABLE_MENTION = "Honorable Mention"
+    BEST_PAPER_NOMINATION = "Best Paper Nominee"
+    TEN_YEAR_IMPACT_AWARD = "10-Year Impact Award"
+
+class PubVenueType(models.TextChoices):
+    CONFERENCE = "Conference"
+    ARTICLE = "Article"
+    JOURNAL = "Journal"
+    BOOK_CHAPTER = "Book Chapter"
+    BOOK = "Book"
+    DOCTORAL_CONSORTIUM = "Doctoral Consortium"
+    MS_THESIS = "MS Thesis"
+    PHD_DISSERTATION = "PhD Dissertation"
+    WORKSHOP = "Workshop"
+    POSTER = "Poster"
+    DEMO = "Demo"
+    WIP = "Work in Progress"
+    LATE_BREAKING = "Late Breaking Result"
+    PANEL = "Panel"
+    OTHER = "Other"
+
+
+
 class Publication(models.Model):
     UPLOAD_DIR = 'publications/' # relative path
     THUMBNAIL_DIR = os.path.join(UPLOAD_DIR, 'images/') # relative path
@@ -79,45 +106,12 @@ class Publication(models.Model):
     publisher_address = models.CharField(max_length=255, blank=True, null=True)
     acmid = models.CharField(max_length=255, blank=True, null=True)
 
-    CONFERENCE = "Conference"
-    ARTICLE = "Article"
-    JOURNAL = "Journal"
-    BOOK_CHAPTER = "Book Chapter"
-    BOOK = "Book"
-    DOCTORAL_CONSORTIUM = "Doctoral Consortium"
-    MS_THESIS = "MS Thesis"
-    PHD_DISSERTATION = "PhD Dissertation"
-    WORKSHOP = "Workshop"
-    POSTER = "Poster"
-    DEMO = "Demo"
-    WIP = "Work in Progress"
-    LATE_BREAKING = "Late Breaking Result"
-    PANEL = "Panel"
-    OTHER = "Other"
-
-    PUB_VENUE_TYPE_CHOICES = (
-        (CONFERENCE, CONFERENCE),
-        (ARTICLE, ARTICLE),
-        (JOURNAL, JOURNAL),
-        (BOOK_CHAPTER, BOOK_CHAPTER),
-        (BOOK, BOOK),
-        (DOCTORAL_CONSORTIUM, DOCTORAL_CONSORTIUM),
-        (MS_THESIS, MS_THESIS),
-        (PHD_DISSERTATION, PHD_DISSERTATION),
-        (WORKSHOP, WORKSHOP),
-        (POSTER, POSTER),
-        (DEMO, DEMO),
-        (WIP, WIP),
-        (LATE_BREAKING, LATE_BREAKING),
-        (PANEL, PANEL),
-        (OTHER, OTHER)
-    )
 
     # TODO: remove null=True from the following three
     pub_venue_url = models.URLField(blank=True, null=True)
     pub_venue_url.help_text = "The url to the publication venue (e.g., https://chi2021.acm.org/ or https://cscw.acm.org/2022/)"
 
-    pub_venue_type = models.CharField(max_length=50, choices=PUB_VENUE_TYPE_CHOICES, null=True)
+    pub_venue_type = models.CharField(max_length=50, choices=PubVenueType.choices, null=True)
     extended_abstract = models.BooleanField(null=True)
     extended_abstract.help_text = "If the paper is not a *full* paper, it's likely an extended abstract (like a poster, demo, etc.)"
     peer_reviewed = models.BooleanField(null=True)
@@ -127,23 +121,7 @@ class Publication(models.Model):
     total_papers_submitted = models.IntegerField(blank=True, null=True)
     total_papers_submitted.help_text = "The total number of papers submitted to the venue (if known)"
 
-    BEST_ARTIFACT_AWARD = "Best Artifact Award"
-    BEST_ARTIFACT_RUNNERUP_AWARD = "Best Artifact Runner-up Award"
-    BEST_PAPER_AWARD = "Best Paper Award"
-    HONORABLE_MENTION = "Honorable Mention"
-    BEST_PAPER_NOMINATION = "Best Paper Nominee"
-    TEN_YEAR_IMPACT_AWARD = "10-Year Impact Award"
-
-    AWARD_CHOICES = (
-        (BEST_PAPER_AWARD, BEST_PAPER_AWARD),
-        (HONORABLE_MENTION, HONORABLE_MENTION),
-        (BEST_PAPER_NOMINATION, BEST_PAPER_NOMINATION),
-        (TEN_YEAR_IMPACT_AWARD, TEN_YEAR_IMPACT_AWARD),
-        (BEST_ARTIFACT_AWARD, BEST_ARTIFACT_AWARD),
-        (BEST_ARTIFACT_RUNNERUP_AWARD, BEST_ARTIFACT_RUNNERUP_AWARD)
-    )
-    award = models.CharField(max_length=50, choices=AWARD_CHOICES, blank=True, null=True)
-
+    award = models.CharField(max_length=50, choices=PubAwardType.choices, blank=True, null=True)
 
     def get_person(self):
         """Returns the first author"""
