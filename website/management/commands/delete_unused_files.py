@@ -70,9 +70,10 @@ class Command(BaseCommand):
                     del map_raw_poster_filename_to_full_path_on_filesystem[raw_poster_filename]
   
             # If this thumbnail exists in the filesystem, keep it there (don't delete it)
-            poster_thumbnail_filename = os.path.basename(poster.thumbnail.path)
-            if poster_thumbnail_filename in map_poster_thumbnail_to_full_path_on_filesystem:
-                del map_poster_thumbnail_to_full_path_on_filesystem[poster_thumbnail_filename]
+            if poster.thumbnail:
+                poster_thumbnail_filename = os.path.basename(poster.thumbnail.path)
+                if poster_thumbnail_filename in map_poster_thumbnail_to_full_path_on_filesystem:
+                    del map_poster_thumbnail_to_full_path_on_filesystem[poster_thumbnail_filename]
 
         if len(map_poster_pdf_filename_to_full_path_on_filesystem) > 0:
             _logger.debug("Set to delete {} unused poster PDFs".format(len(map_poster_pdf_filename_to_full_path_on_filesystem)))  
@@ -142,9 +143,10 @@ class Command(BaseCommand):
                     del map_talk_pptx_filename_to_full_path_on_filesystem[talk_pptx_filename]
   
             # If this thumbnail exists in the filesystem, keep it there (don't delete it)
-            talk_thumbnail_filename = os.path.basename(talk.thumbnail.path)
-            if talk_thumbnail_filename in map_talk_thumbnail_to_full_path_on_filesystem:
-                del map_talk_thumbnail_to_full_path_on_filesystem[talk_thumbnail_filename]
+            if talk.thumbnail:
+                talk_thumbnail_filename = os.path.basename(talk.thumbnail.path)
+                if talk_thumbnail_filename in map_talk_thumbnail_to_full_path_on_filesystem:
+                    del map_talk_thumbnail_to_full_path_on_filesystem[talk_thumbnail_filename]
 
         if len(map_talk_pdf_filename_to_full_path_on_filesystem) > 0:
             _logger.debug("Set to delete {} unused talk PDFs".format(len(map_talk_pdf_filename_to_full_path_on_filesystem)))  
