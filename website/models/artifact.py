@@ -158,10 +158,19 @@ class Artifact(models.Model):
         first_time_saved = self.id is None
         _logger.debug(f"For artifact.id={self.id}, first_time_saved={first_time_saved}")
         
+        # Note that "update_fields" is custom filled by our save_model in ArtifactAdmin
+        # It will never contain the m2m fields (e.g., authors, keywords, etc.) due to
+        # how Django handles these fields. Instead, you can hook up an m2m_changed signal
+        # as we have for authors_changed
         if not first_time_saved and kwargs.get('update_fields') is not None:
             update_fields = kwargs['update_fields']
             _logger.debug(f"update_fields={update_fields}, checking to see if we have to do some cleanup on files")
-            orig_artifact = Artifact.objects.get(pk=self.pk)
+
+            # type(self) will return the class of the current instance. For example, if self is an instance of Poster, type(self) 
+            # will be Poster. This allows you to query the correct model without having to implement the save method in 
+            # each child class. According to ChatGPT, using type(self) in this way is generally considered acceptable in Python and Django. 
+            # It’s a common way to access the concrete class from an instance in a base class method. 
+            orig_artifact = type(self).objects.get(pk=self.pk)
 
             # Check if pdf_file is one of the updated fields and, if so, delete the old file
             if 'pdf_file' in update_fields:
@@ -208,8 +217,9 @@ class Artifact(models.Model):
             # then attempts to continue only when author values have been set
             _logger.debug(f"The authors for the artifact are: {self.authors.all()}")
             if self.authors.exists():
-                _logger.debug(f"A author exists, checking to see if filenames need to be renamed")
+                _logger.debug(f"An author exists, checking to see if filenames need to be renamed")
                 if Artifact.do_filenames_need_updating(self):
+                    _logger.debug(f"At least one filename needs to be renamed...")
                     new_filename_no_ext = Artifact.generate_filename(self)
 
                     if self.pdf_file:
@@ -220,20 +230,26 @@ class Artifact(models.Model):
                             # We call only rename artifact on filesystem and not the _db version as all of these
                             # changes will be saved back to the db with the super.save() call at end of this method
                             ml_fileutils.rename_artifact_on_filesystem(self.pdf_file, new_filename_no_ext)
+                        else:
+                            _logger.debug(f"The pdf filename matches {old_pdf_filename} so not renaming")
                     
                     if self.raw_file:
-                        old_raw_filename = os.path.basename(self.pdf_file.name)
+                        old_raw_filename = os.path.basename(self.raw_file.name)
                         old_raw_filename_no_ext, ext = os.path.splitext(old_raw_filename)
                         if new_filename_no_ext != old_raw_filename_no_ext:
                             _logger.debug(f"The new_filename_no_ext={new_filename_no_ext} and old_raw_filename_no_ext={old_raw_filename_no_ext} don't match. Renaming...")
                             ml_fileutils.rename_artifact_on_filesystem(self.raw_file, new_filename_no_ext)
+                        else:
+                            _logger.debug(f"The raw filename matches {old_raw_filename} so not renaming")
 
                     if self.thumbnail:
-                        old_thumbnail_filename = os.path.basename(self.pdf_file.name)
+                        old_thumbnail_filename = os.path.basename(self.thumbnail.name)
                         old_thumbnail_filename_no_ext, ext = os.path.splitext(old_thumbnail_filename)
                         if new_filename_no_ext != old_thumbnail_filename_no_ext:
                             _logger.debug(f"The new_filename_no_ext={new_filename_no_ext} and old_thumbnail_filename_no_ext={old_thumbnail_filename_no_ext} don't match. Renaming...")
                             ml_fileutils.rename_artifact_on_filesystem(self.thumbnail, new_filename_no_ext)
+                        else:
+                            _logger.debug(f"The thumbnail filename matches {old_thumbnail_filename} so not renaming")
             else:
                 _logger.debug("No authors exist yet, so will wait for m2m authors_changed to rename files")
 

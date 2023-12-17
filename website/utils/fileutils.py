@@ -174,8 +174,10 @@ def rename_artifact_in_db_and_filesystem(model, file_field, new_filename, update
             _logger.debug(f"Calling model.save() on model={model} with artifact.name={file_field.name}")
             model.save()
         else:
-            _logger.debug(f"Careful: update_db={update_db}, so we are not saving this new artifact.name={file_field.name} to the db.\
-                          The old artifact.name={old_filename_with_local_path}. You should call model.save() to save these changes")
+            _logger.debug(
+                f"Careful: update_db={update_db}, so we are not saving this new artifact.name={file_field.name} to the db."
+                f"The old artifact.name={old_filename_with_local_path}. You should call model.save() to save these changes"
+            )
 
         return new_filename_with_full_path
     else:
