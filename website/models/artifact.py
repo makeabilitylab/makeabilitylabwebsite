@@ -160,7 +160,7 @@ class Artifact(models.Model):
         
         # Note that "update_fields" is custom filled by our save_model in ArtifactAdmin
         # It will never contain the m2m fields (e.g., authors, keywords, etc.) due to
-        # how Django handles these fields. Instead, you can hook up an m2m_changed signal
+        # how Django handles m2m fields. Instead, you can hook up an m2m_changed signal
         # as we have for authors_changed in signals.py
         if not first_time_saved and kwargs.get('update_fields') is not None:
             update_fields = kwargs['update_fields']
