@@ -78,9 +78,9 @@ def get_files_in_directory(dir_path):
     """Returns a list of files in the given directory"""
     return [os.path.join(dir_path, f) for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))]
 
-def get_filename_for_artifact(last_name, title, forum_name, date, ext, suffix=None):
+def get_filename_for_artifact(last_name, title, forum_name, date, ext, suffix=None, max_pub_title_length=-1):
     """Generates a filename from the provided content."""
-    filename_without_ext = get_filename_without_ext_for_artifact(last_name, title, forum_name, date, suffix)
+    filename_without_ext = get_filename_without_ext_for_artifact(last_name, title, forum_name, date, suffix, max_pub_title_length)
 
     # Check if ext starts with a dot. If not, add it
     if not ext.startswith('.'):
@@ -89,7 +89,7 @@ def get_filename_for_artifact(last_name, title, forum_name, date, ext, suffix=No
     # Combine filename with extension
     return filename_without_ext + ext
 
-def get_filename_without_ext_for_artifact(last_name, title, forum_name, date, suffix=None):
+def get_filename_without_ext_for_artifact(last_name, title, forum_name, date, suffix=None, max_pub_title_length=-1):
     """Generates a filename from the provided content"""
 
     if last_name is None:
@@ -99,6 +99,10 @@ def get_filename_without_ext_for_artifact(last_name, title, forum_name, date, su
     year = date.year
     title = ''.join(x for x in title.title() if not x.isspace())
     title = ''.join(e for e in title if e.isalnum())
+
+    # Only get the first N characters of the string if max_pub_title_length set
+    if max_pub_title_length > 0 and max_pub_title_length < len(title):
+        title = title[0:max_pub_title_length]
 
     forum_name = forum_name.replace(" ", "")
 

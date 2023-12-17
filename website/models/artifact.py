@@ -318,7 +318,7 @@ class Artifact(models.Model):
         return False
 
     @staticmethod
-    def generate_filename(artifact, file_extension=None):
+    def generate_filename(artifact, file_extension=None, max_pub_title_length = -1):
         """
         Generates a filename for the given artifact.
 
@@ -337,8 +337,9 @@ class Artifact(models.Model):
         >>> generate_filename(artifact, file_extension=".pdf")
         'Froehlich_ResearchArtifactTitle_CHI2023.pdf'
         """
-         
-        if file_extension is None:
+        
+        # An empty string or a string with only whitespace characters is considered False in a boolean context.
+        if not file_extension or not file_extension.strip():
             return ml_fileutils.get_filename_without_ext_for_artifact(
                     artifact.get_first_author_last_name(), artifact.title, 
                     artifact.forum_name, artifact.date)
