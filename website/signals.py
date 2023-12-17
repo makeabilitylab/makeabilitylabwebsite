@@ -71,26 +71,6 @@ def authors_changed(sender, instance, action, reverse, **kwargs):
     _logger.debug(f"Completed authors_changed")
 
     
-# Called automatically by Django after Publication is saved using Django's
-# built-in signal dispatch functionality. We use this function to do some
-# post-processing on the uploaded Publication data like auto-generating a thumbnail
-# For more info on Django signal dispatch, see: https://docs.djangoproject.com/en/1.9/topics/signals/
-@receiver(post_save, sender=Publication)
-def publication_post_save(sender, **kwargs):
-    # See: http://www.yaconiello.com/blog/auto-generating-pdf-covers/
-    # http://stackoverflow.com/questions/1308386/programmatically-saving-image-to-django-imagefield
-
-    # get the publication that was just saved and auto-generate a thumbnail
-    pub = kwargs['instance']
-    if pub.pdf_file:
-        _logger.debug("Publication '{}' has just been saved with PDF={}, checking to see if we should auto-generate a thumbnail".format(pub.title, pub.pdf_file.path))
-        thumbnail_res = 300
-        generate_and_save_thumbnail_from_pdf(pub, thumbnail_res)
-
-# Called automatically by Django after Talk is saved using Django's
-# built-in signal dispatch functionality. We use this function to do some
-# post-processing on the uploaded Talk data like auto-generating a thumbnail
-# For more info on Django signal dispatch, see: https://docs.djangoproject.com/en/1.9/topics/signals/
 @receiver(post_save, sender=Talk)
 def talk_post_save(sender, **kwargs):
     """
@@ -123,42 +103,3 @@ def talk_post_save(sender, **kwargs):
     _logger.debug(f"Speakers: {talk.authors.all()}")
 
     _logger.debug(f"Completed talk_post_save with sender={sender} and kwargs={kwargs}")
-
-# Assumes that artifact is a models.Model type and has the following fields:
-#  an ImageField called thumbnail
-#  a FileField called pdf_file
-def generate_and_save_thumbnail_from_pdf(artifact, thumbnail_resolution):
-
-    # Get the thumbnail dir
-    thumbnail_dir = os.path.normpath(os.path.normcase(os.path.join(settings.MEDIA_ROOT, artifact.thumbnail.field.upload_to)))
-
-    # make sure this dir exists
-    if not os.path.exists(thumbnail_dir):
-        os.makedirs(thumbnail_dir)
-
-    pdf_filename = os.path.basename(artifact.pdf_file.path)
-    pdf_filename_no_ext = os.path.splitext(pdf_filename)[0]
-    thumbnail_filename = "{}.{}".format(pdf_filename_no_ext, "jpg");
-    thumbnail_path = os.path.join(thumbnail_dir, thumbnail_filename)
-
-    _logger.debug("Checking for thumbnail at '{}', otherwise will auto-generate".format(thumbnail_path))
-
-    # check to see if this is a new (or changed) file. This 'if condition' is super necessary
-    # because otherwise we would enter an infinite loop given that we save the model again below
-    if not artifact.thumbnail or artifact.thumbnail.name is None or \
-                    os.path.normpath(os.path.normcase(artifact.thumbnail.path)) != os.path.normpath(os.path.normcase(thumbnail_path)):
-        _logger.debug("Thumbnail does not exist, creating...")
-
-        with Image(filename="{}[0]".format(artifact.pdf_file.path), resolution=300) as img:
-            img.format = 'jpeg'
-            img.background_color = Color('white')
-            img.alpha_channel = 'remove'
-            img.save(filename=thumbnail_path)
-
-        # talk.thumbnail = thumbnail_path
-        relative_thumbnail_path = os.path.join(artifact.thumbnail.field.upload_to, thumbnail_filename)
-        artifact.thumbnail = relative_thumbnail_path
-
-        artifact.save()
-    else:
-        _logger.debug("No need to save, the thumbnail '{}' already exists!".format(thumbnail_path))
