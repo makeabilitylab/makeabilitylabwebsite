@@ -7,6 +7,7 @@ import logging
 from django.utils.text import get_valid_filename
 import time # for generating unique filenames
 from wand.image import Image, Color # for creating thumbnails
+from wand.exceptions import ImageError # for creating thumbnails
 
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
@@ -216,11 +217,19 @@ def generate_thumbnail_for_pdf(pdf_file_field, thumbnail_image_field, thumbnail_
     thumbnail_filename_with_full_path = os.path.join(thumbnail_full_path, thumbnail_filename)
     thumbnail_filename_with_full_path = ensure_filename_is_unique(thumbnail_filename_with_full_path)
 
-    with Image(filename="{}[0]".format(pdf_file_field.path), resolution=300) as img:
-        img.format = 'jpeg'
-        img.background_color = Color('white')
-        img.alpha_channel = 'remove'
-        img.save(filename=thumbnail_filename_with_full_path)
+    try:
+        with Image(filename="{}[0]".format(pdf_file_field.path), resolution=300) as img:
+            img.format = 'jpeg'
+            img.background_color = Color('white')
+            img.alpha_channel = 'remove'
+            img.save(filename=thumbnail_filename_with_full_path)
+    except ImageError as e:
+        _logger.debug(f"Caught ImageError when generating thumbnail at 300 DPI, retrying at 72 DPI. Error: {str(e)}")
+        with Image(filename="{}[0]".format(pdf_file_field.path), resolution=72) as img:
+            img.format = 'jpeg'
+            img.background_color = Color('white')
+            img.alpha_channel = 'remove'
+            img.save(filename=thumbnail_filename_with_full_path)
 
     thumbnail_filename_with_local_path = os.path.join(thumbnail_local_path, thumbnail_filename)
     thumbnail_image_field.name = thumbnail_filename_with_local_path
