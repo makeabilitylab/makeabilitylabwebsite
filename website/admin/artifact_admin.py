@@ -1,6 +1,7 @@
 from django.contrib import admin
 from website.models import Artifact
 from django.contrib.admin import widgets
+from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
 import logging
 
 # This retrieves a Python logging instance (or creates it)
@@ -25,7 +26,8 @@ class ArtifactAdmin(admin.ModelAdmin):
         if db_field.name == "projects":
             kwargs["widget"] = widgets.FilteredSelectMultiple("projects", is_stacked=False)
         if db_field.name == "authors":
-            kwargs["widget"] = widgets.FilteredSelectMultiple("authors", is_stacked=False)
+            # kwargs["widget"] = widgets.FilteredSelectMultiple("authors", is_stacked=False)
+            kwargs['widget'] = SortedFilteredSelectMultiple()
         if db_field.name == "keywords":
             kwargs["widget"] = widgets.FilteredSelectMultiple("keywords", is_stacked=False)
         if db_field.name == "projects":

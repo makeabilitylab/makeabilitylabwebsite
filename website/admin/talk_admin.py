@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin import widgets
+from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
 from website.models import Talk
 import logging
 
@@ -71,7 +72,9 @@ class TalkAdmin(admin.ModelAdmin):
             # current_member_and_collab_ids = [person.id for person in Person.objects.all() if person.is_current_member()]
             # filtered_speakers = Person.objects.filter(id__in=current_member_and_collab_ids).order_by('first_name')
             # kwargs["queryset"] = filtered_speakers
-            kwargs["widget"] = widgets.FilteredSelectMultiple("authors", is_stacked=False)
+            
+            # kwargs["widget"] = widgets.FilteredSelectMultiple("authors", is_stacked=False)
+            kwargs['widget'] = SortedFilteredSelectMultiple()
         if db_field.name == "keywords":
             kwargs["widget"] = widgets.FilteredSelectMultiple("keywords", is_stacked=False)
         
