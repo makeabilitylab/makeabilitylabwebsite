@@ -71,7 +71,6 @@ def authors_changed(sender, instance, action, reverse, **kwargs):
     _logger.debug(f"Completed authors_changed")
 
     
-
 # Called automatically by Django after Publication is saved using Django's
 # built-in signal dispatch functionality. We use this function to do some
 # post-processing on the uploaded Publication data like auto-generating a thumbnail
@@ -94,6 +93,20 @@ def publication_post_save(sender, **kwargs):
 # For more info on Django signal dispatch, see: https://docs.djangoproject.com/en/1.9/topics/signals/
 @receiver(post_save, sender=Talk)
 def talk_post_save(sender, **kwargs):
+    """
+    This function is a Django signal receiver that gets called after a `Talk` instance is saved.
+    It logs the start and end of the function execution, as well as the speakers of the talk.
+
+    Parameters:
+    sender (ModelBase): The model class. `Talk` in this case.
+    **kwargs: Arbitrary keyword arguments. This function expects 'instance' to be one of the keywords.
+        - instance (Model instance): The actual instance of the model that just got saved.
+        - created (bool): True if a new record was created, False if an existing record was saved.
+        - raw (bool): True if the model is saved exactly as presented (i.e., when loading a fixture). 
+          One should not query/modify other records in the database as the database might not be in a consistent state yet.
+        - update_fields (set): The set of fields to update as passed to Model.save(), or None if 
+          the update_fields argument wasn't passed to save().
+    """
     _logger.debug(f"Started talk_post_save with sender={sender} and kwargs={kwargs}")
 
     # Note to the reader:
@@ -109,31 +122,7 @@ def talk_post_save(sender, **kwargs):
     talk = kwargs['instance']
     _logger.debug(f"Speakers: {talk.authors.all()}")
 
-    
-    # TODO Need to check to see if we need to generate a thumbnail and generate it
-    # Could we do this in .save() instead?
-    # if talk.pdf_file:
-        # _logger.debug("Talk '{}' has just been saved with PDF={}, checking to see if we should auto-generate a thumbnail".format(talk.title, talk.pdf_file.path))
-        # thumbnail_res = 300
-        # generate_and_save_thumbnail_from_pdf(talk, thumbnail_res)
-
     _logger.debug(f"Completed talk_post_save with sender={sender} and kwargs={kwargs}")
-
-# Called automatically by Django after Talk is saved using Django's
-# built-in signal dispatch functionality. We use this function to do some
-# post-processong on the uploaded Talk data like auto-generating a thumbnail
-# For more info on Django signal dispatch, see: https://docs.djangoproject.com/en/1.9/topics/signals/
-# @receiver(post_save, sender=Poster)
-# def poster_post_save(sender, **kwargs):
-#     # See: http://www.yaconiello.com/blog/auto-generating-pdf-covers/
-#     # http://stackoverflow.com/questions/1308386/programmatically-saving-image-to-django-imagefield
-
-#     # get the talk that was just saved and auto-generate a thumbnail
-#     poster = kwargs['instance']
-#     if poster.pdf_file:
-#         _logger.debug("Poster '{}' has just been saved with PDF={}, checking to see if we should auto-generate a thumbnail".format(poster.title, poster.pdf_file.path))
-#         thumbnail_res = 300
-#         generate_and_save_thumbnail_from_pdf(poster, thumbnail_res)
 
 # Assumes that artifact is a models.Model type and has the following fields:
 #  an ImageField called thumbnail
