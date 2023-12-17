@@ -29,14 +29,36 @@ class TalkAdmin(admin.ModelAdmin):
     ]
 
     def get_form(self, request, obj=None, **kwargs):
+        """
+        Overrides the get_form method of the parent ModelAdmin class to customize the form used in the admin interface.
+
+        Parameters:
+        request (HttpRequest): The current Django HttpRequest object capturing all details of the request.
+        obj (Model, optional): The database object being edited. Default is None, which means this is a new object.
+        **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+        form (ModelForm): The form to be used in the admin interface. The 'authors' field label is changed to 'Speakers'.
+        """
         form = super().get_form(request, obj, **kwargs)
         form.base_fields['authors'].label = 'Speakers'
         return form
     
-    # Filters speakers only to current members and collaborators and sorts by first name
-    # Based on: https://stackoverflow.com/a/17457828
-    # Update: we no longer do this because sometimes we want to add a talk by a former member or collaborator
     def formfield_for_manytomany(self, db_field, request, **kwargs):
+        """
+        Overrides the formfield_for_manytomany method of the parent ModelAdmin class to customize the widgets 
+        used for ManyToMany fields in the admin interface.
+
+        Parameters:
+        db_field (Field): The database field being processed.
+        request (HttpRequest): The current Django HttpRequest object capturing all details of the request.
+        **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+        formfield (FormField): The formfield to be used in the admin interface for the ManyToMany field. The 
+        widget of the formfield is customized based on the name of the db_field.
+        """
+         
         # print("TalkAdmin.formfield_for_manytomany: db_field: {} db_field.name {} request: {}".format(db_field, db_field.name, request))
         if db_field.name == "projects":
             kwargs["widget"] = widgets.FilteredSelectMultiple("projects", is_stacked=False)

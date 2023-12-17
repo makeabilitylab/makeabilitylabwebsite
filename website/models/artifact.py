@@ -7,6 +7,12 @@ from sortedm2m.fields import SortedManyToManyField
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
 
+def get_upload_dir(instance, filename):
+    return instance.get_upload_dir(filename)
+
+def get_upload_thumbnail_dir(instance, filename):
+    return instance.get_thumbnail_dir(filename)
+
 class Artifact(models.Model):
     title = models.CharField(max_length=255, blank=True, null=True)
     authors = SortedManyToManyField('Person', blank=True)
@@ -20,12 +26,12 @@ class Artifact(models.Model):
     location.help_text = "The geographic location of where this artifact was presented"
     
     # The artifacts themselves
-    pdf_file = models.FileField(upload_to='get_upload_dir', null=True, default=None, max_length=255)
+    pdf_file = models.FileField(upload_to=get_upload_dir, null=True, default=None, max_length=255)
     pdf_file.help_text = "The rendered PDF of the talk"
-    raw_file = models.FileField(upload_to='get_upload_dir', blank=True, null=True, default=None, max_length=255)
+    raw_file = models.FileField(upload_to=get_upload_dir, blank=True, null=True, default=None, max_length=255)
     raw_file.help_text = "The raw file (e.g., pptx, keynote) for the artifact. While not required, this is "\
         "<b>highly</b> recommended as it creates a better archive of the work"
-    thumbnail = models.ImageField(upload_to='get_upload_thumbnail_dir', editable=False, null=True, max_length=255)
+    thumbnail = models.ImageField(upload_to=get_upload_thumbnail_dir, editable=False, null=True, max_length=255)
     
     # Project and keyword associations
     projects = models.ManyToManyField('Project', blank=True)
@@ -42,12 +48,24 @@ class Artifact(models.Model):
     def get_upload_dir(self, filename):
         raise NotImplementedError("This method should be overridden in a child class")
     
-    def get_thumbnail_dir(self, filename):
+    def get_upload_thumbnail_dir(self, filename):
         raise NotImplementedError("This method should be overridden in a child class")
     
+    def get_first_author_last_name(self):
+        """
+        Returns the last name of the first author of the artifact.
+        
+        If the artifact has an ID and at least one author, it returns the last name of the first author.
+        Otherwise, it returns "Unknown".
+        """
+        if self.id and self.authors.exists(): 
+            return self.authors.first().last_name
+        else:
+            return "Unknown"
+
     def __str__(self):
-        if self.id and self.authors.exists():
-            return "{}, '{}', {} {}".format(self.get_person().get_full_name(), self.title, self.forum_name, self.date)
+        if self.id and self.authors.exists():          
+            return "{}, '{}', {} {}".format(self.get_first_author_last_name(), self.title, self.forum_name, self.date)
         else:
             return f"Unknown, '{self.title}', {self.forum_name}, {self.date}"
     
@@ -77,24 +95,27 @@ class Artifact(models.Model):
                 # context of deleting a model instance (which is what’s happening here), we don’t want to save the model 
                 # after deleting the file, because the model itself is being deleted. And super().delete(*args, **kwargs)
                 # will handle this for us
+                pdf_file_full_path = self.pdf_file.path
                 self.pdf_file.delete(False)
-                _logger.debug(f"Deleted pdf_file={self.pdf_file} off filesystem")
+                _logger.debug(f"Deleted {pdf_file_full_path} off filesystem")
             else:
                 _logger.debug(f"Could not delete pdf_file={self.pdf_file} as it does not exist on filesystem")
         
         _logger.debug(f"Attempting to delete raw_file={self.raw_file} off filesystem")
         if self.raw_file:
+            raw_file_full_path = self.raw_file.path
             if self.raw_file.storage.exists(self.raw_file.name):
                 self.raw_file.delete(False)
-                _logger.debug(f"Deleted raw_file={self.raw_file} off filesystem")
+                _logger.debug(f"Deleted {raw_file_full_path} off filesystem")
             else:
                 _logger.debug(f"Could not delete raw_file={self.raw_file} as it does not exist on filesystem")
 
         _logger.debug(f"Attempting to delete thumbnail={self.thumbnail} off filesystem")
         if self.thumbnail:
+            thumbnail_full_path = self.thumbnail.path
             if self.thumbnail.storage.exists(self.thumbnail.name):
                 self.thumbnail.delete(False)
-                _logger.debug(f"Deleted thumbnail={self.thumbnail} off filesystem")
+                _logger.debug(f"Deleted {thumbnail_full_path} off filesystem")
             else:
                 _logger.debug(f"Could not delete thumbnail={self.thumbnail} as it does not exist on filesystem")
 
@@ -220,14 +241,15 @@ class Artifact(models.Model):
             pdf_filename = os.path.basename(self.pdf_file.name)
             pdf_filename_no_ext, ext = os.path.splitext(pdf_filename)
             thumbnail_filename = os.path.basename(pdf_filename_no_ext) + ".jpg" 
-            thumbnail_filename_with_local_path = os.path.join(self.thumbnail.field.upload_to, thumbnail_filename)
+            thumbnail_filename_with_local_path = self.get_upload_thumbnail_dir(thumbnail_filename)
             thumbnail_exists_in_storage = self.thumbnail.storage.exists(thumbnail_filename_with_local_path)
             if not self.thumbnail or not thumbnail_exists_in_storage:
                 _logger.debug(f"The thumbnail for artifact.id={self.id} does not exist at {thumbnail_filename_with_local_path}, generating...")
                 
                 # generate a thumbnail
                 if self.pdf_file.storage.exists(self.pdf_file.name):
-                    ml_fileutils.generate_thumbnail_for_pdf(self.pdf_file, self.thumbnail)
+                    thumbnail_local_path = os.path.dirname(thumbnail_filename_with_local_path)
+                    ml_fileutils.generate_thumbnail_for_pdf(self.pdf_file, self.thumbnail, thumbnail_local_path)
                 else:
                     _logger.debug(f"Could not generate a thumbnail because the pdf {self.pdf_file.path} was not found in storage")
             elif thumbnail_exists_in_storage:

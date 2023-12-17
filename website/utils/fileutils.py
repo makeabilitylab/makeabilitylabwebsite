@@ -183,7 +183,7 @@ def rename_artifact_in_db_and_filesystem(model, file_field, new_filename, update
         _logger.error(f"Thus, we did not rename the file or call model.save()")
         return None
     
-def generate_thumbnail_for_pdf(pdf_file, thumbnail):
+def generate_thumbnail_for_pdf(pdf_file_field, thumbnail_image_field, thumbnail_local_path):
     """ 
     Generates a thumbnail for a given PDF file.
 
@@ -196,31 +196,33 @@ def generate_thumbnail_for_pdf(pdf_file, thumbnail):
     """
 
     # Check if the file is a PDF
-    if not pdf_file.name.endswith('.pdf'):
+    if not pdf_file_field.name.endswith('.pdf'):
         raise ValueError("The provided file is not a PDF.")
     
+    _logger.debug(f"Generating thumbnail for PDF file {pdf_file_field.name} and thumbnail local path {thumbnail_local_path}")
+    
     # Get the thumbnail dir
-    thumbnail_dir = os.path.join(settings.MEDIA_ROOT, thumbnail.field.upload_to)
+    thumbnail_full_path = os.path.join(settings.MEDIA_ROOT, thumbnail_local_path)
 
     # make sure this dir exists
-    if not os.path.exists(thumbnail_dir):
-        os.makedirs(thumbnail_dir)
+    if not os.path.exists(thumbnail_full_path):
+        os.makedirs(thumbnail_full_path)
 
-    pdf_filename = os.path.basename(pdf_file.path)
+    pdf_filename = os.path.basename(pdf_file_field.path)
     pdf_filename_no_ext = os.path.splitext(pdf_filename)[0]
     thumbnail_filename = "{}.{}".format(pdf_filename_no_ext, "jpg");
-    thumbnail_filename_with_path = os.path.join(thumbnail_dir, thumbnail_filename)
-    thumbnail_filename_with_path = ensure_filename_is_unique(thumbnail_filename_with_path)
+    thumbnail_filename_with_full_path = os.path.join(thumbnail_full_path, thumbnail_filename)
+    thumbnail_filename_with_full_path = ensure_filename_is_unique(thumbnail_filename_with_full_path)
 
-    with Image(filename="{}[0]".format(pdf_file.path), resolution=300) as img:
+    with Image(filename="{}[0]".format(pdf_file_field.path), resolution=300) as img:
         img.format = 'jpeg'
         img.background_color = Color('white')
         img.alpha_channel = 'remove'
-        img.save(filename=thumbnail_filename_with_path)
+        img.save(filename=thumbnail_filename_with_full_path)
 
-    relative_thumbnail_path = os.path.join(thumbnail.field.upload_to, thumbnail_filename)
-    thumbnail.name = relative_thumbnail_path
+    thumbnail_filename_with_local_path = os.path.join(thumbnail_local_path, thumbnail_filename)
+    thumbnail_image_field.name = thumbnail_filename_with_local_path
 
-    return thumbnail_filename_with_path
+    return thumbnail_filename_with_full_path
     
    

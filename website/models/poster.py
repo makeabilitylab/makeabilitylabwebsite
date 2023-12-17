@@ -8,5 +8,5 @@ class Poster(Artifact):
     def get_upload_dir(self, filename):
         return os.path.join(self.UPLOAD_DIR, filename)
 
-    def get_thumbnail_dir(self, filename):
+    def get_upload_thumbnail_dir(self, filename):
         return os.path.join(self.THUMBNAIL_DIR, filename)

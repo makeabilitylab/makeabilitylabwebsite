@@ -123,17 +123,17 @@ def talk_post_save(sender, **kwargs):
 # built-in signal dispatch functionality. We use this function to do some
 # post-processong on the uploaded Talk data like auto-generating a thumbnail
 # For more info on Django signal dispatch, see: https://docs.djangoproject.com/en/1.9/topics/signals/
-@receiver(post_save, sender=Poster)
-def poster_post_save(sender, **kwargs):
-    # See: http://www.yaconiello.com/blog/auto-generating-pdf-covers/
-    # http://stackoverflow.com/questions/1308386/programmatically-saving-image-to-django-imagefield
+# @receiver(post_save, sender=Poster)
+# def poster_post_save(sender, **kwargs):
+#     # See: http://www.yaconiello.com/blog/auto-generating-pdf-covers/
+#     # http://stackoverflow.com/questions/1308386/programmatically-saving-image-to-django-imagefield
 
-    # get the talk that was just saved and auto-generate a thumbnail
-    poster = kwargs['instance']
-    if poster.pdf_file:
-        _logger.debug("Poster '{}' has just been saved with PDF={}, checking to see if we should auto-generate a thumbnail".format(poster.title, poster.pdf_file.path))
-        thumbnail_res = 300
-        generate_and_save_thumbnail_from_pdf(poster, thumbnail_res)
+#     # get the talk that was just saved and auto-generate a thumbnail
+#     poster = kwargs['instance']
+#     if poster.pdf_file:
+#         _logger.debug("Poster '{}' has just been saved with PDF={}, checking to see if we should auto-generate a thumbnail".format(poster.title, poster.pdf_file.path))
+#         thumbnail_res = 300
+#         generate_and_save_thumbnail_from_pdf(poster, thumbnail_res)
 
 # Assumes that artifact is a models.Model type and has the following fields:
 #  an ImageField called thumbnail
