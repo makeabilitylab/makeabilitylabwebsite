@@ -2,6 +2,18 @@ import os
 from website.models import Artifact
 from django.db import models
 
+# Django’s built-in Choices class: Django 3.0 introduced a Choices class with two subclasses: 
+# IntegerChoices and TextChoices. These extend Python’s Enum types with extra constraints 
+# and functionality to make them suitable for Field.choices1. 
+class TalkType(models.TextChoices):
+    INVITED_TALK = "Invited Talk"
+    CONFERENCE_TALK = "Conference Talk"
+    MS_DEFENSE = "MS Defense"
+    PHD_DEFENSE = "PhD Defense"
+    GUEST_LECTURE = "Guest Lecture"
+    QUALS_TALK = "Quals Talk"
+    KEYNOTE_TALK = "Keynote Talk"
+
 class Talk(Artifact):
     UPLOAD_DIR = 'talks/'
     THUMBNAIL_DIR = os.path.join(UPLOAD_DIR, 'images/')
@@ -13,25 +25,7 @@ class Talk(Artifact):
     video = models.ForeignKey('Video', blank=True, null=True, on_delete=models.DO_NOTHING)
     video.help_text = "If there is a video recording of the talk, add it here."
 
-    INVITED_TALK = "Invited Talk"
-    CONFERENCE_TALK = "Conference Talk"
-    MS_DEFENSE = "MS Defense"
-    PHD_DEFENSE = "PhD Defense"
-    GUEST_LECTURE = "Guest Lecture"
-    QUALS_TALK = "Quals Talk"
-    KEYNOTE_TALK = "Keynote Talk"
-
-    TALK_TYPE_CHOICES = (
-        (INVITED_TALK, INVITED_TALK),
-        (CONFERENCE_TALK, CONFERENCE_TALK),
-        (MS_DEFENSE, MS_DEFENSE),
-        (PHD_DEFENSE, PHD_DEFENSE),
-        (GUEST_LECTURE, GUEST_LECTURE),
-        (QUALS_TALK, QUALS_TALK),
-        (KEYNOTE_TALK, KEYNOTE_TALK),
-    )
-
-    talk_type = models.CharField(max_length=50, choices=TALK_TYPE_CHOICES, null=True)
+    talk_type = models.CharField(max_length=50, choices=TalkType.choices, null=True)
     talk_type.help_text = "If this is a conference talk (e.g., for CHI, ASSETS, UIST, IMWUT), please select 'Conference Talk'"
 
     def get_upload_dir(self, filename):
