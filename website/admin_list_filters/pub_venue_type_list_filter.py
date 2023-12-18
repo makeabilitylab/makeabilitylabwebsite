@@ -1,5 +1,6 @@
 from django.contrib import admin
 from website.models import Publication
+from website.models.publication import PubType
 
 class PubVenueTypeListFilter(admin.SimpleListFilter):
     """
@@ -26,7 +27,7 @@ class PubVenueTypeListFilter(admin.SimpleListFilter):
         human-readable name for the option that will appear
         in the right sidebar.
         """
-        return Publication.PUB_VENUE_TYPE_CHOICES
+        return PubType.choices
 
     def queryset(self, request, queryset):
         """

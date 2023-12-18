@@ -1,4 +1,5 @@
 from django.contrib import admin
+from .artifact_admin import ArtifactAdmin
 from . import banner_admin, news_admin, person_admin, photo_admin, poster_admin,\
     project_admin, project_umbrella_admin, publication_admin, talk_admin, video_admin, keyword_admin
 from website.models import Keyword, Sponsor

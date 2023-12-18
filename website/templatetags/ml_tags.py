@@ -6,7 +6,12 @@ import re
 
 from django.template.defaulttags import register
 
-from website.models import Publication
+from website.models import Artifact
+
+import logging
+
+# This retrieves a Python logging instance (or creates it)
+_logger = logging.getLogger(__name__)
 
 register = template.Library()
 
@@ -32,7 +37,10 @@ def var_exists(context, var_name):
 # We use this to generate citation filenames dynamically when downloading citations like .bib
 @register.simple_tag
 def get_pub_filename(pub, file_extension, max_pub_title_length):
-    return Publication.generate_file_name(pub, file_extension, max_pub_title_length)
+    _logger.debug(f"Started get_pub_filename: pub={pub}, file_extension={file_extension}, max_pub_title_length={max_pub_title_length}")
+    generated_file_name = Artifact.generate_filename(pub, file_extension, max_pub_title_length)
+    _logger.debug(f"The generated_file_name={generated_file_name}")
+    return generated_file_name
 
 # From https://stackoverflow.com/questions/8000022/django-template-how-to-look-up-a-dictionary-value-with-a-variable
 @register.filter

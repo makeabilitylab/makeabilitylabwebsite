@@ -5,20 +5,21 @@ from website.admin_list_filters import PubVenueTypeListFilter, PubVenueListFilte
 
 from sortedm2m.fields import SortedManyToManyField
 from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
+from website.admin import ArtifactAdmin
 
 @admin.register(Publication)
-class PublicationAdmin(admin.ModelAdmin):
+class PublicationAdmin(ArtifactAdmin):
     fieldsets = [
         (None,                      {'fields': ['title', 'authors', 'date']}),
         ('Files',                   {'fields': ['pdf_file']}),
-        ('Pub Venue information',   {'fields': ['pub_venue_url','pub_venue_type', 'book_title', 'book_title_short', 'geo_location', 'total_papers_submitted', 'total_papers_accepted']}),
+        ('Pub Venue information',   {'fields': ['forum_url','pub_venue_type', 'book_title', 'forum_name', 'location', 'total_papers_submitted', 'total_papers_accepted']}),
         ('Archival Info',           {'fields': ['official_url', 'extended_abstract', 'peer_reviewed', 'award' ]}),
         ('Page Info',               {'fields': ['num_pages', 'page_num_start', 'page_num_end']}),
         ('Supplementary Artifacts', {'fields': ['poster', 'video', 'talk', 'code_repo_url']}),
         ('Project Info',            {'fields': ['projects', 'project_umbrellas']}),
         ('Keyword Info',            {'fields': ['keywords']}),
     ]
-    list_display = ('title', 'book_title_short', 'date')
+    list_display = ('title', 'forum_name', 'date')
 
     # default the sort order in table to descending order by date
     ordering = ('-date',)
@@ -55,7 +56,7 @@ class PublicationAdmin(admin.ModelAdmin):
         text_min_width = 750
         form.base_fields['title'].widget.attrs['style'] = f'min-width: {text_min_width}px;'
         form.base_fields['book_title'].widget.attrs['style'] = f'min-width: {text_min_width}px;'
-        form.base_fields['book_title_short'].widget.attrs['style'] = f'min-width: 500px;'
+        form.base_fields['forum_name'].widget.attrs['style'] = f'min-width: 500px;'
 
         select_min_width = 600
         select_max_width = 800
@@ -74,14 +75,3 @@ class PublicationAdmin(admin.ModelAdmin):
 
         # If the db_field is not one of those fields, we’re just calling the parent class’s formfield_for_foreignkey method.
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-    def formfield_for_manytomany(self, db_field, request=None, **kwargs):
-        if db_field.name == "authors":
-           kwargs['widget'] = SortedFilteredSelectMultiple()
-        if db_field.name == "projects":
-            kwargs["widget"] = widgets.FilteredSelectMultiple("projects", is_stacked=False)
-        elif db_field.name == "project_umbrellas":
-            kwargs["widget"] = widgets.FilteredSelectMultiple("project umbrellas", is_stacked=False)
-        elif db_field.name == "keywords":
-            kwargs["widget"] = widgets.FilteredSelectMultiple("keywords", is_stacked=False)
-        return super(PublicationAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)

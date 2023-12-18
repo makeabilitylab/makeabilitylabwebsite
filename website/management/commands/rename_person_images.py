@@ -51,7 +51,6 @@ class Command(BaseCommand):
                             new_filename_without_ext = os.path.splitext(os.path.basename(new_filename_with_full_path))[0]
                             new_filename_with_full_path = os.path.join(old_full_path, new_filename_without_ext + uuid4().hex + file_ext)
 
-
                         os.rename(old_filename_with_full_path, new_filename_with_full_path)
                         
                         # You cannot directly set the path attribute of an ImageField, so we set the name attribute instead
@@ -123,6 +122,7 @@ class Command(BaseCommand):
 
 
     def get_map_basename_to_full_path(self, files):
+        """Returns a dictionary that maps the filename without a path to the filename with the full path"""
         map_filename_to_full_path = dict()
         for file_with_path in files:
             filename = os.path.basename(file_with_path)

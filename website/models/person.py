@@ -50,6 +50,7 @@ def get_unique_filename_for_person(person, original_filename, append_str=None, f
     new_filename_without_ext = new_filename_without_ext.translate(str.maketrans('', '', string.punctuation)) # remove punctuation from filename
     new_filename_without_ext = new_filename_without_ext.replace(" ", "_") # replace spaces with underscores
 
+    # Check if the append str should be added
     if append_str is not None:
         new_filename_without_ext += append_str
 
