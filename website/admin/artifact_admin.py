@@ -9,6 +9,22 @@ _logger = logging.getLogger(__name__)
 
 class ArtifactAdmin(admin.ModelAdmin):
 
+    # The list display lets us control what is shown in the default talk table at Home > Website > Talk
+    # See: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_display
+    list_display = ('title', 'date', 'get_first_author_last_name', 'forum_name', 'location')
+
+    # search_fields are used for auto-complete, see:
+    #   https://docs.djangoproject.com/en/3.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields
+    search_fields = ['title', 'forum_name']
+
+    fieldsets = [
+        (None,                      {'fields': ['title', 'authors', 'date']}),
+        ('Files',                   {'fields': ['pdf_file', 'raw_file']}),
+        ('Venue Info',              {'fields': ['forum_name', 'forum_url', 'location']}),
+        ('Project Info',            {'fields': ['projects', 'project_umbrellas']}),
+        ('Keyword Info',            {'fields': ['keywords']}),
+    ]
+
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         """
         Overrides the formfield_for_manytomany method of the parent ModelAdmin class to customize the widgets 
@@ -70,6 +86,7 @@ class ArtifactAdmin(admin.ModelAdmin):
             _logger.debug(f"Looks like we are modifying artifact={obj.id} with changed_fields={changed_fields}")
             obj.save(update_fields=changed_fields)
         else:
+            _logger.debug(f"Looks like we are creating a new artifact, so calling super().save_model()")
             # Call the superclass method, which calls the model.save() as well but
             # doesn't support the update_fields
             super().save_model(request, obj, form, change)

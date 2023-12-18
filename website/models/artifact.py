@@ -62,6 +62,8 @@ class Artifact(models.Model):
             return self.authors.first().last_name
         else:
             return "Unknown"
+    
+    get_first_author_last_name.short_description = 'First Author (Last Name)' # used in the admin display for column header
 
     def __str__(self):
         if self.id and self.authors.exists():          

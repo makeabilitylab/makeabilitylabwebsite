@@ -5,9 +5,10 @@ from website.admin_list_filters import PubVenueTypeListFilter, PubVenueListFilte
 
 from sortedm2m.fields import SortedManyToManyField
 from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
+from website.admin import ArtifactAdmin
 
 @admin.register(Publication)
-class PublicationAdmin(admin.ModelAdmin):
+class PublicationAdmin(ArtifactAdmin):
     fieldsets = [
         (None,                      {'fields': ['title', 'authors', 'date']}),
         ('Files',                   {'fields': ['pdf_file']}),
@@ -74,14 +75,3 @@ class PublicationAdmin(admin.ModelAdmin):
 
         # If the db_field is not one of those fields, we’re just calling the parent class’s formfield_for_foreignkey method.
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-    def formfield_for_manytomany(self, db_field, request=None, **kwargs):
-        if db_field.name == "authors":
-           kwargs['widget'] = SortedFilteredSelectMultiple()
-        if db_field.name == "projects":
-            kwargs["widget"] = widgets.FilteredSelectMultiple("projects", is_stacked=False)
-        elif db_field.name == "project_umbrellas":
-            kwargs["widget"] = widgets.FilteredSelectMultiple("project umbrellas", is_stacked=False)
-        elif db_field.name == "keywords":
-            kwargs["widget"] = widgets.FilteredSelectMultiple("keywords", is_stacked=False)
-        return super(PublicationAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
