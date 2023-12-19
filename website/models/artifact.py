@@ -14,6 +14,10 @@ def get_upload_thumbnail_dir(instance, filename):
     return instance.get_thumbnail_dir(filename)
 
 class Artifact(models.Model):
+    """
+    If you want to add a new artifact type, you should create a new model that inherits from this class.
+    You must then also create a new Admin class that derives from ArtifactAdmin(admin.ModelAdmin):
+    """
     title = models.CharField(max_length=255, blank=True, null=True)
     authors = SortedManyToManyField('Person', blank=True)
     date = models.DateField(null=True)
