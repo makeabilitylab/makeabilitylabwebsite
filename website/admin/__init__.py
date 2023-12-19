@@ -1,7 +1,8 @@
 from django.contrib import admin
 from .artifact_admin import ArtifactAdmin
 from . import banner_admin, news_admin, person_admin, photo_admin, poster_admin,\
-    project_admin, project_umbrella_admin, publication_admin, talk_admin, video_admin, keyword_admin
+    project_admin, project_umbrella_admin, publication_admin, talk_admin, video_admin,\
+        keyword_admin, grant_admin
 from website.models import Keyword, Sponsor
 import django # so we can print out the Django version in the admin interface
 from django.conf import settings # so we can print out the Makeability Lab website version in the admin interface
