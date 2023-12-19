@@ -92,29 +92,31 @@ def get_filename_for_artifact(last_name, title, forum_name, date, ext, suffix=No
 def get_filename_without_ext_for_artifact(last_name, title, forum_name, date, suffix=None, max_pub_title_length=-1):
     """Generates a filename from the provided content"""
 
-    if last_name is None:
+    if not last_name:
         last_name = "None"
 
     last_name = last_name.replace(" ", "")
     year = date.year
-    title = ''.join(x for x in title.title() if not x.isspace())
-    title = ''.join(e for e in title if e.isalnum())
+
+    # Ensures that the title is converted to title case and all spaces are removed.
+    title = ''.join(x for x in title.title() if x.isalnum() or not x.isspace())
 
     # Only get the first N characters of the string if max_pub_title_length set
     if max_pub_title_length > 0 and max_pub_title_length < len(title):
         title = title[0:max_pub_title_length]
 
-    forum_name = forum_name.replace(" ", "")
+    if forum_name:
+        forum_name = forum_name.replace(" ", "")
 
     # Convert metadata into a filename
-    new_filename_no_ext = last_name + '_' + title + '_'
+    new_filename_no_ext = f"{last_name}_{title}_"
 
     # Add the suffix
     if suffix is not None:
         new_filename_no_ext += suffix + '_'
     
     # Add the rest of the metadata
-    new_filename_no_ext += forum_name + str(year)
+    new_filename_no_ext += f"{forum_name}{year}"
 
     return get_valid_filename(new_filename_no_ext)
     

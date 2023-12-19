@@ -126,22 +126,24 @@ class Publication(Artifact):
         """Returns a human readable citation as html"""
         citation = ", ".join([author.get_citation_name(full_name=False) for author in self.authors.all()]) + " "
 
-        citation += "({}). ".format(self.date.year)
+        citation += f"({self.date.year}). "
         citation += self.title + ". "
-        citation += "<i>{}</i>. ".format(self.forum_name)
+        citation += f"<i>{self.forum_name}</i>. "
 
         if self.official_url:
-            citation += "<a href={}>{}</a>".format(self.official_url, self.official_url)
+            citation += f"<a href={self.official_url}>{self.official_url}</a>"
 
         return citation
 
     def get_bibtex_id(self):
         """Generates and returns the bibtex id for this paper"""
-        bibtex_id = self.get_person().last_name
+        bibtex_id = self.get_first_author_last_name()
 
-        forum = self.forum_name.lower()
-        if "proceedings of" in forum:
-            forum = forum.replace('proceedings of', '')
+        forum = "unknown"
+        if self.forum_name:
+            forum = self.forum_name.lower()
+            if "proceedings of" in forum:
+                forum = forum.replace('proceedings of', '')
 
         forum = forum.upper().replace(" ", "")
         if not forum[-1].isdigit():
@@ -184,19 +186,9 @@ class Publication(Artifact):
 
         # start author block
         bibtex += " author={"
-
-        author_idx = 0
-        num_authors = self.authors.count()
-        for author in self.authors.all():
-            citation_name = author.get_citation_name(full_name=True)
-            bibtex += citation_name
-
-            if (author_idx + 1) < num_authors:
-                bibtex += " and "
-
-            author_idx += 1
+        citation_names = [author.get_citation_name(full_name=True) for author in self.authors.all()]
+        bibtex += ' and '.join(citation_names)
         bibtex += "}," + newline
-        # end author block
 
         bibtex += " title={{{}}},{}".format(self.title, newline)
         bibtex += " booktitle={{{}}},{}".format(self.book_title, newline)
