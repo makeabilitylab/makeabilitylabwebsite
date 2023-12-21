@@ -41,4 +41,6 @@ class GrantAdmin(ArtifactAdmin):
         form.base_fields['pdf_file'].label = 'Grant PDF'
         form.base_fields['raw_file'].help_text = 'The raw file (e.g., Word Docx, Overleaf Zip, etc.) for <b>archival</b> purposes. This is not shown on the website.'
 
+        form.base_fields['funding_amount'].widget.attrs['style'] = f'min-width: 300px;'
+
         return form

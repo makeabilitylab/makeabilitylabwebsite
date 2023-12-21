@@ -51,12 +51,14 @@ class Grant(Artifact):
     
     def save(self, *args, **kwargs):
         if self.forum_name is None:
-            _logger.warning(f"Grant {self.title} has no forum_name, setting to sponsor")
+            _logger.debug(f"Grant {self.title} has no forum_name, setting to sponsor")
 
             if self.sponsor.short_name is not None:
                 self.forum_name = self.sponsor.short_name
             elif self.sponsor.name is not None:
                 self.forum_name = self.sponsor.name
+
+            _logger.debug(f"Grant {instance.title} now has forum_name {instance.forum_name}.")
 
         super(Grant, self).save(*args, **kwargs)
     
@@ -65,9 +67,11 @@ def check_sponsor_change(sender, instance, **kwargs):
     if instance.id is not None:  # this is not a new object
         old_grant = Grant.objects.get(id=instance.id)
         if old_grant.sponsor != instance.sponsor:
-            _logger.warning(f"Grant {instance.title} changed sponsor from {old_grant.sponsor} to {instance.sponsor}.")
+            _logger.debug(f"Grant {instance.title} changed sponsor from {old_grant.sponsor} to {instance.sponsor}.")
 
             if instance.sponsor.short_name is not None:
                 instance.forum_name = instance.sponsor.short_name
             elif instance.sponsor.name is not None:
                 instance.forum_name = instance.sponsor.name
+
+            _logger.debug(f"Grant {instance.title} now has forum_name {instance.forum_name}.")
