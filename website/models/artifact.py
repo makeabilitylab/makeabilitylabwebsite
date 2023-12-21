@@ -16,7 +16,11 @@ def get_upload_thumbnail_dir(instance, filename):
 class Artifact(models.Model):
     """
     If you want to add a new artifact type, you should create a new model that inherits from this class.
-    You must then also create a new Admin class that derives from ArtifactAdmin(admin.ModelAdmin):
+
+    You must then:
+      1. also create a new Admin class that derives from ArtifactAdmin(admin.ModelAdmin):
+      2. also hook up an authors_changed signal in signals.py. For example, add the line "@receiver(m2m_changed, sender=Grant.authors.through)"
+         to signals.py's def authors_changed(sender, instance, action, reverse, **kwargs):
     """
     title = models.CharField(max_length=255, blank=True, null=True)
     authors = SortedManyToManyField('Person', blank=True)
