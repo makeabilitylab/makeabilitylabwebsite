@@ -94,10 +94,10 @@ class Publication(Artifact):
     def is_extended_abstract(self):
         """Returns True if this publication is an extended abstract"""
         return (self.extended_abstract or
-                self.pub_venue_type == self.POSTER or
-                self.pub_venue_type == self.DEMO or
-                self.pub_venue_type == self.WIP or
-                self.pub_venue_type == self.DOCTORAL_CONSORTIUM)
+                self.pub_venue_type == PubType.POSTER or
+                self.pub_venue_type == PubType.DEMO or
+                self.pub_venue_type == PubType.WIP or
+                self.pub_venue_type == PubType.DOCTORAL_CONSORTIUM)
 
     def get_acceptance_rate(self):
         """Returns the acceptance rate as a percentage"""
@@ -108,15 +108,15 @@ class Publication(Artifact):
 
     def is_best_paper(self):
         """Returns true if earned best paper, best artifact, or test of time award"""
-        return self.award == self.BEST_PAPER_AWARD or \
-            self.award == self.BEST_ARTIFACT_AWARD or \
-            self.award == self.TEN_YEAR_IMPACT_AWARD
+        return self.award == PubAwardType.BEST_PAPER_AWARD or \
+            self.award == PubAwardType.BEST_ARTIFACT_AWARD or \
+            self.award == PubAwardType.TEN_YEAR_IMPACT_AWARD
 
     def is_honorable_mention(self):
         """Returns true if earned honorable mention or best paper nomination"""
-        return self.award == self.HONORABLE_MENTION or \
-            self.award == self.BEST_ARTIFACT_RUNNERUP_AWARD or \
-            self.award == self.BEST_PAPER_NOMINATION
+        return self.award == PubAwardType.HONORABLE_MENTION or \
+            self.award == PubAwardType.BEST_ARTIFACT_RUNNERUP_AWARD or \
+            self.award == PubAwardType.BEST_PAPER_NOMINATION
 
     def to_appear(self):
         """Returns true if the publication date happens in the future (e.g., tomorrow or later)"""
