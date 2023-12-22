@@ -1,5 +1,5 @@
 from django.conf import settings # for access to settings variables, see https://docs.djangoproject.com/en/4.0/topics/settings/#using-settings-in-python-code
-from website.models import Banner, Publication, Talk, Video, Project, Person, News
+from website.models import Banner, Publication, Talk, Video, Project, Person, News, Sponsor
 import website.utils.ml_utils as ml_utils 
 from django.shortcuts import render # for render https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
 from django.db.models import OuterRef, Subquery
@@ -47,6 +47,8 @@ def index(request):
                 .annotate(most_recent_publication=Subquery(latest_publication_dates.values('date')[:1]))
                 .order_by('-most_recent_publication', 'id').distinct())[:MAX_NUM_PROJECTS]
 
+    # Get all the sponsors
+    sponsors = Sponsor.objects.all()
 
     context = {'banners': banners,
                'news': news_items,
@@ -54,6 +56,7 @@ def index(request):
                'talks': talks,
                'videos': videos,
                'projects': active_projects,
+               'sponsors': sponsors,
                'debug': settings.DEBUG}
     
     # Render is a Django shortcut (aka helper function). It combines a given template—in this case

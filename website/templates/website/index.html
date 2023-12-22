@@ -8,113 +8,127 @@
 {% load ml_tags %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{% static 'website/css/index.css' %}">
-    <link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
-    <link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}">
-    <link rel="stylesheet" href="{% static 'website/css/project-listing.css' %}"/>
+  <link rel="stylesheet" href="{% static 'website/css/index.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/project-listing.css' %}" />
+  <link rel="stylesheet" href="{% static 'website/css/sponsor-listing.css' %}" />
 {% endblock %}
 
 {% block external_scripts %}
-    <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
-    <script src="{% static 'website/js/citationPopoverSimple.js' %}"></script>
+  <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
+  <script src="{% static 'website/js/citationPopoverSimple.js' %}"></script>
 
-    {# humanize-duration is used to pretty print date ages, see https://github.com/EvanHahn/HumanizeDuration.js #}
-    {# we use it, for example, to pretty print the age of videos #}
-    <script src="{% static 'website/js/humanize-duration.js' %}"></script>
+  {# humanize-duration is used to pretty print date ages, see https://github.com/EvanHahn/HumanizeDuration.js #}
+  {# we use it, for example, to pretty print the age of videos #}
+  <script src="{% static 'website/js/humanize-duration.js' %}"></script>
 {% endblock %}
 
 {% block scripts %}
-    $(document).ready(function() {
-        // find the citation links and set up the popover content and behavior for each
-        var citationLinks = $(".publication-citation-link");
-        for(var i = 0; i < citationLinks.length; i++) {
-            $(citationLinks[i]).citationPopover();
-        }
-    });
-{% endblock %}
+  $(document).ready(function() {
+  // find the citation links and set up the popover content and behavior for each
+  var citationLinks = $(".publication-citation-link");
+  for(var i = 0; i < citationLinks.length; i++) { $(citationLinks[i]).citationPopover(); } }); 
+{% endblock %} 
+  <!-- TODO:
+  The navbar and banner caption should have same left and right margins as the rest of the content on page I think. As
+  now, navbar is narrower -->
+  {% block maincarousel %}
+  {{ block.super }} {# Call the parent block #}
 
-<!-- TODO: The navbar and banner caption should have same left and right margins as the rest of the content on page I think. As now, navbar is narrower -->
-{% block maincarousel %}
-    {{ block.super }} {# Call the parent block #}
-
-    <div class="container-fluid makelab-content-container news-banner-overlay-container" > 
-         <!-- This is a news overlay on the banner -->
-        <div class="container-fluid news-banner-listing">
-                {% for news_item in news %}
-                    <p class="line-clamp news-banner-item">
-                        <a href="{% url 'website:news_item_by_slug' slug=news_item.slug %}">
-                            <span class="news-banner-item-date">{{ news_item.date }}.</span>
-                            {{ news_item.title }}
-                        </a>
-                    </p>
-                {% endfor %}
-        </div>
+  <div class="container-fluid makelab-content-container news-banner-overlay-container">
+    <!-- This is a news overlay on the banner -->
+    <div class="container-fluid news-banner-listing">
+      {% for news_item in news %}
+        <p class="line-clamp news-banner-item">
+          <a href="{% url 'website:news_item_by_slug' slug=news_item.slug %}">
+            <span class="news-banner-item-date">{{ news_item.date }}.</span>
+            {{ news_item.title }}
+          </a>
+        </p>
+      {% endfor %}
     </div>
-
+  </div>
 {% endblock %}
 
 {% block content %}
 
-    <!-- TODO: make it so that first banner is the Intro to Makeability Lab banner, which provides a nice introduction to who we are -->
-    <!-- TODO: add in mouseover effect to projects, talks, other things?
-         See:
-              https://designshack.net/articles/css/joshuajohnson-2/
-              https://www.awwwards.com/websites/portfolio/ & vanschneider.com for demos
-              https://codepen.io/Remedy/pen/ZYJrpp
-              https://stackoverflow.com/questions/15757036/creating-a-zoom-effect-on-an-image-on-hover-using-css
-    -->
-
-    <div id="makelab-recent-projects" class="container-fluid makelab-content-container">
-        <h1 class="section-header" style="margin-top:25px">Recent Projects</h1>
-        <div class="project-grid landing-page-project-grid">
-            {% for project in projects %}
-                {% include "snippets/display_project_snippet.html" %}
-            {% endfor %}    
-        </div>
-        <div class="row justify-content-end">
-            <div class="col-xs-12 see-all-artifacts">
-                <div class="col-xs-12" style="display:none"></div>
-                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 see-all-artifacts pull-right">
-                    <a href="{% url 'website:projects' %}">See All Projects ></a>
-                </div>
-            </div>
-        </div>
+  <div id="makelab-recent-projects" class="container-fluid makelab-content-container">
+    <h1 class="section-header" style="margin-top:25px">Recent Projects</h1>
+    <div class="project-grid landing-page-project-grid">
+      {% for project in projects %}
+      {% include "snippets/display_project_snippet.html" %}
+      {% endfor %}
     </div>
-
-    <div id="makelab-recent-papers" class="container-fluid makelab-content-container">
-        <h1 class="section-header">Recent Papers</h1>
-        <div class="section">
-            {% for pub in publications %}
-                {% include "snippets/display_pub_snippet.html" with orientation="horizontal"%}
-            {% endfor %}
-            <div class="col-xs-12 see-all-artifacts">
-                <a href="{% url 'website:publications' %}">See All Papers ></a>
-            </div>
+    <div class="row justify-content-end">
+      <div class="col-xs-12 see-all-artifacts">
+        <div class="col-xs-12" style="display:none"></div>
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 see-all-artifacts pull-right">
+          <a href="{% url 'website:projects' %}">See All Projects ></a>
         </div>
+      </div>
     </div>
+  </div>
 
-    <div id="makelab-recent-videos" class="container-fluid makelab-content-container">
-        <h1 class="section-header">Recent Videos</h1>
-        <div class="section">
-            {% for video in videos %}
-                {% include "snippets/display_video_snippet.html" %}
-            {% endfor %}
-            <div class="col-xs-12 see-all-artifacts">
-                <a href="{% url 'website:videos' %}">See All Videos ></a>
-            </div>
-        </div>
+  <div id="makelab-recent-papers" class="container-fluid makelab-content-container">
+    <h1 class="section-header">Recent Papers</h1>
+    <div class="section">
+      {% for pub in publications %}
+        {% include "snippets/display_pub_snippet.html" with orientation="horizontal"%}
+      {% endfor %}
+      <div class="col-xs-12 see-all-artifacts">
+        <a href="{% url 'website:publications' %}">See All Papers ></a>
+      </div>
     </div>
+  </div>
 
-    <div id="makelab-recent-talks" class="container-fluid makelab-content-container">
-        <h1 class="section-header">Recent Talks</h1>
-        <div class="section">
-            {% for talk in talks %} 
-                {% include "snippets/display_talk_snippet.html" %}
-            {% endfor %}
-            <div class="col-xs-12 see-all-artifacts">
-                <a href="{% url 'website:talks' %}">See All Talks ></a>
-            </div>
-        </div>
+  <div id="makelab-recent-videos" class="container-fluid makelab-content-container">
+    <h1 class="section-header">Recent Videos</h1>
+    <div class="section">
+      {% for video in videos %}
+        {% include "snippets/display_video_snippet.html" %}
+      {% endfor %}
+      <div class="col-xs-12 see-all-artifacts">
+        <a href="{% url 'website:videos' %}">See All Videos ></a>
+      </div>
     </div>
+  </div>
+
+  <div id="makelab-recent-talks" class="container-fluid makelab-content-container">
+    <h1 class="section-header">Recent Talks</h1>
+    <div class="section">
+      {% for talk in talks %}
+        {% include "snippets/display_talk_snippet.html" %}
+      {% endfor %}
+      <div class="col-xs-12 see-all-artifacts">
+        <a href="{% url 'website:talks' %}">See All Talks ></a>
+      </div>
+    </div>
+  </div>
+
+  <div id="makelab-sponsors" class="container-fluid makelab-content-container">
+    <h1 class="section-header">Sponsors</h1>
+    <div class="sponsor-grid">
+      {% for sponsor in sponsors %}
+        <div class="sponsor-card">
+          <div class="sponsor-logo">
+            <a href="{{sponsor.url}}">
+              <img class="sponsor-img" 
+              {% comment %}
+                  We use easy-thumbnails to create thumbnail image: https://easy-thumbnails.readthedocs.io/en/latest/usage/#templates
+                  The basic syntax is: {% thumbnail [source] [size] [options] %}
+                  For options, see: https://easy-thumbnails.readthedocs.io/en/latest/usage/#thumbnail-options 
+              {% endcomment %}
+              src="{% thumbnail sponsor.icon sponsor.get_thumbnail_size_as_str box=sponsor.icon_cropping crop=True upscale=True %}" 
+              alt="{{sponsor.get_icon_alt_text}}"/>
+            </a>
+          </div>
+          <div class="sponsor-info">
+            {{ sponsor.name }}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
 
 {% endblock %}

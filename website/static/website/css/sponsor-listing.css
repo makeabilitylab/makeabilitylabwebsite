@@ -1,0 +1,21 @@
+.sponsor-grid{
+  display: flex; 
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.sponsor-card {
+  flex: 1 0 200px;
+  max-width: 200px;
+  margin: 10px;
+}
+
+.sponsor-img {
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover;
+}
+
+.sponsor-info{
+  text-align: center;
+}
