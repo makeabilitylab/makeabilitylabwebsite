@@ -23,3 +23,9 @@
 .sponsor-info{
   text-align: center;
 }
+
+.sponsorship-statement{
+  max-width: 600px; 
+  text-align: center;
+  margin: auto;
+}
