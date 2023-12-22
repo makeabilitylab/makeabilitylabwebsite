@@ -110,6 +110,7 @@ class Person(models.Model):
     github = models.URLField(blank=True, null=True)
     twitter = models.URLField(blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
+    bio_datetime_modified = models.DateField(null=True, blank=True)
 
     next_position = models.CharField(max_length=255, blank=True, null=True)
     next_position.help_text = "This is a field to track the next position held by alumni of the lab. This field stores text information about their position and the next field stores a url for that position."
@@ -512,6 +513,14 @@ class Person(models.Model):
         # Finally, clean remaining characters (EX: dashes, periods).
         url_name_cleaned = re.sub('[^a-zA-Z]', '', url_name_cleaned)
         self.url_name = url_name_cleaned
+
+        # Next, automatically set the bio_date_modified field
+        if self.pk is not None: # checks if this is an existing object
+            orig = Person.objects.get(pk=self.pk)
+            if orig.bio != self.bio:
+                self.bio_date_modified = timezone.now().date()
+        else:
+            self.bio_date_modified = timezone.now().date()
 
         # Check if their headshot image is not set. If not, set to random star war image
         if not self.image:

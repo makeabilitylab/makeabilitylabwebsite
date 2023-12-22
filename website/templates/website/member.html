@@ -1,6 +1,6 @@
-{% extends 'website/base.html' %}
+{% extends "website/base.html" %}
 
-{% block pagetitle %}{{ page_title }}{% endblock %}
+{% block pagetitle %}{{news.title}}{% endblock %}
 
 {% load static %}
 {% load thumbnail %}
@@ -8,141 +8,55 @@
 {% load ml_tags %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{% static 'website/css/talks.css' %}">
-    <link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
-    <link rel="stylesheet" href="{% static 'website/css/news.css' %}">
-    <link rel="stylesheet" href="{% static 'website/css/member.css' %}">
-    <link rel="stylesheet" href="{% static 'website/css/project-listing.css' %}">
-{% endblock %}
-
-
-{% block scripts %}
-    $(document).ready(function() {
-        // find the citation links and set up the popover content and behavior for each
-        var citationLinks = $(".publication-citation-link");
-        for(var i = 0; i < citationLinks.length; i++) {
-            $(citationLinks[i]).citationPopover();
-        }
-    });
-{% endblock %}
-
-{% block external_scripts %}
-    <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
-    <script src="{% static 'website/js/citationPopoverSimple.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'website/css/news-item.css' %}">
 {% endblock %}
 
 {% block maincarousel %}
-    <div style="min-height: 40px">&nbsp;
-        {# Uncomment the following if you want to have a carousel on the people page #}
-        {# {% include "snippets/display_short_carousel_snippet.html" %} #}
-    </div>
+	{% comment %} <div style="min-height: 40px">&nbsp; {% endcomment %}
+			{# Uncomment the following if you want to have a carousel on the people page #}
+			{# {% include "snippets/display_short_carousel_snippet.html" %} #}
+	{% comment %} </div> {% endcomment %}
 {% endblock %}
 
 {% block content %}
 
-    <div id="content" class="container content-container" data-spy="scroll">
-        <div id="header" class="container">
-            <div class="row" id="about-header">
-                <div class="col-sm-6 col-md-3 hidden-xs">
-                   
-                    <img src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}"/>
-                    
-                </div>
-                <div class="col-sm-12 col-md-8">
-                    <h3 class="member-title">{{ person.get_full_name }}</h3>
-                    {% with person.get_latest_position as position %}
-                        {% if position %}
-                            <p class="person-title-text">
-                                {{ position.title }}{% if not position.is_high_school %}, {{ position.department }}{% endif %}
-                                <br/>
-                                {{ position.school }}
-                            </p>
-                        {% endif %}
-                    {% endwith %}
-                    <div class="icon-housing">
-                        {% if person.email %}
-                            <a href="mailto:{{ person.email }}">
-                                <img src="{% static 'website/img/email.png' %}" class="header-icon">
-                            </a>
-                        {% endif %}
-                        {% if person.personal_website %}
-                            <a href="{{ person.personal_website }}" target="_blank">
-                                <img src="{% static 'website/img/link.png' %}" class="header-icon">
-                            </a>
-                        {% endif %}
-                        {% if person.github %}
-                            <a href="{{ person.github }}" target="_blank">
-                                <img src="{% static 'website/img/github.png' %}" class="header-icon">
-                            </a>
-                        {% endif %}
-                        {% if person.twitter %}
-                            <a href="{{ person.twitter }}" target="_blank">
-                                <img src="{% static 'website/img/twitter.png' %}" class="header-icon">
-                            </a>
-                        {% endif %}
-                    </div>
-                    <p class="person-bio-text">
-                        {{ person.bio }}
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div id="main-content" class="container">
-            <div class="row">
-                <div class="col-xs-12 col-md-2 col-md-push-10">
-                    {% if news %}
-                        <!-- Create a row for the well which will contain news from our feeds -->
-                        <div class="row">
-                            <h3 class="news-type-label">Recent News</h3>
-                            <div class="well news-well">
-                                {% for news_item in news %}
-                                    {% include "snippets/display_news_blurb_sidebar_snippet.html" %}
-                                {% endfor %}
-                            </div>
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="col-xs-12 col-md-10 col-md-pull-2 landing-content">
-                    <div id="makelab-recent-projects" class="makelab-content-container">
-                        {% if project_roles and projects %}
-                            <div class="row">
-                                <h3 class="news-type-label"><b>Projects</b></h3>
-                                {% for project in projects %}
-                                    {% if project.has_thumbnail and project.has_publication %}
-                                        {% include "snippets/display_project_snippet.html" with project=project %}
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    </div>
+{% comment %}
+Bootstrap requires a containing element to wrap site contents and house our grid system. 
+You may choose one of two containers to use in your projects:
+ - .container for responsive fixed width container
+ - .container-fluid for full width container, spanning the entire width of your viewport. 
+Note that, due to padding and more, neither container is nestable.
+See: https://getbootstrap.com/docs/3.4/css/#overview-container
+{% endcomment %}
+<div class="container makelab-container makelab-person">
+	
+	<div class="row">
+		<div class="col-md-8">
+			<div class="person-image-and-bio">
+				{{person}}
+			</div>
+		</div>
+		
+		<!-- Sidebar for related news -->
+		<div class="col-md-4 news-item-sidebar">
+			{% if news %}
+				<h2 class="news-item-sidebar-header first-subsection">Recent News</h2>
+				<ul class="news-item-sidebar-ul">
+				{% for recent_news_item in news|slice:":4" %}
+					{% include "snippets/display_news_item_sidebar_snippet.html" %}
+				{% endfor %}			
+			{% endif %}
+		</div>
+	</div>
 
-                    <div id="makelab-recent-publications" class="makelab-content-container">
-                        {% if publications %}
-                            <div class="row">
-                                <h3 class="news-type-label"><b>Publications</b></h3>
-                                <div class="col-xs-12 col-md-10">
-                                    {% for pub in publications %}
-                                        {% include "snippets/display_pub_snippet.html" %}
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        {% endif %}
-                    </div>
-
-                    <div id="makelab-recent-talks" class="makelab-content-container">
-                        {% if talks %}
-                            <div class="row">
-                                <h3 class="news-type-label"><b>Talks</b></h3>
-                                <div class="row">
-                                    {% for talk in talks %}
-                                        {% include "snippets/display_talk_snippet.html" %}
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
+  <div id="makelab-recent-projects" class="container-fluid makelab-content-container">
+    <h1 class="section-header" style="margin-top:25px">Recent Projects</h1>
+    <div class="project-grid landing-page-project-grid">
+      {% for project in projects %}
+        {% include "snippets/display_project_snippet.html" %}
+      {% endfor %}
     </div>
+    {% comment %} <div>Load more...</div> {% endcomment %}
+  </div>
+</div>
 {% endblock %}

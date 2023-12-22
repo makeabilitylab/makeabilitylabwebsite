@@ -15,8 +15,8 @@ def member(request, member_id):
     _logger.debug(f"Starting views/member member_id={member_id} at {func_start_time:0.4f}")
 
     news_items_num = 5  # Defines the number of news items that will be selected
-    all_banners = Banner.objects.filter(page=Banner.PEOPLE)
-    displayed_banners = ml_utils.choose_banners(all_banners)
+    # all_banners = Banner.objects.filter(page=Banner.PEOPLE)
+    # displayed_banners = ml_utils.choose_banners(all_banners)
 
     # TODO: what is this set of code for?
     # get_object_or_404 is a Django shortcut that raises Http404 instead of the model’s DoesNotExist exception
@@ -48,7 +48,7 @@ def member(request, member_id):
                'publications': publications,
                'project_roles': project_roles,
                'projects' : projects,
-               'banners': displayed_banners,
+               # 'banners': displayed_banners,
                'debug': settings.DEBUG,
                'navbar_white': True,
                'page_title': person.get_full_name()}
