@@ -8,9 +8,9 @@
   /* Set flex grow factor to 1, flex shrink to 0, and flex basis to 200px.
      So, each card is flexible and can grow to fill the container but won't
      shrink smaller than 200px. */
-  flex: 1 0 200px; 
-  max-width: 200px; /* Card won't exceed 200px */
-  margin: 10px; /* Add a margin of 10px around each card */
+  flex: 1 0 150px; 
+  max-width: 150px; /* Card won't exceed 200px */
+  margin: 15px; /* Add a margin of 10px around each card */
 }
 
 .sponsor-img {
