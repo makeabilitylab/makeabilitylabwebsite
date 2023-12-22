@@ -88,3 +88,5 @@ def news_item(request, slug=None, id=None):
     func_end_time = time.perf_counter()
     _logger.debug(f"Prepared views/news for news.slug={slug} in {func_end_time - func_start_time:0.4f} seconds")
     context['render_time'] = func_end_time - func_start_time
+
+    return render_response
