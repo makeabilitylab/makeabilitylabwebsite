@@ -78,6 +78,10 @@ def get_files_in_directory(dir_path):
     """Returns a list of files in the given directory"""
     return [os.path.join(dir_path, f) for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))]
 
+def get_filename_no_ext(filename):
+    """Returns the *just* filename without the extension (no other path information)"""
+    return os.path.splitext(os.path.basename(filename))[0]
+
 def get_filename_for_artifact(last_name, title, forum_name, date, ext, suffix=None, max_pub_title_length=-1):
     """Generates a filename from the provided content."""
     filename_without_ext = get_filename_without_ext_for_artifact(last_name, title, forum_name, date, suffix, max_pub_title_length)

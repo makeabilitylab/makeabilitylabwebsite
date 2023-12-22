@@ -44,20 +44,16 @@
       <h1>Publications</h1>
       {% for pub_year, pub_list in map_year_to_pub_list.items %}
         <h2 id="{{pub_year}}">{{ pub_year }}</h2>
-                {% for pub in pub_list %}
-                <div class="row" style="margin-left: 5px">
-                    <div class="col-xs-12 col-md-10">
-                    {% include "snippets/display_pub_snippet.html" %}
-                </div>
+        {% for pub in pub_list %}
+          <div class="row" style="margin-left: 5px">
+            <div class="col-xs-12 col-md-10">
+              {% include "snippets/display_pub_snippet.html" with orientation="vertical"%}
             </div>
-                {% endfor %}
-            
+          </div>
         {% endfor %}
-        </div>
-      </div>
+      {% endfor %}
     </div>
   </div>
-  
 
 <script>
     tocbot.init({

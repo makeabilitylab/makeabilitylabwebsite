@@ -56,15 +56,20 @@ def index(request):
                'projects': active_projects,
                'debug': settings.DEBUG}
     
+    # Render is a Django shortcut (aka helper function). It combines a given template—in this case
+    # index.html—with a context dictionary and returns an HttpResponse object with that rendered text.
+    # See: https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render 
+    render_func_start_time = time.perf_counter()
+    render_response = render(request, 'website/index.html', context)
+    render_func_end_time = time.perf_counter()
+    _logger.debug(f"Took {render_func_end_time - render_func_start_time:0.4f} seconds to create render_response")
+
     # People rendering
     func_end_time = time.perf_counter()
     _logger.debug(f"Prepared views/index in {func_end_time - func_start_time:0.4f} seconds")
     context['render_time'] = func_end_time - func_start_time
 
-    # Render is a Django shortcut (aka helper function). It combines a given template—in this case
-    # index.html—with a context dictionary and returns an HttpResponse object with that rendered text.
-    # See: https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
-    return render(request, 'website/index.html', context)
+    return render_response
 
 def get_landing_page_banners(max_num_banners=5):
     # Get favorite banners that should appear on the landing page. Order by recency.

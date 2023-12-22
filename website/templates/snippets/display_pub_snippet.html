@@ -3,7 +3,7 @@
 {% load cropping %}
 {% load ml_tags %}
 
-{% if pub and orientation == "horizontal" %}
+{% if pub and orientation and orientation == "horizontal" %}
     <div class="col-xs-12 col-md-4 pub-column" style="margin-bottom: 20px;">
         <div class="pub-thumbnail" style="float: left; margin-right: 7px;">
             <a href="../../media/{{ pub.pdf_file }}" class="pub-thumbnail-link">
