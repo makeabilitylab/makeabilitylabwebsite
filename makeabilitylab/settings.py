@@ -72,7 +72,7 @@ else:
     ALLOWED_HOSTS = ['*']
 
 # Makeability Lab Global Variables
-ML_WEBSITE_VERSION = "1.7.1 (fixed people page with PubType and PubAwardType)"
+ML_WEBSITE_VERSION = "1.7.2 (fixed publication page rendering slowness)"
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
