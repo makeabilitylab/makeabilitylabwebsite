@@ -22,8 +22,8 @@ urlpatterns = [
     re_path(r'^talks/$', views.talks, name='talks'),
     re_path(r'^videos/$', views.videos, name='videos'),
     re_path(r'^projects/$', views.project_listing, name='projects'),
-    re_path(r'^projects/(?P<project_name>[a-zA-Z ]+)/$', views.project, name='project'),
-    re_path(r'^project/(?P<project_name>[a-zA-Z ]+)/$', views.project, name='project'),
+    re_path(r'^projects/(?P<project_name>[a-zA-Z\- ]+)/$', views.project, name='project'),
+    re_path(r'^project/(?P<project_name>[a-zA-Z\- ]+)/$', views.project, name='project'),
     re_path(r'^news/$', views.news_listing, name='news_listing'),
 
     # First try to match on the news id (for historical compatibility) then match on the slug
@@ -37,7 +37,7 @@ urlpatterns = [
     # and we'll try to go to that project without putting in 'projects' or 'project'
     # For example, http://makeabilitylab.cs.uw.edu/soundwatch will go to
     # http://makeabilitylab.cs.uw.edu/project/soundwatch 
-    re_path(r'(?P<project_name>[a-zA-Z ]+)/$', views.redirect_project, name='project'),
+    re_path(r'(?P<project_name>[a-zA-Z\- ]+)/$', views.redirect_project, name='project'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
