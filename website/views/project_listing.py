@@ -65,3 +65,5 @@ def project_listing(request):
     num_projects = len(active_projects) + len(completed_projects)
     _logger.debug(f"Prepared {num_projects} projects for views/projects in {func_end_time - func_start_time:0.4f} seconds")
     context['render_time'] = func_end_time - func_start_time
+
+    return render_response
