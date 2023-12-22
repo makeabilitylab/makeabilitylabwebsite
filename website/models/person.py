@@ -1,6 +1,7 @@
 from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_save, m2m_changed, post_delete
+from website.models.publication import PubType
 from django.core.files import File
 import website.utils.fileutils as ml_fileutils
 
@@ -151,7 +152,7 @@ class Person(models.Model):
         # query, get() will raise a DoesNotExist exception
         # See: https://docs.djangoproject.com/en/4.2/topics/db/queries/#retrieving-a-single-object-with-get
         # return pubModel.objects.get(pub_venue_type=pubModel.PHD_DISSERTATION, authors=self)
-        dissertation = pubModel.objects.filter(pub_venue_type=pubModel.PHD_DISSERTATION, authors=self)
+        dissertation = pubModel.objects.filter(pub_venue_type=PubType.PHD_DISSERTATION, authors=self)
         if dissertation.exists():
             return dissertation[0]
 

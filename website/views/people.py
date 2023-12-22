@@ -1,5 +1,6 @@
 from django.conf import settings # for access to settings variables, see https://docs.djangoproject.com/en/4.0/topics/settings/#using-settings-in-python-code
 from website.models import Banner, Position, Person, Publication
+from website.models.publication import PubType
 import website.utils.ml_utils as ml_utils 
 import operator
 from django.shortcuts import render # for render https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
@@ -54,7 +55,7 @@ def people(request):
         current_member_position_ids.append(current_member_position.pk)
     
     # Get PHD students with dissertations
-    dissertations = Publication.objects.filter(pub_venue_type=Publication.PHD_DISSERTATION).order_by('-date')
+    dissertations = Publication.objects.filter(pub_venue_type=PubType.PHD_DISSERTATION).order_by('-date')
     list_of_graduated_phd_students = []
     for dissertation in dissertations:
         grad_student = dissertation.get_person()
