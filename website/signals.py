@@ -1,6 +1,6 @@
 from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
-from website.models import Talk, Publication, Poster, Artifact
+from website.models import Artifact, Talk, Publication, Poster, Grant
 from wand.image import Image, Color
 from django.conf import settings
 import os
@@ -25,6 +25,7 @@ _logger = logging.getLogger(__name__)
 # See : https://docs.djangoproject.com/en/1.9/topics/signals/#receiver-functions
 #
 
+@receiver(m2m_changed, sender=Grant.authors.through)
 @receiver(m2m_changed, sender=Poster.authors.through)
 @receiver(m2m_changed, sender=Talk.authors.through)
 @receiver(m2m_changed, sender=Publication.authors.through)

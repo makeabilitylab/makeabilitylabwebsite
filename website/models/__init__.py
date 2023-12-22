@@ -14,3 +14,4 @@ from .publication import Publication
 from .sponsor import Sponsor
 from .talk import Talk
 from .video import Video
+from .grant import Grant
