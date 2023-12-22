@@ -74,7 +74,7 @@
     <h1 class="section-header">Recent Papers</h1>
     <div class="section">
       {% for pub in publications %}
-        {% include "snippets/display_pub_snippet.html" with orientation="horizontal"%}
+        {% include "snippets/display_pub_snippet.html" with orientation="horizontal" %}
       {% endfor %}
       <div class="col-xs-12 see-all-artifacts">
         <a href="{% url 'website:publications' %}">See All Papers ></a>

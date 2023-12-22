@@ -165,7 +165,7 @@
 		<h3 class="news-type-label">Publications</h3>
 		{% endif %}
 		{% for pub in publications %}
-            {% include "snippets/display_pub_snippet.html" %}
+            {% include "snippets/display_pub_snippet.html" with orientation="vertical"%}
 		{% endfor %}
 	    </div>
 	</div>

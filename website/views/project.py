@@ -56,7 +56,7 @@ def project(request, project_name):
         elif project_role.has_completed_role():
             project_roles_past.append(project_role)
 
-    _logger.warn("project_roles_past: ", project_roles_past)
+    _logger.debug(f"project_roles_past: {project_roles_past}")
     project_roles_past = [] # sorted(project_roles_past, key=attrgetter('end_date'), reverse=True)
 
     map_status_to_title_to_project_role = dict()
