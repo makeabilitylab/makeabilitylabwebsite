@@ -16,7 +16,7 @@
 .sponsor-img {
   width: 100%; 
   height: 100%; 
-  object-fit: cover; /* image cover the entire content box of its parent element, while maintaining its aspect ratio
+  object-fit: cover; /* image cover the entire content box of its parent element, while maintaining its aspect ratio */
 }
 
 .sponsor-info{
