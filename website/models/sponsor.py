@@ -40,4 +40,4 @@ class Sponsor(models.Model):
         if not self.alt_text:
             return "This is the icon for the sponsor " + self.name
         else:
-            return self.thumbnail_alt_text
+            return self.alt_text

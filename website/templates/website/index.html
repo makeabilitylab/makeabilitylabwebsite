@@ -112,16 +112,18 @@
       {% for sponsor in sponsors %}
         <div class="sponsor-card">
           <div class="sponsor-logo">
-            <a href="{{sponsor.url}}">
-              <img class="sponsor-img" 
-              {% comment %}
-                  We use easy-thumbnails to create thumbnail image: https://easy-thumbnails.readthedocs.io/en/latest/usage/#templates
-                  The basic syntax is: {% thumbnail [source] [size] [options] %}
-                  For options, see: https://easy-thumbnails.readthedocs.io/en/latest/usage/#thumbnail-options 
-              {% endcomment %}
-              src="{% thumbnail sponsor.icon sponsor.get_thumbnail_size_as_str box=sponsor.icon_cropping crop=True upscale=True %}" 
-              alt="{{sponsor.get_icon_alt_text}}"/>
-            </a>
+            {% if sponsor.icon %}
+              <a href="{{sponsor.url}}">
+                <img class="sponsor-img" 
+                {% comment %}
+                    We use easy-thumbnails to create thumbnail image: https://easy-thumbnails.readthedocs.io/en/latest/usage/#templates
+                    The basic syntax is: {% thumbnail [source] [size] [options] %}
+                    For options, see: https://easy-thumbnails.readthedocs.io/en/latest/usage/#thumbnail-options 
+                {% endcomment %}
+                src="{% thumbnail sponsor.icon sponsor.get_thumbnail_size_as_str box=sponsor.icon_cropping crop=True upscale=True %}" 
+                alt="{{sponsor.get_icon_alt_text}}"/>
+              </a>
+            {% endif %}
           </div>
           <div class="sponsor-info">
             {{ sponsor.name }}
