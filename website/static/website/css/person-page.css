@@ -1,0 +1,26 @@
+.person-image-and-bio-container {
+  display: flex;
+  /* align-items: center; */
+  align-items: flex-start;
+}
+
+.person-name-header{
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.person-image {
+  flex: 1;
+  text-align: center;
+}
+
+.person-image img{
+  border-radius:50%;
+  width: 200px;
+  height: 200px;
+}
+
+.person-bio{
+  flex: 2;
+  /* margin-left: 5px; */
+}

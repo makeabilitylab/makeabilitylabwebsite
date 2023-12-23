@@ -1,5 +1,5 @@
 from django.conf import settings # for access to settings variables, see https://docs.djangoproject.com/en/4.0/topics/settings/#using-settings-in-python-code
-from website.models import Banner, Person
+from website.models import Banner, Person, News
 import website.utils.ml_utils as ml_utils 
 from django.shortcuts import render, get_object_or_404
 
@@ -18,16 +18,22 @@ def member(request, member_id):
     # all_banners = Banner.objects.filter(page=Banner.PEOPLE)
     # displayed_banners = ml_utils.choose_banners(all_banners)
 
-    # TODO: what is this set of code for?
-    # get_object_or_404 is a Django shortcut that raises Http404 instead of the model’s DoesNotExist exception
-    # https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#get-object-or-404
+    # This code block gets a person object either from the member id or the url_name.
+    # If the member_id is a digit, it's assumed to be the primary key (pk) of the Person object
+    # The get_object_or_404 function is then used to retrieve the Person object with this pk. 
+    # If no such Person object exists, the function will raise a 404 error.
+    # If the member_id is not a digit, it's assumed to be the url-friendly name (url_name).
     if (member_id.isdigit()):
         person = get_object_or_404(Person, pk=member_id)
     else:
         person = get_object_or_404(Person, url_name__iexact=member_id)
 
-    # Get objects relevant to this person
-    news = person.authored_news.all().order_by('-date')[:news_items_num]
+    # Returns QuerySet of News objects that mention the specified person. 
+    # The order_by('-date') part sorts the QuerySet by date in descending order 
+    # (so the most recent news comes first), and [:4] limits the QuerySet to 
+    # the first 4 objects.
+    news = News.objects.filter(people=person).order_by('-date')[:4]
+    latest_position = person.get_latest_position
     publications = person.publication_set.order_by('-date')
     talks = person.talk_set.order_by('-date')
     project_roles = person.projectrole_set.order_by('start_date')
@@ -48,6 +54,7 @@ def member(request, member_id):
                'publications': publications,
                'project_roles': project_roles,
                'projects' : projects,
+               'position' : latest_position,
                # 'banners': displayed_banners,
                'debug': settings.DEBUG,
                'navbar_white': True,
