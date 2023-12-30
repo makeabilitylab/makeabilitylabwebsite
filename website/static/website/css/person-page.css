@@ -12,15 +12,23 @@
   margin-bottom: 20px;
 }
 
-.person-image-and-bio-container {
-  display: flex;
-  /* align-items: center; */
-  align-items: flex-start;
+@media (min-width: 576px) {
+  .person-image-and-bio-container {
+    display: flex;
+    align-items: flex-start;
+  }
 }
 
 .person-name-header{
-  margin-top: 4px;
+  margin-top: 8px;
   margin-bottom: 4px;
+}
+
+@media (min-width: 576px) {
+  .person-name-header{
+    margin-top: 4px;
+    margin-bottom: 4px;
+  }
 }
 
 .person-image {
@@ -40,4 +48,12 @@
 
 .person-bio-text{
   line-height: 1.8em;
+}
+
+.person-bio-modified-timestamp{
+  /* text-align: right; */
+  margin-top: 5px;
+  font-size: 0.8em;
+  color: #7F7F7F;
+  font-style: italic;
 }

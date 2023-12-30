@@ -518,9 +518,9 @@ class Person(models.Model):
         if self.pk is not None: # checks if this is an existing object
             orig = Person.objects.get(pk=self.pk)
             if orig.bio != self.bio:
-                self.bio_date_modified = timezone.now().date()
+                self.bio_datetime_modified = timezone.now().date()
         else:
-            self.bio_date_modified = timezone.now().date()
+            self.bio_datetime_modified = timezone.now().date()
 
         # Check if their headshot image is not set. If not, set to random star war image
         if not self.image:
