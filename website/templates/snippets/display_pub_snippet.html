@@ -4,7 +4,7 @@
 {% load ml_tags %}
 
 {% if pub and orientation and orientation == "horizontal" %}
-  <div class="col-xs-12 col-md-4 pub-column-horiz-layout">
+  <div class="col-xs-12 col-sm-6 col-md-4 pub-column-horiz-layout">
     <div class="pub-thumbnail pub-thumbnail-horiz-layout">
       <a href="{{ pub.pdf_file.url }}" class="pub-thumbnail-link">
           <img src="{% thumbnail pub.thumbnail 300x0 detail %}" class="pub-thumbnail-image2 img-responsive"

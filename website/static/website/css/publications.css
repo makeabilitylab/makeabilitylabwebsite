@@ -22,12 +22,6 @@
   }
 }
 
-/* TODO: do we need this .navbar? Need to investigate */
-
-.navbar {
-  width: 100%;
-}
-
 .citation-links {
   text-align: left;
   margin-bottom: -5px;
