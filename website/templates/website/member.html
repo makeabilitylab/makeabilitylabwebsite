@@ -10,7 +10,13 @@
 {% block stylesheets %}
   <link rel="stylesheet" href="{% static 'website/css/news-item.css' %}">
   <link rel="stylesheet" href="{% static 'website/css/person-page.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/project-listing.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
   {% comment %} <link rel="stylesheet" href="{% static 'website/css/people.css' %}"> {% endcomment %}
+{% endblock %}
+
+{% block external_scripts %}
+  <script src="{% static 'website/js/swap-image.js' %}"></script>
 {% endblock %}
 
 {% block maincarousel %}
@@ -36,7 +42,7 @@ See: https://getbootstrap.com/docs/3.4/css/#overview-container
     {% if news %}
       <div class="col-md-8 person-image-and-bio-container">
     {% else %}
-      <div class="col-md-10 person-image-and-bio-container">
+      <div class="col-md-12 person-image-and-bio-container">
     {% endif %}
       <div class="person-image">
         <img class="swap-image" onmouseover="swapImage(this)" onmouseout="swapImage(this)"
@@ -53,7 +59,7 @@ See: https://getbootstrap.com/docs/3.4/css/#overview-container
         </div>
         <p><a href="https://www.example.com">Website</a></p>
         <div class="person-bio-text">
-          {{person.bio}}
+          {{ person.bio|safe}}
         </div>
       </div>
     </div>
@@ -79,14 +85,23 @@ See: https://getbootstrap.com/docs/3.4/css/#overview-container
     {% endif %}
 	</div>
 
-  {% comment %} <div id="makelab-recent-projects" class="container-fluid makelab-content-container">
+  <div id="makelab-recent-projects" class="container-fluid makelab-content-container">
     <h1 class="section-header" style="margin-top:25px">Recent Projects</h1>
     <div class="project-grid landing-page-project-grid">
-      {% for project in projects %}
+      {% for project in projects|slice:":4" %}
         {% include "snippets/display_project_snippet.html" %}
       {% endfor %}
     </div>
-    <div>Load more...</div>
-  </div> {% endcomment %}
+    <div class="load-more">Load more projects...</div>
+  </div>
+
+  <div id="makelab-recent-papers" class="container-fluid makelab-content-container">
+    <h1 class="section-header">Recent Papers</h1>
+    <div class="section d-flex flex-wrap">
+      {% for pub in publications|slice:":6" %}
+        {% include "snippets/display_pub_snippet.html" with orientation="horizontal" %}
+      {% endfor %}
+    </div>
+  </div>
 </div>
 {% endblock %}

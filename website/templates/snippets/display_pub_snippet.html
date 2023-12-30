@@ -4,144 +4,144 @@
 {% load ml_tags %}
 
 {% if pub and orientation and orientation == "horizontal" %}
-    <div class="col-xs-12 col-md-4 pub-column" style="margin-bottom: 20px;">
-        <div class="pub-thumbnail" style="float: left; margin-right: 7px;">
-            <a href="../../media/{{ pub.pdf_file }}" class="pub-thumbnail-link">
-                <img src="{% thumbnail pub.thumbnail 300x0 detail %}" class="pub-thumbnail-image2 img-responsive"
-                     style="max-width: 100px;">
-            </a>
-            {% if pub.award %}
-                <img src="/static/website/img/awardoverlay.png" class="publication-award-banner">
-            {% endif %}
-        </div>
+  <div class="col-xs-12 col-md-4 pub-column-horiz-layout">
+    <div class="pub-thumbnail pub-thumbnail-horiz-layout">
+      <a href="{{ pub.pdf_file.url }}" class="pub-thumbnail-link">
+          <img src="{% thumbnail pub.thumbnail 300x0 detail %}" class="pub-thumbnail-image2 img-responsive"
+                style="max-width: 100px;">
+      </a>
+      {% if pub.award %}
+          <img src="{% static 'website/img/awardoverlay.png' %}" class="pub-award-banner">
+      {% endif %}
+    </div>
 
-        <a href="../../media/{{ pub.pdf_file }}">
-            <span class="artifact-title line-clamp" style="margin-top: 0px;">{{ pub.title }}</span>
-        </a>
-        <p class="artifact-venue line-clamp-one-line">
-            {{ pub.forum_name }}
+    <a href="{{ pub.pdf_file.url }}">
+      <span class="artifact-title line-clamp" style="margin-top: 0px;">{{ pub.title }}</span>
+    </a>
+    <p class="artifact-venue line-clamp-one-line">
+      {{ pub.forum_name }}
+      {% if pub.to_appear %}
+          <span class="pub-to-appear-text">To Appear</span>
+      {% endif %}
+      {% if pub.award %}
+          <span class="pub-award">|
+              {% if pub.is_best_paper %}
+                  <span class="pub-award-icon"><img src="{% static 'website/img/bestpaper.png' %}" align="center" class="award-icon"/></span>
+              {% elif pub.is_honorable_mention %}
+                  <span class="pub-award-icon"><img src="{% static 'website/img/honorablemention.png' %}" align="center" class="award-icon"/></span>
+              {% endif %}
+              <span class="pub-award-text">{{ pub.award }}</span>
+          </span>
+      {% endif %}
+    </p>
+    <p class="artifact-authors line-clamp3">
+      {% for author in pub.authors.all %}
+          <a href="{% url 'website:member' author.url_name %}">{{ author.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
+      {% endfor %}
+    </p>
+
+    <!-- We only show the download bar if there is a paper to download. And, thankfully, this if condition checks that
+          pub.pdf_file exists, is not empty, and is not a false boolean value. See https://docs.djangoproject.com/en/1.9/ref/templates/builtins/#if-->
+    {% if pub.pdf_file %}
+      <p class="pub-download-links">
+        <a href="{{ pub.pdf_file.url }}">PDF</a>
+        {% if pub.official_url %}| <a href="{{ pub.official_url }}">doi</a>{% endif %}
+        {% include "snippets/display_citation_link_snippet.html" %}
+        {% if pub.code_repo_url %}| <a href="{{ pub.code_repo_url }}">Code</a>{% endif %}
+        {% if pub.talk and pub.talk.pdf_file %}| <a href="{{ pub.talk.pdf_file.url }}">Talk</a>{% endif %}
+        {% if pub.poster and pub.poster.pdf_file %}| <a href="{{ pub.poster.pdf_file.url }}">Poster</a>{% endif %}
+
+        {% for project in pub.projects.all %}
+            {% if forloop.first and pub.projects.all|length > 0 %}| {% endif %}
+            {% if project.can_show_online %}
+                <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>{% if not forloop.last %} • {% endif %}
+            {% endif %}
+        {% endfor %}
+      </p>
+    {% endif %}
+  </div>
+{% elif pub %} {# If we're here, we display the pubs vertically #}
+  <div class="row pub-row-vert-layout">
+    <div class="pub-thumbnail">
+      <a href="{{ pub.pdf_file.url }}" class="pub-thumbnail-link">
+          <img src="{% thumbnail pub.thumbnail 300x0 detail %}"
+                class="pub-thumbnail-image img-responsive">
+      </a>
+      {% if pub.award %}
+          <img src="{% static 'website/img/awardoverlay.png' %}" class="pub-award-banner">
+      {% endif %}
+    </div>
+    <div class="pub-info">
+      <p class="pub-title">{{ pub.title }}</p>
+      <p class="pub-authors">
+        {% for author in pub.authors.all %}
+            <a href="{% url 'website:member' author.url_name %}">{{ author.get_full_name }}</a>{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      </p>
+      <p class="pub-stats">
+        <span class="pub-venue">
+            {% if pub.is_extended_abstract and "Poster" not in pub.forum_name and "Extended" not in pub.forum_name %}
+                Extended Abstract {{ pub.forum_name }}
+            {% else %}
+                {{ pub.forum_name }}
+            {% endif %}
             {% if pub.to_appear %}
                 <span class="pub-to-appear-text">To Appear</span>
             {% endif %}
-            {% if pub.award %}
-                <span class="publication-award">|
-                    {% if pub.is_best_paper %}
-                        <span class="publication-award-icon"><img src="{% static 'website/img/bestpaper.png' %}" align="center" class="award-icon"/></span>
-                    {% elif pub.is_honorable_mention %}
-                        <span class="publication-award-icon"><img src="{% static 'website/img/honorablemention.png' %}" align="center" class="award-icon"/></span>
-                    {% endif %}
-                    <span class="publication-award-text">{{ pub.award }}</span>
+        </span>
+        {% if pub.total_papers_accepted %}
+            <span class="pub-acceptance-rate">|
+                <span class="pub-acceptance-rate-text">
+                    {# Formatting strings with Django templates: #}
+                    {# https://docs.djangoproject.com/en/1.11/ref/templates/builtins/#stringformat #}
+                    Acceptance Rate: {{ pub.get_acceptance_rate|stringformat:".1f" }}%
+                    ({{ pub.total_papers_accepted }} / {{ pub.total_papers_submitted }})
                 </span>
-            {% endif %}
-        </p>
-        <p class="artifact-authors line-clamp3">
-            {% for author in pub.authors.all %}
-                <a href="{% url 'website:member' author.url_name %}">{{ author.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
-            {% endfor %}
-        </p>
-
-        <!-- We only show the download bar if there is a paper to download. And, thankfully, this if condition checks that
-             pub.pdf_file exists, is not empty, and is not a false boolean value. See https://docs.djangoproject.com/en/1.9/ref/templates/builtins/#if-->
-        {% if pub.pdf_file %}
-            <p class="pub-download-links">
-                <a href="../../media/{{ pub.pdf_file }}">PDF</a>
-                {% if pub.official_url %}| <a href="{{ pub.official_url }}">doi</a>{% endif %}
-                {% include "snippets/display_citation_link_snippet.html" %}
-                {% if pub.code_repo_url %}| <a href="{{ pub.code_repo_url }}">Code</a>{% endif %}
-                {% if pub.talk and pub.talk.pdf_file %}| <a href="../../media/{{ pub.talk.pdf_file }}">Talk</a>{% endif %}
-                {% if pub.poster and pub.poster.pdf_file %}| <a href="../../media/{{ pub.poster.pdf_file }}">Poster</a>{% endif %}
-
-                {% for project in pub.projects.all %}
-                    {% if forloop.first and pub.projects.all|length > 0 %}| {% endif %}
-                    {% if project.can_show_online %}
-                        <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>{% if not forloop.last %} • {% endif %}
-                    {% endif %}
-                {% endfor %}
-            </p>
+            </span>
         {% endif %}
-    </div>
-{% elif pub %} {# If we're here, we display the pubs vertically #}
-    <div class="row publication-template">
-        <div class="publication-thumbnail">
-            <a href="../../media/{{ pub.pdf_file }}" class="publication-thumbnail-link">
-                <img src="{% thumbnail pub.thumbnail 300x0 detail %}"
-                     class="publication-thumbnail-image img-responsive">
-            </a>
-            {% if pub.award %}
-                <img src="/static/website/img/awardoverlay.png" class="publication-award-banner">
-            {% endif %}
-        </div>
-        <div class="publication-info">
-            <p class="publication-title">{{ pub.title }}</p>
-            <p class="publication-authors">
-                {% for author in pub.authors.all %}
-                    <a href="{% url 'website:member' author.url_name %}">{{ author.get_full_name }}</a>{% if not forloop.last %},{% endif %}
-                {% endfor %}
-            </p>
-            <p class="publication-stats">
-                <span class="publication-venue">
-                    {% if pub.is_extended_abstract and "Poster" not in pub.forum_name and "Extended" not in pub.forum_name %}
-                        Extended Abstract {{ pub.forum_name }}
-                    {% else %}
-                        {{ pub.forum_name }}
-                    {% endif %}
-                    {% if pub.to_appear %}
-                        <span class="publication-to-appear-text">To Appear</span>
-                    {% endif %}
-                </span>
-                {% if pub.total_papers_accepted %}
-                    <span class="publication-acceptance-rate">|
-                        <span class="publication-acceptance-rate-text">
-                            {# Formatting strings with Django templates: #}
-                            {# https://docs.djangoproject.com/en/1.11/ref/templates/builtins/#stringformat #}
-                            Acceptance Rate: {{ pub.get_acceptance_rate|stringformat:".1f" }}%
-                            ({{ pub.total_papers_accepted }} / {{ pub.total_papers_submitted }})
-                        </span>
-                    </span>
+        {% if pub.award %}
+            <span class="pub-award">|
+                {% if pub.is_best_paper %}
+                    <span class="pub-award-icon"><img src="{% static 'website/img/bestpaper.png' %}" align="center" class="award-icon"/></span>
+                {% elif pub.is_honorable_mention %}
+                    <span class="pub-award-icon"><img src="{% static 'website/img/honorablemention.png' %}" align="center" class="award-icon"/></span>
                 {% endif %}
-                {% if pub.award %}
-                    <span class="publication-award">|
-                        {% if pub.is_best_paper %}
-                            <span class="publication-award-icon"><img src="{% static 'website/img/bestpaper.png' %}" align="center" class="award-icon"/></span>
-                        {% elif pub.is_honorable_mention %}
-                            <span class="publication-award-icon"><img src="{% static 'website/img/honorablemention.png' %}" align="center" class="award-icon"/></span>
-                        {% endif %}
-                        <span class="publication-award-text">{{ pub.award }}</span>
-                    </span>
-                {% endif %}
-            </p>
-            {% if pub.keywords and pub.keywords.count > 0 %}
-                <p class="publication-keywords hidden-xs">
-                    keywords:
-                    <span class="publication-keyword"><span class="publication-keyword-text">
-                    {% for keyword in pub.keywords.all %}
-                        {% if forloop.last %}
-                            {{ keyword.keyword }}
-                        {% else %}
-                            {{ keyword.keyword }},
-                        {% endif %}
-                    {% endfor %}
-                    </span></span>
-                </p>
-            {% endif %}
+                <span class="pub-award-text">{{ pub.award }}</span>
+            </span>
+        {% endif %}
+      </p>
+      {% if pub.keywords and pub.keywords.count > 0 %}
+        <p class="pub-keywords hidden-xs">
+          keywords:
+          <span class="pub-keyword"><span class="pub-keyword-text">
+          {% for keyword in pub.keywords.all %}
+              {% if forloop.last %}
+                  {{ keyword.keyword }}
+              {% else %}
+                  {{ keyword.keyword }},
+              {% endif %}
+          {% endfor %}
+          </span></span>
+        </p>
+      {% endif %}
 
-            {% if pub.pdf_file %}
-                <p class="pub-download-links">
-                    <a href="../../media/{{ pub.pdf_file }}">PDF</a>
-                    {% if pub.official_url %}| <a href="{{ pub.official_url }}">doi</a>{% endif %}
-                    {% include "snippets/display_citation_link_snippet.html" %}
-                    {% if pub.code_repo_url %}| <a href="{{ pub.code_repo_url }}">Code</a>{% endif %}
-                    {% if pub.talk and pub.talk.pdf_file %}| <a href="../../media/{{ pub.talk.pdf_file }}">Talk</a>{% endif %}
-                    {% if pub.poster and pub.poster.pdf_file %}| <a href="../../media/{{ pub.poster.pdf_file }}">Poster</a>{% endif %}
+      {% if pub.pdf_file %}
+        <p class="pub-download-links">
+          <a href="{{ pub.pdf_file.url }}">PDF</a>
+          {% if pub.official_url %}| <a href="{{ pub.official_url }}">doi</a>{% endif %}
+          {% include "snippets/display_citation_link_snippet.html" %}
+          {% if pub.code_repo_url %}| <a href="{{ pub.code_repo_url }}">Code</a>{% endif %}
+          {% if pub.talk and pub.talk.pdf_file %}| <a href="{{ pub.talk.pdf_file.url }}">Talk</a>{% endif %}
+          {% if pub.poster and pub.poster.pdf_file %}| <a href="{{ pub.poster.pdf_file.url }}">Poster</a>{% endif %}
 
-                    {% for project in pub.projects.all %}
-                        {% if forloop.first and pub.projects.all|length > 0 %}| {% endif %}
-                        {% if project.can_show_online %}
-                            <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>{% if not forloop.last %} • {% endif %}
-                        {% endif %}
-                    {% endfor %}
-                </p>
-            {% endif %}
-        </div>
+          {% for project in pub.projects.all %}
+              {% if forloop.first and pub.projects.all|length > 0 %}| {% endif %}
+              {% if project.can_show_online %}
+                  <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>{% if not forloop.last %} • {% endif %}
+              {% endif %}
+          {% endfor %}
+        </p>
+      {% endif %}
     </div>
+  </div>
 {% endif %}

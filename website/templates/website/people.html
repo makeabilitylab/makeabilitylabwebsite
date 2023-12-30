@@ -8,9 +8,12 @@
 {% load ml_tags %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{% static 'website/css/people.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/people.css' %}">
 {% endblock %}
 
+{% block external_scripts %}
+  <script src="{% static 'website/js/swap-image.js' %}"></script>
+{% endblock %}
 
 {% block maincarousel %}
     {% comment %} Keep this empty to not have a carousel {% endcomment %}
@@ -136,21 +139,4 @@
     </div>
 
   </div>
-
-  <script>
-    var _swapImageEnabled = true;
-    console.log("Hi console friends 👋🏽,\n\nTo turn off our 'easter egg' swap, in the console window, type 'toggleSwapImage()'.")
-
-    function swapImage(imgElement) {
-      if(_swapImageEnabled){
-        let temp = imgElement.src;
-        imgElement.src = imgElement.dataset.altSrc;
-        imgElement.dataset.altSrc = temp;
-      }
-    }
-    
-    function toggleSwapImage() {
-      _swapImageEnabled = !_swapImageEnabled;
-    }
-  </script>
 {% endblock %}
