@@ -149,11 +149,14 @@ def auto_generate_bio(person):
     return bio
 
 def humanize_duration(duration):
+    """Given a timedelta object, returns a humanized string of the duration (e.g., 1.5 years)"""
     total_months = duration.total_seconds() / (30 * 24 * 60 * 60)
+
+    # Calculate years and months
     years = total_months // 12
     months = total_months % 12
 
     if years >= 1:
         return f"{years + months/12:.1f} years"
     else:
-        return f"{months} months"
+        return f"{months:.1f} months"
