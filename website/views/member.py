@@ -118,9 +118,9 @@ def auto_generate_bio(person):
     elif person.is_current_collaborator:
         bio += f"is a current collaborator with the Makeability Lab."
     elif person.is_alumni_member:
-        bio += f"was a {person.get_current_title} in the Makeability Lab "
+        bio += f"was a {person.get_current_title} in the Makeability Lab"
     elif person.is_past_collaborator:
-        bio += f"was a collaborator with the Makeability Lab "
+        bio += f"was a collaborator with the Makeability Lab"
 
     if person.is_current_member or person.is_current_collaborator:
         bio += f" They have been in the lab for {humanized_duration} and have contributed to"
@@ -128,15 +128,23 @@ def auto_generate_bio(person):
         start_date_str = person.get_start_date.strftime("%b %Y")
         end_date_str = person.get_end_date.strftime("%b %Y") if person.get_end_date else "present"
             
-        bio += f" from {start_date_str} to {end_date_str} and contributed to"
+        bio += f" from {start_date_str} to {end_date_str} "
    
-    project_word = "project" if project_count == 1 else "projects"
-    publication_word = "publication" if publication_count == 1 else "publications"
+    if project_count > 0 or publication_count > 0:
+        bio += " and contributed to"
+        project_word = "project" if project_count == 1 else "projects"
+        publication_word = "publication" if publication_count == 1 else "publications"
 
-    bio += f" {project_count} {project_word}"
-    
-    if publication_count > 0:
-        bio += f" and {publication_count} {publication_word}."
+        if project_count > 0:
+            bio += f" {project_count} {project_word}"
+        
+        if project_count > 0 and publication_count > 0:
+            bio += " and"
+
+        if publication_count > 0:
+            bio += f" {publication_count} {publication_word}."
+        else:
+            bio += "."
     else:
         bio += "."
 
