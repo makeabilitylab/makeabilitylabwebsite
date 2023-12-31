@@ -11,7 +11,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 # then website will try to load http://makeabilitylab.cs.uw.edu/project/soundwatch 
 from django.contrib import admin
 
-app_name = 'website'
+app_name = "website"
 urlpatterns = [
     re_path(r"^admin/", admin.site.urls),
     re_path(r'^$', views.index, name='index'),
@@ -25,13 +25,13 @@ urlpatterns = [
     re_path(r'^projects/(?P<project_name>[a-zA-Z\- ]+)/$', views.project, name='project'),
     re_path(r'^project/(?P<project_name>[a-zA-Z\- ]+)/$', views.project, name='project'),
     re_path(r'^news/$', views.news_listing, name='news_listing'),
+    path('view-project-people/', views.view_project_people, name='view_project_people'),
 
     # First try to match on the news id (for historical compatibility) then match on the slug
     path('news/<int:id>/', views.news_item, name='news_item_by_id'),
     path('news/<slug:slug>/', views.news_item, name='news_item_by_slug'),
     
     re_path(r'^faq/$', views.faq, name='faq'),
-    
     
     # JEF (Oct 31, 2022): this makes it sound you can just type in a project name
     # and we'll try to go to that project without putting in 'projects' or 'project'

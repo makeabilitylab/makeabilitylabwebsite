@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models import Max, Min
+from django.db.models import F, ExpressionWrapper, fields, Sum
 
 from image_cropping import ImageRatioField
 
@@ -6,10 +8,13 @@ from datetime import date, datetime, timedelta
 
 from .sponsor import Sponsor
 from .project_umbrella import ProjectUmbrella
+from .project_role import ProjectRole
 from .keyword import Keyword
 from .publication import Publication
 from .talk import Talk
 from .video import Video
+from .person import Person
+
 import os
 
 PROJECT_THUMBNAIL_SIZE = (500, 300) # 15 : 9 aspect ratio
@@ -181,50 +186,92 @@ class Project(models.Model):
 
     get_talk_count.short_description = "Talks"
 
+    def get_most_recent_roles(self):
+        """
+        Returns the most recent ProjectRole for each person that has worked on the project
+        :return: QuerySet of ProjectRole instances
+        """
+        # Annotate each person with the date of their most recent role
+        people = Person.objects.annotate(most_recent_role_date=Max('projectrole__start_date'))
+
+        # Get the ProjectRoles that match the most recent role date for each person
+        most_recent_roles = ProjectRole.objects.filter(
+            person__in=people,
+            start_date__in=[person.most_recent_role_date for person in people]
+        )
+
+        return most_recent_roles
+
+    def get_people(self, sorted_by="time_on_project"):
+        """
+        Returns a QuerySet of all people who have worked on the project
+        :return: QuerySet of Person instances
+        """
+        if sorted_by == "time_on_project":
+            # Calculate time_worked as the difference between end_date and start_date
+            # If end_date is None, use the current date as the end date
+            time_worked = ExpressionWrapper(
+                (F('projectrole__end_date') if F('projectrole__end_date') is not None else timezone.now()) - F('projectrole__start_date'),
+                output_field=fields.DurationField()
+            )
+            return Person.objects.filter(projectrole__project=self).annotate(
+                total_time_worked=Sum(time_worked)
+            ).order_by('-total_time_worked').distinct()
+        elif sorted_by == "start_date":
+            # Sort by earliest start date
+            return Person.objects.filter(projectrole__project=self).annotate(
+                earliest_start_date=Min('projectrole__start_date')
+            ).order_by('earliest_start_date').distinct()
+        elif sorted_by == "alphabetical":
+            # Sort by last name, then first name
+            return Person.objects.filter(projectrole__project=self).order_by('last_name', 'first_name').distinct()
+        else:
+            return Person.objects.filter(projectrole__project=self).distinct()
+    
     def get_people_count(self):
         """
         Returns the number of people involved in the project
-        :return:
         """
-        project_roles = self.projectrole_set.order_by('-start_date')
+        # project_roles = self.projectrole_set.order_by('-start_date')
 
-        # For more on this style of list iteration (called list comprehension)
-        # See: https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions
-        #      https://www.python.org/dev/peps/pep-0202/
-        people = set([project_role.person for project_role in project_roles])
-        return len(people)
+        # # For more on this style of list iteration (called list comprehension)
+        # # See: https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions
+        # #      https://www.python.org/dev/peps/pep-0202/
+        # people = set([project_role.person for project_role in project_roles])
+        # return len(people)
+        return self.projectrole_set.values('person').distinct().count()
 
-    get_people_count.short_description = "People"
+    get_people_count.short_description = "Num People"
 
     def get_current_member_count(self):
         """
         Returns the number of current members
-        :return:
         """
-        project_roles = self.projectrole_set.order_by('-start_date')
-        current_member_cnt = 0
-        for project_role in project_roles:
-            if project_role.is_active():
-                current_member_cnt = current_member_cnt + 1
-        return current_member_cnt
+        # project_roles = self.projectrole_set.order_by('-start_date')
+        # current_member_cnt = 0
+        # for project_role in project_roles:
+        #     if project_role.is_active():
+        #         current_member_cnt = current_member_cnt + 1
+        # return current_member_cnt
+        self.projectrole_set.filter(end_date__isnull=True).values('person').distinct().count()
 
-    get_current_member_count.short_description = "Current Members"
+    get_current_member_count.short_description = "Num Current Members"
 
     def get_past_member_count(self):
         """
         Returns the number of past members
-        :return:
         """
 
-        # TODO: could likely turn all of this code into a single query?
-        project_roles = self.projectrole_set.order_by('-start_date')
-        past_member_cnt = 0
-        for project_role in project_roles:
-            if project_role.has_completed_role():
-                past_member_cnt = past_member_cnt + 1
-        return past_member_cnt
+        # # TODO: could likely turn all of this code into a single query?
+        # project_roles = self.projectrole_set.order_by('-start_date')
+        # past_member_cnt = 0
+        # for project_role in project_roles:
+        #     if project_role.has_completed_role():
+        #         past_member_cnt = past_member_cnt + 1
+        # return past_member_cnt
+        return self.projectrole_set.filter(end_date__isnull=False).values('person').distinct().count()
 
-    get_past_member_count.short_description = "Past Members"
+    get_past_member_count.short_description = "Num Past Members"
 
     def get_most_recent_artifact(self):
         """
@@ -234,20 +281,21 @@ class Project(models.Model):
         mostRecentArtifacts = []
 
         if self.publication_set.exists():
-            mostRecentPub = self.publication_set.order_by('-date')[0]
+            mostRecentPub = self.publication_set.latest('date')
             mostRecentArtifacts.append((mostRecentPub.date, mostRecentPub))
 
         if self.talk_set.exists():
-            mostRecentTalk = self.talk_set.order_by('-date')[0]
+            mostRecentTalk = self.talk_set.latest('date')
             mostRecentArtifacts.append((mostRecentTalk.date, mostRecentTalk))
 
         if self.video_set.exists():
-            mostRecentVideo = self.video_set.order_by('-date')[0]
+            mostRecentVideo = self.video_set.latest('date')
             mostRecentArtifacts.append((mostRecentVideo.date, mostRecentVideo))
 
         if len(mostRecentArtifacts) > 0:
-            mostRecentArtifacts = sorted(mostRecentArtifacts, key=lambda artifact: artifact[0], reverse=True)
-            return mostRecentArtifacts[0][0], mostRecentArtifacts[0][1]
+            # mostRecentArtifacts = sorted(mostRecentArtifacts, key=lambda artifact: artifact[0], reverse=True)
+            #return mostRecentArtifacts[0][0], mostRecentArtifacts[0][1]
+            return max(mostRecentArtifacts, key=lambda artifact: artifact[0])
         else:
             return None
 

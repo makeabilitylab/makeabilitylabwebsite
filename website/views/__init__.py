@@ -9,4 +9,5 @@ from .project_listing import *
 from .publications import *
 from .talks import *
 from .videos import *
+from .view_project_people import *
 

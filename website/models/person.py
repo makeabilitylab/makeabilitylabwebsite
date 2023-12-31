@@ -169,7 +169,6 @@ class Person(models.Model):
         if dissertation.exists():
             return dissertation[0]
 
-
     @cached_property
     def get_current_title(self):
         """Returns the title for person's current position. A cached property."""
