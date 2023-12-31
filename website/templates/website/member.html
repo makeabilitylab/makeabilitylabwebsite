@@ -1,6 +1,8 @@
 {% extends "website/base.html" %}
 
-{% block pagetitle %}{{news.title}}{% endblock %}
+{% block pagetitle %}
+  {{ person.get_full_name }}
+{% endblock %}
 
 {% load static %}
 {% load thumbnail %}
@@ -18,6 +20,7 @@
 
 {% block external_scripts %}
   <script src="{% static 'website/js/swap-image.js' %}"></script>
+  <script src="{% static 'website/js/humanize-duration.js' %}"></script>
 {% endblock %}
 
 {% block maincarousel %}
@@ -106,7 +109,7 @@ See: https://getbootstrap.com/docs/3.4/css/#overview-container
 		<!-- Sidebar for related news -->
     {% if news %}
 		  <div class="hidden-xs hidden-sm col-md-4 news-item-sidebar">
-				<h2 class="news-item-sidebar-header">Recent News</h2>
+				<h2 class="news-item-sidebar-header">Recent {{ person.first_name }} News</h2>
 				<ul class="news-item-sidebar-ul">
 				{% for recent_news_item in news|slice:":3" %}
 					{% include "snippets/display_news_item_sidebar_snippet.html" %}
