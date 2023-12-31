@@ -194,6 +194,8 @@
 
 .pub-column-horiz-layout {
   margin-bottom: 20px;
+  padding-left: 0px;
+  max-height: 129px;
 }
 
 .pub-thumbnail {

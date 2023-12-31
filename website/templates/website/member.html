@@ -82,11 +82,11 @@ See: https://getbootstrap.com/docs/3.4/css/#overview-container
 	</div>
 
   {% if projects %}
-    <div id="makelab-recent-projects" class="container-fluid makelab-content-container">
+    <div id="person-projects" class="container-fluid makelab-content-container">
       {% if projects|length > 4 %}
         <h1 class="section-header" style="margin-top:25px">Recent Projects</h1>
       {% else %}
-        <h1 class="section-header text-left">Projects</h1>
+        <h1 class="section-header {% if left_align_headers %}text-left{% endif %}">Projects</h1>
       {% endif %}
       <div class="project-grid landing-page-project-grid">
         {% for project in projects|slice:":4" %}
@@ -98,16 +98,16 @@ See: https://getbootstrap.com/docs/3.4/css/#overview-container
   {% endif %}
 
   {% if publications %}
-    <div id="makelab-recent-papers" class="container-fluid makelab-content-container">
-      {% if publications|length > 4 %}
+    <div id="person-pubs" class="container-fluid makelab-content-container">
+      {% if publications|length > 3 %}
         <h1 class="section-header">Recent Papers</h1>
       {% else %}
-        <h1 class="section-header text-left">Papers</h1>
+        <h1 class="section-header {% if left_align_headers %}text-left{% endif %}">Papers</h1>
       {% endif %}
       
       <div class="section d-flex flex-wrap">
         {% if publications|length > 3 %}
-          {% for pub in publications|slice:":6" %}
+          {% for pub in publications|slice:":3" %}
             {% include "snippets/display_pub_snippet.html" with orientation="horizontal" %}
           {% endfor %}
         {% else %}
@@ -122,11 +122,11 @@ See: https://getbootstrap.com/docs/3.4/css/#overview-container
   {% endif %}
 
   {% if videos %}
-    <div id="makelab-recent-videos" class="container-fluid makelab-content-container">
+    <div id="person-videos" class="container-fluid makelab-content-container">
       {% if videos|length > 3 %}
         <h1 class="section-header">Recent Videos</h1>
       {% else %}
-        <h1 class="section-header text-left">Videos</h1>
+        <h1 class="section-header {% if left_align_headers %}text-left{% endif %}">Videos</h1>
       {% endif %}
       <div class="section">
         {% for video in videos|slice:":3" %}
@@ -137,11 +137,11 @@ See: https://getbootstrap.com/docs/3.4/css/#overview-container
   {% endif %}
 
   {% if talks %}
-    <div id="makelab-recent-talks" class="container-fluid makelab-content-container">
+    <div id="person-talks" class="container-fluid makelab-content-container">
       {% if talks|length > 4 %}
         <h1 class="section-header">Recent Talks</h1>
       {% else %}
-        <h1 class="section-header text-left">Talks</h1>
+        <h1 class="section-header {% if left_align_headers %}text-left{% endif %}">Talks</h1>
       {% endif %}
       <div class="section">
         {% for talk in talks|slice:":4" %}

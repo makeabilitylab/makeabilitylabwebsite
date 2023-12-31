@@ -1,7 +1,8 @@
 from django.conf import settings # for access to settings variables, see https://docs.djangoproject.com/en/4.0/topics/settings/#using-settings-in-python-code
-from website.models import Banner, Person, News
+from website.models import Banner, Person, News, Talk, Video, Publication
 import website.utils.ml_utils as ml_utils 
 from django.shortcuts import render, get_object_or_404
+from django.db.models import Q
 
 # For logging
 import time
@@ -36,8 +37,12 @@ def member(request, member_id):
     latest_position = person.get_latest_position
     publications = person.publication_set.order_by('-date')
     talks = person.talk_set.order_by('-date')
+    videos = get_videos_by_author(person)
     project_roles = person.projectrole_set.order_by('start_date')
     projects = person.get_projects
+
+    left_align_headers = (len(projects) <= 4 and len(publications) <= 3 and 
+                          len(talks) <= 3 and len(videos) <= 3)
 
     # filter projects to those that have a thumbnail and have been published
     # TODO: might consider moving this to ml_utils so we have consistent determination
@@ -51,11 +56,13 @@ def member(request, member_id):
     context = {'person': person,
                'news': news,
                'talks': talks,
+               'videos': videos,
                'publications': publications,
                'project_roles': project_roles,
                'projects' : projects,
                'position' : latest_position,
                # 'banners': displayed_banners,
+               'left_align_headers': left_align_headers,
                'debug': settings.DEBUG,
                'navbar_white': True,
                'page_title': person.get_full_name()}
@@ -75,3 +82,17 @@ def member(request, member_id):
     context['render_time'] = func_end_time - func_start_time
 
     return render_response
+
+def get_videos_by_author(person):
+    """Returns a queryset of videos that the given person is an author on"""
+    # Get all Publications where the given person is an author
+    publication_videos = Publication.objects.filter(authors=person).values_list('video', flat=True)
+
+    # Get all Talks where the given person is an author
+    talk_videos = Talk.objects.filter(authors=person).values_list('video', flat=True)
+
+    # Combine the two querysets and order by date
+    videos = Video.objects.filter(Q(id__in=publication_videos) | 
+                                  Q(id__in=talk_videos)).order_by('-date')
+
+    return videos
