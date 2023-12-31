@@ -106,10 +106,19 @@ class Person(models.Model):
     last_name = models.CharField(max_length=50)
     url_name = models.CharField(editable=False, max_length=50, default='placeholder')
     email = models.EmailField(blank=True, null=True)
+    
+    # Website links
     personal_website = models.URLField(blank=True, null=True)
     github = models.URLField(blank=True, null=True)
     twitter = models.URLField(blank=True, null=True)
+    threads = models.URLField(blank=True, null=True)
+    mastodon = models.URLField(blank=True, null=True)
+    linkedin = models.URLField(blank=True, null=True)
+    
+    # If a bio is not added, the member view page will auto-generate one
     bio = models.TextField(blank=True, null=True)
+    bio.help_text = "You can use HTML markup here. If a bio is not added, the member view page will auto-generate one."
+    bio_datetime_modified = models.DateField(null=True, blank=True)
 
     next_position = models.CharField(max_length=255, blank=True, null=True)
     next_position.help_text = "This is a field to track the next position held by alumni of the lab. This field stores text information about their position and the next field stores a url for that position."
@@ -137,6 +146,10 @@ class Person(models.Model):
     easter_egg_crop.help_text = mark_safe("This image defaults to a Star Wars LEGO figure from\
         <a href='https://brickipedia.fandom.com/wiki/Star_Wars'>Brickipedia's Star War page</a>\
         but you can set it to anything you want and crop it appropriately here")
+
+    def has_website_links(self):
+        """Returns True if person has a personal website, github, or twitter, etc. False otherwise."""
+        return self.personal_website or self.github or self.twitter
 
     @cached_property
     def is_graduated_phd_student(self):
@@ -249,12 +262,20 @@ class Person(models.Model):
 
 
     def get_total_time_in_role(self, role):
-        """Returns the total time as in the specified role across all positions."""
+        """Returns the total time as in the specified role across all positions as a DurationField"""
         duration = ExpressionWrapper(Coalesce(F('end_date'), date.today()) - F('start_date'), output_field=fields.DurationField())
         total_time_in_role = self.position_set.filter(role=role).aggregate(total=Sum(duration))['total']
         return total_time_in_role
 
     get_total_time_in_role.short_description = "Total Time In Role"
+
+    def get_total_time_in_lab(self):
+        """Returns the total time in the lab across all roles as a DurationField"""
+        duration = ExpressionWrapper(Coalesce(F('end_date'), date.today()) - F('start_date'), output_field=fields.DurationField())
+        total_time_in_lab = self.position_set.aggregate(total=Sum(duration))['total']
+        return total_time_in_lab
+
+    get_total_time_in_lab.short_description = "Total Time In Lab"
 
     @cached_property
     def get_total_time_as_member(self):
@@ -512,6 +533,14 @@ class Person(models.Model):
         # Finally, clean remaining characters (EX: dashes, periods).
         url_name_cleaned = re.sub('[^a-zA-Z]', '', url_name_cleaned)
         self.url_name = url_name_cleaned
+
+        # Next, automatically set the bio_date_modified field
+        if self.pk is not None: # checks if this is an existing object
+            orig = Person.objects.get(pk=self.pk)
+            if orig.bio != self.bio:
+                self.bio_datetime_modified = timezone.now().date()
+        else:
+            self.bio_datetime_modified = timezone.now().date()
 
         # Check if their headshot image is not set. If not, set to random star war image
         if not self.image:

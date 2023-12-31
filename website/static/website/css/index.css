@@ -120,56 +120,12 @@
   width: 50px;
 }
 
-.pub-column {
-  /*no-op currently*/
-  height: 129px;
-  /* Had to fix height because of weird wrapping, see: https://stackoverflow.com/a/25682250 */
-}
-
 .talk-text {
   margin-bottom: 20px;
   vertical-align: top;
   margin-top: 5px;
   /*width:80%;*/
   /*text-align: center;*/
-}
-
-.pub-thumbnail {
-  position: relative;
-}
-
-.pub-thumbnail-image {
-  border: 1px solid #dddddd;
-  width: 90%;
-  margin: auto;
-}
-
-.pub-thumbnail-image2 {
-  border: 1px solid #dddddd;
-}
-
-.pub-text {
-  margin: 4px 9px 0 9px;
-  vertical-align: top;
-  /*width:80%;*/
-  /*text-align: center;*/
-}
-
-.pub-to-appear-text {
-  font-style: italic;
-}
-
-.pub-thumbnail-image-float-left {
-  border: 1px solid #dddddd;
-  width: 25%;
-  float: left;
-  margin-right: 5px;
-  /*position: absolute;*/
-  /*clip: rect(0px,100px,50px,0px);*/
-}
-
-.pub-text-float-left {
-  vertical-align: top;
 }
 
 .talk2-thumbnail-image {

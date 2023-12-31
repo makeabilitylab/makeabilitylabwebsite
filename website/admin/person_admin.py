@@ -56,6 +56,7 @@ class ProjectRoleInline(admin.StackedInline):
 
 @admin.register(Person)
 class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
+    exclude = ('bio_datetime_modified',) # don't show this field as it's auto-calculated
 
     # inlines allow us to edit models on the same page as a parent model
     # see: https://docs.djangoproject.com/en/1.11/ref/contrib/admin/#inlinemodeladmin-objects

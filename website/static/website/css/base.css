@@ -321,28 +321,6 @@ otherwise, they are hidden! */
   opacity: 1;
 }
 
-/* This opacity stuff auto-shows the download links on mouseover ('hover');
-otherwise, they are hidden! */
-.pub-column .pub-download-links {
-  opacity: 0;
-}
-
-.pub-column:hover .pub-download-links {
-  opacity: 1;
-}
-
-.pub-download-links {
-  font-size: 7pt;
-  color: gray;
-  margin-top: 8px !important;
-  margin: 0 20px 0 107px;
-  bottom: 0;
-  /* position: absolute; */
-  border-top: 1px solid #dddddd;
-  overflow: hidden;
-  max-height: 14px;
-}
-
 .artifact-venue {
   /*color: #7F7F7F;*/
   font-size: 13px;

@@ -3,6 +3,10 @@ from website.models import Talk
 from website.admin import ArtifactAdmin
 import logging
 
+from django.utils.html import format_html # for formatting thumbnails
+from easy_thumbnails.files import get_thumbnailer # for generating thumbnails
+import os # for checking if thumbnail file exists
+
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
 
@@ -10,7 +14,10 @@ _logger = logging.getLogger(__name__)
 class TalkAdmin(ArtifactAdmin):
     # The list display lets us control what is shown in the default talk table at Home > Website > Talk
     # See: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_display
-    list_display = ('title', 'date', 'get_speakers_as_csv', 'forum_name', 'location', 'talk_type')
+    list_display = ('title', 'get_display_thumbnail', 'get_speakers_as_csv', 'date', 'forum_name', 'location', 'talk_type')
+
+    # Only show 25 items per page
+    list_per_page = 10
 
     # search_fields are used for auto-complete, see:
     #   https://docs.djangoproject.com/en/3.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields
@@ -44,3 +51,15 @@ class TalkAdmin(ArtifactAdmin):
         form = super().get_form(request, obj, **kwargs)
         form.base_fields['authors'].label = 'Speakers'
         return form
+    
+    def get_display_thumbnail(self, obj):
+        if obj.thumbnail and os.path.isfile(obj.thumbnail.path):
+            # Use easy_thumbnails to generate a thumbnail
+            thumbnailer = get_thumbnailer(obj.thumbnail)
+            thumbnail_options = {'size': (100, 56), 'crop': True}
+            thumbnail_url = thumbnailer.get_thumbnail(thumbnail_options).url
+
+            return format_html('<img src="{}" width="100" />', thumbnail_url)
+        return 'No Thumbnail'
+    
+    get_display_thumbnail.short_description = 'Thumbnail'
