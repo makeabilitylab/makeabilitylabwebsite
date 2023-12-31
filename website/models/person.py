@@ -139,6 +139,10 @@ class Person(models.Model):
         <a href='https://brickipedia.fandom.com/wiki/Star_Wars'>Brickipedia's Star War page</a>\
         but you can set it to anything you want and crop it appropriately here")
 
+    def has_website_links(self):
+        """Returns True if person has a personal website, github, or twitter, etc. False otherwise."""
+        return self.personal_website or self.github or self.twitter
+
     @cached_property
     def is_graduated_phd_student(self):
         """Returns True if person is a graduated PhD student. False otherwise. A cached property."""
@@ -250,12 +254,20 @@ class Person(models.Model):
 
 
     def get_total_time_in_role(self, role):
-        """Returns the total time as in the specified role across all positions."""
+        """Returns the total time as in the specified role across all positions as a DurationField"""
         duration = ExpressionWrapper(Coalesce(F('end_date'), date.today()) - F('start_date'), output_field=fields.DurationField())
         total_time_in_role = self.position_set.filter(role=role).aggregate(total=Sum(duration))['total']
         return total_time_in_role
 
     get_total_time_in_role.short_description = "Total Time In Role"
+
+    def get_total_time_in_lab(self):
+        """Returns the total time in the lab across all roles as a DurationField"""
+        duration = ExpressionWrapper(Coalesce(F('end_date'), date.today()) - F('start_date'), output_field=fields.DurationField())
+        total_time_in_lab = self.position_set.aggregate(total=Sum(duration))['total']
+        return total_time_in_lab
+
+    get_total_time_in_lab.short_description = "Total Time In Lab"
 
     @cached_property
     def get_total_time_as_member(self):

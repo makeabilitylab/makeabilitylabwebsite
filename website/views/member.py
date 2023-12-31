@@ -43,6 +43,10 @@ def member(request, member_id):
 
     left_align_headers = (len(projects) <= 4 and len(publications) <= 3 and 
                           len(talks) <= 3 and len(videos) <= 3)
+    
+    auto_generated_bio = ""
+    if not person.bio:
+        auto_generated_bio = auto_generate_bio(person)
 
     # filter projects to those that have a thumbnail and have been published
     # TODO: might consider moving this to ml_utils so we have consistent determination
@@ -54,6 +58,7 @@ def member(request, member_id):
     projects = filtered_projects
 
     context = {'person': person,
+               'auto_generated_bio': auto_generated_bio,
                'news': news,
                'talks': talks,
                'videos': videos,
@@ -96,3 +101,53 @@ def get_videos_by_author(person):
                                   Q(id__in=talk_videos)).order_by('-date')
 
     return videos
+
+def auto_generate_bio(person):
+    """Auto-generates a bio for the given person based on their contributions to the lab"""
+    project_count = person.projectrole_set.count()
+    publication_count = person.publication_set.count()
+    # start_date = person.projectrole_set.order_by('start_date').first().start_date
+    # years_in_lab = (datetime.date.today() - start_date).days // 365
+    total_time_in_lab = person.get_total_time_in_lab()
+    #total_time_in_role = person.get_total_time_in_current_position()
+    humanized_duration = humanize_duration(total_time_in_lab)
+    
+    bio = f"{person.first_name} "
+    if person.is_current_member:
+        bio += f"is a current {person.get_current_title} in the Makeability Lab."
+    elif person.is_current_collaborator:
+        bio += f"is a current collaborator with the Makeability Lab."
+    elif person.is_alumni_member:
+        bio += f"was a {person.get_current_title} in the Makeability Lab "
+    elif person.is_past_collaborator:
+        bio += f"was a collaborator with the Makeability Lab "
+
+    if person.is_current_member or person.is_current_collaborator:
+        bio += f" They have been in the lab for {humanized_duration} and have contributed to"
+    elif person.is_alumni_member or person.is_past_collaborator:
+        start_date_str = person.get_start_date.strftime("%b %Y")
+        end_date_str = person.get_end_date.strftime("%b %Y") if person.get_end_date else "present"
+            
+        bio += f" from {start_date_str} to {end_date_str} and contributed to"
+   
+    project_word = "project" if project_count == 1 else "projects"
+    publication_word = "publication" if publication_count == 1 else "publications"
+
+    bio += f" {project_count} {project_word}"
+    
+    if publication_count > 0:
+        bio += f" and {publication_count} {publication_word}."
+    else:
+        bio += "."
+
+    return bio
+
+def humanize_duration(duration):
+    total_months = duration.total_seconds() / (30 * 24 * 60 * 60)
+    years = total_months // 12
+    months = total_months % 12
+
+    if years >= 1:
+        return f"{years + months/12:.1f} years"
+    else:
+        return f"{months} months"

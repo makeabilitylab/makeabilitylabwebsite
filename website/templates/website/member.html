@@ -8,6 +8,7 @@
 {% load ml_tags %}
 
 {% block stylesheets %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.1/css/all.min.css">
   <link rel="stylesheet" href="{% static 'website/css/news-item.css' %}">
   <link rel="stylesheet" href="{% static 'website/css/person-page.css' %}">
   <link rel="stylesheet" href="{% static 'website/css/project-listing.css' %}">
@@ -57,15 +58,45 @@ See: https://getbootstrap.com/docs/3.4/css/#overview-container
         <div class="person-affiliation">
           {{ position.school }} 
         </div>
-        <p><a href="https://www.example.com">Website</a></p>
-        <div class="person-bio-text">
-          {{ person.bio|safe}}
-        </div>
-        <div class="person-bio-modified-timestamp">
-          {% if person.bio_datetime_modified %}
-            Bio last updated: {{ person.bio_datetime_modified|date:"F d, Y" }}
-          {% endif %}
-        </div>
+
+        {% if person.has_website_links %}
+          <div class="person-websites">
+            {% if person.personal_website %}
+                <a href="{{ person.personal_website }}"><i class="fas fa-globe"></i> Website</a>
+            {% endif %}
+            {% if person.github %}
+                <a href="{{ person.github }}"><i class="fab fa-github"></i> Github</a>
+            {% endif %}
+            {% if person.twitter %}
+                <a href="{{ person.twitter }}"><i class="fab fa-twitter"></i> Twitter</a>
+            {% endif %}
+            {% if person.linkedin %}
+                <a href="{{ person.linkedin }}"><i class="fab fa-linkedin"></i> LinkedIn</a>
+            {% endif %}
+            {% if person.mastodon %}
+                <a href="{{ person.mastodon }}"><i class="fab fa-mastodon"></i> Mastodon</a>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {% if person.bio %}
+          <div class="person-bio-text">
+            {{ person.bio|safe}}
+          </div>
+
+          <div class="person-bio-modified-timestamp">
+            {% if person.bio_datetime_modified %}
+              Bio last updated: {{ person.bio_datetime_modified|date:"F d, Y" }}
+            {% endif %}
+          </div>
+        {% elif auto_generated_bio %}
+          <div class="person-bio-text">
+            {{ auto_generated_bio|safe}}
+          </div>
+          <div class="person-bio-modified-timestamp">
+            This bio was auto-generated.
+          </div>
+        {% endif %}
       </div>
     </div>
 		

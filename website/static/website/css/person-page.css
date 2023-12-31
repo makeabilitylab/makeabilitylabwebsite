@@ -41,13 +41,22 @@
   border-radius:50%;
 }
 
+.person-websites a {
+  margin-right: 15px;
+}
+
 .person-bio{
   flex: 2;
   margin-left: 10px;
 }
 
+.person-websites{
+  margin-top: 3px;
+}
+
 .person-bio-text{
   line-height: 1.8em;
+  margin-top: 10px;
 }
 
 .person-bio-modified-timestamp{
