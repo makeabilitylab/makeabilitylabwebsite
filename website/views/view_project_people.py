@@ -4,6 +4,10 @@ from django.http import Http404
 from django.db.models import Q
 
 def view_project_people(request):
+    """This page is intended to be used internally in our lab to view the people 
+       associated with a project. It should be useful for generating screenshots
+       for our talks, etc.
+    """
     project_name = request.GET.get('project_name', None)
     if project_name:
         project = Project.objects.get(Q(name=project_name) | Q(short_name=project_name))
