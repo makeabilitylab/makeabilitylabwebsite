@@ -72,8 +72,6 @@ def member(request, member_id):
                'navbar_white': True,
                'page_title': person.get_full_name()}
     
-    
-
     # Render is a Django shortcut (aka helper function). It combines a given template—in this case
     # member.html—with a context dictionary and returns an HttpResponse object with that rendered text.
     # See: https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
@@ -123,7 +121,7 @@ def auto_generate_bio(person):
         bio += f"was a collaborator with the Makeability Lab"
 
     if person.is_current_member or person.is_current_collaborator:
-        bio += f" They have been in the lab for {humanized_duration} and have contributed to"
+        bio += f" They have been in the lab for {humanized_duration}"
     elif person.is_alumni_member or person.is_past_collaborator:
         start_date_str = person.get_start_date.strftime("%b %Y")
         end_date_str = person.get_end_date.strftime("%b %Y") if person.get_end_date else "present"
