@@ -106,10 +106,18 @@ class Person(models.Model):
     last_name = models.CharField(max_length=50)
     url_name = models.CharField(editable=False, max_length=50, default='placeholder')
     email = models.EmailField(blank=True, null=True)
+    
+    # Website links
     personal_website = models.URLField(blank=True, null=True)
     github = models.URLField(blank=True, null=True)
     twitter = models.URLField(blank=True, null=True)
+    threads = models.URLField(blank=True, null=True)
+    mastodon = models.URLField(blank=True, null=True)
+    linkedin = models.URLField(blank=True, null=True)
+    
+    # If a bio is not added, the member view page will auto-generate one
     bio = models.TextField(blank=True, null=True)
+    bio.help_text = "You can use HTML markup here. If a bio is not added, the member view page will auto-generate one."
     bio_datetime_modified = models.DateField(null=True, blank=True)
 
     next_position = models.CharField(max_length=255, blank=True, null=True)

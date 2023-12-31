@@ -70,11 +70,14 @@ See: https://getbootstrap.com/docs/3.4/css/#overview-container
             {% if person.twitter %}
                 <a href="{{ person.twitter }}"><i class="fab fa-twitter"></i> Twitter</a>
             {% endif %}
-            {% if person.linkedin %}
-                <a href="{{ person.linkedin }}"><i class="fab fa-linkedin"></i> LinkedIn</a>
-            {% endif %}
             {% if person.mastodon %}
                 <a href="{{ person.mastodon }}"><i class="fab fa-mastodon"></i> Mastodon</a>
+            {% endif %}
+            {% if person.threads %}
+                <a href="{{ person.threads }}"><i class="fab fa-threads"></i> Threads</a>
+            {% endif %}
+            {% if person.linkedin %}
+                <a href="{{ person.linkedin }}"><i class="fab fa-linkedin"></i> LinkedIn</a>
             {% endif %}
           </div>
         {% endif %}
