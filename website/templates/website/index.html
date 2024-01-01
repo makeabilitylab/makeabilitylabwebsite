@@ -125,13 +125,15 @@
                     For options, see: https://easy-thumbnails.readthedocs.io/en/latest/usage/#thumbnail-options 
                 {% endcomment %}
                 src="{% thumbnail sponsor.icon sponsor.get_thumbnail_size_as_str box=sponsor.icon_cropping crop=True upscale=True %}" 
-                alt="{{sponsor.get_icon_alt_text}}"/>
+                alt="{{sponsor.get_icon_alt_text}}"
+                title="{{sponsor.name}}"/>
               </a>
             {% endif %}
           </div>
-          <div class="sponsor-info">
+          {% comment %} Uncomment the following if you want text below the logos {% endcomment %}
+          {% comment %} <div class="sponsor-info">
             {{ sponsor.name }}
-          </div>
+          </div> {% endcomment %}
         </div>
       {% endfor %}
     </div>
