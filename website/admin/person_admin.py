@@ -1,11 +1,15 @@
 from django.contrib import admin
 from website.models import Position, Person, ProjectRole
+from website.models.person import PERSON_THUMBNAIL_SIZE
 from website.admin_list_filters import PositionRoleListFilter, PositionTitleListFilter
 from image_cropping import ImageCroppingMixin
 
 from django.db.models import Q
 from django.utils import timezone
 
+from django.utils.html import format_html # for formatting thumbnails
+from easy_thumbnails.files import get_thumbnailer # for generating thumbnails
+import os # for checking if thumbnail file exists
 
 class PositionInline(admin.StackedInline):
     model = Position
@@ -64,10 +68,22 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
     # The list display lets us control what is shown in the default persons table at Home > Website > People
     # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
-    list_display = ('get_full_name', 'get_current_title', 'get_current_role', 'is_active', 
+    list_display = ('get_full_name', 'get_display_thumbnail', 'get_current_title', 'get_current_role', 'is_active', 
                     'get_start_date', 'get_end_date', 'get_project_count', 'get_pub_count',
                     'get_talk_count', 'get_time_in_current_position', 'get_total_time_as_member')
 
     list_filter = (PositionRoleListFilter, PositionTitleListFilter)
+
+    def get_display_thumbnail(self, obj):
+        if obj.image and os.path.isfile(obj.image.path):
+            # Use easy_thumbnails to generate a thumbnail
+            thumbnailer = get_thumbnailer(obj.image)
+            thumbnail_options = {'size': (PERSON_THUMBNAIL_SIZE[0], PERSON_THUMBNAIL_SIZE[1]), 'crop': True}
+            thumbnail_url = thumbnailer.get_thumbnail(thumbnail_options).url
+
+            return format_html('<img src="{}" height="50" style="border-radius: 50%;"/>', thumbnail_url)
+        return 'No Thumbnail'
+    
+    get_display_thumbnail.short_description = 'Thumbnail'
 
 
