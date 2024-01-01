@@ -58,7 +58,7 @@ class Grant(Artifact):
             elif self.sponsor.name is not None:
                 self.forum_name = self.sponsor.name
 
-            _logger.debug(f"Grant {instance.title} now has forum_name {instance.forum_name}.")
+            _logger.debug(f"Grant {self.title} now has forum_name {self.forum_name}.")
 
         super(Grant, self).save(*args, **kwargs)
     
