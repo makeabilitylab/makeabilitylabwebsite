@@ -44,7 +44,7 @@ class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
             # Get the related Person objects and sort by first name
             current_members = Person.objects.filter(
-                id__in=current_members.values_list('person', flat=True)).order_by('first_name')
+                id__in=current_member_positions.values_list('person', flat=True)).order_by('first_name')
             
             kwargs["queryset"] = current_members
         
