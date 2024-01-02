@@ -132,7 +132,8 @@
           </div>
           {% comment %} Uncomment the following if you want text below the logos {% endcomment %}
           {% comment %} <div class="sponsor-info">
-            {{ sponsor.name }}
+            {{ sponsor.name }}<br/>
+            ${{ sponsor.total_funding}}
           </div> {% endcomment %}
         </div>
       {% endfor %}

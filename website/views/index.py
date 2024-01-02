@@ -4,6 +4,9 @@ import website.utils.ml_utils as ml_utils
 from django.shortcuts import render # for render https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
 from django.db.models import OuterRef, Subquery
 
+from django.db.models import Sum # for summing grant funding amounts
+from django.db.models.functions import Coalesce # for replacing None with 0 when summing grant funding amounts
+
 # For logging
 import time
 import logging
@@ -47,8 +50,14 @@ def index(request):
                 .annotate(most_recent_publication=Subquery(latest_publication_dates.values('date')[:1]))
                 .order_by('-most_recent_publication', 'id').distinct())[:MAX_NUM_PROJECTS]
 
-    # Get all the sponsors
-    sponsors = Sponsor.objects.all()
+    # Get all sponsors, annotate each with the sum of their grants' funding_amount
+    # In this code, Coalesce(Sum('grant__funding_amount'), 0) calculates the sum of the 
+    # funding_amount for all grants related to each sponsor, and replaces None with 0 if 
+    # there are no related grants.
+    sponsors = Sponsor.objects.annotate(total_funding=Coalesce(Sum('grant__funding_amount'), 0))
+
+    # Sort by total_funding in descending order, then by name in ascending order
+    sponsors = sponsors.order_by('-total_funding', 'name')
 
     context = {'banners': banners,
                'news': news_items,
