@@ -66,6 +66,9 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
     # see: https://docs.djangoproject.com/en/1.11/ref/contrib/admin/#inlinemodeladmin-objects
     inlines = [PositionInline, ProjectRoleInline]
 
+    # We must define search_fields in order to use the autocomplete_fields option
+    search_fields = ['first_name', 'last_name'] 
+
     # The list display lets us control what is shown in the default persons table at Home > Website > People
     # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
     list_display = ('get_full_name', 'get_display_thumbnail', 'get_current_title', 'get_current_role', 'is_active', 
