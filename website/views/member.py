@@ -126,7 +126,7 @@ def auto_generate_bio(person):
         start_date_str = person.get_start_date.strftime("%b %Y")
         end_date_str = person.get_end_date.strftime("%b %Y") if person.get_end_date else "present"
             
-        bio += f" from {start_date_str} to {end_date_str} "
+        bio += f" from {start_date_str} to {end_date_str}"
    
     if project_count > 0 or publication_count > 0:
         bio += " and contributed to"
