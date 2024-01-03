@@ -6,11 +6,35 @@ from django.contrib.admin import widgets
 from django.db.models import Q
 from datetime import date
 
+from django.db.models.functions import TruncYear # for filtering by year
+
+class YearListFilter(admin.SimpleListFilter):
+    title = 'year' # a label for our filter
+    parameter_name = 'year' # you can put anything here
+
+    def lookups(self, request, model_admin):
+        # This method should return a list of tuples. The first element in each
+        # tuple is the coded value for the option that will appear in the URL query.
+        # The second element is the human-readable name for the option that will
+        # appear in the right sidebar.
+       
+        qs = model_admin.model.objects.annotate(year=TruncYear('date')).values('year').distinct()
+        return [(x['year'].year, x['year'].year) for x in qs.order_by('-year')]
+
+    def queryset(self, request, queryset):
+        # This method is used when the user selects a choice.
+        # It should return a filtered queryset based on the chosen value.
+        if self.value():
+            return queryset.filter(date__year=self.value())
+
 @admin.register(News)
 class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
     # The list display lets us control what is shown in the default table at Home > Website > News
     list_display = ('title', 'author', 'date', 'display_projects', 'display_people') 
+
+    # Add a filter to the right sidebar that allows us to filter by year
+    list_filter = (YearListFilter, 'project')
 
     # Define 'author' as an auto-complete field. We must then also define "search_fields"
     # in PersonAdmin or we'll receive a Django error
@@ -30,34 +54,15 @@ class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
         return ", ".join([person.get_full_name() for person in obj.people.all()])
     display_people.short_description = 'People'
 
-    # Filters authors only to current members and sorts by firstname
-    # Based on: http://stackoverflow.com/a/30627555
-    # def formfield_for_foreignkey(self, db_field, request, **kwargs):
-
-    #     # print("NewsAdmin.formfield_for_foreignkey: db_field: {} db_field.name {} request: {}".format(db_field, db_field.name, request))
-    #     if db_field.name == "author":
-    #         # Define the conditions for a current member. Current members need to have:
-    #         # 1. Have started today or in the past
-    #         # 2. Have an end date of null or in the future
-    #         # 3. Be a current member 
-    #         current_member_conditions = (Q(start_date__lte=date.today()) &
-    #                                      (Q(end_date__isnull=True) | Q(end_date__gte=date.today())) &
-    #                                      Q(role=Position.MEMBER)) # must be a member of the lab
-
-    #         # Get all current members
-    #         current_member_positions = Position.objects.filter(current_member_conditions)
-
-    #         # Get the related Person objects and sort by first name
-    #         current_members = Person.objects.filter(
-    #             id__in=current_member_positions.values_list('person', flat=True)).order_by('first_name')
-            
-    #         kwargs["queryset"] = current_members
-        
-    #     return super(NewsAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
-
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
         if db_field.name == "project":
             kwargs["widget"] = widgets.FilteredSelectMultiple("project", is_stacked=False)
         if db_field.name == "people":
             kwargs["widget"] = widgets.FilteredSelectMultiple("people", is_stacked=False)
         return super(NewsAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
+    
+    def queryset(self, request, queryset):
+        # This method is used when the user selects a choice.
+        # It should return a filtered queryset based on the chosen value.
+        if self.value():
+            return queryset.filter(date__year=self.value())

@@ -10,6 +10,7 @@ from django.utils import timezone
 from django.utils.html import format_html # for formatting thumbnails
 from easy_thumbnails.files import get_thumbnailer # for generating thumbnails
 import os # for checking if thumbnail file exists
+from website.utils import timeutils
 
 class PositionInline(admin.StackedInline):
     model = Position
@@ -73,9 +74,24 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
     # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
     list_display = ('get_full_name', 'get_display_thumbnail', 'get_current_title', 'get_current_role', 'is_active', 
                     'get_start_date', 'get_end_date', 'get_project_count', 'get_pub_count',
-                    'get_talk_count', 'get_time_in_current_position', 'get_total_time_as_member')
+                    'get_talk_count', 'display_time_current_position', 'display_total_time_as_member')
 
     list_filter = (PositionRoleListFilter, PositionTitleListFilter)
+
+    def display_time_current_position(self, obj):
+        """Displays the time in the current position"""
+        duration = obj.get_time_in_current_position
+        return timeutils.humanize_duration(duration, sig_figs=2, use_abbreviated_units=True)
+    
+    display_time_current_position.short_description = 'Time in Current Position'
+    
+    def display_total_time_as_member(self, obj):
+        """Displays the total time as a member of the lab"""
+        duration = obj.get_total_time_as_member
+        
+        return timeutils.humanize_duration(duration, sig_figs=2, use_abbreviated_units=True)
+    
+    display_total_time_as_member.short_description = 'Total Time as Member'
 
     def get_display_thumbnail(self, obj):
         if obj.image and os.path.isfile(obj.image.path):
