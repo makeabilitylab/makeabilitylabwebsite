@@ -1,5 +1,6 @@
 from django.contrib import admin
 from website.models import News, Person, Position
+from website.models.news import NEWS_THUMBNAIL_SIZE
 from image_cropping import ImageCroppingMixin
 from django.contrib.admin import widgets
 
@@ -7,6 +8,10 @@ from django.db.models import Q
 from datetime import date
 
 from django.db.models.functions import TruncYear # for filtering by year
+
+from django.utils.html import format_html # for formatting thumbnails
+from easy_thumbnails.files import get_thumbnailer # for generating thumbnails
+import os # for checking if thumbnail file exists
 
 class YearListFilter(admin.SimpleListFilter):
     title = 'year' # a label for our filter
@@ -31,7 +36,7 @@ class YearListFilter(admin.SimpleListFilter):
 class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
     # The list display lets us control what is shown in the default table at Home > Website > News
-    list_display = ('title', 'author', 'date', 'display_projects', 'display_people') 
+    list_display = ('title', 'get_display_thumbnail', 'author', 'date', 'display_projects', 'display_people') 
 
     # Add a filter to the right sidebar that allows us to filter by year
     list_filter = (YearListFilter, 'project')
@@ -42,6 +47,18 @@ class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
     # Exclude the slug field since it is auto-generated
     exclude = ('slug',)
+
+    def get_display_thumbnail(self, obj):
+        if obj.image and os.path.isfile(obj.image.path):
+            # Use easy_thumbnails to generate a thumbnail
+            thumbnailer = get_thumbnailer(obj.image)
+            thumbnail_options = {'size': (NEWS_THUMBNAIL_SIZE[0], NEWS_THUMBNAIL_SIZE[1]), 'crop': True}
+            thumbnail_url = thumbnailer.get_thumbnail(thumbnail_options).url
+
+            return format_html('<img src="{}" height="50" style="border-radius: 5%;"/>', thumbnail_url)
+        return 'No Thumbnail'
+    
+    get_display_thumbnail.short_description = 'Thumbnail'
 
     def display_projects(self, obj):
         """Displays the projects linked to the news story"""
