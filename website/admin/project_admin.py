@@ -1,8 +1,13 @@
 from django.contrib import admin
 from django.contrib.admin import widgets
 from website.models import Project, ProjectHeader, Banner, Photo
+from website.models.project import PROJECT_THUMBNAIL_SIZE
 from website.admin_list_filters import ActiveProjectsFilter
 from image_cropping import ImageCroppingMixin
+
+from django.utils.html import format_html # for formatting thumbnails
+from easy_thumbnails.files import get_thumbnailer # for generating thumbnails
+import os # for checking if thumbnail file exists
 
 class ProjectHeaderInline(ImageCroppingMixin, admin.StackedInline):
     """This allows us to edit ProjectHeader from the Project page"""
@@ -26,12 +31,24 @@ class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
     # The list display lets us control what is shown in the Project table at Home > Website > Project
     # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
-    list_display = ('name', 'start_date', 'end_date', 'has_ended', 'get_people_count',
+    list_display = ('name', 'get_display_thumbnail', 'start_date', 'end_date', 'has_ended', 'get_people_count',
                     'get_current_member_count', 'get_past_member_count',
                     'get_most_recent_artifact_date', 'get_most_recent_artifact_type',
                     'get_publication_count', 'get_video_count', 'get_talk_count', 'get_banner_count')
     
     list_filter = (ActiveProjectsFilter, )
+
+    def get_display_thumbnail(self, obj):
+        if obj.gallery_image and os.path.isfile(obj.gallery_image.path):
+            # Use easy_thumbnails to generate a thumbnail
+            thumbnailer = get_thumbnailer(obj.gallery_image)
+            thumbnail_options = {'size': (PROJECT_THUMBNAIL_SIZE[0], PROJECT_THUMBNAIL_SIZE[1]), 'crop': True}
+            thumbnail_url = thumbnailer.get_thumbnail(thumbnail_options).url
+
+            return format_html('<img src="{}" height="50" style="border-radius: 5%;"/>', thumbnail_url)
+        return 'No Thumbnail'
+    
+    get_display_thumbnail.short_description = 'Thumbnail'
 
     def get_search_results(self, request, queryset, search_term):
         """In this code, get_search_results is a method that Django calls to get the list of results 
