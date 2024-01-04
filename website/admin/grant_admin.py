@@ -7,15 +7,14 @@ class GrantAdmin(ArtifactAdmin):
 
     # search_fields are used for auto-complete, see:
     #   https://docs.djangoproject.com/en/3.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields
-    search_fields = ['title', 'date']
+    search_fields = ['title', 'date', 'forum_name']
 
     # The list display lets us control what is shown in the default talk table at Home > Website > Grants
     # See: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_display
     list_display = ('title', 'date', 'get_first_author_last_name', 'sponsor', 'funding_amount')
 
-    # search_fields are used for auto-complete, see:
-    #   https://docs.djangoproject.com/en/3.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields
-    search_fields = ['title', 'forum_name']
+    # I want to make sponsor auto-complete but it's causing errors, so commenting out
+    # autocomplete_fields = ['sponsor']
 
     fieldsets = [
         (None,                      {'fields': ['title', 'authors']}),

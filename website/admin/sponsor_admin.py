@@ -13,7 +13,13 @@ import os # for checking if thumbnail file exists
 class SponsorAdmin(ImageCroppingMixin, admin.ModelAdmin):
     # The list display lets us control what is shown in the default talk table at Home > Website > Sponsors
     # See: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_display
-    list_display = ('name', 'get_display_thumbnail', 'short_name', 'total_funding', 'grant_count', 'active_grant_count')
+    list_display = ('name', 'get_display_thumbnail', 'short_name', 'total_funding', 
+                    'grant_count', 'active_grant_count')
+    
+    # search_fields is a list of field names that will be searched whenever
+    # the user enters a search term in the admin change list page for this model.
+    # In this case, the admin will search the 'name' and 'short_name' fields of the Sponsor model.
+    search_fields = ['name', 'short_name']
 
     def total_funding(self, obj):
         return obj.grant_set.aggregate(total_funding=Sum('funding_amount'))['total_funding']

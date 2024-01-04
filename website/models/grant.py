@@ -28,7 +28,7 @@ class Grant(Artifact):
     funding_amount = models.IntegerField(null=True)
     funding_amount.help_text = "Amount of funding (in USD) for this grant"
 
-    grant_id = models.CharField(max_length=255, null=True)
+    grant_id = models.CharField(max_length=255, null=True, blank=True)
     grant_id.help_text = "The grant id (e.g., <a href='https://www.nsf.gov/awardsearch/showAward?AWD_ID=1302338'>1302338</a>)"
 
     @property
