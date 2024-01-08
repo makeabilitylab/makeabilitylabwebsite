@@ -82,10 +82,10 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
         """Displays the time in the current position"""
         duration = obj.get_time_in_current_position
 
-        if duration is None:
-            return "N/A"
-        else:
+        if duration:
             return timeutils.humanize_duration(duration, sig_figs=2, use_abbreviated_units=True)
+        else:
+            return 'N/A'
     
     display_time_current_position.short_description = 'Time in Current Position'
     
