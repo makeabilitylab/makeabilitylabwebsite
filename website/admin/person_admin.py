@@ -114,7 +114,9 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
                 thumbnail_url = thumbnailer.get_thumbnail(thumbnail_options).url
                 return format_html('<img src="{}" height="50" style="border-radius: 50%;"/>', thumbnail_url)
             except InvalidImageFormatError as e:
-                _logger.error(f"Invalid image format error: {e}")
+                _logger.error(f"When trying to generate a thumbnail for {obj.get_full_name()}, received a invalid image format error: {e}")
+            except PermissionError as e:
+                _logger.error(f"When trying to generate a thumbnail for {obj.get_full_name()}, received permission error: {e}")
 
         return 'No Thumbnail'
     
