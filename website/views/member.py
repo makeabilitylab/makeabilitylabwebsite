@@ -122,7 +122,7 @@ def auto_generate_bio(person):
     elif person.is_past_collaborator:
         bio += f" was a collaborator with the Makeability Lab"
     else:
-        bio = " has"
+        bio += " has"
 
     if person.is_current_member:
         bio += f" They have been in the lab for {humanized_duration} and"
