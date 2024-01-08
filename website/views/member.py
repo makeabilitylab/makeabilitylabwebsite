@@ -108,7 +108,9 @@ def auto_generate_bio(person):
     # years_in_lab = (datetime.date.today() - start_date).days // 365
     total_time_in_lab = person.get_total_time_in_lab()
     #total_time_in_role = person.get_total_time_in_current_position()
-    humanized_duration = humanize_duration(total_time_in_lab)
+    humanized_duration = None
+    if total_time_in_lab:
+        humanize_duration(total_time_in_lab)
     
     bio = f"{person.first_name} "
     if person.is_current_member:
@@ -120,8 +122,10 @@ def auto_generate_bio(person):
     elif person.is_past_collaborator:
         bio += f"was a collaborator with the Makeability Lab"
 
-    if person.is_current_member or person.is_current_collaborator:
+    if person.is_current_member:
         bio += f" They have been in the lab for {humanized_duration}"
+    elif person.is_current_collaborator:
+        bio += f" They have collaborated with the lab for {humanize_duration}"
     elif person.is_alumni_member or person.is_past_collaborator:
         start_date_str = person.get_start_date.strftime("%b %Y")
         end_date_str = person.get_end_date.strftime("%b %Y") if person.get_end_date else "present"
