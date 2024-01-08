@@ -93,7 +93,10 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
         """Displays the total time as a member of the lab"""
         duration = obj.get_total_time_as_member
         
-        return timeutils.humanize_duration(duration, sig_figs=2, use_abbreviated_units=True)
+        if duration:
+            return timeutils.humanize_duration(duration, sig_figs=2, use_abbreviated_units=True)
+        else:
+            return 'N/A'
     
     display_total_time_as_member.short_description = 'Total Time as Member'
 
