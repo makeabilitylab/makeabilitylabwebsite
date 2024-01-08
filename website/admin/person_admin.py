@@ -1,6 +1,7 @@
 from django.contrib import admin
 from website.models import Position, Person, ProjectRole
 from website.models.person import PERSON_THUMBNAIL_SIZE
+from easy_thumbnails.exceptions import InvalidImageFormatError # for handling invalid images
 from website.admin_list_filters import PositionRoleListFilter, PositionTitleListFilter
 from image_cropping import ImageCroppingMixin
 
@@ -11,6 +12,9 @@ from django.utils.html import format_html # for formatting thumbnails
 from easy_thumbnails.files import get_thumbnailer # for generating thumbnails
 import os # for checking if thumbnail file exists
 from website.utils import timeutils
+
+import logging
+_logger = logging.getLogger(__name__)
 
 class PositionInline(admin.StackedInline):
     model = Position
@@ -105,9 +109,13 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
             # Use easy_thumbnails to generate a thumbnail
             thumbnailer = get_thumbnailer(obj.image)
             thumbnail_options = {'size': (PERSON_THUMBNAIL_SIZE[0], PERSON_THUMBNAIL_SIZE[1]), 'crop': True}
-            thumbnail_url = thumbnailer.get_thumbnail(thumbnail_options).url
+            
+            try:
+                thumbnail_url = thumbnailer.get_thumbnail(thumbnail_options).url
+                return format_html('<img src="{}" height="50" style="border-radius: 50%;"/>', thumbnail_url)
+            except InvalidImageFormatError as e:
+                _logger.error(f"Invalid image format error: {e}")
 
-            return format_html('<img src="{}" height="50" style="border-radius: 50%;"/>', thumbnail_url)
         return 'No Thumbnail'
     
     get_display_thumbnail.short_description = 'Thumbnail'
