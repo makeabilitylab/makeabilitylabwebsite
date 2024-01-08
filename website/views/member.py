@@ -112,28 +112,30 @@ def auto_generate_bio(person):
     if total_time_in_lab:
         humanize_duration(total_time_in_lab)
     
-    bio = f"{person.first_name} "
+    bio = f"{person.first_name}"
     if person.is_current_member:
-        bio += f"is a current {person.get_current_title} in the Makeability Lab."
+        bio += f" is a current {person.get_current_title} in the Makeability Lab."
     elif person.is_current_collaborator:
-        bio += f"is a current collaborator with the Makeability Lab."
+        bio += f" is a current collaborator with the Makeability Lab."
     elif person.is_alumni_member:
-        bio += f"was a {person.get_current_title} in the Makeability Lab"
+        bio += f" was a {person.get_current_title} in the Makeability Lab"
     elif person.is_past_collaborator:
-        bio += f"was a collaborator with the Makeability Lab"
+        bio += f" was a collaborator with the Makeability Lab"
+    else:
+        bio = " has"
 
     if person.is_current_member:
-        bio += f" They have been in the lab for {humanized_duration}"
+        bio += f" They have been in the lab for {humanized_duration} and"
     elif person.is_current_collaborator:
-        bio += f" They have collaborated with the lab for {humanize_duration}"
+        bio += f" They have collaborated with the lab for {humanize_duration} and"
     elif person.is_alumni_member or person.is_past_collaborator:
         start_date_str = person.get_start_date.strftime("%b %Y")
         end_date_str = person.get_end_date.strftime("%b %Y") if person.get_end_date else "present"
             
-        bio += f" from {start_date_str} to {end_date_str}"
+        bio += f" from {start_date_str} to {end_date_str} and"
    
     if project_count > 0 or publication_count > 0:
-        bio += " and contributed to"
+        bio += " contributed to"
         project_word = "project" if project_count == 1 else "projects"
         publication_word = "publication" if publication_count == 1 else "publications"
 
