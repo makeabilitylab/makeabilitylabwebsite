@@ -2,6 +2,7 @@ from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_save, m2m_changed, post_delete
 from website.models.publication import PubType
+from website.models.position import Role, Title
 from django.core.files import File
 import website.utils.fileutils as ml_fileutils
 
@@ -109,7 +110,9 @@ class Person(models.Model):
     
     # Website links
     personal_website = models.URLField(blank=True, null=True)
+    personal_website.help_text = 'Put the full url. For example, <a href="https://jonfroehlich.github.io/">https://jonfroehlich.github.io/</a>'
     github = models.URLField(blank=True, null=True)
+    github.help_text = 'Again, put the full url. For example, <a href="https://github.com/jonfroehlich">https://github.com/jonfroehlich</a>'
     twitter = models.URLField(blank=True, null=True)
     threads = models.URLField(blank=True, null=True)
     mastodon = models.URLField(blank=True, null=True)
@@ -188,7 +191,7 @@ class Person(models.Model):
         if latest_position is not None:
             return latest_position.get_title_index()
         else:
-            return Position.TITLE_ORDER_MAPPING[Position.UNKNOWN]
+            return Position.TITLE_ORDER_MAPPING[Title.UNKNOWN]
 
     @cached_property
     def get_current_department(self):
@@ -279,7 +282,7 @@ class Person(models.Model):
     @cached_property
     def get_total_time_as_member(self):
         """Returns the total time as a member across all positions. A cached property."""
-        return self.get_total_time_in_role(Position.MEMBER)
+        return self.get_total_time_in_role(Role.MEMBER)
 
     get_total_time_as_member.short_description = "Total Time As Member"
 
@@ -303,7 +306,7 @@ class Person(models.Model):
         # we use Django’s Q objects to construct a complex query. We check if there exists any position 
         # where the role was Position.MEMBER and the end date is less than the current time (i.e., in the past). 
         # The exists() method returns True if such a position exists, and False otherwise.
-        return self.position_set.filter(Q(role=Position.MEMBER) & Q(end_date__lt=timezone.now())).exists()
+        return self.position_set.filter(Q(role=Role.MEMBER) & Q(end_date__lt=timezone.now())).exists()
 
     @cached_property
     def is_current_collaborator(self):
@@ -326,7 +329,7 @@ class Person(models.Model):
     @cached_property
     def get_latest_phd_student_position(self):
         """Returns the latest position for this person that is a PhD student. A cached property."""
-        return self.get_latest_position_in_title(Position.PHD_STUDENT)
+        return self.get_latest_position_in_title(Title.PHD_STUDENT)
 
     def get_latest_position_in_title(self, title):
         """Returns the latest position in the specified role. A cached property."""

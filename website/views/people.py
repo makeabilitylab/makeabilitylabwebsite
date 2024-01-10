@@ -1,5 +1,6 @@
 from django.conf import settings # for access to settings variables, see https://docs.djangoproject.com/en/4.0/topics/settings/#using-settings-in-python-code
 from website.models import Banner, Position, Person, Publication
+from website.models.position import Role
 from website.models.publication import PubType
 import website.utils.ml_utils as ml_utils 
 import operator
@@ -22,10 +23,6 @@ def people(request):
     func_start_time = time.perf_counter()
     _logger.debug(f"Starting views/people at {func_start_time:0.4f}")
 
-    # current_members = Person.objects.filter(position__is_current_member=True).distinct()
-    # current_members = Position.objects.filter(start_date__lte=date.today(),
-    #                                           end_date__isnull=True | end_date__gte=date.today())
-    
     # In Django, keyword objects are AND'ed together. If we want more complex queries (e.g,. with OR statements),
     # we need to use Q objects. See: https://docs.djangoproject.com/en/4.2/topics/db/queries/#complex-lookups-with-q-objects
     # We want to get all current members ordered by start date (ascending)
@@ -39,7 +36,7 @@ def people(request):
     map_title_to_order = Position.get_map_title_to_order();
     current_member_positions = (Position.objects.filter(Q(start_date__lte=date.today()), # start date is in the past
                             Q(end_date__isnull=True) | Q(end_date__gte=date.today()), # end date is in the future or null
-                            Q(role=Position.MEMBER)) # must be a member of the lab
+                            Q(role=Role.MEMBER)) # must be a member of the lab
                             .order_by( # Order by title (in specified order) followed by start date
                                Case(*[When(title=title, then=priority_order) for (title, priority_order) in map_title_to_order.items()]),
                                'start_date' 
@@ -67,7 +64,7 @@ def people(request):
     # Get past members
     past_member_positions = (Position.objects.filter(Q(start_date__lte=date.today()), # start date is in the past
                             Q(end_date__isnull=False) | Q(end_date__lt=date.today()), # end date is not null
-                            Q(role=Position.MEMBER)) # must be a member of the lab
+                            Q(role=Role.MEMBER)) # must be a member of the lab
                             .exclude(person__id__in=exclude_member_ids) # exclude current members and graduated phd students
                             .annotate(total=Count('title')).order_by('-end_date'))
 
