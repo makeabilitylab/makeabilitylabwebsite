@@ -11,7 +11,34 @@ class AbstractedTitle(Enum):
     """Enum class for abstracted titles"""
     GRADUATE_STUDENT = "Graduate Student"
     PROFESSOR = "Professor"
-    PROFESSIONAL = "Research Scientist, Engineer, or Designer"
+    PROFESSIONAL = "Professional"
+
+class MemberClassification(Enum):
+    """Enum class for member or collaborator classification"""
+    CURRENT_MEMBER = "Current Member"
+    PAST_MEMBER = "Alumni Member"
+    FUTURE_MEMBER = "Future Member"
+    CURRENT_COLLABORATOR = "Current Collaborator"
+    PAST_COLLABORATOR = "Past Collaborator"
+
+class Role(models.TextChoices):
+    MEMBER = "Member"
+    COLLABORATOR = "Collaborator"
+
+class Title(models.TextChoices):
+    HIGH_SCHOOL = "High School Student"
+    UGRAD = "Undergrad"
+    MS_STUDENT = "MS Student"
+    PHD_STUDENT = "PhD Student"
+    POST_DOC = "Post doc"
+    DIRECTOR = "Director"
+    ASSISTANT_PROF = "Assistant Professor"
+    ASSOCIATE_PROF = "Associate Professor"
+    FULL_PROF = "Professor"
+    RESEARCH_SCIENTIST = "Research Scientist"
+    SOFTWARE_DEVELOPER = "Software Developer"
+    DESIGNER = "Designer"
+    UNKNOWN = "Uncategorized"
 
 class Position(models.Model):
 
@@ -24,74 +51,27 @@ class Position(models.Model):
     advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Advisor', on_delete=models.SET_NULL)
     co_advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Co_Advisor', verbose_name='Co-advisor', on_delete=models.SET_NULL)
     grad_mentor = models.ForeignKey('Person', blank=True, null=True, related_name='Grad_Mentor', on_delete=models.SET_NULL)
-
-
-    # According to Django docs, best to have field choices within the primary
-    # class that uses them. See https://docs.djangoproject.com/en/1.9/ref/models/fields/#choices
-    MEMBER = "Member"
-    COLLABORATOR = "Collaborator"
-
-    ROLE_CHOICES = (
-        (MEMBER, "Member"),
-        (COLLABORATOR, "Collaborator"),
-    )
-    role = models.CharField(max_length=50, choices=ROLE_CHOICES, default=MEMBER)
-
-    # Note, if you add a new title here, you must also update:
-    #  1. The TITLE_ORDER_MAPPING below
-    #  2. The static method get_sorted_titles
-    HIGH_SCHOOL = "High School Student"
-    UGRAD = "Undergrad"
-    MS_STUDENT = "MS Student"
-    PHD_STUDENT = "PhD Student"
-    POST_DOC = "Post doc"
-    ASSISTANT_PROF = "Assistant Professor"
-    ASSOCIATE_PROF = "Associate Professor"
-    FULL_PROF = "Professor"
-    RESEARCH_SCIENTIST = "Research Scientist"
-    SOFTWARE_DEVELOPER = "Software Developer"
-    DESIGNER = "Designer"
-    UNKNOWN = "Uncategorized"
-
-    TITLE_CHOICES = (
-        (HIGH_SCHOOL, HIGH_SCHOOL),
-        (UGRAD, UGRAD),
-        (MS_STUDENT, MS_STUDENT),
-        (PHD_STUDENT, PHD_STUDENT),
-        (POST_DOC, POST_DOC),
-        (ASSISTANT_PROF, ASSISTANT_PROF),
-        (ASSOCIATE_PROF, ASSOCIATE_PROF),
-        (FULL_PROF, FULL_PROF),
-        (RESEARCH_SCIENTIST, RESEARCH_SCIENTIST),
-        (SOFTWARE_DEVELOPER, SOFTWARE_DEVELOPER),
-        (DESIGNER, DESIGNER),
-        (UNKNOWN, UNKNOWN)
-    )
-    title = models.CharField(max_length=50, choices=TITLE_CHOICES)
-
-    TITLE_ORDER_MAPPING = {
-        FULL_PROF: 0,
-        ASSOCIATE_PROF: 1,
-        ASSISTANT_PROF: 2,
-        POST_DOC: 3,
-        RESEARCH_SCIENTIST: 4,
-        PHD_STUDENT: 5,
-        MS_STUDENT: 6,
-        SOFTWARE_DEVELOPER: 6,
-        DESIGNER: 6,
-        UGRAD: 7,
-        HIGH_SCHOOL: 8,
-        UNKNOWN: 9
-    }
-
-    CURRENT_MEMBER = "Current Member"
-    PAST_MEMBER = "Past Member"
-    FUTURE_MEMBER = "Future Member"
-    CURRENT_COLLABORATOR = "Current Collaborator"
-    PAST_COLLABORATOR = "Past Collaborator"
+    role = models.CharField(max_length=50, choices=Role.choices, default=Role.MEMBER)
+    title = models.CharField(max_length=50, choices=Title.choices)
 
     department = models.CharField(max_length=50, blank=True, default="Allen School of Computer Science and Engineering")
     school = models.CharField(max_length=60, default="University of Washington")
+
+    TITLE_ORDER_MAPPING = {
+        Title.FULL_PROF: 0,
+        Title.ASSOCIATE_PROF: 1,
+        Title.ASSISTANT_PROF: 2,
+        Title.POST_DOC: 3,
+        Title.DIRECTOR: 4,
+        Title.RESEARCH_SCIENTIST: 5,
+        Title.PHD_STUDENT: 6,
+        Title.MS_STUDENT: 7,
+        Title.SOFTWARE_DEVELOPER: 8,
+        Title.DESIGNER: 8,
+        Title.UGRAD: 9,
+        Title.HIGH_SCHOOL: 10,
+        Title.UNKNOWN: 11
+    }
 
     def get_start_date_short(self):
         earliest_position = self.person.get_earliest_position_in_role(self.role, contiguous_constraint=True)
@@ -135,48 +115,56 @@ class Position(models.Model):
 
     def is_collaborator(self):
         """Returns true if collaborator"""
-        return self.role == Position.COLLABORATOR
+        return self.role == Role.COLLABORATOR
 
     def is_member(self):
         """Returns true if member"""
-        return self.role == Position.MEMBER
+        return self.role == Role.MEMBER
 
     def is_professor(self):
         """Returns true if professor"""
-        return self.title == Position.FULL_PROF or self.title == Position.ASSOCIATE_PROF \
-            or self.title == Position.ASSISTANT_PROF
+        return (self.title == Title.FULL_PROF or 
+                self.title == Title.ASSOCIATE_PROF or 
+                self.title == Title.ASSISTANT_PROF)
 
     def is_grad_student(self):
         """Returns true if grad student"""
-        return self.title == Position.MS_STUDENT or self.title == Position.PHD_STUDENT
+        return (self.title == Title.MS_STUDENT or 
+                self.title == Title.PHD_STUDENT)
 
     def is_high_school(self):
         """Returns true if high school student"""
-        return self.title == Position.HIGH_SCHOOL
+        return self.title == Title.HIGH_SCHOOL
 
     def is_current_member(self):
         """Returns true if member is current based on end date"""
-        return self.is_member() and \
-               self.start_date is not None and self.start_date <= date.today() and \
-               (self.end_date is None or (self.end_date is not None and self.end_date >= date.today()))
+        has_started = self.start_date is not None and self.start_date <= date.today()
+        has_not_ended = self.end_date is None or self.end_date >= date.today()
+
+        return self.is_member() and has_started and has_not_ended
 
     def is_current_collaborator(self):
         """Returns true if member is current based on end date"""
-        return self.is_collaborator() and \
-               (self.start_date is not None and self.start_date <= date.today() and \
-                self.end_date is None or (self.end_date is not None and self.end_date >= date.today()))
+        has_started = self.start_date is not None and self.start_date <= date.today()
+        has_not_ended = self.end_date is None or self.end_date >= date.today()
 
+        return self.is_collaborator() and has_started and has_not_ended
+    
     def is_past_collaborator(self):
         """Returns true if collaborator is a past collaborator (used to differentiate between future collaborators)"""
-        return self.is_collaborator() and \
-               self.start_date < date.today() and \
-               self.end_date != None and self.end_date < date.today()
+        is_collaborator = self.is_collaborator()
+        has_started = self.start_date < date.today()
+        has_ended = self.end_date is not None and self.end_date < date.today()
+
+        return is_collaborator and has_started and has_ended
 
     def is_alumni_member(self):
         """Returns true if member is an alumni member (used to differentiate between future members)"""
-        return self.is_member() and \
-               self.start_date < date.today() and \
-               self.end_date != None and self.end_date < date.today()
+        is_member = self.is_member()
+        has_started = self.start_date < date.today()
+        has_ended = self.end_date is not None and self.end_date < date.today()
+
+        return is_member and has_started and has_ended
 
     def clean(self):
         """Automatically called by Django when saving data to validate the data"""
@@ -190,8 +178,8 @@ class Position(models.Model):
     @staticmethod
     def get_sorted_abstracted_titles():
         """Static method returns a sorted list of abstracted title names"""
-        return (AbstractedTitle.PROFESSOR.value, AbstractedTitle.PROFESSIONAL.value, Position.POST_DOC,
-                AbstractedTitle.GRADUATE_STUDENT.value, Position.UGRAD, Position.HIGH_SCHOOL, Position.UNKNOWN)
+        return (AbstractedTitle.PROFESSOR.value, AbstractedTitle.PROFESSIONAL.value, Title.POST_DOC,
+                AbstractedTitle.GRADUATE_STUDENT.value, Title.UGRAD, Title.HIGH_SCHOOL, Title.UNKNOWN)
 
     @staticmethod
     def get_map_abstracted_title_to_order():
@@ -222,30 +210,27 @@ class Position(models.Model):
     @staticmethod
     def get_prof_titles():
         """Returns an array of professor titles"""
-        return [Position.ASSISTANT_PROF, Position.ASSOCIATE_PROF, Position.FULL_PROF]
+        return [Title.ASSISTANT_PROF, Title.ASSOCIATE_PROF, Title.FULL_PROF]
 
     @staticmethod
     def get_sorted_titles():
         """Static method returns a sorted list of title names"""
-        return (Position.FULL_PROF, Position.ASSOCIATE_PROF, Position.ASSISTANT_PROF, 
-                Position.RESEARCH_SCIENTIST, Position.POST_DOC, Position.PHD_STUDENT, 
-                Position.MS_STUDENT, Position.SOFTWARE_DEVELOPER, Position.DESIGNER, 
-                Position.UGRAD, Position.HIGH_SCHOOL, Position.UNKNOWN)
-    
+        return sorted(Title, key=lambda title: Position.TITLE_ORDER_MAPPING[title])
+
     @staticmethod
     def get_map_title_to_order():
         """Static method returns a map of titles to their order"""
-        sorted_titles = Position.get_sorted_titles()
-        map_title_to_order = {j: i for i, j in enumerate(sorted_titles)}
-        return map_title_to_order
+        return Position.TITLE_ORDER_MAPPING
 
     @staticmethod
     def is_graduate_student_position(position):
         """Static method returns true if position is a graduated student"""
         if(type(position) is Position):
-            return position.title == Position.PHD_STUDENT or position.title == Position.MS_STUDENT
+            return (position.title == Title.PHD_STUDENT or 
+                    position.title == Title.MS_STUDENT)
         elif(type(position) is str):
-            return position == Position.PHD_STUDENT or position == Position.MS_STUDENT
+            return (position == Title.PHD_STUDENT or 
+                    position == Title.MS_STUDENT)
         else:
             raise TypeError("position must be of type Position or str")
 
@@ -253,11 +238,13 @@ class Position(models.Model):
     def is_professorial_position(position):
         """Static method returns true if position is a professor"""
         if(type(position) is Position):
-            return (position.title == Position.FULL_PROF or position.title == Position.ASSOCIATE_PROF 
-                    or position.title == Position.ASSISTANT_PROF)
+            return (position.title == Title.FULL_PROF or 
+                    position.title == Title.ASSOCIATE_PROF or
+                    position.title == Title.ASSISTANT_PROF)
         elif(type(position) is str):
-            return (position == Position.FULL_PROF or position == Position.ASSOCIATE_PROF  
-                    or position == Position.ASSISTANT_PROF)  
+            return (position == Title.FULL_PROF or 
+                    position == Title.ASSOCIATE_PROF or
+                    position == Title.ASSISTANT_PROF)  
         else:
             raise TypeError("position must be of type Position or str")
         
@@ -265,11 +252,15 @@ class Position(models.Model):
     def is_professional_position(position):
         """Static method returns true if position is a professional"""
         if(type(position) is Position):
-            return (position.title == Position.RESEARCH_SCIENTIST or position.title == Position.SOFTWARE_DEVELOPER 
-                    or position.title == Position.DESIGNER)
+            return (position.title == Title.RESEARCH_SCIENTIST or 
+                    position.title == Title.SOFTWARE_DEVELOPER or
+                    position.title == Title.DIRECTOR or 
+                    position.title == Title.DESIGNER)
         elif(type(position) is str):
-            return (position.title == Position.RESEARCH_SCIENTIST or position == Position.SOFTWARE_DEVELOPER 
-                    or position == Position.DESIGNER)
+            return (position == Title.RESEARCH_SCIENTIST or 
+                    position == Title.SOFTWARE_DEVELOPER or
+                    position == Title.DIRECTOR or
+                    position == Title.DESIGNER)
         else:
             raise TypeError("position must be of type Position or str")
     

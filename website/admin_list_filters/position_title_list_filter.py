@@ -1,5 +1,6 @@
 from django.contrib import admin
-from website.models import Person, Position
+from website.models import Position
+from website.models.position import Title
 
 class PositionTitleListFilter(admin.SimpleListFilter):
     """
@@ -26,7 +27,7 @@ class PositionTitleListFilter(admin.SimpleListFilter):
         human-readable name for the option that will appear
         in the right sidebar.
         """
-        return Position.TITLE_CHOICES
+        return Title.choices
 
     def queryset(self, request, queryset):
         """
@@ -44,7 +45,7 @@ class PositionTitleListFilter(admin.SimpleListFilter):
 
         if self.value() is None:
             return queryset
-        elif self.value() == Position.UNKNOWN:
+        elif self.value() == Title.UNKNOWN:
             return queryset.filter(latest_position_title__isnull=True)
         else:
             return queryset.filter(latest_position_title=self.value())
