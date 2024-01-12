@@ -3,6 +3,7 @@ from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_save, m2m_changed, post_delete
 from website.models.publication import PubType
 from website.models.position import Role, Title
+from website.models.project_role import ProjectRole
 from django.core.files import File
 import website.utils.fileutils as ml_fileutils
 
@@ -225,6 +226,44 @@ class Person(models.Model):
             return None
 
     get_current_role.short_description = "Role"
+
+    def get_total_time_on_project(self, project):
+        """
+        Returns the total time as a timedelta this person has worked on the given project.
+        If the end_date is None, the current date/time is used.
+        """
+        print(f"person {self}, project {project}")
+        # Get the roles this person has had on the given project
+        roles = ProjectRole.objects.filter(person=self, project=project)
+
+        print(f"person {self}, roles {roles}")
+        # If there are no roles, return a timedelta of zero duration
+        if not roles.exists():
+            return timedelta()
+
+        # Calculate the total time worked as the sum of (end_date - start_date) for each role
+        # If end_date is None, use the current date/time
+        # total_time_worked = roles.annotate(
+        #     time_worked=ExpressionWrapper(
+        #         (F('end_date') if F('end_date') is not None else timezone.now()) - F('start_date'),
+        #         output_field=fields.DurationField()
+        #     )
+        # ).aggregate(total_time=Sum('time_worked'))['total_time']
+
+        # Calculate the total time worked as the sum of (end_date - start_date) for each role
+        # If end_date is None, use the current date/time
+        total_time_worked = roles.annotate(
+            time_worked=ExpressionWrapper(
+                Coalesce(F('end_date'), timezone.now()) - F('start_date'),
+                output_field=fields.DurationField()
+            )
+        ).aggregate(total_time=Sum('time_worked'))['total_time']
+
+        print(f"person {self}, total_time_worked", total_time_worked)
+
+        # Returns a timedelta object, which is part of Python’s datetime module and it represents
+        # a duration, or the difference between two dates or times.
+        return total_time_worked
 
     @cached_property
     def get_time_in_current_position(self):

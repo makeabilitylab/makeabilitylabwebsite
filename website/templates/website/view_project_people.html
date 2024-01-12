@@ -11,18 +11,10 @@
 {{project}}
 
 <div class="people-grid">
-  {% for person in people %} 
+  {% for person in people_only %}
     <div class="person">
       <a href="{% url 'website:member' person.url_name %}">
-        {% comment %}
-          We have a fun little "easter egg" here that swaps out a person's image on mouseover.
-          Also, we use easy-thumbnails to create thumbnail image: https://easy-thumbnails.readthedocs.io/en/latest/usage/#templates
-          The basic syntax is: {% thumbnail [source] [size] [options] %}
-
-          If box is specified, then it will crop. Otherwise, you can also set crop=True
-        {% endcomment %}       
-        <img class="swap-image" onmouseover="swapImage(this)" onmouseout="swapImage(this)"
-            src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}" 
+        <img src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}" 
             alt="{{ person.get_full_name }}" 
             data-alt-src="{% thumbnail person.easter_egg person.get_thumbnail_size_as_str box=person.easter_egg_crop crop=True upscale=True detail=True %}" 
             width=90%"/>

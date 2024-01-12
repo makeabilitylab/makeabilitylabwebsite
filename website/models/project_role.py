@@ -65,8 +65,8 @@ class ProjectRole(models.Model):
             return f"{self.start_date.year}-{self.end_date.year}"
 
     def get_pi_status_index(self):
-        if self.pi_member is not None and self.pi_member in self.LEAD_PROJECT_ROLE_MAPPING:
-            return self.LEAD_PROJECT_ROLE_MAPPING[self.pi_member]
+        if self.lead_project_role is not None and self.lead_project_role in self.LEAD_PROJECT_ROLE_MAPPING:
+            return self.LEAD_PROJECT_ROLE_MAPPING[self.lead_project_role]
         else:
             return self.LEAD_PROJECT_ROLE_MAPPING["Other"]
 
@@ -92,4 +92,4 @@ class ProjectRole(models.Model):
     def __str__(self):
         return "Project: '{}' Name={}, StartDate={} EndDate={} PI/Co-PI={}, PI Status Index={} Title Index={}".format(
             self.project.name, self.person.get_full_name(), self.start_date, self.end_date,
-            self.pi_member, self.get_pi_status_index(), self.person.get_current_title_index)
+            self.lead_project_role, self.get_pi_status_index(), self.person.get_current_title_index)
