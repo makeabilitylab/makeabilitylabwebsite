@@ -15,6 +15,11 @@ from .talk import Talk
 from .video import Video
 from .person import Person
 
+import logging # for logging
+
+# This retrieves a Python logging instance (or creates it)
+_logger = logging.getLogger(__name__)
+
 import os
 
 PROJECT_THUMBNAIL_SIZE = (500, 300) # 15 : 9 aspect ratio
@@ -61,6 +66,46 @@ class Project(models.Model):
                        For example, you can use <b>bold</b>, <i>italics</i>, <a href='https://makeabilitylab.cs.washington.edu'>links</a>"
 
     updated = models.DateField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        """
+        This method overrides the default save method for the Project model.
+
+        When a Project instance is saved, we check if the project's end_date has been set. 
+        If it has, we iterate over all related ProjectRole instances where end_date is null
+        and automatically set these end dates either to the Project end date or the person's
+        lab departure date, whichever is earlier.
+        """
+        _logger.debug("Running Project.save() method...")
+        super(Project, self).save(*args, **kwargs)  # Save the Project instance first
+
+        if self.end_date:
+            # Get ProjectRoles related to the Project that have a null end_date
+            project_roles_to_close = ProjectRole.objects.filter(project=self, end_date__isnull=True)
+            
+            # Log and update the ProjectRoles that will be automatically closed
+            for project_role in project_roles_to_close:
+                person = project_role.person
+
+                # We need to check if a person has left the lab. If they have, we need to check
+                # to see if their lab departure date is before the project end date. If it is,
+                # we need to use the lab departure date as the project role end date.
+                if not person.is_active:
+                    # Get the latest end_date among the person's positions
+                    latest_position = person.get_latest_position
+                    if latest_position and latest_position.end_date:
+                        # Use the earlier of the project's end_date and the person's leaving date
+                        end_date = min(self.end_date, latest_position.end_date)
+                    else:
+                        end_date = self.end_date
+                else:
+                    end_date = self.end_date
+
+                _logger.info(f"Automatically closing ProjectRole: {project_role} for Person: {person} with end_date: {end_date}")
+                
+                # Update end_date of the ProjectRole
+                project_role.end_date = end_date
+                project_role.save()
 
     def get_thumbnail_alt_text(self):
         if not self.thumbnail_alt_text:

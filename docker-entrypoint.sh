@@ -90,6 +90,11 @@ echo "4.2 Running 'python manage.py generate_slugs_for_old_news_items' to genera
 echo "******************************************"
 python manage.py generate_slugs_for_old_news_items
 
+echo "****************** STEP 4.3/5: docker-entrypoint.sh ************************"
+echo "4.3 Running 'python manage.py auto_close_project_roles' to auto-close project roles"
+echo "******************************************"
+python manage.py auto_close_project_roles
+
 # echo "****************** STEP 4.3/5: docker-entrypoint.sh ************************"
 # echo "4.3 Running 'python manage.py rename_person_images' to rename person images"
 # echo "******************************************"

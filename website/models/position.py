@@ -1,10 +1,15 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-
+from website.models.project_role import ProjectRole
 from datetime import date, datetime, timedelta
 
 import website.utils.ml_utils as ml_utils # for department abbreviations
 from enum import Enum
+
+import logging # for logging
+
+# This retrieves a Python logging instance (or creates it)
+_logger = logging.getLogger(__name__)
 
 # from .person import Person
 class AbstractedTitle(Enum):
@@ -72,6 +77,29 @@ class Position(models.Model):
         Title.HIGH_SCHOOL: 10,
         Title.UNKNOWN: 11
     }
+
+    def save(self, *args, **kwargs):
+        # Save the Position instance first
+        super(Position, self).save(*args, **kwargs)  
+
+        # If the person has completely left the lab (there have no active Positions),
+        # then we need to also set the the end_date of all ProjectRoles related to the Person
+        # This is just a convenience method to make sure that project roles are properly ended 
+        # when a person leaves the lab.
+        if self.end_date and self.person.is_active == False:
+            # Get ProjectRoles related to the Person that have a null end_date
+            project_roles_to_close = ProjectRole.objects.filter(person=self.person, end_date__isnull=True)
+            
+            # Log the ProjectRoles that will be automatically closed
+            for project_role in project_roles_to_close:
+                # Use the earlier of the project's end_date and the position's end_date
+                end_date = min(project_role.project.end_date, self.end_date) if project_role.project.end_date else self.end_date
+                
+                _logger.info(f"Automatically closing ProjectRole: {project_role.id} for Person: {self.person.id} with end_date: {end_date}")
+                
+                # Update end_date of the ProjectRole
+                project_role.end_date = end_date
+                project_role.save()
 
     def get_start_date_short(self):
         earliest_position = self.person.get_earliest_position_in_role(self.role, contiguous_constraint=True)
