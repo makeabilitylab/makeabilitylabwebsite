@@ -136,8 +136,7 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
     def recent_projects(self, obj):
         # Get the three most recent projects for this person based on start_date
         recent_projects = (ProjectRole.objects.filter(person=obj)
-                                     .order_by('project', '-start_date')
-                                     .distinct('project')[:3])
+                                     .order_by('-start_date')[:3])
         
         # Return the project names as a comma-separated string
         return ', '.join([str(project.project) for project in recent_projects])
