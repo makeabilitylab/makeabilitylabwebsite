@@ -37,7 +37,7 @@ class PositionInline(admin.StackedInline):
 
     fieldsets = [
         (None,                      {'fields': ['start_date', 'end_date']}),
-        ('Role and Affiliations',  {'fields': ['role', 'title', 'department', 'school']}),
+        ('Role and Affiliations',   {'fields': ['role', 'title', 'department', 'school']}),
         ('Advisors/Mentors',        {'fields': ['advisor', 'co_advisor', 'grad_mentor']}),
     ]
 
@@ -110,7 +110,7 @@ class ProjectRoleInline(admin.StackedInline):
 @admin.register(Person)
 class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
     fieldsets = [
-        (None,                      {'fields': ['first_name', 'middle_name', 'last_name', 'image', 'easter_egg']}),
+        (None,                      {'fields': ['first_name', 'middle_name', 'last_name', 'image', 'cropping', 'easter_egg', 'easter_egg_crop']}),
         ('Bio',                     {'fields': ['bio', 'personal_website', 'github']}),
         ('Socials',                 {'fields': ['twitter', 'threads', 'mastodon', 'linkedin']}),
         ('For Alumni (Next Position)', {'fields': ['next_position', 'next_position_url']}),
@@ -128,10 +128,21 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
     # The list display lets us control what is shown in the default persons table at Home > Website > People
     # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
     list_display = ('get_full_name', 'get_display_thumbnail', 'get_current_title', 'get_current_role', 'is_active', 
-                    'get_start_date', 'get_end_date', 'get_project_count', 'get_pub_count',
+                    'get_start_date', 'get_end_date', 'recent_projects', 'get_project_count', 'get_pub_count',
                     'get_talk_count', 'display_time_current_position', 'display_total_time_as_member')
 
     list_filter = (PositionRoleListFilter, PositionTitleListFilter)
+
+    def recent_projects(self, obj):
+        # Get the three most recent projects for this person based on start_date
+        recent_projects = (ProjectRole.objects.filter(person=obj)
+                                     .order_by('project', '-start_date')
+                                     .distinct('project')[:3])
+        
+        # Return the project names as a comma-separated string
+        return ', '.join([str(project.project) for project in recent_projects])
+
+    recent_projects.short_description = 'Recent Projects'  # Sets column name in admin interface
 
     def display_time_current_position(self, obj):
         """Displays the time in the current position"""
