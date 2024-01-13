@@ -1,5 +1,6 @@
 from django.conf import settings # for access to settings variables, see https://docs.djangoproject.com/en/4.0/topics/settings/#using-settings-in-python-code
 from website.models import Project, Position
+from website.models.position import MemberClassification
 import website.utils.ml_utils as ml_utils 
 from django.shortcuts import render, get_object_or_404, redirect
 from operator import attrgetter
@@ -73,11 +74,11 @@ def project(request, project_name):
             # check for current status on project
             member_status_name = "unknown"
             if project_role.is_active():
-                member_status_name = Position.CURRENT_MEMBER
+                member_status_name = MemberClassification.CURRENT_MEMBER
             elif project_role.has_completed_role():
-                member_status_name = Position.PAST_MEMBER
+                member_status_name = MemberClassification.PAST_MEMBER
             elif project_role.has_role_started():
-                member_status_name = Position.FUTURE_MEMBER
+                member_status_name = MemberClassification.FUTURE_MEMBER
 
             if member_status_name not in map_status_to_title_to_project_role:
                 map_status_to_title_to_project_role[member_status_name] = dict()
@@ -89,11 +90,13 @@ def project(request, project_name):
 
     for status, map_title_to_project_role in map_status_to_title_to_project_role.items():
         for title, project_role_with_title in map_title_to_project_role.items():
-            if "Current" in status:
+            if (status == MemberClassification.CURRENT_MEMBER or 
+                status == MemberClassification.CURRENT_COLLABORATOR):
                 # sort current members and collaborators by start date first (so
                 # people who started earliest are shown first)
                 project_role_with_title.sort(key=attrgetter('start_date'))
-            elif "Past" in status:
+            elif (status == MemberClassification.PAST_MEMBER or 
+                  status == MemberClassification.PAST_COLLABORATOR):
                 # sort past members and collaborators reverse chronologically by end date (so people
                 # who ended most recently are shown first)
                 project_role_with_title.sort(key=attrgetter('end_date'), reverse=True)
