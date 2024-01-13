@@ -11,7 +11,7 @@ class Command(BaseCommand):
            """
 
     def handle(self, *args, **options):
-        _logger.debug("Running TEST auto_close_project_roles.py command to close project roles for people who have left the lab...")
+        _logger.debug("Running auto_close_project_roles.py command to close project roles for people who have left the lab...")
        
         # Iterate over all Person instances
         list_persons_updated = []
@@ -37,7 +37,7 @@ class Command(BaseCommand):
                     project_role.end_date = end_date
 
                     # NEED TO UNCOMMENT THIS AFTER WE TEST
-                    # project_role.save()
+                    project_role.save()
 
                     list_project_roles_updated.append(project_role)
 
