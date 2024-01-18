@@ -146,6 +146,10 @@
   font-weight: 500;
   word-wrap: break-word;
   text-overflow: ellipsis;
+
+  /* Added this max-width 01/18/2024 to address long titles messing up the project gallery
+  https://github.com/makeabilitylab/makeabilitylabwebsite/issues/1133 */
+  max-width: 320px; 
 }
 
 .pub-stats {
