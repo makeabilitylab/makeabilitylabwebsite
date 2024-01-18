@@ -3,6 +3,10 @@ from django.contrib.admin import widgets
 from website.models import Publication, Poster, Video, Talk
 from website.admin_list_filters import PubVenueTypeListFilter, PubVenueListFilter
 
+from django.utils.html import format_html # for formatting thumbnails
+from easy_thumbnails.files import get_thumbnailer # for generating thumbnails
+import os # for checking if thumbnail file exists
+
 from sortedm2m.fields import SortedManyToManyField
 from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
 from website.admin import ArtifactAdmin
@@ -19,7 +23,11 @@ class PublicationAdmin(ArtifactAdmin):
         ('Project Info',            {'fields': ['projects', 'project_umbrellas']}),
         ('Keyword Info',            {'fields': ['keywords']}),
     ]
-    list_display = ('title', 'forum_name', 'date')
+
+    list_display = ('title', 'get_display_thumbnail', 'forum_name', 'date', 'display_projects', 'display_authors')
+
+    # Only show N items per page
+    list_per_page = 20
 
     # default the sort order in table to descending order by date
     ordering = ('-date',)
@@ -40,6 +48,27 @@ class PublicationAdmin(ArtifactAdmin):
     # Update Nov 10, 2023: This is now broken due to weirdness with Select2 fields in the admin interface
     # See: https://github.com/makeabilitylab/makeabilitylabwebsite/issues/1093
     #autocomplete_fields = ['poster', 'video', 'talk']
+
+    def display_projects(self, obj):
+        return ", ".join([project.name for project in obj.projects.all()])
+    display_projects.short_description = 'Projects'
+
+    def display_authors(self, obj):
+        authors = [author.get_full_name() for author in obj.authors.all()[:5]]
+        return ", ".join(authors) if authors else 'No authors'
+    display_authors.short_description = 'Authors (First 5)'
+
+    def get_display_thumbnail(self, obj):
+        if obj.thumbnail and os.path.isfile(obj.thumbnail.path):
+            # Use easy_thumbnails to generate a thumbnail
+            thumbnailer = get_thumbnailer(obj.thumbnail)
+            thumbnail_options = {'size': (110, 142), 'crop': True}
+            thumbnail_url = thumbnailer.get_thumbnail(thumbnail_options).url
+
+            return format_html('<img src="{}" width="100" />', thumbnail_url)
+        return 'No Thumbnail'
+    
+    get_display_thumbnail.short_description = 'Thumbnail'
 
     def get_form(self, request, obj=None, **kwargs):
         """We custom style some of the admin UI, including expanding the width of the talk select interface"""
