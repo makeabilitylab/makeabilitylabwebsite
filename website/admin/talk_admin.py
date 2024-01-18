@@ -36,6 +36,9 @@ class TalkAdmin(ArtifactAdmin):
         ('Keyword Info',            {'fields': ['keywords']}),
     ]
 
+    ordering = ('-date',)  # Sort talks by date in descending order
+    list_filter = ('talk_type',)  # Add a filter for the talk type
+
     def get_form(self, request, obj=None, **kwargs):
         """
         Overrides the get_form method of the parent ModelAdmin class to customize the form used in the admin interface.
