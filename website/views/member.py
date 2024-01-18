@@ -110,7 +110,9 @@ def auto_generate_bio(person):
     #total_time_in_role = person.get_total_time_in_current_position()
     humanized_duration = None
     if total_time_in_lab:
-        humanize_duration(total_time_in_lab)
+        humanized_duration = humanize_duration(total_time_in_lab)
+
+    print(f"total_time_in_lab={total_time_in_lab}, humanized_duration={humanized_duration}")
     
     bio = f"{person.first_name}"
     if person.is_current_member:
@@ -123,7 +125,7 @@ def auto_generate_bio(person):
         bio += f" was a collaborator with the Makeability Lab"
     else:
         bio += " has"
-
+    
     if person.is_current_member:
         bio += f" They have been in the lab for {humanized_duration} and"
     elif person.is_current_collaborator:
