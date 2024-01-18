@@ -55,6 +55,8 @@ class PublicationAdmin(ArtifactAdmin):
 
     def display_authors(self, obj):
         authors = [author.get_full_name() for author in obj.authors.all()[:5]]
+        if obj.authors.count() > 5:
+            authors.append("...")
         return ", ".join(authors) if authors else 'No authors'
     display_authors.short_description = 'Authors (First 5)'
 
