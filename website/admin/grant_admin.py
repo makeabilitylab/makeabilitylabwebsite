@@ -16,6 +16,8 @@ class GrantAdmin(ArtifactAdmin):
     # I want to make sponsor auto-complete but it's causing errors, so commenting out
     # autocomplete_fields = ['sponsor']
 
+    ordering = ('-date',)  # sort by date, most recent first
+
     fieldsets = [
         (None,                      {'fields': ['title', 'authors']}),
         ('Grant Info',              {'fields': ['date', 'end_date', 'sponsor', 'funding_amount', 'forum_url', 'grant_id']}),
