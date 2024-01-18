@@ -24,7 +24,7 @@ class PublicationAdmin(ArtifactAdmin):
         ('Keyword Info',            {'fields': ['keywords']}),
     ]
 
-    list_display = ('title', 'get_display_thumbnail', 'forum_name', 'date', 'display_projects', 'display_authors')
+    list_display = ('title', 'get_display_thumbnail', 'display_authors', 'forum_name', 'date', 'display_projects')
 
     # Only show N items per page
     list_per_page = 20
