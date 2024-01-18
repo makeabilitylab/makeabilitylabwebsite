@@ -16,7 +16,7 @@ class TalkAdmin(ArtifactAdmin):
     # See: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_display
     list_display = ('title', 'get_display_thumbnail', 'get_speakers_as_csv', 'date', 'forum_name', 'location', 'talk_type')
 
-    # Only show 25 items per page
+    # Only show N items per page
     list_per_page = 10
 
     # search_fields are used for auto-complete, see:
