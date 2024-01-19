@@ -41,7 +41,7 @@ class PositionInline(admin.StackedInline):
         ('Advisors/Mentors',        {'fields': ['advisor', 'co_advisor', 'grad_mentor']}),
     ]
 
-    autocomplete_fields = ['advisor', 'co_advisor', 'grad_mentor']
+    autocomplete_fields = ['co_advisor', 'grad_mentor']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
 
