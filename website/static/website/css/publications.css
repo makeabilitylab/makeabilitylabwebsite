@@ -189,6 +189,10 @@
   cursor: pointer;
 }
 
+.publication-citation-link {
+  cursor: pointer;
+}
+
 .award-icon {
   border: none;
   width: 20px;
