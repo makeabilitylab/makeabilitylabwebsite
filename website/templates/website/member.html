@@ -53,7 +53,7 @@ See: https://getbootstrap.com/docs/3.4/css/#overview-container
           src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}" 
           alt="{{ person.get_full_name }}" 
           data-alt-src="{% thumbnail person.easter_egg person.get_thumbnail_size_as_str box=person.easter_egg_crop crop=True upscale=True detail=True %}" 
-          width=90%"/>
+          width="90%"/>
       </div>
       <div class="col-xs-12 person-bio">
         <h2 class="person-name-header">{{person.get_full_name}}</h2>
