@@ -273,17 +273,37 @@ class Project(models.Model):
         else:
             return Person.objects.filter(projectrole__project=self).distinct()
     
+    def get_contributors(self):
+        """
+        Returns a QuerySet of all people who have ProjectRoles associated with this project
+        and who are listed as co-authors on any publications associated with this project.
+      
+        """
+        # Get all people who have roles in this project
+        role_people = ProjectRole.objects.filter(project=self).values_list('person', flat=True).distinct()
+
+        # Get all authors from publications associated with this project
+        publication_people = Publication.objects.filter(projects=self).values_list('authors', flat=True).distinct()
+
+        # Combine the two querysets
+        all_people = role_people.union(publication_people)
+
+        return all_people
+
+    def get_contributor_count(self):
+        """
+        Returns the total number of people with ProjectRoles associated with this project
+        and who are listed as co-authors on any publications associated with this project.
+        It should always be >= the number of people returned by get_people_count()
+        """
+        return self.get_contributors().count()
+
+    get_contributor_count.short_description = "Contributors"
+
     def get_people_count(self):
         """
         Returns the number of people involved in the project
         """
-        # project_roles = self.projectrole_set.order_by('-start_date')
-
-        # # For more on this style of list iteration (called list comprehension)
-        # # See: https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions
-        # #      https://www.python.org/dev/peps/pep-0202/
-        # people = set([project_role.person for project_role in project_roles])
-        # return len(people)
         return self.projectrole_set.values('person').distinct().count()
 
     get_people_count.short_description = "Num People"
@@ -306,14 +326,6 @@ class Project(models.Model):
         """
         Returns the number of past members
         """
-
-        # # TODO: could likely turn all of this code into a single query?
-        # project_roles = self.projectrole_set.order_by('-start_date')
-        # past_member_cnt = 0
-        # for project_role in project_roles:
-        #     if project_role.has_completed_role():
-        #         past_member_cnt = past_member_cnt + 1
-        # return past_member_cnt
         return self.projectrole_set.filter(end_date__isnull=False).values('person').distinct().count()
 
     get_past_member_count.short_description = "Num Past Members"
@@ -345,6 +357,25 @@ class Project(models.Model):
             return None
 
     get_most_recent_artifact.short_description = "Most Recent Artifact"
+
+
+    def get_project_dates_str(self):
+        """
+        Returns a string representation of the project's start and end dates.
+        If the start and end dates are in the same year, it returns that year.
+        If the end date is None, it returns a string in the format 'start_year - Present'.
+        Otherwise, it returns a string in the format 'start_year - end_year'.
+        """
+        # If end_date is None, return 'start_year - Present'
+        if self.end_date is None:
+            return f"{self.start_date.year} - Present"
+
+        # If start_date and end_date are in the same year, return that year
+        if self.start_date.year == self.end_date.year:
+            return str(self.start_date.year)
+
+        # Otherwise, return 'start_year - end_year'
+        return f"{self.start_date.year} - {self.end_date.year}"
 
 
     def __str__(self):
