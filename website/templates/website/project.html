@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
   <link rel="stylesheet" href="{% static 'website/css/index.css' %}">
   <link rel="stylesheet" href="{% static 'website/css/news-item.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/sponsor-listing.css' %}">
   <link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}">
 {% endblock %}
 
@@ -71,22 +72,67 @@
         {# Project leadership info #}
         {% if active_PIs.count > 0 %}
           <h3 class="sidebar-header">PI{% if active_PIs.count > 1 %}s{% endif %}</h3>
-          {{ active_PIs }}
+          <ul class="sidebar-ul">
+            {% for active_pi_role in active_PIs %}
+              {% with person=active_pi_role.person %}
+                <li class="sidebar-li">   
+                  <a href="{% url 'website:member' person.url_name %}">
+                    <img src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}" 
+                          alt="{{ person.get_full_name }}"/> 
+                  </a>
+                  <div class="sidebar-content">
+                    <a href="{% url 'website:member' person.url_name %}">{{ person.get_full_name }}</a>
+                  </div>
+                </li>
+              {% endwith %}
+            {% endfor %}
+          </ul>
         {% endif %}
-
+        
         {% if active_student_leads.count > 0 %}
           <h3 class="sidebar-header">Student Lead{% if active_student_leads.count > 1 %}s{% endif %}</h3>
-          {{ active_student_leads }}
+          <ul class="sidebar-ul">
+            {% for active_student_lead in active_student_leads %}
+              {% with person=active_student_lead.person %}
+                <li class="sidebar-li">   
+                  <a href="{% url 'website:member' person.url_name %}">
+                    <img src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}" 
+                          alt="{{ person.get_full_name }}"/> 
+                  </a>
+                  <div class="sidebar-content">
+                    <a href="{% url 'website:member' person.url_name %}">{{ person.get_full_name }}</a>
+                  </div>
+                </li>
+              {% endwith %}
+            {% endfor %}
+          </ul>
         {% endif %}
 
         <h3 class="sidebar-header"># Contributors</h3>
         {{ num_contributors }}
 
-        <h3 class="sidebar-header">Sponsors</h3>
-        List of sponsors
+        {% if sponsors %}
+          <h3 class="sidebar-header">Sponsors</h3>
+          <div class="sponsor-sidebar-grid">
+            {% for sponsor in sponsors %}
+              <div class="sponsor-sidebar-card" {% if forloop.first %} style="margin-left:0px" {% endif %}>
+                <div class="sponsor-logo">
+                  {% if sponsor.icon %}
+                    <a href="{{sponsor.url}}">
+                      <img class="sponsor-img" 
+                        src="{% thumbnail sponsor.icon sponsor.get_thumbnail_size_as_str box=sponsor.icon_cropping crop=True upscale=True %}" 
+                        alt="{{sponsor.get_icon_alt_text}}"
+                        title="{{sponsor.name}}"/>
+                    </a>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
 
         {% if news %}
-          <h3 class="sidebar-header">Recent Project News</h3>
+          <h3 class="sidebar-header">Recent News</h3>
           <ul class="news-item-sidebar-ul">
           {% for recent_news_item in news|slice:":3" %}
             {% include "snippets/display_news_item_sidebar_snippet.html" %}
@@ -100,7 +146,7 @@
     </div>
     <div class="col-md-9 col-md-pull-3">
       <div class="row" style="width:90%">
-        <h3>Project Description</h3>
+        <h2 class="project-section-header">Project Description</h2>
           <div class="project-description">
             {% autoescape off %}
               {{ project.about }}

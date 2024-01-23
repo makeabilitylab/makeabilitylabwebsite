@@ -5,9 +5,9 @@
 }
 
 .sponsor-card {
-  /* Set flex grow factor to 1, flex shrink to 0, and flex basis to 200px.
+  /* Set flex grow factor to 1, flex shrink to 0, and flex basis to 150px.
      So, each card is flexible and can grow to fill the container but won't
-     shrink smaller than 200px. */
+     shrink smaller than 150px. */
   flex: 1 0 150px; 
   max-width: 150px; /* Card won't exceed 200px */
   margin: 15px; /* Add a margin of 10px around each card */
@@ -29,4 +29,19 @@
   text-align: center;
   margin: auto;
   margin-bottom: 15px;
+}
+
+.sponsor-sidebar-grid{
+  display: flex; /* Use flexbox layout */
+  flex-wrap: wrap; /* Wrap to multiple lines if there isn't enough space on one line */
+}
+
+.sponsor-sidebar-card {
+  /* Set flex grow factor to 1, flex shrink to 0, and flex basis to 40px.
+      So, each card is flexible and can grow to fill the container but won't
+      shrink smaller than 40px. */
+  flex: 1 0 45px; 
+  max-width: 45px; /* Card won't exceed 200px */
+  margin: 0px;
+  margin-left: 4px; 
 }

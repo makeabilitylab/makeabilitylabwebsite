@@ -363,19 +363,19 @@ class Project(models.Model):
         """
         Returns a string representation of the project's start and end dates.
         If the start and end dates are in the same year, it returns that year.
-        If the end date is None, it returns a string in the format 'start_year - Present'.
-        Otherwise, it returns a string in the format 'start_year - end_year'.
+        If the end date is None, it returns a string in the format 'start_year–Present'.
+        Otherwise, it returns a string in the format 'start_year–end_year'.
         """
-        # If end_date is None, return 'start_year - Present'
+        # If end_date is None, return 'start_year–Present'
         if self.end_date is None:
-            return f"{self.start_date.year} - Present"
+            return f"{self.start_date.year}–Present"
 
         # If start_date and end_date are in the same year, return that year
         if self.start_date.year == self.end_date.year:
             return str(self.start_date.year)
 
-        # Otherwise, return 'start_year - end_year'
-        return f"{self.start_date.year} - {self.end_date.year}"
+        # Otherwise, return 'start_year–end_year'
+        return f"{self.start_date.year}–{self.end_date.year}"
 
 
     def __str__(self):

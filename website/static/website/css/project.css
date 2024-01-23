@@ -5,7 +5,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h2 {
-  font-size: 16px;
+  font-size: 20px;
 }
 
 h3 {
@@ -13,7 +13,8 @@ h3 {
 }
 
 .sidebar-header{
-  margin-bottom: 5px;
+  margin-top: 30px;
+  margin-bottom: 6px;
 }
 
 p {
@@ -26,4 +27,33 @@ p {
   line-height: 2;
   font-weight: 400;
   color: rgb(122, 122, 122);
+}
+
+/* SIDEBAR CSS */
+.sidebar-ul{
+  list-style-type: none;
+  padding-left: 0;
+  margin-left: 0;
+}
+
+.sidebar-ul li{
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: nowrap;
+}
+
+.sidebar-ul img{
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.sidebar-content{
+  margin-left: 6px;
+}
+
+.sidebar-date{
+  font-size: smaller;
+  color: rgb(150,150,150);
 }
