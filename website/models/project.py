@@ -9,6 +9,7 @@ from datetime import date, datetime, timedelta
 from .sponsor import Sponsor
 from .project_umbrella import ProjectUmbrella
 from .project_role import ProjectRole
+from .project_role import LeadProjectRoleTypes
 from .keyword import Keyword
 from .publication import Publication
 from .talk import Talk
@@ -124,9 +125,9 @@ class Project(models.Model):
             if recent_project_video is not None:
                 return recent_project_video
     
-            # Get the most recent publication with a video
+            # Get the most recent publication asscoaited with this project with a video
             recent_publication_with_video = (Publication.objects
-                                             .filter(video__isnull=False)
+                                             .filter(video__isnull=False, projects=self)
                                              .order_by('-date').first())
             if recent_publication_with_video:
                 return recent_publication_with_video.video
@@ -148,14 +149,46 @@ class Project(models.Model):
         else:
             # Get the most recent publication with a code repository URL
             recent_publication_with_code_repo_url = (Publication.objects
-                                                     .filter(code_repo_url__isnull=False)
+                                                     .filter(code_repo_url__isnull=False, projects=self)
                                                      .order_by('-date').first())
             if recent_publication_with_code_repo_url:
                 return recent_publication_with_code_repo_url.code_repo_url
             else:
                 return None
 
+    def get_related_projects(self, match_all_umbrellas=False):
+        """
+        Gets all projects that share project umbrellas with this project.
+        
+        If match_all_umbrellas is True, it returns projects that share exactly the same project umbrellas.
+        If match_all_umbrellas is False, it returns projects that share at least one project umbrella.
+        
+        Args:
+            match_all_umbrellas (bool): Whether to match all project umbrellas or just one. Defaults to False.
+        
+        Returns:
+            QuerySet: A QuerySet of Project instances that match the criteria.
+        """
+        if match_all_umbrellas:
+            # If we want to match all project umbrellas,
+            # we first annotate each project with the count of matching project umbrellas.
+            # Then we filter the projects where the count of matching project umbrellas is equal to the count of project umbrellas in the current project.
+            return (Project.objects
+                    .annotate(matching_count=models.Count('project_umbrellas', filter=models.Q(project_umbrellas__in=self.project_umbrellas.all())))
+                    .filter(matching_count=self.project_umbrellas.count())
+                    .exclude(id=self.id)  # Exclude the current project from the results
+                    .order_by('-start_date')  # Order the results by start_date in descending order
+                    .distinct())  # Ensure each project is returned only once
+        else:
+            # If we want to match at least one project umbrella,
+            # we simply filter the projects that have any of the same project umbrellas as the current project.
+            return (Project.objects
+                    .filter(project_umbrellas__in=self.project_umbrellas.all())
+                    .exclude(id=self.id)  # Exclude the current project from the results
+                    .order_by('-start_date')  # Order the results by start_date in descending order
+                    .distinct())  # Ensure each project is returned only once
 
+    
     def get_thumbnail_alt_text(self):
         if not self.thumbnail_alt_text:
             return "This is the thumbnail image for the project " + self.name
@@ -164,24 +197,27 @@ class Project(models.Model):
 
     def get_pis(self):
         """Returns the PIs for the project (as a Person object)"""
-        pis_queryset = self.projectrole_set.filter(pi_member="PI")
-        pis_list = [pi.person for pi in pis_queryset]
-        return pis_list
+        pis_queryset = (self.projectrole_set
+                          .filter(pi_member=LeadProjectRoleTypes.PI)
+                          .values_list('person', flat=True))
+        return pis_queryset
 
     def get_co_pis(self):
-        """Returns the PIs for ths project (as a list of Person objects)"""
-        copis_queryset = self.projectrole_set.filter(pi_member="Co-PI")
-        copis_list = [copi.person for copi in copis_queryset]
-        return copis_list
+        """Returns the Co-PIs for this project (as a QuerySet of Person objects)"""
+        copis_queryset = (self.projectrole_set
+                          .filter(pi_member=LeadProjectRoleTypes.CO_PI)
+                          .values_list('person', flat=True))
+        return copis_queryset
 
     def has_award(self):
-        """Returns true if one or more pubs have an award"""
-        if self.publication_set.exists():
-            # For filtering, see: https://stackoverflow.com/a/844572
-            num_award_papers = self.publication_set.filter(award__isnull=False).exclude(award__exact='').count()
-            return num_award_papers > 0
-        else:
-            return False
+        """
+        Returns true if one or more publications have an award.
+
+        Returns:
+            bool: True if one or more publications have an award, False otherwise.
+        """
+        # Check if any publication has an award (not null and not an empty string)
+        return self.publication_set.filter(award__isnull=False).exclude(award__exact='').exists()
 
     def can_show_online(self):
         """Returns true if we can show this project on the webpage"""
@@ -193,15 +229,23 @@ class Project(models.Model):
         return bool(self.gallery_image)
 
     def has_publication(self):
-        """Returns True if the project has at least one publication"""
-        return self.get_publication_count() > 0
+        """
+        Returns True if the project has at least one publication.
+
+        Returns:
+            bool: True if the project has at least one publication, False otherwise.
+        """
+        return self.publication_set.exists()
 
     def get_most_recent_publication(self):
-        """Returns the most recent publication for project"""
-        if self.publication_set.exists():
-            return self.publication_set.order_by('-date')[0]
-        else:
-            return None
+        """
+        Returns the most recent publication for the project.
+
+        Returns:
+            Publication: The most recent publication if it exists, None otherwise.
+        """
+        return self.publication_set.order_by('-date').first()
+
 
     def has_artifact(self):
         """
@@ -394,13 +438,11 @@ class Project(models.Model):
             mostRecentTalk = self.talk_set.latest('date')
             mostRecentArtifacts.append((mostRecentTalk.date, mostRecentTalk))
 
-        if self.video_set.exists():
-            mostRecentVideo = self.video_set.latest('date')
+        if self.video.exists():
+            mostRecentVideo = self.video.latest('date')
             mostRecentArtifacts.append((mostRecentVideo.date, mostRecentVideo))
 
         if len(mostRecentArtifacts) > 0:
-            # mostRecentArtifacts = sorted(mostRecentArtifacts, key=lambda artifact: artifact[0], reverse=True)
-            #return mostRecentArtifacts[0][0], mostRecentArtifacts[0][1]
             return max(mostRecentArtifacts, key=lambda artifact: artifact[0])
         else:
             return None

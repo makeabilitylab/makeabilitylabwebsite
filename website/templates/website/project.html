@@ -62,7 +62,7 @@
 {% block content %}
 <div id="content" class="container content-container" data-spy="scroll">
   <div class="row about-column">
-    <div class="col-md-3 col-md-push-9">
+    <div class="col-md-3 col-md-push-9 project-sidebar">
       <div class="row">
         <h3 class="sidebar-header">Date</h3>
         {{ date_str }}
@@ -80,7 +80,7 @@
               {% with person=active_pi_role.person %}
                 <li class="sidebar-li">   
                   <a href="{% url 'website:member' person.url_name %}">
-                    <img src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}" 
+                    <img class="sidebar-person-thumbnail" src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}" 
                           alt="{{ person.get_full_name }}"/> 
                   </a>
                   <div class="sidebar-content">
@@ -99,7 +99,7 @@
               {% with person=active_student_lead.person %}
                 <li class="sidebar-li">   
                   <a href="{% url 'website:member' person.url_name %}">
-                    <img src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}" 
+                    <img class="sidebar-person-thumbnail" src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}" 
                           alt="{{ person.get_full_name }}"/> 
                   </a>
                   <div class="sidebar-content">
@@ -137,13 +137,29 @@
         {% if news %}
           <h3 class="sidebar-header">Recent News</h3>
           <ul class="news-item-sidebar-ul">
-          {% for recent_news_item in news|slice:":3" %}
-            {% include "snippets/display_news_item_sidebar_snippet.html" %}
-          {% endfor %}			
+            {% for recent_news_item in news|slice:":3" %}
+              {% include "snippets/display_news_item_sidebar_snippet.html" %}
+            {% endfor %}
+          </ul>			
         {% endif %}
 
-        <h3 class="sidebar-header">Related Projects</h3>
-        TODO: insert related projects based on project umbrella
+        {% if related_projects %}
+          <h3 class="sidebar-header">Related Projects</h3>
+          <ul class="sidebar-ul">
+            {% for related_project in related_projects %}
+              <li class="sidebar-li">   
+                <a href="{% url 'website:project' related_project.short_name %}">
+                  <img class="related-project-thumbnail" 
+                       src="{% thumbnail related_project.gallery_image related_project.get_thumbnail_size_as_str box=related_project.cropping crop=True upscale=True %}" 
+                       alt="{{related_project.get_thumbnail_alt_text}}"/>
+                </a>
+                <div class="sidebar-content">
+                  <a href="{% url 'website:project' related_project.short_name %}">{{ related_project.name }}</a>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
       </div>
       
     </div>

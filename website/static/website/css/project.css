@@ -68,7 +68,7 @@ body {
   flex-wrap: nowrap;
 }
 
-.sidebar-ul img{
+.sidebar-person-thumbnail{
   width: 30px;
   height: 30px;
   border-radius: 50%;
@@ -81,4 +81,9 @@ body {
 .sidebar-date{
   font-size: smaller;
   color: rgb(150,150,150);
+}
+
+.related-project-thumbnail{
+  width: 80px;
+  border-radius: 10%;
 }

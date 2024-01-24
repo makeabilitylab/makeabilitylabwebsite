@@ -53,9 +53,6 @@ def project(request, project_name):
     # Get current date
     current_date = timezone.now().date()
 
-    # TODO: the logic for this needs to be updated. I think we can categorize "active_pis" if they have an
-    # end_date that is less than the project end update
-
     # Query for active PIs. Active PIs are defined as either:
     # 1. They have an end_date that is null
     # 2. They have an end_date that is >= the current date
@@ -78,8 +75,6 @@ def project(request, project_name):
             project=project,
             lead_project_role=LeadProjectRoleTypes.PI)
         .distinct('person'))
-    
-    print("active_PIs", active_PIs)
 
     # Query for active Co-PIs
     active_Co_PIs = (ProjectRole.objects.filter(
@@ -88,12 +83,6 @@ def project(request, project_name):
             lead_project_role=LeadProjectRoleTypes.CO_PI)
         .distinct('person'))
     
-    # All student leads
-    all_student_leads = (ProjectRole.objects.filter(
-            project=project,
-            lead_project_role=LeadProjectRoleTypes.STUDENT_LEAD)
-        .distinct('person'))
-    print("all_student_leads", all_student_leads)
     
     # Query for active student leads
     active_student_leads = (ProjectRole.objects.filter(
@@ -128,6 +117,11 @@ def project(request, project_name):
             lead_project_role=LeadProjectRoleTypes.STUDENT_LEAD,
         ).exclude(person__in=[role.person for role in active_student_leads]).distinct('person'))
 
+    # Query for related projects. Limit to top 5
+    related_projects = project.get_related_projects(match_all_umbrellas=True)[:5]
+
+    print("project umbrellas", project.project_umbrellas.all())
+
     context = {'banners': displayed_banners,
                'project': project,
                'publications': publications,
@@ -142,6 +136,7 @@ def project(request, project_name):
                'date_str' : project.get_project_dates_str(),
                'active_PIs': active_PIs,
                'active_student_leads': active_student_leads,
+               'related_projects': related_projects,
                'debug': settings.DEBUG}
 
     func_end_time = time.perf_counter()
