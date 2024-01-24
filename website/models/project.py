@@ -303,7 +303,7 @@ class Project(models.Model):
         Returns the number of videos associated with this project
         :return: the number of videos associated with this project
         """
-        return self.video_set.count()
+        return self.videos.count()
 
     get_video_count.short_description = "Videos"
 
@@ -438,8 +438,8 @@ class Project(models.Model):
             mostRecentTalk = self.talk_set.latest('date')
             mostRecentArtifacts.append((mostRecentTalk.date, mostRecentTalk))
 
-        if self.video.exists():
-            mostRecentVideo = self.video.latest('date')
+        if self.videos.exists():
+            mostRecentVideo = self.videos.latest('date')
             mostRecentArtifacts.append((mostRecentVideo.date, mostRecentVideo))
 
         if len(mostRecentArtifacts) > 0:

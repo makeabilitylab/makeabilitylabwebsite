@@ -115,7 +115,7 @@
         {{ num_contributors }}
 
         {% if sponsors %}
-          <h3 class="sidebar-header">Sponsors</h3>
+          <h3 class="sidebar-header">Funding</h3>
           <div class="sponsor-sidebar-grid">
             {% for sponsor in sponsors %}
               <div class="sponsor-sidebar-card" {% if forloop.first %} style="margin-left:0px" {% endif %}>
@@ -147,16 +147,23 @@
           <h3 class="sidebar-header">Related Projects</h3>
           <ul class="sidebar-ul">
             {% for related_project in related_projects %}
-              <li class="sidebar-li">   
-                <a href="{% url 'website:project' related_project.short_name %}">
-                  <img class="related-project-thumbnail" 
-                       src="{% thumbnail related_project.gallery_image related_project.get_thumbnail_size_as_str box=related_project.cropping crop=True upscale=True %}" 
-                       alt="{{related_project.get_thumbnail_alt_text}}"/>
-                </a>
-                <div class="sidebar-content">
-                  <a href="{% url 'website:project' related_project.short_name %}">{{ related_project.name }}</a>
-                </div>
-              </li>
+              {% if related_project.gallery_image %}
+                <li class="sidebar-li">   
+                  <a href="{% url 'website:project' related_project.short_name %}">
+                    <img class="related-project-thumbnail" 
+                        src="{% thumbnail related_project.gallery_image related_project.get_thumbnail_size_as_str box=related_project.cropping crop=True upscale=True %}" 
+                        alt="{{related_project.get_thumbnail_alt_text}}"/>
+                  </a>
+                  <div class="sidebar-content">
+                    <div class="sidebar-related-project-title">
+                      <a href="{% url 'website:project' related_project.short_name %}">{{ related_project.name }}</a>
+                    </div>
+                    <div class="sidebar-related-project-date">
+                      {{ related_project.get_project_dates_str }}
+                    </div>   
+                  </div>
+                </li>
+              {% endif %}
             {% endfor %}
           </ul>
         {% endif %}
@@ -174,7 +181,7 @@
         </p>
       </div>
       {% if featured_video %}
-        <div class="row" style="width:90%">
+        <div class="row project-content-row">
           <div class="video-wrapper">
             <iframe class="video-iframe" src="{{ featured_video.get_embed }}" 
               frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
@@ -182,8 +189,8 @@
         </div>
       {% endif %}
       {% if publications %}
-        <div class="row" style="width:90%"> 
-          <h3 class="news-type-label">Publications</h3>
+        <div class="row project-content-row"> 
+          <h2>Publications</h2>
           {% for pub in publications %}
               {% include "snippets/display_pub_snippet.html" with orientation="vertical"%}
           {% endfor %}
@@ -192,24 +199,28 @@
     </div>
   </div>
   <div class="row" id="below-sidebar">
-    
-    <div class="row row-adjust-margins">
-      {% if videos %}
-        <h3 class="news-type-label">Videos</h3>
-      {% endif %}
-      {% for video in videos %}
+    {% if has_videos_beyond_featured_video %}
+      <div class="row row-adjust-margins">
+        {% if videos %}
+          <h2>Videos</h3>
+        {% endif %}
+        {% for video in videos %}
           {% include "snippets/display_video_snippet.html" %}
-      {% endfor %}
-    </div>
+        {% endfor %}
+      </div>
+    {% endif %}
     <div class="row row-adjust-margins">
       {% if talks %}
-          <h3 class="news-type-label">Talks</h3>
+          <h2>Talks</h3>
       {% endif %}
 
       {% for talk in talks %}
           {% include "snippets/display_talk_snippet.html" %}
       {% endfor %}
     </div>
+
+    {% comment %} Take out photo gallery for now {% endcomment %}
+    {% comment %} 
     {% if photos %}
     <div class="row row-adjust-margins">
         <h3 class="news-type-label">Photo Gallery</h3>
@@ -225,7 +236,7 @@
         {% endfor %}
     </div>
     {% include "snippets/display_project_gallery_lightbox.html" %}
-    {% endif %}
-  </div>
+    {% endif %}{% endcomment %}
+  </div> 
 </div>
 {% endblock %}

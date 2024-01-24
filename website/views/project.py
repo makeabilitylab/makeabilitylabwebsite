@@ -44,6 +44,8 @@ def project(request, project_name):
     sponsors = project.sponsors.all()
     code_repo_url = project.get_featured_code_repo_url()
     featured_video = project.get_featured_video()
+    has_videos_beyond_featured_video = (project.videos.exclude(id=featured_video.id).exists() 
+        if featured_video else project.videos.exists())
 
     print("featured video", featured_video)
 
@@ -137,6 +139,7 @@ def project(request, project_name):
                'active_PIs': active_PIs,
                'active_student_leads': active_student_leads,
                'related_projects': related_projects,
+               'has_videos_beyond_featured_video': has_videos_beyond_featured_video,
                'debug': settings.DEBUG}
 
     func_end_time = time.perf_counter()

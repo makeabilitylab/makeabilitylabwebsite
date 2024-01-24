@@ -22,6 +22,11 @@ body {
   line-height: 1.5;
 }
 
+.row-adjust-margins{
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
 .project-description {
   font-family: 'Roboto', sans-serif;
   font-size: 15px;
@@ -30,8 +35,12 @@ body {
   color: rgb(122, 122, 122);
 }
 
-.project-content-row {
+.project-content-row{
   width: 90%;
+}
+
+.pub-row-vert-layout {
+  margin-left: 0px;
 }
 
 /* FEATURED VIDEO */
@@ -86,4 +95,9 @@ body {
 .related-project-thumbnail{
   width: 80px;
   border-radius: 10%;
+}
+
+.sidebar-related-project-date{
+  font-size: smaller;
+  color: rgb(150,150,150);
 }
