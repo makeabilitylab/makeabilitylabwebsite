@@ -10,7 +10,9 @@ class Video(models.Model):
     title = models.CharField(max_length=255)
     caption = models.CharField(max_length=255, blank=True, null=True)
     date = models.DateField(null=True)
-    project = models.ForeignKey('Project', blank=True, null=True, on_delete=models.SET_NULL)
+
+    projects = models.ManyToManyField('Project', blank=True, null=True, related_name='videos')
+    #project = models.ForeignKey('Project', blank=True, null=True, on_delete=models.SET_NULL)
 
     def get_video_host_str(self):
         if 'youtu.be' in self.video_url or 'youtube.com' in self.video_url:

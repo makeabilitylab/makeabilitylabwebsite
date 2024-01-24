@@ -12,13 +12,14 @@ h3 {
   font-size: 14px;
 }
 
-.sidebar-header{
-  margin-top: 30px;
-  margin-bottom: 6px;
-}
-
 p {
   margin-bottom: 20px;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .project-description {
@@ -29,7 +30,31 @@ p {
   color: rgb(122, 122, 122);
 }
 
+.project-content-row {
+  width: 90%;
+}
+
+/* FEATURED VIDEO */
+.video-wrapper {
+  position: relative;
+  overflow: hidden;
+  padding-top: 56.25%;
+}
+
+.video-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
 /* SIDEBAR CSS */
+.sidebar-header{
+  margin-top: 30px;
+  margin-bottom: 6px;
+}
+
 .sidebar-ul{
   list-style-type: none;
   padding-left: 0;

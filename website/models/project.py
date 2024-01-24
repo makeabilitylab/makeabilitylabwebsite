@@ -43,8 +43,8 @@ class Project(models.Model):
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     project_umbrellas = models.ManyToManyField('ProjectUmbrella', blank=True)
-
-    # header_visual = models.ForeignKey(ProjectHeader, blank=True, null=True)
+    featured_video = models.ForeignKey('Video', blank=True, null=True, on_delete=models.SET_NULL, related_name='related_project')
+    featured_code_repo_url = models.URLField(blank=True, null=True)
     keywords = models.ManyToManyField(Keyword, blank=True)
 
     # pis = models.ManyToOneField(Person, blank=True, null=True)
@@ -106,6 +106,55 @@ class Project(models.Model):
                 # Update end_date of the ProjectRole
                 project_role.end_date = end_date
                 project_role.save()
+
+    def get_featured_video(self):
+        """
+        This function returns the Project's video if it exists. 
+        If the Project's video is null, it finds the most recent publication with a video and returns that.
+        If no such publication exists, it returns None.
+
+        Returns:
+            Video: The video of the Project or the most recent publication with a video. None if no such video exists.
+        """
+        if self.featured_video is not None:
+            return self.featured_video
+        else:
+            # Check for a project video
+            recent_project_video = self.videos.order_by('-date').first()
+            if recent_project_video is not None:
+                return recent_project_video
+    
+            # Get the most recent publication with a video
+            recent_publication_with_video = (Publication.objects
+                                             .filter(video__isnull=False)
+                                             .order_by('-date').first())
+            if recent_publication_with_video:
+                return recent_publication_with_video.video
+            else:
+                return None
+
+    def get_featured_code_repo_url(self):
+        """
+        This function returns the Project's code repository URL if it exists. 
+        If the Project's code repository URL is null, it finds the most recent publication with a 
+        code repository URL and returns that. If no such publication exists, it returns None.
+
+        Returns:
+            model.URLField: The code repository URL of the Project or the most recent publication 
+                            with a code repository URL. None if no such URL exists.
+        """
+        if self.featured_code_repo_url is not None:
+            return self.featured_code_repo_url
+        else:
+            # Get the most recent publication with a code repository URL
+            recent_publication_with_code_repo_url = (Publication.objects
+                                                     .filter(code_repo_url__isnull=False)
+                                                     .order_by('-date').first())
+            if recent_publication_with_code_repo_url:
+                return recent_publication_with_code_repo_url.code_repo_url
+            else:
+                return None
+
 
     def get_thumbnail_alt_text(self):
         if not self.thumbnail_alt_text:

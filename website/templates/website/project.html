@@ -66,8 +66,11 @@
       <div class="row">
         <h3 class="sidebar-header">Date</h3>
         {{ date_str }}
-        <h3 class="sidebar-header">Code</h3>
-        GitHub Link
+
+        {% if featured_code_repo_url %}
+          <h3 class="sidebar-header">Code</h3>
+          <a href="{{featured_code_repo_url}}">GitHub Link</a>
+        {% endif %}
         
         {# Project leadership info #}
         {% if active_PIs.count > 0 %}
@@ -145,7 +148,7 @@
       
     </div>
     <div class="col-md-9 col-md-pull-3">
-      <div class="row" style="width:90%">
+      <div class="row project-content-row">
         <h2 class="project-section-header">Project Description</h2>
           <div class="project-description">
             {% autoescape off %}
@@ -154,9 +157,14 @@
           </div>
         </p>
       </div>
-      <div class="row" style="width:90%">
-        TODO: insert video
-      </div>
+      {% if featured_video %}
+        <div class="row" style="width:90%">
+          <div class="video-wrapper">
+            <iframe class="video-iframe" src="{{ featured_video.get_embed }}" 
+              frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+          </div>
+        </div>
+      {% endif %}
       {% if publications %}
         <div class="row" style="width:90%"> 
           <h3 class="news-type-label">Publications</h3>

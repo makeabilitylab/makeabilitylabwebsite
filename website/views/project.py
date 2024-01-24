@@ -36,12 +36,16 @@ def project(request, project_name):
     displayed_banners = ml_utils.choose_banners(all_banners)
 
     publications = project.publication_set.order_by('-date')
-    videos = project.video_set.order_by('-date')
+    videos = project.videos.order_by('-date')
     talks = project.talk_set.order_by('-date')
     news = project.news_set.order_by('-date')
     photos = project.photo_set.all()
     num_contributors = project.get_contributor_count()
     sponsors = project.sponsors.all()
+    code_repo_url = project.get_featured_code_repo_url()
+    featured_video = project.get_featured_video()
+
+    print("featured video", featured_video)
 
     # Get PIs, Co-PIs, and lead graduate students for this project
     print("project.end_date", project.end_date)
@@ -132,6 +136,8 @@ def project(request, project_name):
                'news': news,
                'photos': photos,
                'sponsors': sponsors,
+               'code_repo_url': code_repo_url,
+               'featured_video': featured_video,
                'num_contributors': num_contributors,
                'date_str' : project.get_project_dates_str(),
                'active_PIs': active_PIs,
