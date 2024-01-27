@@ -62,7 +62,11 @@
 {% block content %}
 <div id="content" class="container content-container" data-spy="scroll">
   <div class="row about-column">
-    <div class="col-md-3 col-md-push-9 project-sidebar">
+    <!-- In this code, d-none applies display: none to the element, effectively hiding it on all 
+         screen sizes. Then, d-md-block applies display: block from the medium (md) breakpoint and up, 
+         overriding the d-none. So, the project-sidebar will be hidden on extra small (xs) and small 
+         (sm) screens, and visible on medium (md) screens and larger. -->
+    <div class="col-md-3 col-md-push-9 project-sidebar hidden-xs">
       <div class="row">
         <h3 class="sidebar-header">Date</h3>
         {{ date_str }}

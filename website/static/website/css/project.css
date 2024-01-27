@@ -35,8 +35,14 @@
   color: rgb(122, 122, 122);
 }
 
-.project-content-row{
-  width: 90%;
+.project-content-row {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .project-content-row {
+    width: 90%;
+  }
 }
 
 .pub-row-vert-layout {
