@@ -1,22 +1,22 @@
-h1, h2, h3, h4, h5, h6 {
+.content-container h1, h2, h3, h4, h5, h6 {
   font-family: 'Montserrat', sans-serif;
   color: #0a0a0a;
   font-weight: 700;
 }
 
-h2 {
+.content-container h2 {
   font-size: 20px;
 }
 
-h3 {
+.content-container h3 {
   font-size: 14px;
 }
 
-p {
+.content-container p {
   margin-bottom: 20px;
 }
 
-body {
+.content-container body {
   font-family: 'Roboto', sans-serif;
   font-size: 14px;
   line-height: 1.5;
