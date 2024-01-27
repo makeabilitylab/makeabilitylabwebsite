@@ -5,12 +5,15 @@ from website.models.position import MemberClassification
 import website.utils.ml_utils as ml_utils 
 from django.shortcuts import render, get_object_or_404, redirect
 from operator import attrgetter
+from django.template.loader import render_to_string
+from django.http import HttpResponse
 
 from django.db.models import Q, F
 
 # For logging
 import time
 import logging
+
 
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
@@ -75,11 +78,22 @@ def project(request, project_name):
                'has_videos_beyond_featured_video': has_videos_beyond_featured_video,
                'debug': settings.DEBUG}
 
+    context['view_prep_time'] = time.perf_counter() - func_start_time
+    response_content = render_to_string('website/project.html', context)
+
+    # Calculate render time
+    render_time = time.perf_counter() - func_start_time
+    render_time_str = f"{render_time:0.4f} seconds"
+
+    # Replace the special string with the actual render time
+    response_content = response_content.replace('DEBUG_INSERT_RENDER_TIMING', render_time_str, 1)
+
     func_end_time = time.perf_counter()
     _logger.debug(f"Prepared '{project.name}' in {func_end_time - func_start_time:0.4f} seconds")
-    context['render_time'] = func_end_time - func_start_time
+    
 
     # Render is a Django helper function. It combines a given template—in this case project.html—with
     # a context dictionary and returns an HttpResponse object with that rendered text.
     # See: https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
-    return render(request, 'website/project.html', context)
+    # return render(request, 'website/project.html', context)
+    return HttpResponse(response_content)

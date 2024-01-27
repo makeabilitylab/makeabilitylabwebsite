@@ -183,6 +183,8 @@ if DEBUG:
     INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2", "128.208.5.106"]
 
 MIDDLEWARE = [
+    # 'website.middleware.RenderTimingMiddleware', # couldn't get this work, see file for details
+
     # JEF (9/22/2023) The order of MIDDLEWARE is important. You should include the Debug Toolbar middleware as 
     # early as possible in the list. However, it must come after any other middleware that 
     # encodes the response’s content, such as GZipMiddleware.

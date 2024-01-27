@@ -6,12 +6,13 @@
   {% load static %}
   {% load cropping %}
 
-  <!-- The following code are dynamic comments that we generate to help with debugging. Do not remove! -->
+  <!-- The following code includes dynamic comments that we generate to help with debugging. Do not remove! -->
   <!-- Makeability Lab website version {% get_settings_value "ML_WEBSITE_VERSION" %} -->
   <!-- DEBUG mode set to {% get_settings_value "DEBUG" %}-->
-  {% var_exists 'render_time' as render_time_exists %}
-  {% if render_time_exists %}
-  <!-- Took {{ render_time|floatformat:3 }} secs for Django to render this page -->{% endif %}
+  {% var_exists 'view_prep_time' as view_prep_time_time_exists %}
+  {% if view_prep_time_time_exists %}
+  <!-- Took {{ view_prep_time|floatformat:3 }} secs for Django view prep -->{% endif %}
+  <!-- Took DEBUG_INSERT_RENDER_TIMING for Django to render this page -->
 
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
