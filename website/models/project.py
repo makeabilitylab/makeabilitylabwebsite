@@ -1,14 +1,16 @@
 from django.db import models
 from django.db.models import Max, Min
-from django.db.models import F, ExpressionWrapper, fields, Sum
+from django.db.models import F, ExpressionWrapper, fields, Sum, Q
 
 from image_cropping import ImageRatioField
 
 from datetime import date, datetime, timedelta
+from django.utils import timezone
 
 from .sponsor import Sponsor
 from .project_umbrella import ProjectUmbrella
 from .project_role import ProjectRole
+from .project_role import LeadProjectRoleTypes
 from .keyword import Keyword
 from .publication import Publication
 from .talk import Talk
@@ -43,8 +45,8 @@ class Project(models.Model):
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     project_umbrellas = models.ManyToManyField('ProjectUmbrella', blank=True)
-
-    # header_visual = models.ForeignKey(ProjectHeader, blank=True, null=True)
+    featured_video = models.ForeignKey('Video', blank=True, null=True, on_delete=models.SET_NULL, related_name='related_project')
+    featured_code_repo_url = models.URLField(blank=True, null=True)
     keywords = models.ManyToManyField(Keyword, blank=True)
 
     # pis = models.ManyToOneField(Person, blank=True, null=True)
@@ -107,6 +109,172 @@ class Project(models.Model):
                 project_role.end_date = end_date
                 project_role.save()
 
+    def get_featured_video(self):
+        """
+        This function returns the Project's video if it exists. 
+        If the Project's video is null, it finds the most recent publication with a video and returns that.
+        If no such publication exists, it returns None.
+
+        Returns:
+            Video: The video of the Project or the most recent publication with a video. None if no such video exists.
+        """
+        if self.featured_video is not None:
+            return self.featured_video
+        else:
+            # Check for a project video
+            recent_project_video = self.videos.order_by('-date').first()
+            if recent_project_video is not None:
+                return recent_project_video
+    
+            # Get the most recent publication asscoaited with this project with a video
+            recent_publication_with_video = (Publication.objects
+                                             .filter(video__isnull=False, projects=self)
+                                             .order_by('-date').first())
+            if recent_publication_with_video:
+                return recent_publication_with_video.video
+            else:
+                return None
+
+    def get_featured_code_repo_url(self):
+        """
+        This function returns the Project's code repository URL if it exists. 
+        If the Project's code repository URL is null, it finds the most recent publication with a 
+        code repository URL and returns that. If no such publication exists, it returns None.
+
+        Returns:
+            model.URLField: The code repository URL of the Project or the most recent publication 
+                            with a code repository URL. None if no such URL exists.
+        """
+        if self.featured_code_repo_url is not None:
+            return self.featured_code_repo_url
+        else:
+            # Get the most recent publication with a code repository URL
+            recent_publication_with_code_repo_url = (Publication.objects
+                                                     .filter(code_repo_url__isnull=False, projects=self)
+                                                     .order_by('-date').first())
+            if recent_publication_with_code_repo_url:
+                return recent_publication_with_code_repo_url.code_repo_url
+            else:
+                return None
+
+    def get_related_projects(self, match_all_umbrellas=False):
+        """
+        Gets all projects that share project umbrellas with this project.
+        
+        If match_all_umbrellas is True, it returns projects that share exactly the same project umbrellas.
+        If match_all_umbrellas is False, it returns projects that share at least one project umbrella.
+        
+        Args:
+            match_all_umbrellas (bool): Whether to match all project umbrellas or just one. Defaults to False.
+        
+        Returns:
+            QuerySet: A QuerySet of Project instances that match the criteria.
+        """
+        if match_all_umbrellas:
+            # If we want to match all project umbrellas,
+            # we first annotate each project with the count of matching project umbrellas.
+            # Then we filter the projects where the count of matching project umbrellas is equal to the count of project umbrellas in the current project.
+            return (Project.objects
+                    .annotate(matching_count=models.Count('project_umbrellas', filter=models.Q(project_umbrellas__in=self.project_umbrellas.all())))
+                    .filter(matching_count=self.project_umbrellas.count())
+                    .exclude(id=self.id)  # Exclude the current project from the results
+                    .order_by('-start_date')  # Order the results by start_date in descending order
+                    .distinct())  # Ensure each project is returned only once
+        else:
+            # If we want to match at least one project umbrella,
+            # we simply filter the projects that have any of the same project umbrellas as the current project.
+            return (Project.objects
+                    .filter(project_umbrellas__in=self.project_umbrellas.all())
+                    .exclude(id=self.id)  # Exclude the current project from the results
+                    .order_by('-start_date')  # Order the results by start_date in descending order
+                    .distinct())  # Ensure each project is returned only once
+
+    def get_project_leadership(self):
+        """
+        This function queries for all PIs, active PIs, Co-PIs, student leads, and their inactive counterparts 
+        for a given project. The function returns a dictionary containing these querysets.
+
+        Parameters:
+        self (Project): The project for which the leadership roles are to be queried.
+
+        Returns:
+        Dict[str, QuerySet]: A dictionary containing querysets of all PIs, active PIs, Co-PIs, student leads, 
+        and their inactive counterparts.
+        """
+        # Get current date
+        current_date = timezone.now().date()
+
+        # Query for active PIs. Active PIs are defined as either:
+        # 1. They have an end_date that is null
+        # 2. They have an end_date that is >= the current date
+        # 3. They have an end_date that is >= the project end date
+        # If project.end_date is None, we will not include it in the query
+        buffer_days = timedelta(days=45)
+        active_role_query_conditions = Q(end_date__isnull=True) | Q(end_date__gte=current_date)
+        if self.end_date is not None:
+            active_role_query_conditions |= Q(end_date__gte=F('project__end_date') - buffer_days)
+
+        all_PIs = (ProjectRole.objects.filter(
+                project=self,
+                lead_project_role=LeadProjectRoleTypes.PI)
+            .distinct('person'))
+        
+        active_PIs = (ProjectRole.objects.filter(
+                active_role_query_conditions,
+                project=self,
+                lead_project_role=LeadProjectRoleTypes.PI)
+            .distinct('person'))
+
+        # Query for active Co-PIs
+        active_Co_PIs = (ProjectRole.objects.filter(
+                active_role_query_conditions,
+                project=self,
+                lead_project_role=LeadProjectRoleTypes.CO_PI)
+            .distinct('person'))
+        
+        
+        # Query for active student leads
+        active_student_leads = (ProjectRole.objects.filter(
+                active_role_query_conditions,
+                project=self,
+                lead_project_role=LeadProjectRoleTypes.STUDENT_LEAD)
+            .distinct('person'))
+
+        # Query for inactive PIs
+        inactive_role_query_conditions = Q(end_date__lt=current_date)
+        if self.end_date is not None:
+            inactive_role_query_conditions |= Q(end_date__lt=self.end_date)
+        
+        inactive_PIs = (ProjectRole.objects.filter(
+                inactive_role_query_conditions,
+                project=self,
+                lead_project_role=LeadProjectRoleTypes.PI,   
+            ).exclude(person__in=[role.person for role in active_PIs]).distinct('person'))
+
+        # Query for inactive Co-PIs
+        inactive_Co_PIs = (ProjectRole.objects.filter(
+                inactive_role_query_conditions,
+                project=self,
+                lead_project_role=LeadProjectRoleTypes.CO_PI,
+            ).exclude(person__in=[role.person for role in active_Co_PIs]).distinct('person'))
+        
+        # Query for inactive student leads
+        inactive_student_leads = (ProjectRole.objects.filter(
+                inactive_role_query_conditions,
+                project=self,
+                lead_project_role=LeadProjectRoleTypes.STUDENT_LEAD,
+            ).exclude(person__in=[role.person for role in active_student_leads]).distinct('person'))
+        
+        return {
+            'all_PIs': all_PIs,
+            'active_PIs': active_PIs,
+            'active_Co_PIs': active_Co_PIs,
+            'active_student_leads': active_student_leads,
+            'inactive_PIs': inactive_PIs,
+            'inactive_Co_PIs': inactive_Co_PIs,
+            'inactive_student_leads': inactive_student_leads,
+        }
+    
     def get_thumbnail_alt_text(self):
         if not self.thumbnail_alt_text:
             return "This is the thumbnail image for the project " + self.name
@@ -115,24 +283,27 @@ class Project(models.Model):
 
     def get_pis(self):
         """Returns the PIs for the project (as a Person object)"""
-        pis_queryset = self.projectrole_set.filter(pi_member="PI")
-        pis_list = [pi.person for pi in pis_queryset]
-        return pis_list
+        pis_queryset = (self.projectrole_set
+                          .filter(pi_member=LeadProjectRoleTypes.PI)
+                          .values_list('person', flat=True))
+        return pis_queryset
 
     def get_co_pis(self):
-        """Returns the PIs for ths project (as a list of Person objects)"""
-        copis_queryset = self.projectrole_set.filter(pi_member="Co-PI")
-        copis_list = [copi.person for copi in copis_queryset]
-        return copis_list
+        """Returns the Co-PIs for this project (as a QuerySet of Person objects)"""
+        copis_queryset = (self.projectrole_set
+                          .filter(pi_member=LeadProjectRoleTypes.CO_PI)
+                          .values_list('person', flat=True))
+        return copis_queryset
 
     def has_award(self):
-        """Returns true if one or more pubs have an award"""
-        if self.publication_set.exists():
-            # For filtering, see: https://stackoverflow.com/a/844572
-            num_award_papers = self.publication_set.filter(award__isnull=False).exclude(award__exact='').count()
-            return num_award_papers > 0
-        else:
-            return False
+        """
+        Returns true if one or more publications have an award.
+
+        Returns:
+            bool: True if one or more publications have an award, False otherwise.
+        """
+        # Check if any publication has an award (not null and not an empty string)
+        return self.publication_set.filter(award__isnull=False).exclude(award__exact='').exists()
 
     def can_show_online(self):
         """Returns true if we can show this project on the webpage"""
@@ -144,15 +315,23 @@ class Project(models.Model):
         return bool(self.gallery_image)
 
     def has_publication(self):
-        """Returns True if the project has at least one publication"""
-        return self.get_publication_count() > 0
+        """
+        Returns True if the project has at least one publication.
+
+        Returns:
+            bool: True if the project has at least one publication, False otherwise.
+        """
+        return self.publication_set.exists()
 
     def get_most_recent_publication(self):
-        """Returns the most recent publication for project"""
-        if self.publication_set.exists():
-            return self.publication_set.order_by('-date')[0]
-        else:
-            return None
+        """
+        Returns the most recent publication for the project.
+
+        Returns:
+            Publication: The most recent publication if it exists, None otherwise.
+        """
+        return self.publication_set.order_by('-date').first()
+
 
     def has_artifact(self):
         """
@@ -210,7 +389,7 @@ class Project(models.Model):
         Returns the number of videos associated with this project
         :return: the number of videos associated with this project
         """
-        return self.video_set.count()
+        return self.videos.count()
 
     get_video_count.short_description = "Videos"
 
@@ -273,17 +452,37 @@ class Project(models.Model):
         else:
             return Person.objects.filter(projectrole__project=self).distinct()
     
+    def get_contributors(self):
+        """
+        Returns a QuerySet of all people who have ProjectRoles associated with this project
+        and who are listed as co-authors on any publications associated with this project.
+      
+        """
+        # Get all people who have roles in this project
+        role_people = ProjectRole.objects.filter(project=self).values_list('person', flat=True).distinct()
+
+        # Get all authors from publications associated with this project
+        publication_people = Publication.objects.filter(projects=self).values_list('authors', flat=True).distinct()
+
+        # Combine the two querysets
+        all_people = role_people.union(publication_people)
+
+        return all_people
+
+    def get_contributor_count(self):
+        """
+        Returns the total number of people with ProjectRoles associated with this project
+        and who are listed as co-authors on any publications associated with this project.
+        It should always be >= the number of people returned by get_people_count()
+        """
+        return self.get_contributors().count()
+
+    get_contributor_count.short_description = "Contributors"
+
     def get_people_count(self):
         """
         Returns the number of people involved in the project
         """
-        # project_roles = self.projectrole_set.order_by('-start_date')
-
-        # # For more on this style of list iteration (called list comprehension)
-        # # See: https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions
-        # #      https://www.python.org/dev/peps/pep-0202/
-        # people = set([project_role.person for project_role in project_roles])
-        # return len(people)
         return self.projectrole_set.values('person').distinct().count()
 
     get_people_count.short_description = "Num People"
@@ -306,14 +505,6 @@ class Project(models.Model):
         """
         Returns the number of past members
         """
-
-        # # TODO: could likely turn all of this code into a single query?
-        # project_roles = self.projectrole_set.order_by('-start_date')
-        # past_member_cnt = 0
-        # for project_role in project_roles:
-        #     if project_role.has_completed_role():
-        #         past_member_cnt = past_member_cnt + 1
-        # return past_member_cnt
         return self.projectrole_set.filter(end_date__isnull=False).values('person').distinct().count()
 
     get_past_member_count.short_description = "Num Past Members"
@@ -333,18 +524,35 @@ class Project(models.Model):
             mostRecentTalk = self.talk_set.latest('date')
             mostRecentArtifacts.append((mostRecentTalk.date, mostRecentTalk))
 
-        if self.video_set.exists():
-            mostRecentVideo = self.video_set.latest('date')
+        if self.videos.exists():
+            mostRecentVideo = self.videos.latest('date')
             mostRecentArtifacts.append((mostRecentVideo.date, mostRecentVideo))
 
         if len(mostRecentArtifacts) > 0:
-            # mostRecentArtifacts = sorted(mostRecentArtifacts, key=lambda artifact: artifact[0], reverse=True)
-            #return mostRecentArtifacts[0][0], mostRecentArtifacts[0][1]
             return max(mostRecentArtifacts, key=lambda artifact: artifact[0])
         else:
             return None
 
     get_most_recent_artifact.short_description = "Most Recent Artifact"
+
+
+    def get_project_dates_str(self):
+        """
+        Returns a string representation of the project's start and end dates.
+        If the start and end dates are in the same year, it returns that year.
+        If the end date is None, it returns a string in the format 'start_year–Present'.
+        Otherwise, it returns a string in the format 'start_year–end_year'.
+        """
+        # If end_date is None, return 'start_year–Present'
+        if self.end_date is None:
+            return f"{self.start_date.year}–Present"
+
+        # If start_date and end_date are in the same year, return that year
+        if self.start_date.year == self.end_date.year:
+            return str(self.start_date.year)
+
+        # Otherwise, return 'start_year–end_year'
+        return f"{self.start_date.year}–{self.end_date.year}"
 
 
     def __str__(self):
