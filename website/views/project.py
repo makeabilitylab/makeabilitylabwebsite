@@ -7,8 +7,6 @@ from django.shortcuts import render, get_object_or_404, redirect
 from operator import attrgetter
 
 from django.db.models import Q, F
-from django.utils import timezone
-from datetime import timedelta
 
 # For logging
 import time
@@ -52,72 +50,7 @@ def project(request, project_name):
     # Get PIs, Co-PIs, and lead graduate students for this project
     print("project.end_date", project.end_date)
 
-    # Get current date
-    current_date = timezone.now().date()
-
-    # Query for active PIs. Active PIs are defined as either:
-    # 1. They have an end_date that is null
-    # 2. They have an end_date that is >= the current date
-    # 3. They have an end_date that is >= the project end date
-    # If project.end_date is None, we will not include it in the query
-    buffer_days = timedelta(days=45)
-    active_role_query_conditions = Q(end_date__isnull=True) | Q(end_date__gte=current_date)
-    if project.end_date is not None:
-        active_role_query_conditions |= Q(end_date__gte=F('project__end_date') - buffer_days)
-
-    all_PIs = (ProjectRole.objects.filter(
-            project=project,
-            lead_project_role=LeadProjectRoleTypes.PI)
-        .distinct('person'))
-    
-    print("all_PIs", all_PIs)
-    
-    active_PIs = (ProjectRole.objects.filter(
-            active_role_query_conditions,
-            project=project,
-            lead_project_role=LeadProjectRoleTypes.PI)
-        .distinct('person'))
-
-    # Query for active Co-PIs
-    active_Co_PIs = (ProjectRole.objects.filter(
-            active_role_query_conditions,
-            project=project,
-            lead_project_role=LeadProjectRoleTypes.CO_PI)
-        .distinct('person'))
-    
-    
-    # Query for active student leads
-    active_student_leads = (ProjectRole.objects.filter(
-            active_role_query_conditions,
-            project=project,
-            lead_project_role=LeadProjectRoleTypes.STUDENT_LEAD)
-        .distinct('person'))
-    print("active_student_leads", active_student_leads)
-
-    # Query for inactive PIs
-    inactive_role_query_conditions = Q(end_date__lt=current_date)
-    if project.end_date is not None:
-        inactive_role_query_conditions |= Q(end_date__lt=project.end_date)
-    
-    inactive_PIs = (ProjectRole.objects.filter(
-            inactive_role_query_conditions,
-            project=project,
-            lead_project_role=LeadProjectRoleTypes.PI,   
-        ).exclude(person__in=[role.person for role in active_PIs]).distinct('person'))
-
-    # Query for inactive Co-PIs
-    inactive_Co_PIs = (ProjectRole.objects.filter(
-            inactive_role_query_conditions,
-            project=project,
-            lead_project_role=LeadProjectRoleTypes.CO_PI,
-        ).exclude(person__in=[role.person for role in active_Co_PIs]).distinct('person'))
-    
-    # Query for inactive student leads
-    inactive_student_leads = (ProjectRole.objects.filter(
-            inactive_role_query_conditions,
-            project=project,
-            lead_project_role=LeadProjectRoleTypes.STUDENT_LEAD,
-        ).exclude(person__in=[role.person for role in active_student_leads]).distinct('person'))
+    project_leadership = project.get_project_leadership()
 
     # Query for related projects. Limit to top 5
     related_projects = project.get_related_projects(match_all_umbrellas=True)[:5]
@@ -136,8 +69,8 @@ def project(request, project_name):
                'featured_video': featured_video,
                'num_contributors': num_contributors,
                'date_str' : project.get_project_dates_str(),
-               'active_PIs': active_PIs,
-               'active_student_leads': active_student_leads,
+               'active_PIs': project_leadership["active_PIs"],
+               'active_student_leads': project_leadership["active_student_leads"],
                'related_projects': related_projects,
                'has_videos_beyond_featured_video': has_videos_beyond_featured_video,
                'debug': settings.DEBUG}
