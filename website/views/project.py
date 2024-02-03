@@ -1,5 +1,5 @@
 from django.conf import settings # for access to settings variables, see https://docs.djangoproject.com/en/4.0/topics/settings/#using-settings-in-python-code
-from website.models import Project, Position, ProjectRole
+from website.models import Project, Position, ProjectRole, News
 from website.models.project_role import LeadProjectRoleTypes
 from website.models.position import MemberClassification
 import website.utils.ml_utils as ml_utils 
@@ -79,6 +79,12 @@ def project(request, project_name):
                'debug': settings.DEBUG}
 
     context['view_prep_time'] = time.perf_counter() - func_start_time
+
+    # The render_to_string function does not run context processors, which is why your recent_news 
+    # context from website/context_processors.py is not available in project.html.
+    # So we are hacking it on here.
+    context['recent_news'] = News.objects.order_by('-date')[:3]
+
     response_content = render_to_string('website/project.html', context)
 
     # Calculate render time
@@ -90,7 +96,6 @@ def project(request, project_name):
 
     func_end_time = time.perf_counter()
     _logger.debug(f"Prepared '{project.name}' in {func_end_time - func_start_time:0.4f} seconds")
-    
 
     # Render is a Django helper function. It combines a given template—in this case project.html—with
     # a context dictionary and returns an HttpResponse object with that rendered text.
