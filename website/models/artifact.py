@@ -192,7 +192,7 @@ class Artifact(models.Model):
                         # whether to save the model after the file has been deleted. If save is True, the model will be 
                         # saved after the file deletion. Since we're already in a save(), we don't want to call save
                         deleted_path = orig_artifact.pdf_file.path
-                        orig_artifact.pdf_file.delete(False)
+                        orig_artifact.pdf_file.delete(False) # False here since it will be saved by the super().save() call 
                         _logger.debug(f"Deleted pdf_file={deleted_path} off filesystem")
                     else:
                         _logger.debug(f"Could not delete pdf_file={orig_artifact.pdf_file} as it does not exist on filesystem")
@@ -240,6 +240,9 @@ class Artifact(models.Model):
                             # We call only rename artifact on filesystem and not the _db version as all of these
                             # changes will be saved back to the db with the super.save() call at end of this method
                             ml_fileutils.rename_artifact_on_filesystem(self.pdf_file, new_filename_no_ext)
+                            
+                            # Add 'pdf_file' to the update_fields list so that it gets updated in the db
+                            kwargs.setdefault('update_fields', []).append('pdf_file')
                         else:
                             _logger.debug(f"The pdf filename matches {old_pdf_filename} so not renaming")
                     
@@ -248,7 +251,14 @@ class Artifact(models.Model):
                         old_raw_filename_no_ext, ext = os.path.splitext(old_raw_filename)
                         if new_filename_no_ext != old_raw_filename_no_ext:
                             _logger.debug(f"The new_filename_no_ext={new_filename_no_ext} and old_raw_filename_no_ext={old_raw_filename_no_ext} don't match. Renaming...")
+                            
+                            # Just rename the artifact on the filesystem but don't yet update it in the db
+                            # We'll do that by adding 'raw_file' to the 'update_fields' list and it will
+                            # be taken care of by the super().save() call at the end of this method
                             ml_fileutils.rename_artifact_on_filesystem(self.raw_file, new_filename_no_ext)
+
+                            # Add 'raw_file' to the update_fields list so that it gets updated in the db
+                            kwargs.setdefault('update_fields', []).append('raw_file')
                         else:
                             _logger.debug(f"The raw filename matches {old_raw_filename} so not renaming")
 
@@ -256,8 +266,15 @@ class Artifact(models.Model):
                         old_thumbnail_filename = os.path.basename(self.thumbnail.name)
                         old_thumbnail_filename_no_ext, ext = os.path.splitext(old_thumbnail_filename)
                         if new_filename_no_ext != old_thumbnail_filename_no_ext:
-                            _logger.debug(f"The new_filename_no_ext={new_filename_no_ext} and old_thumbnail_filename_no_ext={old_thumbnail_filename_no_ext} don't match. Renaming...")
+                            _logger.debug(f"The new_thumbnail_filename_no_ext={new_filename_no_ext} and old_thumbnail_filename_no_ext={old_thumbnail_filename_no_ext} don't match. Renaming...")
+                            
+                            # Just rename the artifact on the filesystem but don't yet update it in the db
+                            # We'll do that by adding 'thumbnail' to the 'update_fields' list and it will
+                            # be taken care of by the super().save() call at the end of this method
                             ml_fileutils.rename_artifact_on_filesystem(self.thumbnail, new_filename_no_ext)
+
+                            # Add 'thumbnail' to the update_fields list so that it gets updated in the db
+                            kwargs.setdefault('update_fields', []).append('thumbnail')
                         else:
                             _logger.debug(f"The thumbnail filename matches {old_thumbnail_filename} so not renaming")
             else:
@@ -276,6 +293,11 @@ class Artifact(models.Model):
                 if self.pdf_file.storage.exists(self.pdf_file.name):
                     thumbnail_local_path = os.path.dirname(thumbnail_filename_with_local_path)
                     ml_fileutils.generate_thumbnail_for_pdf(self.pdf_file, self.thumbnail, thumbnail_local_path)
+                
+                    # If 'update_fields' does not exist in kwargs, all fields are saved
+                    # Add 'thumbnail' to the update_fields list so that it gets updated in the db
+                    if 'update_fields' in kwargs:
+                        kwargs.setdefault('update_fields', []).append('thumbnail')
                 else:
                     _logger.debug(f"Could not generate a thumbnail because the pdf {self.pdf_file.path} was not found in storage")
             elif thumbnail_exists_in_storage:
