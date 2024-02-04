@@ -39,9 +39,10 @@ class Project(models.Model):
     # Short name is used for urls, and should be name.lower().replace(" ", "")
     short_name = models.CharField(max_length=255)
     short_name.help_text = "This should be the same as name but lower case with no spaces. It is used in the url of the project"
-
-    # Sponsors is currently a simple list of sponsors but could be updated to a many to many field if a sponsors model is desired.
-    sponsors = models.ManyToManyField('Sponsor', blank=True)
+   
+    # grants = models.ManyToManyField('Grant', blank=True)
+    # grants.help_text = "Almost all projects in our lab are funded by grants. If you don't know about the project funding, please ask Jon."
+   
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     project_umbrellas = models.ManyToManyField('ProjectUmbrella', blank=True)
@@ -108,6 +109,10 @@ class Project(models.Model):
                 # Update end_date of the ProjectRole
                 project_role.end_date = end_date
                 project_role.save()
+
+    def get_sponsors(self):
+        # Get all unique sponsors of the grants associated with the project
+        return Sponsor.objects.filter(grant__projects__in=[self]).distinct()
 
     def get_featured_video(self):
         """
@@ -282,14 +287,14 @@ class Project(models.Model):
             return self.thumbnail_alt_text
 
     def get_pis(self):
-        """Returns the PIs for the project (as a Person object)"""
+        """Returns the PIs for the project as a QuerySet of Person objects"""
         pis_queryset = (self.projectrole_set
                           .filter(pi_member=LeadProjectRoleTypes.PI)
                           .values_list('person', flat=True))
         return pis_queryset
 
     def get_co_pis(self):
-        """Returns the Co-PIs for this project (as a QuerySet of Person objects)"""
+        """Returns the Co-PIs for this project as a QuerySet of Person objects"""
         copis_queryset = (self.projectrole_set
                           .filter(pi_member=LeadProjectRoleTypes.CO_PI)
                           .values_list('person', flat=True))
