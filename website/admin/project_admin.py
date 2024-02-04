@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin import widgets
-from website.models import Project, Banner, Photo, ProjectRole
+from website.models import Project, Banner, Photo, ProjectRole, Grant
 from website.models.project import PROJECT_THUMBNAIL_SIZE
 from website.admin_list_filters import ActiveProjectsFilter
 from image_cropping import ImageCroppingMixin
@@ -41,10 +41,14 @@ class PhotoInline(ImageCroppingMixin, admin.StackedInline):
     model = Photo
     extra = 0  # Number of extra "empty" forms to show at the bottom
 
+class GrantInline(admin.TabularInline):
+    model = Grant.projects.through
+    extra = 1
+
 @admin.register(Project)
 class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
     search_fields = ['name']  # allows you to search by the name of the project
-    inlines = [BannerInline, PhotoInline, ProjectRoleInline]
+    inlines = [GrantInline, BannerInline, PhotoInline, ProjectRoleInline]
 
     # The list display lets us control what is shown in the Project table at Home > Website > Project
     # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
@@ -56,7 +60,7 @@ class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
     
     fieldsets = [
         (None,                      {'fields': ['name', 'short_name']}),
-        ('About',                   {'fields': ['start_date', 'end_date', 'about', 'gallery_image', 'cropping', 'thumbnail_alt_text', 'sponsors']}),
+        ('About',                   {'fields': ['start_date', 'end_date', 'about', 'gallery_image', 'cropping', 'thumbnail_alt_text']}),
         ('Featured',                {'fields': ['featured_video', 'featured_code_repo_url']}),
         ('Associations',            {'fields': ['project_umbrellas', 'keywords']}),
     ]
@@ -85,8 +89,6 @@ class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
         return queryset, use_distinct
 
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
-        if db_field.name == "sponsors":
-            kwargs["widget"] = widgets.FilteredSelectMultiple("sponsors", is_stacked=False)
         if db_field.name == "keywords":
             kwargs["widget"] = widgets.FilteredSelectMultiple("keywords", is_stacked=False)
         if db_field.name == "project_umbrellas":

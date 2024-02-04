@@ -35,7 +35,7 @@ class Artifact(models.Model):
     
     # The artifacts themselves
     pdf_file = models.FileField(upload_to=get_upload_dir, null=True, default=None, max_length=255)
-    pdf_file.help_text = "The rendered PDF of the talk"
+    pdf_file.help_text = "The rendered PDF of the artifact"
     raw_file = models.FileField(upload_to=get_upload_dir, blank=True, null=True, default=None, max_length=255)
     raw_file.help_text = "The raw file (e.g., pptx, keynote) for the artifact. While not required, this is "\
         "<b>highly</b> recommended as it creates a better archive of the work"

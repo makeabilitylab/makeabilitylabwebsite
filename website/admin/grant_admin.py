@@ -40,7 +40,10 @@ class GrantAdmin(ArtifactAdmin):
         form.base_fields['forum_url'].help_text = f'The grant url (e.g., <a href="{grant_url}">{grant_url}</a>)'
 
         form.base_fields['pdf_file'].label = 'Grant PDF'
+        form.base_fields['pdf_file'].help_text = 'The rendered PDF of the grant. Internal only. This is not currently shown on the website.'
         form.base_fields['raw_file'].help_text = 'The raw file (e.g., Word Docx, Overleaf Zip, etc.) for <b>archival</b> purposes. This is not shown on the website.'
+
+        form.base_fields['projects'].help_text = 'Associate this grant with all the projects that it supports.'
 
         form.base_fields['funding_amount'].widget.attrs['style'] = f'min-width: 300px;'
 

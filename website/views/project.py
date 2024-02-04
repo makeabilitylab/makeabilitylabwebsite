@@ -1,5 +1,5 @@
 from django.conf import settings # for access to settings variables, see https://docs.djangoproject.com/en/4.0/topics/settings/#using-settings-in-python-code
-from website.models import Project, Position, ProjectRole
+from website.models import Project, Position, ProjectRole, Grant
 from website.models.project_role import LeadProjectRoleTypes
 from website.models.position import MemberClassification
 import website.utils.ml_utils as ml_utils 
@@ -42,13 +42,15 @@ def project(request, project_name):
     news = project.news_set.order_by('-date')
     photos = project.photo_set.all()
     num_contributors = project.get_contributor_count()
-    sponsors = project.sponsors.all()
+    sponsors = project.get_sponsors()
     code_repo_url = project.get_featured_code_repo_url()
     featured_video = project.get_featured_video()
     has_videos_beyond_featured_video = (project.videos.exclude(id=featured_video.id).exists() 
         if featured_video else project.videos.exists())
 
-    _logger.debug(f"The featured video: {featured_video} and has videos beyond featured? {has_videos_beyond_featured_video}")
+    _logger.debug(f"Project sponsorship: {sponsors}")
+    _logger.debug(f"Project grants: {Grant.objects.filter(projects__in=[project])}")
+    _logger.debug(f"The featured video: {featured_video}. Has videos beyond featured? {has_videos_beyond_featured_video}")
     _logger.debug(f"The project start date: {project.start_date} and end date: {project.end_date}")
     
     # Get PIs, Co-PIs, and lead graduate students for this project
