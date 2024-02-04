@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin import widgets
-from website.models import Project, ProjectHeader, Banner, Photo
+from website.models import Project, Banner, Photo, ProjectRole
 from website.models.project import PROJECT_THUMBNAIL_SIZE
 from website.admin_list_filters import ActiveProjectsFilter
 from image_cropping import ImageCroppingMixin
@@ -8,16 +8,33 @@ from image_cropping import ImageCroppingMixin
 from django.utils.html import format_html # for formatting thumbnails
 from easy_thumbnails.files import get_thumbnailer # for generating thumbnails
 import os # for checking if thumbnail file exists
+from django import forms
+from django.db.models import F
 
-class ProjectHeaderInline(ImageCroppingMixin, admin.StackedInline):
-    """This allows us to edit ProjectHeader from the Project page"""
-    model = ProjectHeader
-    extra = 0
+class ProjectRoleInline(admin.TabularInline):
+    model = ProjectRole
+    extra = 1  # Number of extra forms displayed
+
+    autocomplete_fields = ['person']
+
+    # This method is used to customize the form field for a given database field
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        formfield = super().formfield_for_dbfield(db_field, **kwargs)
+        # If the database field is 'role', we create a new Textarea widget with the desired 
+        # number of columns and rows
+        if db_field.name == 'role':
+            formfield.widget = forms.Textarea(attrs={'cols': '40', 'rows': '2'})
+        return formfield
+    
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        # Order by end_date descending with nulls first
+        return qs.order_by(F('end_date').desc(nulls_first=True))
 
 class BannerInline(ImageCroppingMixin, admin.StackedInline):
     """This allows us to edit Banner from the Project page"""
     model = Banner
-    extra = 0  # Number of extra "empty" forms to show at the bottom
+    extra = 1  # Number of extra "empty" forms to show at the bottom
 
 class PhotoInline(ImageCroppingMixin, admin.StackedInline):
     """This allows us to add Photos from the Project page"""
@@ -27,7 +44,7 @@ class PhotoInline(ImageCroppingMixin, admin.StackedInline):
 @admin.register(Project)
 class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
     search_fields = ['name']  # allows you to search by the name of the project
-    inlines = [ProjectHeaderInline, BannerInline, PhotoInline]
+    inlines = [BannerInline, PhotoInline, ProjectRoleInline]
 
     # The list display lets us control what is shown in the Project table at Home > Website > Project
     # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
@@ -36,6 +53,13 @@ class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
                     'get_current_member_count', 'get_past_member_count',
                     'get_most_recent_artifact_date', 'get_most_recent_artifact_type',
                     'get_publication_count', 'get_video_count', 'get_talk_count', 'get_banner_count')
+    
+    fieldsets = [
+        (None,                      {'fields': ['name', 'short_name']}),
+        ('About',                   {'fields': ['start_date', 'end_date', 'about', 'gallery_image', 'cropping', 'thumbnail_alt_text', 'sponsors']}),
+        ('Featured',                {'fields': ['featured_video', 'featured_code_repo_url']}),
+        ('Associations',            {'fields': ['project_umbrellas', 'keywords']}),
+    ]
     
     list_filter = (ActiveProjectsFilter, )
 

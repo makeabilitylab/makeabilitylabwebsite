@@ -48,17 +48,15 @@ def project(request, project_name):
     has_videos_beyond_featured_video = (project.videos.exclude(id=featured_video.id).exists() 
         if featured_video else project.videos.exists())
 
-    print("featured video", featured_video)
-
+    _logger.debug(f"The featured video: {featured_video} and has videos beyond featured? {has_videos_beyond_featured_video}")
+    _logger.debug(f"The project start date: {project.start_date} and end date: {project.end_date}")
+    
     # Get PIs, Co-PIs, and lead graduate students for this project
-    print("project.end_date", project.end_date)
-
     project_leadership = project.get_project_leadership()
+    _logger.debug(f"The project leadership for {project_name}: {project_leadership}")
 
     # Query for related projects. Limit to top 5
     related_projects = project.get_related_projects(match_all_umbrellas=True)[:5]
-
-    print("project umbrellas", project.project_umbrellas.all())
 
     context = {'banners': displayed_banners,
                'project': project,
@@ -79,6 +77,7 @@ def project(request, project_name):
                'debug': settings.DEBUG}
 
     context['view_prep_time'] = time.perf_counter() - func_start_time
+    _logger.debug(f"Setup view for '{project.name}' (sans render) in {context['view_prep_time']:0.4f} seconds")
 
     # Render is a Django helper function. It combines a given template—in this case project.html—with
     # a context dictionary and returns an HttpResponse object with that rendered text.

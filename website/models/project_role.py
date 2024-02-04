@@ -11,14 +11,16 @@ class ProjectRole(models.Model):
     project = models.ForeignKey("Project", on_delete=models.CASCADE)
     
     role = models.TextField(blank=True, null=True)
-    role.help_text = "A brief description of your role on the project. Be specific."
+    role.help_text = ("A brief description of your role on the project. Be specific. If you had more than one" 
+                      " role (e.g., you started as a dev and then became a lead), please add a new role with"
+                      " the correct start and end dates")
     
     start_date = models.DateField()
     start_date.help_text = "When did you start in this role?"
    
     end_date = models.DateField(blank=True, null=True)
-    end_date.help_text = """When did you end this role? Leave blank if you are still working on this project.
-                            Note: we will automatically set this end date if a project has been ended."""
+    end_date.help_text = ("When did you end this role? Leave blank if you are still working on this project."
+                          "Note: we will automatically set this end date if a project has been ended.")
     
     LEAD_PROJECT_ROLE_MAPPING = {
         LeadProjectRoleTypes.PI: 0,
@@ -28,9 +30,9 @@ class ProjectRole(models.Model):
     }
 
     lead_project_role = models.CharField(max_length=50, blank=True, null=True, choices=LeadProjectRoleTypes.choices, default=None)
-    lead_project_role.help_text = """If you are the lead student on this project, please select 'Student Lead.'
-                                     In addition, for most projects, Jon Froehlich should be the PI. So make sure 
-                                     to add him on his person page."""
+    lead_project_role.help_text = ("If you are the lead student on this project, please select 'Student Lead.'"
+                                   " In addition, for most projects, Jon Froehlich should be the PI. So make sure" 
+                                   " to add him on his person page.")
 
     def get_start_date_short(self):
         return self.start_date.strftime('%b %Y')
