@@ -173,21 +173,97 @@
     <div class="col-sm-9 col-sm-pull-3">
       <div class="row project-content-row">
         <h2 class="project-section-header">Project Description</h2>
-          <div class="project-description">
-            {% autoescape off %}
-              {{ project.about }}
-            {% endautoescape %}
+        <div class="inline-sidebar-flex-container-xs">
+          <div class="inline-sidebar-flex-item-xs">
+            <h3 class="sidebar-header">Date</h3>
+            {{ date_str }}
           </div>
-        </p>
+          <div class="inline-sidebar-flex-item-xs">
+            {% if active_PIs.count > 0 %}
+              <h3 class="sidebar-header">PI{% if active_PIs.count > 1 %}s{% endif %}</h3>
+              <ul class="sidebar-ul">
+                {% for active_pi_role in active_PIs %}
+                  {% with person=active_pi_role.person %}
+                    <li class="sidebar-li">   
+                      <a href="{% url 'website:member' person.url_name %}">
+                        <img class="sidebar-person-thumbnail" src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}" 
+                              alt="{{ person.get_full_name }}"/> 
+                      </a>
+                      <div class="sidebar-content">
+                        <a href="{% url 'website:member' person.url_name %}">{{ person.get_full_name }}</a>
+                      </div>
+                    </li>
+                  {% endwith %}
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+          <div class="inline-sidebar-flex-item-xs">
+            {% if active_student_leads.count > 0 %}
+              <h3 class="sidebar-header">Student Lead{% if active_student_leads.count > 1 %}s{% endif %}</h3>
+              <ul class="sidebar-ul">
+                {% for active_student_lead in active_student_leads %}
+                  {% with person=active_student_lead.person %}
+                    <li class="sidebar-li">   
+                      <a href="{% url 'website:member' person.url_name %}">
+                        <img class="sidebar-person-thumbnail" src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}" 
+                              alt="{{ person.get_full_name }}"/> 
+                      </a>
+                      <div class="sidebar-content">
+                        <a href="{% url 'website:member' person.url_name %}">{{ person.get_full_name }}</a>
+                      </div>
+                    </li>
+                  {% endwith %}
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+        </div> 
+        <div class="project-description">
+          {% autoescape off %}
+            {{ project.about }}
+          {% endautoescape %}
+        </div>   
       </div>
       {% if featured_video %}
-        <div class="row project-content-row">
+        <div class="row project-content-row" style="margin-top: 20px">
           <div class="video-wrapper">
             <iframe class="video-iframe" src="{{ featured_video.get_embed }}" 
               frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
           </div>
         </div>
       {% endif %}
+      <div class="row project-content-row" style="margin-top: 20px">
+        <div class="inline-sidebar-flex-container-xs">
+          {% if featured_code_repo_url %}
+            <div class="inline-sidebar-flex-item-xs">
+              <h3 class="sidebar-header">Code</h3>
+              <a href="{{featured_code_repo_url}}">GitHub Link</a>
+            </div>
+          {% endif %}
+          <div class="inline-sidebar-flex-item-xs">
+            {% if sponsors %}
+              <h3 class="sidebar-header">Funding</h3>
+              <div class="sponsor-sidebar-grid">
+                {% for sponsor in sponsors %}
+                  <div class="sponsor-sidebar-card" {% if forloop.first %} style="margin-left:0px" {% endif %}>
+                    <div class="sponsor-logo">
+                      {% if sponsor.icon %}
+                        <a href="{{sponsor.url}}">
+                          <img class="sponsor-img" 
+                            src="{% thumbnail sponsor.icon sponsor.get_thumbnail_size_as_str box=sponsor.icon_cropping crop=True upscale=True %}" 
+                            alt="{{sponsor.get_icon_alt_text}}"
+                            title="{{sponsor.name}}"/>
+                        </a>
+                      {% endif %}
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
       {% if publications %}
         <div class="row project-content-row"> 
           <h2>Publications</h2>

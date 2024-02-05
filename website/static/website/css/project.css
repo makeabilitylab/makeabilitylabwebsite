@@ -112,3 +112,33 @@
   font-size: smaller;
   color: rgb(150,150,150);
 }
+
+/*** INLINE SIDEBAR FOR SMALL SCREENS ***/
+.inline-sidebar-flex-container-xs {
+  display: flex;
+  flex-wrap: wrap;
+  color: #333333;
+}
+
+.inline-sidebar-flex-item-xs {
+  flex: 1 0 33.33%; /* flex-grow | flex-shrink | flex-basis */
+  box-sizing: border-box;
+  padding-right: 5px;
+}
+
+@media (min-width: 789px) {
+  .inline-sidebar-flex-container-xs {
+    display: none;
+  }
+}
+
+@media (max-width: 788px) {
+  .sidebar-header {
+    margin-top: 5px;
+    color: darkslategray;
+  }
+
+  .project-description {
+    font-size: 17px;
+  }
+}
