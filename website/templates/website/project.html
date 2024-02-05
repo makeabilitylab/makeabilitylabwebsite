@@ -67,6 +67,11 @@
         <h3 class="sidebar-header">Date</h3>
         {{ date_str }}
 
+        {% if website %}
+          <h3 class="sidebar-header">Website</h3>
+          <a href="{{website}}">{{website}}</a>
+        {% endif %}
+
         {% if featured_code_repo_url %}
           <h3 class="sidebar-header">Code</h3>
           <a href="{{featured_code_repo_url}}">GitHub Link</a>

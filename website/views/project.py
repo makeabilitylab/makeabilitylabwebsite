@@ -70,6 +70,7 @@ def project(request, project_name):
                'sponsors': sponsors,
                'code_repo_url': code_repo_url,
                'featured_video': featured_video,
+               'website': project.website,
                'num_contributors': num_contributors,
                'date_str' : project.get_project_dates_str(),
                'active_PIs': project_leadership["active_PIs"],

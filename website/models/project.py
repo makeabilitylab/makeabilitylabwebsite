@@ -48,6 +48,8 @@ class Project(models.Model):
     project_umbrellas = models.ManyToManyField('ProjectUmbrella', blank=True)
     featured_video = models.ForeignKey('Video', blank=True, null=True, on_delete=models.SET_NULL, related_name='related_project')
     featured_code_repo_url = models.URLField(blank=True, null=True)
+    website = models.URLField(blank=True, null=True)
+    website.help_text = "The project's external website, if it has one (e.g., https://projectsidewalk.org)"
     keywords = models.ManyToManyField(Keyword, blank=True)
 
     # pis = models.ManyToOneField(Person, blank=True, null=True)
