@@ -39,6 +39,11 @@
   width: 100%;
 }
 
+.project-row{
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
 @media (min-width: 768px) {
   .project-content-row {
     width: 90%;

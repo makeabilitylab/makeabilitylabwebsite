@@ -61,8 +61,8 @@
 
 {% block content %}
 <div id="content" class="container content-container" data-spy="scroll">
-  <div class="row about-column">
-    <div class="col-md-3 col-md-push-9 project-sidebar hidden-xs">
+  <div class="row project-row about-column">
+    <div class="col-sm-3 col-sm-push-9 project-sidebar hidden-xs">
       <div class="row">
         <h3 class="sidebar-header">Date</h3>
         {{ date_str }}
@@ -170,7 +170,7 @@
       </div>
       
     </div>
-    <div class="col-md-9 col-md-pull-3">
+    <div class="col-sm-9 col-sm-pull-3">
       <div class="row project-content-row">
         <h2 class="project-section-header">Project Description</h2>
           <div class="project-description">
@@ -198,7 +198,7 @@
       {% endif %}
     </div>
   </div>
-  <div class="row" id="below-sidebar">
+  <div class="row project-row" id="below-sidebar">
     {% if has_videos_beyond_featured_video %}
       <div class="row row-adjust-margins">
         {% if videos %}
