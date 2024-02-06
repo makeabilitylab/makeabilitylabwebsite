@@ -5,6 +5,8 @@ class LeadProjectRoleTypes(models.TextChoices):
     PI = ('PI', 'Principal Investigator')
     CO_PI = ('Co-PI', 'Co-PI')
     STUDENT_LEAD = 'Student Lead'
+    POSTDOC_LEAD = 'Postdoc Lead'
+    RESEARCH_SCIENTIST_LEAD = 'Research Scientist Lead'
 
 class ProjectRole(models.Model):
     person = models.ForeignKey("Person", on_delete=models.CASCADE)
@@ -26,7 +28,9 @@ class ProjectRole(models.Model):
         LeadProjectRoleTypes.PI: 0,
         LeadProjectRoleTypes.CO_PI: 1,
         LeadProjectRoleTypes.STUDENT_LEAD: 2,
-        "Other": 3
+        LeadProjectRoleTypes.POSTDOC_LEAD: 3,
+        LeadProjectRoleTypes.RESEARCH_SCIENTIST_LEAD: 4,
+        "Other": 5
     }
 
     lead_project_role = models.CharField(max_length=50, blank=True, null=True, choices=LeadProjectRoleTypes.choices, default=None)

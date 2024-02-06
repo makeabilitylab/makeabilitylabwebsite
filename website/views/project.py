@@ -71,10 +71,13 @@ def project(request, project_name):
                'code_repo_url': code_repo_url,
                'featured_video': featured_video,
                'website': project.website,
+               'data_url': project.data_url,
                'num_contributors': num_contributors,
                'date_str' : project.get_project_dates_str(),
                'active_PIs': project_leadership["active_PIs"],
                'active_student_leads': project_leadership["active_student_leads"],
+               'active_postdoc_leads': project_leadership["active_postdoc_leads"],
+               'active_research_scientist_leads': project_leadership["active_research_scientist_leads"],
                'related_projects': related_projects,
                'has_videos_beyond_featured_video': has_videos_beyond_featured_video,
                'debug': settings.DEBUG}

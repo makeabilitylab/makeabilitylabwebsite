@@ -61,7 +61,7 @@ class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
     fieldsets = [
         (None,                      {'fields': ['name', 'short_name']}),
         ('About',                   {'fields': ['start_date', 'end_date', 'about', 'gallery_image', 'cropping', 'thumbnail_alt_text']}),
-        ('Featured',                {'fields': ['website', 'featured_video', 'featured_code_repo_url']}),
+        ('Links',                   {'fields': ['website', 'data_url', 'featured_video', 'featured_code_repo_url']}),
         ('Associations',            {'fields': ['project_umbrellas', 'keywords']}),
     ]
     

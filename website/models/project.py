@@ -50,6 +50,8 @@ class Project(models.Model):
     featured_code_repo_url = models.URLField(blank=True, null=True)
     website = models.URLField(blank=True, null=True)
     website.help_text = "The project's external website, if it has one (e.g., https://projectsidewalk.org)"
+    data_url = models.URLField(blank=True, null=True)
+    data_url.help_text = "The project's data repository, if it has one"
     keywords = models.ManyToManyField(Keyword, blank=True)
 
     # pis = models.ManyToOneField(Person, blank=True, null=True)
@@ -196,91 +198,78 @@ class Project(models.Model):
                     .order_by('-start_date')  # Order the results by start_date in descending order
                     .distinct())  # Ensure each project is returned only once
 
-    def get_project_leadership(self):
+
+    def get_project_leadership(self, buffer_days=timedelta(days=45)):
         """
-        This function queries for all PIs, active PIs, Co-PIs, student leads, and their inactive counterparts 
-        for a given project. The function returns a dictionary containing these querysets.
+        Retrieves the leadership roles in a project, distinguishing between active and inactive roles.
 
         Parameters:
-        self (Project): The project for which the leadership roles are to be queried.
+        buffer_days (timedelta): The buffer period for determining active roles. Defaults to 45 days.
 
         Returns:
-        Dict[str, QuerySet]: A dictionary containing querysets of all PIs, active PIs, Co-PIs, student leads, 
-        and their inactive counterparts.
+        dict: A dictionary containing lists of all PIs, active PIs, inactive PIs, active Co-PIs, inactive Co-PIs,
+            active student leads, inactive student leads, active postdoc leads, inactive postdoc leads,
+            active research scientist leads, and inactive research scientist leads.
         """
-        # Get current date
         current_date = timezone.now().date()
 
-        # Query for active PIs. Active PIs are defined as either:
-        # 1. They have an end_date that is null
-        # 2. They have an end_date that is >= the current date
-        # 3. They have an end_date that is >= the project end date
-        # If project.end_date is None, we will not include it in the query
-        buffer_days = timedelta(days=45)
-        active_role_query_conditions = Q(end_date__isnull=True) | Q(end_date__gte=current_date)
+        # Fetch all ProjectRole objects for the project at once
+        # The .select_related('person') is a Django ORM method that can help optimize 
+        # your database queries when dealing with related objects.
+        # In Django, each time you access a foreign key, a new database query is executed. 
+        # This can lead to a significant number of queries and can slow down your application, 
+        # especially if you’re dealing with a lot of objects. This problem is often referred to 
+        # as the “N+1 selects problem”.
+        # 
+        # The select_related method solves this problem by performing a SQL join and 
+        # including the fields of the related object in the SELECT statement. This way,
+        # when you access the related object, Django doesn’t need to hit the database again, 
+        # because it has already fetched all the necessary data.
+        #
+        # In your case, select_related('person') will fetch the related Person objects at 
+        # the same time as it fetches the ProjectRole objects. So later, when you do role.person 
+        # in your code, Django won’t need to make an additional query to the database, because the 
+        # Person object data was fetched in the original query.
+        all_roles = ProjectRole.objects.filter(project=self).select_related('person')
+
+        # Use list comprehensions to create lists of active and inactive roles
+        active_roles = [role for role in all_roles if role.end_date is None or role.end_date >= current_date]
         if self.end_date is not None:
-            active_role_query_conditions |= Q(end_date__gte=F('project__end_date') - buffer_days)
+            active_roles += [role for role in all_roles if role.end_date >= self.end_date - buffer_days]
 
-        all_PIs = (ProjectRole.objects.filter(
-                project=self,
-                lead_project_role=LeadProjectRoleTypes.PI)
-            .distinct('person'))
-        
-        active_PIs = (ProjectRole.objects.filter(
-                active_role_query_conditions,
-                project=self,
-                lead_project_role=LeadProjectRoleTypes.PI)
-            .distinct('person'))
+        inactive_roles = [role for role in all_roles if role not in active_roles]
 
-        # Query for active Co-PIs
-        active_Co_PIs = (ProjectRole.objects.filter(
-                active_role_query_conditions,
-                project=self,
-                lead_project_role=LeadProjectRoleTypes.CO_PI)
-            .distinct('person'))
-        
-        
-        # Query for active student leads
-        active_student_leads = (ProjectRole.objects.filter(
-                active_role_query_conditions,
-                project=self,
-                lead_project_role=LeadProjectRoleTypes.STUDENT_LEAD)
-            .distinct('person'))
+        # Use list comprehensions to create lists of different types of roles
+        all_PIs = [role for role in all_roles if role.lead_project_role == LeadProjectRoleTypes.PI]
+        active_PIs = [role for role in active_roles if role.lead_project_role == LeadProjectRoleTypes.PI]
+        inactive_PIs = [role for role in inactive_roles if role.lead_project_role == LeadProjectRoleTypes.PI]
 
-        # Query for inactive PIs
-        inactive_role_query_conditions = Q(end_date__lt=current_date)
-        if self.end_date is not None:
-            inactive_role_query_conditions |= Q(end_date__lt=self.end_date)
-        
-        inactive_PIs = (ProjectRole.objects.filter(
-                inactive_role_query_conditions,
-                project=self,
-                lead_project_role=LeadProjectRoleTypes.PI,   
-            ).exclude(person__in=[role.person for role in active_PIs]).distinct('person'))
+        active_Co_PIs = [role for role in active_roles if role.lead_project_role == LeadProjectRoleTypes.CO_PI]
+        inactive_Co_PIs = [role for role in inactive_roles if role.lead_project_role == LeadProjectRoleTypes.CO_PI]
 
-        # Query for inactive Co-PIs
-        inactive_Co_PIs = (ProjectRole.objects.filter(
-                inactive_role_query_conditions,
-                project=self,
-                lead_project_role=LeadProjectRoleTypes.CO_PI,
-            ).exclude(person__in=[role.person for role in active_Co_PIs]).distinct('person'))
-        
-        # Query for inactive student leads
-        inactive_student_leads = (ProjectRole.objects.filter(
-                inactive_role_query_conditions,
-                project=self,
-                lead_project_role=LeadProjectRoleTypes.STUDENT_LEAD,
-            ).exclude(person__in=[role.person for role in active_student_leads]).distinct('person'))
-        
+        active_student_leads = [role for role in active_roles if role.lead_project_role == LeadProjectRoleTypes.STUDENT_LEAD]
+        inactive_student_leads = [role for role in inactive_roles if role.lead_project_role == LeadProjectRoleTypes.STUDENT_LEAD]
+
+        active_postdoc_leads = [role for role in active_roles if role.lead_project_role == LeadProjectRoleTypes.POSTDOC_LEAD]
+        inactive_postdoc_leads = [role for role in inactive_roles if role.lead_project_role == LeadProjectRoleTypes.POSTDOC_LEAD]
+
+        active_research_scientist_leads = [role for role in active_roles if role.lead_project_role == LeadProjectRoleTypes.RESEARCH_SCIENTIST_LEAD]
+        inactive_research_scientist_leads = [role for role in inactive_roles if role.lead_project_role == LeadProjectRoleTypes.RESEARCH_SCIENTIST_LEAD]
+
         return {
             'all_PIs': all_PIs,
             'active_PIs': active_PIs,
-            'active_Co_PIs': active_Co_PIs,
-            'active_student_leads': active_student_leads,
             'inactive_PIs': inactive_PIs,
+            'active_Co_PIs': active_Co_PIs,
             'inactive_Co_PIs': inactive_Co_PIs,
+            'active_student_leads': active_student_leads,
             'inactive_student_leads': inactive_student_leads,
+            'active_postdoc_leads': active_postdoc_leads,
+            'inactive_postdoc_leads': inactive_postdoc_leads,
+            'active_research_scientist_leads': active_research_scientist_leads,
+            'inactive_research_scientist_leads': inactive_research_scientist_leads,
         }
+
     
     def get_thumbnail_alt_text(self):
         if not self.thumbnail_alt_text:
