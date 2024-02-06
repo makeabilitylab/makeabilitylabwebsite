@@ -165,8 +165,16 @@ class Project(models.Model):
                 return recent_publication_with_code_repo_url.code_repo_url
             else:
                 return None
+            
+    def get_related_projects_by_pub(self):
+        """Returns a QuerySet of all projects that share publications with this project."""
+        return Project.objects.filter(publication__in=self.publication_set.all()).exclude(id=self.id)
+    
+    def get_related_projects_by_grant(self):
+        """Returns a QuerySet of all projects that share grants with this project."""
+        return Project.objects.filter(grant__in=self.grant_set.all()).exclude(id=self.id)
 
-    def get_related_projects(self, match_all_umbrellas=False):
+    def get_related_projects_by_umbrella(self, match_all_umbrellas=False):
         """
         Gets all projects that share project umbrellas with this project.
         

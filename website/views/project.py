@@ -58,7 +58,10 @@ def project(request, project_name):
     _logger.debug(f"The project leadership for {project_name}: {project_leadership}")
 
     # Query for related projects. Limit to top 5
-    related_projects = project.get_related_projects(match_all_umbrellas=True)[:5]
+    related_projects = project.get_related_projects_by_umbrella(match_all_umbrellas=True)[:5]
+
+    # related_projects_by_pub = project.get_related_projects_by_pub()
+    # _logger.debug(f"Related projects by publication: {related_projects_by_pub}")
 
     context = {'banners': displayed_banners,
                'project': project,
