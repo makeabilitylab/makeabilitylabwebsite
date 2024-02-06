@@ -339,13 +339,14 @@
               href="{% url 'website:people' %}">&nbsp;> &nbsp; People</a></li>
           <li style="white-space:nowrap;" class="{% if url_name == 'news_listing' %}active{% endif %}"><a
               href="{% url 'website:news_listing' %}">&nbsp;> &nbsp; News</a></li>
-          {#                  <li class="{% if url_name == 'projects' %}active{% endif %}"><a href="{% url 'website:projects' %}">&nbsp;> &nbsp; Projects</a></li>#}
+          <li class="{% if url_name == 'projects' %}active{% endif %}"><a href="{% url 'website:projects' %}">&nbsp;> &nbsp; Projects</a></li>
           <li style="white-space:nowrap;" class="{% if url_name == 'publications' %}active{% endif %}"><a
               href="{% url 'website:publications' %}">&nbsp;> &nbsp; Publications</a></li>
-          <li style="white-space:nowrap;" class="{% if url_name == 'talks' %}active{% endif %}"><a
+          <li style="white-space:nowrap;"><a href="https://docs.google.com/document/d/1YiiDsfpiolpXjUTj8xWrQwQQUzqrfqT9bocOpaYDrtI">&nbsp;> &nbsp; Lab Handbook</a></li>
+          {% comment %} <li style="white-space:nowrap;" class="{% if url_name == 'talks' %}active{% endif %}"><a
               href="{% url 'website:talks' %}">&nbsp;> &nbsp; Talks</a></li>
           <li style="white-space:nowrap;" class="{% if url_name == 'videos' %}active{% endif %}"><a
-              href="{% url 'website:videos' %}">&nbsp;> &nbsp; Videos</a></li>
+              href="{% url 'website:videos' %}">&nbsp;> &nbsp; Videos</a></li> {% endcomment %}
           {% endwith %}
         </ul>
         <div class="makelab-footer-connect-links-mobile">
