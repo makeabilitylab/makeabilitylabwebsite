@@ -184,43 +184,24 @@
             {{ date_str }}
           </div>
           <div class="inline-sidebar-flex-item-xs">
-            {% if active_PIs.count > 0 %}
-              <h3 class="sidebar-header">PI{% if active_PIs.count > 1 %}s{% endif %}</h3>
-              <ul class="sidebar-ul">
-                {% for active_pi_role in active_PIs %}
-                  {% with person=active_pi_role.person %}
-                    <li class="sidebar-li">   
-                      <a href="{% url 'website:member' person.url_name %}">
-                        <img class="sidebar-person-thumbnail" src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}" 
-                              alt="{{ person.get_full_name }}"/> 
-                      </a>
-                      <div class="sidebar-content">
-                        <a href="{% url 'website:member' person.url_name %}">{{ person.get_full_name }}</a>
-                      </div>
-                    </li>
-                  {% endwith %}
-                {% endfor %}
-              </ul>
+            {% if active_PIs %}
+              <h3 class="sidebar-header">PI{% if active_PIs|length > 1 %}s{% endif %}{% if active_Co_PIs %} / Co-PI {% if active_Co_PIs|length > 1 %}s{% endif %}{% endif %}</h3>
+              {% with active_leads=active_PIs %}
+                {% include "snippets/display_project_lead_snippet.html" %}
+              {% endwith %}
+              {% if active_Co_PIs %}
+                {% with active_leads=active_Co_PIs %}
+                  {% include "snippets/display_project_lead_snippet.html" %}
+                {% endwith %}
+              {% endif %}
             {% endif %}
           </div>
           <div class="inline-sidebar-flex-item-xs">
-            {% if active_student_leads.count > 0 %}
-              <h3 class="sidebar-header">Student Lead{% if active_student_leads.count > 1 %}s{% endif %}</h3>
-              <ul class="sidebar-ul">
-                {% for active_student_lead in active_student_leads %}
-                  {% with person=active_student_lead.person %}
-                    <li class="sidebar-li">   
-                      <a href="{% url 'website:member' person.url_name %}">
-                        <img class="sidebar-person-thumbnail" src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}" 
-                              alt="{{ person.get_full_name }}"/> 
-                      </a>
-                      <div class="sidebar-content">
-                        <a href="{% url 'website:member' person.url_name %}">{{ person.get_full_name }}</a>
-                      </div>
-                    </li>
-                  {% endwith %}
-                {% endfor %}
-              </ul>
+            {% if active_student_leads %}
+              <h3 class="sidebar-header">Student Lead{% if active_student_leads|length > 1 %}s{% endif %}</h3>
+              {% with active_leads=active_student_leads %}
+                {% include "snippets/display_project_lead_snippet.html" %}
+              {% endwith %}
             {% endif %}
           </div>
         </div> 
