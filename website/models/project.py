@@ -243,7 +243,7 @@ class Project(models.Model):
         # Use list comprehensions to create lists of active and inactive roles
         active_roles = [role for role in all_roles if role.end_date is None or role.end_date >= current_date]
         if self.end_date is not None:
-            active_roles += [role for role in all_roles if role.end_date >= self.end_date - buffer_days]
+            active_roles += [role for role in all_roles if role.end_date is not None and role.end_date >= self.end_date - buffer_days]
 
         inactive_roles = [role for role in all_roles if role not in active_roles]
 
