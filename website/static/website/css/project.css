@@ -124,6 +124,7 @@
   flex: 1 0 33.33%; /* flex-grow | flex-shrink | flex-basis */
   box-sizing: border-box;
   padding-right: 5px;
+  margin-bottom: 15px;
 }
 
 @media (min-width: 789px) {
@@ -144,6 +145,12 @@
 }
 
 /** INLINE RELATED PROJECTS **/
+@media (min-width: 789px) {
+  .main-related-projects {
+    display: none;
+  }
+}
+
 .main-related-projects-flex-container {
   display: flex;
   flex-wrap: wrap;
