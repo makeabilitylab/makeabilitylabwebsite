@@ -302,10 +302,10 @@
     {% if related_projects %}
       <div class="main-related-projects">
         <h2>Related Projects</h2>
-        <div class="main-related-projects-flex-container">
+        <div class="main-related-projects-grid-container">
           {% for related_project in related_projects %}
             {% if related_project.gallery_image %}
-              <div class="main-related-project-flex-item">   
+              <div class="main-related-project-grid-item">   
                 <a href="{% url 'website:project' related_project.short_name %}">
                   <img class="main-related-project-thumbnail" 
                       src="{% thumbnail related_project.gallery_image related_project.get_thumbnail_size_as_str box=related_project.cropping crop=True upscale=True %}" 
