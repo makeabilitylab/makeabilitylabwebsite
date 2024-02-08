@@ -68,9 +68,13 @@ class Project(models.Model):
     # and the minimum size for the final image
     cropping = ImageRatioField('gallery_image', get_thumbnail_size_as_str(), size_warning=True)
 
+    summary = models.TextField(null=True, blank=True)
+    summary.help_text = ("Please supply a one-sentence summary of the project (max two sentences)." 
+                         "This is an HTML-compatible field. You can use HTML tags to format the text.")
+
     about = models.TextField(null=True, blank=True)
-    about.help_text = "Keep the word count to roughly 150-300 words. This is an HTML-compatible field. You can use HTML tags to format the text.\
-                       For example, you can use <b>bold</b>, <i>italics</i>, <a href='https://makeabilitylab.cs.washington.edu'>links</a>"
+    about.help_text = ("Keep the word count to roughly 150-300 words. This is an HTML-compatible field. You can use HTML tags to format the text."
+                       "For example, you can use <b>bold</b>, <i>italics</i>, <a href='https://makeabilitylab.cs.washington.edu'>links</a>")
 
     updated = models.DateField(auto_now=True)
 

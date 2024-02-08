@@ -60,7 +60,7 @@ class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
     
     fieldsets = [
         (None,                      {'fields': ['name', 'short_name']}),
-        ('About',                   {'fields': ['start_date', 'end_date', 'about', 'gallery_image', 'cropping', 'thumbnail_alt_text']}),
+        ('About',                   {'fields': ['start_date', 'end_date', 'summary', 'about', 'gallery_image', 'cropping', 'thumbnail_alt_text']}),
         ('Links',                   {'fields': ['website', 'data_url', 'featured_video', 'featured_code_repo_url']}),
         ('Associations',            {'fields': ['project_umbrellas', 'keywords']}),
     ]
@@ -87,6 +87,12 @@ class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
         queryset, use_distinct = super().get_search_results(request, queryset, search_term)
         queryset = queryset.order_by('name')
         return queryset, use_distinct
+
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        formfield = super().formfield_for_dbfield(db_field, **kwargs)
+        if db_field.name == 'summary':
+            formfield.widget = forms.Textarea(attrs={'rows': 3, 'class': 'vLargeTextField'})
+        return formfield
 
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
         if db_field.name == "keywords":

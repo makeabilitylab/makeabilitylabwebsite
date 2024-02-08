@@ -57,17 +57,6 @@ def project(request, project_name):
     project_leadership = project.get_project_leadership()
     _logger.debug(f"The project leadership for {project_name}: {project_leadership}")
 
-    # Get the active PIs and Co-PIs
-    active_PIs = leadership['active_PIs']
-    active_Co_PIs = leadership['active_Co_PIs']
-
-    # Combine the lists with active_PIs first and no duplicates
-    combined_PI_leadership = active_PIs
-
-    for co_pi in active_Co_PIs:
-        if co_pi not in active_PIs:
-            combined_PI_leadership.append(co_pi)
-
     # Query for related projects. Limit to top 5
     related_projects = project.get_related_projects_by_umbrella(match_all_umbrellas=True)[:5]
 
@@ -88,8 +77,8 @@ def project(request, project_name):
                'data_url': project.data_url,
                'num_contributors': num_contributors,
                'date_str' : project.get_project_dates_str(),
-               'active_PIs': active_PIs,
-               'active_Co_PIs': active_Co_PIs,
+               'active_PIs': project_leadership['active_PIs'],
+               'active_Co_PIs': project_leadership['active_Co_PIs'],
                'active_student_leads': project_leadership["active_student_leads"],
                'active_postdoc_leads': project_leadership["active_postdoc_leads"],
                'active_research_scientist_leads': project_leadership["active_research_scientist_leads"],

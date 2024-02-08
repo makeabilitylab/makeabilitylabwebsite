@@ -7,6 +7,21 @@
 {% load cropping %}
 {% load ml_tags %}
 
+{% block opengraph %}
+  <meta property="og:title" content="{{project.name}}">
+  <meta property="og:type" content="website">
+  {% if project.summary %}
+    <meta property="og:description" content="{{project.summary}}">
+  {% else %}
+    <meta property="og:description" content="The Makeability Lab is an advanced research lab in Human-Computer Interaction directed by Professor Jon E. Froehlich at University of Washington's Allen School of Computer Science.">
+  {% endif %}
+  {% comment %} <meta property="og:image"
+    content="{{ request.scheme }}://{{ request.get_host }}{% static 'website/img/logos/makelab_logo_v3_white_with_colors_and_text_og_image_ratio_1200w.png' %}" /> {% endcomment %}
+  <meta property="og:image"
+    content="{{ request.scheme }}://{{ request.get_host }}{% thumbnail project.gallery_image 1200x630 box=project.cropping crop=True upscale=True %}" />
+  <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}" />
+{% endblock %}
+
 {% block stylesheets %}
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'website/css/project.css' %}">
