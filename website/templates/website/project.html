@@ -155,7 +155,7 @@
         {% endif %}
 
         {% if news %}
-          <h3 class="sidebar-header">Recent News</h3>
+          <h3 class="sidebar-header">Related News</h3>
           <ul class="news-item-sidebar-ul">
             {% for recent_news_item in news|slice:":3" %}
               {% include "snippets/display_news_item_sidebar_snippet.html" %}
