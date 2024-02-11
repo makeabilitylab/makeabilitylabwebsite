@@ -2,8 +2,40 @@
 <html>
 <head>
   <title>Ajax Example</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
   <h1>Welcome to the Ajax Example Page!</h1>
+
+  <h2>Projects</h2>
+  <div id="projects">
+    {% for project in projects %}
+      <p>{{ project.name }}, {{ project.start_date }}</p>
+    {% endfor %}
+  </div>
+  <button class="load-more" data-type="projects" data-page="2">Load More Projects</button>
+
+  <h2>Publications</h2>
+  <div id="publications">
+    {% for pub in publications %}
+      <p>{{ pub }}</p>
+    {% endfor %}
+  </div>
+  <button class="load-more" data-type="publications" data-page="2">Load More Pubs</button>
+
+  <script>
+    $(document).ready(function() {
+      $('.load-more').click(function() {
+        var page = $(this).data('page');
+        var type = $(this).data('type');
+        $.get('/ajax_example/?type=' + type + '&page=' + page, function(data) {
+          data.data.forEach(function(item) {
+            $('#' + type).append('<p>' + item + '</p>');
+          });
+          $('[data-type="' + type + '"]').data('page', page + 1);
+        });
+      });
+    });
+  </script>
 </body>
 </html>
