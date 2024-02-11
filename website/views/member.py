@@ -41,6 +41,8 @@ def member(request, member_id):
     project_roles = person.projectrole_set.order_by('start_date')
     projects = person.get_projects
 
+    # We set a boolean to left align subsection headers if there are only a 
+    # few items in each section
     left_align_headers = (len(projects) <= 4 and len(publications) <= 3 and 
                           len(talks) <= 3 and len(videos) <= 3)
     
