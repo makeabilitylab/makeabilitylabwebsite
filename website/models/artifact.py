@@ -27,7 +27,7 @@ class Artifact(models.Model):
     date = models.DateField(null=True)
     date.help_text = "When was this artifact presented or published?"
     forum_name = models.CharField(max_length=255, null=True)
-    forum_name.help_text = "Where was this artifact presented? Please use a short name like UIST, ASSETS, CHI, etc."
+    forum_name.help_text = "Where was this artifact presented? Please use a short name like UIST, ASSETS, CHI, <i>etc.</i> Do <b>not</b> include the year."
     forum_url = models.URLField(blank=True, null=True)
     forum_url.help_text = "A hyperlink to the forum (<i>e.g.,</i> if CHI, put https://chi2024.acm.org/)"
     location = models.CharField(max_length=255, null=True)
