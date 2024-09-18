@@ -72,7 +72,10 @@
       {% endif %}
     </div>
     <div class="pub-info">
-      <p class="pub-title">{{ pub.title }}</p>
+      <a href="{{ pub.pdf_file.url }}">
+        <span class="artifact-title pub-title">{{ pub.title }}</span>
+      </a>
+      
       <p class="pub-authors">
         {% for author in pub.authors.all %}
             <a href="{% url 'website:member' author.url_name %}">{{ author.get_full_name }}</a>{% if not forloop.last %},{% endif %}
