@@ -40,4 +40,4 @@ elif [ "$BUILDNC" = true ]; then
     docker build --no-cache . -t makelab_image
 fi
 
-docker-compose -f docker-compose-local-dev.yml up
+docker compose -f docker-compose-local-dev.yml up
