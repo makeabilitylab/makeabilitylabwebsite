@@ -28,7 +28,7 @@ This repository contains the [Makeability Lab's website](https://makeabilitylab.
 
 3. Build the docker images. Run `docker build .` or `docker build . -t <tag>`--the latter allows you to tag your build with a name (we recommend tagging it as `makelab_image` for easy access). This step takes a while the first time (~2-3 min). If you don't add a tag to your build in step 3, you can look at the last line of the build that says `Successfully built <tag>` to get your tag.
 
-4. Running the container. Once the image has built, run `docker-compose -f docker-compose-local-dev.yml up`, this will bring up both the postgres container for the database and the website containers. For future reference, running `docker-compose up -d` will allow you to continue using the same terminal and none of the output messages will be displayed.
+4. Running the container. Once the image has built, run `docker-compose -f docker-compose-local-dev.yml up`, this will bring up both the postgres container for the database and the website containers. For future reference, running `docker-compose up -d` will allow you to continue using the same terminal and none of the output messages will be displayed. Alternatively, we have created this convenient bash shell script `run-docker-local-dev.sh`, which you can use instead.
 
 5. Create the superuser. In another terminal, navigate to the project home directory using the `cd` command and open an interactive bash terminal in the website container using `docker exec -it makeabilitylabwebsite_website_1 bash`. Once inside the bash terminal, run `python manage.py createsuperuser`.
 
@@ -47,11 +47,24 @@ docker-compose -f docker-compose-local-dev.yml up
 ```
 You should then be able to visit the server at `http://localhost:8571/`.
 
+Alternatively, you can use the bash shell script:
+```
+git clone https://github.com/jonfroehlich/makeabilitylabwebsite.git
+cd makeabilitylabwebsite/
+docker build . -t makelab_image
+run-docker-local-dev.sh
+```
+
 In new terminal (navigate to the project home directory)
 ```
 docker exec -it makeabilitylabwebsite_website_1 bash
 python manage.py createsuperuser
 exit
+```
+
+At anypoint thereafter, you can just relaunch the website with the following (assuming Docker is running):
+```
+run-docker-local-dev.sh
 ```
 
 ## Windows
