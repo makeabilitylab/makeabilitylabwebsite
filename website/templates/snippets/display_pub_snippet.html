@@ -20,6 +20,7 @@
     </a>
     <p class="artifact-venue line-clamp-one-line">
       {{ pub.forum_name }}
+      {{ pub.date|date:"Y" }}
       {% if pub.to_appear %}
           <span class="pub-to-appear-text">To Appear</span>
       {% endif %}
@@ -88,6 +89,7 @@
             {% else %}
                 {{ pub.forum_name }}
             {% endif %}
+            {{ pub.date|date:"Y" }}
             {% if pub.to_appear %}
                 <span class="pub-to-appear-text">To Appear</span>
             {% endif %}

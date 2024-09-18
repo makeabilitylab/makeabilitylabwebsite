@@ -1,4 +1,5 @@
 from datetime import timedelta
+import re
 
 def humanize_duration(duration, sig_figs=1, use_abbreviated_units=False):
     # Convert the duration to fractional years, months, or weeks
@@ -21,3 +22,9 @@ def humanize_duration(duration, sig_figs=1, use_abbreviated_units=False):
         duration_str += " weeks" if not use_abbreviated_units else " wks"
     
     return duration_str
+
+def ends_with_year(s):
+     # Check if the string s ends with a four-digit year
+    if re.search(r'\b\d{4}\b$', s):
+        return True
+    return False
