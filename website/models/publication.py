@@ -142,7 +142,7 @@ class Publication(Artifact):
 
         citation += f"({self.date.year}). "
         citation += self.title + ". "
-        citation += f"<i>{self.forum_name} {self.date.year}</i>. "
+        citation += f"<i>{self.get_formatted_forum_name()}</i>. "
 
         if self.official_url:
             citation += f"<a href={self.official_url}>{self.official_url}</a>"
@@ -207,12 +207,7 @@ class Publication(Artifact):
         # we (strangely) use triple braces here so that we can include literal { and } in the title
         bibtex += f" title={{{self.title}}},{newline}"
         bibtex += f" booktitle={{{self.book_title}}},{newline}"
-
-        if timeutils.ends_with_year(self.forum_name):
-            bibtex += f" booktitleshort={{{self.forum_name}}},{newline}"
-        else:
-            forum_name_with_year = f"{self.forum_name} {self.date.year}"
-            bibtex += f" booktitleshort={{{forum_name_with_year}}},{newline}"
+        bibtex += f" booktitleshort={{{self.get_formatted_forum_name()}}},{newline}"
 
         if self.series:
             bibtex += " series = {" + self.series + "}," + newline
