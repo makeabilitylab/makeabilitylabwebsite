@@ -91,6 +91,19 @@ class Publication(Artifact):
     def get_person(self):
         """Returns the first author"""
         return self.authors.all()[0]
+    
+    def get_formatted_forum_name(self):
+        """Returns the formatted forum name with 'Proceedings of' prepended and year appended"""
+        formatted_forum_name = ""
+
+        if self.pub_venue_type == PubType.CONFERENCE:
+            formatted_forum_name = "Proceedings of "
+        elif self.is_extended_abstract():
+            formatted_forum_name = "Extended Abstract Proceedings of "
+
+        formatted_forum_name += self.forum_name
+        formatted_forum_name += f" {self.date.year}"
+        return formatted_forum_name
 
     def is_extended_abstract(self):
         """Returns True if this publication is an extended abstract"""
@@ -202,7 +215,7 @@ class Publication(Artifact):
             bibtex += f" booktitleshort={{{forum_name_with_year}}},{newline}"
 
         if self.series:
-            bibtex += " series = {" + self.series + "},"
+            bibtex += " series = {" + self.series + "}," + newline
 
         bibtex += " year={{{}}},{}".format(self.date.year, newline)
 

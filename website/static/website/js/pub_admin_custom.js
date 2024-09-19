@@ -34,10 +34,10 @@ document.addEventListener('DOMContentLoaded', function () {
             warningMessage.style.marginBottom = '2px';
             
             // Insert the warning message before the input field
-            myField.parentNode.insertBefore(warningMessage, myField);
+            // myField.parentNode.insertBefore(warningMessage, myField);
 
             // Append the warning message to the parent of the input field
-            // myField.parentNode.appendChild(warningMessage);
+            myField.parentNode.appendChild(warningMessage);
         }
     } else {
         // If the input value does not end with a year, remove the warning message if it exists

@@ -84,12 +84,7 @@
       </p>
       <p class="pub-stats">
         <span class="pub-venue">
-            {% if pub.is_extended_abstract and "Poster" not in pub.forum_name and "Extended" not in pub.forum_name %}
-                Extended Abstract {{ pub.forum_name }}
-            {% else %}
-                {{ pub.forum_name }}
-            {% endif %}
-            {{ pub.date|date:"Y" }}
+            {{ pub.get_formatted_forum_name }}
             {% if pub.to_appear %}
                 <span class="pub-to-appear-text">To Appear</span>
             {% endif %}
