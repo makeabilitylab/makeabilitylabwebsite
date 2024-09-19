@@ -4,6 +4,7 @@ from website.models import Artifact
 import logging # for logging
 from datetime import date # for date comparisons
 import re # for regular expressions
+import website.utils.timeutils as timeutils
 
 class PubAwardType(models.TextChoices):
     BEST_ARTIFACT_AWARD = "Best Artifact Award"
@@ -90,6 +91,19 @@ class Publication(Artifact):
     def get_person(self):
         """Returns the first author"""
         return self.authors.all()[0]
+    
+    def get_formatted_forum_name(self):
+        """Returns the formatted forum name with 'Proceedings of' prepended and year appended"""
+        formatted_forum_name = ""
+
+        if self.pub_venue_type == PubType.CONFERENCE:
+            formatted_forum_name = "Proceedings of "
+        elif self.is_extended_abstract():
+            formatted_forum_name = "Extended Abstract Proceedings of "
+
+        formatted_forum_name += self.forum_name
+        formatted_forum_name += f" {self.date.year}"
+        return formatted_forum_name
 
     def is_extended_abstract(self):
         """Returns True if this publication is an extended abstract"""
@@ -128,7 +142,7 @@ class Publication(Artifact):
 
         citation += f"({self.date.year}). "
         citation += self.title + ". "
-        citation += f"<i>{self.forum_name}</i>. "
+        citation += f"<i>{self.get_formatted_forum_name()}</i>. "
 
         if self.official_url:
             citation += f"<a href={self.official_url}>{self.official_url}</a>"
@@ -190,12 +204,13 @@ class Publication(Artifact):
         bibtex += ' and '.join(citation_names)
         bibtex += "}," + newline
 
-        bibtex += " title={{{}}},{}".format(self.title, newline)
-        bibtex += " booktitle={{{}}},{}".format(self.book_title, newline)
-        bibtex += " booktitleshort={{{}}},{}".format(self.forum_name, newline)
+        # we (strangely) use triple braces here so that we can include literal { and } in the title
+        bibtex += f" title={{{self.title}}},{newline}"
+        bibtex += f" booktitle={{{self.book_title}}},{newline}"
+        bibtex += f" booktitleshort={{{self.get_formatted_forum_name()}}},{newline}"
 
         if self.series:
-            bibtex += " series = {" + self.series + "},"
+            bibtex += " series = {" + self.series + "}," + newline
 
         bibtex += " year={{{}}},{}".format(self.date.year, newline)
 

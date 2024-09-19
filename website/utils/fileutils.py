@@ -102,8 +102,9 @@ def get_filename_without_ext_for_artifact(last_name, title, forum_name, date, su
     last_name = last_name.replace(" ", "")
     year = date.year
 
-    # Ensures that the title is converted to title case and all spaces are removed.
-    title = ''.join(x for x in title.title() if x.isalnum() or not x.isspace())
+    # Convert the string 'title' to title case (each word starts with an uppercase letter)
+    # and only keeps alphanumeric characters
+    title = ''.join(x for x in title.title() if x.isalnum())
 
     # Only get the first N characters of the string if max_pub_title_length set
     if max_pub_title_length > 0 and max_pub_title_length < len(title):

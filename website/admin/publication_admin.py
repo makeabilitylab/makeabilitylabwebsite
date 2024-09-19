@@ -13,6 +13,12 @@ from website.admin import ArtifactAdmin
 
 @admin.register(Publication)
 class PublicationAdmin(ArtifactAdmin):
+
+    # We add in some real-time js code to check some data entry
+    class Media:
+        js = ('website/js/pub_admin_custom.js',)
+
+    # This organizes the fields in the admin interface into a series of subheaders ("fieldsets")
     fieldsets = [
         (None,                      {'fields': ['title', 'authors', 'date']}),
         ('Files',                   {'fields': ['pdf_file']}),
