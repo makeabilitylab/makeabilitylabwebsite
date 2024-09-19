@@ -95,6 +95,11 @@ echo "4.3 Running 'python manage.py auto_close_project_roles' to auto-close proj
 echo "******************************************"
 python manage.py auto_close_project_roles
 
+echo "****************** STEP 4.4/5: docker-entrypoint.sh ************************"
+echo "4.4 Running 'python manage.py remove_year_from_forum_name' to remove year from forum names"
+echo "******************************************"
+python manage.py remove_year_from_forum_name
+
 # echo "****************** STEP 4.3/5: docker-entrypoint.sh ************************"
 # echo "4.3 Running 'python manage.py rename_person_images' to rename person images"
 # echo "******************************************"
