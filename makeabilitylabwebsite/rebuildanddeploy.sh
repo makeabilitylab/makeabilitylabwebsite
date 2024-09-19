@@ -23,5 +23,5 @@ else
    export DJANGO_ENV=DEBUG
 fi
 
-docker-compose build website
-docker-compose up -d
+docker compose build website
+docker compose up -d
