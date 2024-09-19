@@ -194,6 +194,10 @@ class Position(models.Model):
 
         return is_member and has_started and has_ended
 
+    def has_started(self):
+        """Returns true if the person has started"""
+        return self.start_date is not None and self.start_date <= date.today()
+    
     def clean(self):
         """Automatically called by Django when saving data to validate the data"""
         if self.end_date is not None and self.start_date > self.end_date:
