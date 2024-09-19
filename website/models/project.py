@@ -219,8 +219,8 @@ class Project(models.Model):
         buffer_days (timedelta): The buffer period for determining active roles. Defaults to 45 days.
 
         Returns:
-        dict: A dictionary containing lists of all PIs, active PIs, inactive PIs, active Co-PIs, inactive Co-PIs,
-            active student leads, inactive student leads, active postdoc leads, inactive postdoc leads,
+        dict: A dictionary containing lists of ProjectRole objects for PIs, active PIs, inactive PIs, 
+            active Co-PIs, inactive Co-PIs, active student leads, inactive student leads, active postdoc leads, inactive postdoc leads,
             active research scientist leads, and inactive research scientist leads.
         """
         current_date = timezone.now().date()
@@ -246,18 +246,26 @@ class Project(models.Model):
 
         # Use list comprehensions to create lists of active and inactive roles
         active_roles = [role for role in all_roles if role.end_date is None or role.end_date >= current_date]
-        if self.end_date is not None:
+        if self.end_date is not None and self.end_date <= current_date:
             active_roles += [role for role in all_roles if role.end_date is not None and role.end_date >= self.end_date - buffer_days]
 
-        inactive_roles = [role for role in all_roles if role not in active_roles]
+        # Convert active_roles to a set for faster lookups
+        active_roles_set = set(active_roles)
+
+        # Create a set of persons in active roles
+        active_persons = {role.person for role in active_roles_set}
+
+        # Filter inactive roles to exclude those with persons in active roles
+        inactive_roles = [role for role in all_roles if role.person not in active_persons]
 
         # Use list comprehensions to create lists of different types of roles
         all_PIs = [role for role in all_roles if role.lead_project_role == LeadProjectRoleTypes.PI]
         active_PIs = [role for role in active_roles if role.lead_project_role == LeadProjectRoleTypes.PI]
         inactive_PIs = [role for role in inactive_roles if role.lead_project_role == LeadProjectRoleTypes.PI]
 
-        active_Co_PIs = [role for role in active_roles if role.lead_project_role == LeadProjectRoleTypes.CO_PI]
-        inactive_Co_PIs = [role for role in inactive_roles if role.lead_project_role == LeadProjectRoleTypes.CO_PI]
+        active_CoPIs = [role for role in active_roles if role.lead_project_role == LeadProjectRoleTypes.CO_PI]
+        inactive_CoPIs = [role for role in inactive_roles if role.lead_project_role == LeadProjectRoleTypes.CO_PI]
+        inactive_PIsAndCoPIs = inactive_PIs + inactive_CoPIs
 
         active_student_leads = [role for role in active_roles if role.lead_project_role == LeadProjectRoleTypes.STUDENT_LEAD]
         inactive_student_leads = [role for role in inactive_roles if role.lead_project_role == LeadProjectRoleTypes.STUDENT_LEAD]
@@ -268,12 +276,16 @@ class Project(models.Model):
         active_research_scientist_leads = [role for role in active_roles if role.lead_project_role == LeadProjectRoleTypes.RESEARCH_SCIENTIST_LEAD]
         inactive_research_scientist_leads = [role for role in inactive_roles if role.lead_project_role == LeadProjectRoleTypes.RESEARCH_SCIENTIST_LEAD]
 
+        print(f"active_student_leads: {active_student_leads}")
+        print(f"inactive_student_leads: {inactive_student_leads}")
+
         return {
             'all_PIs': all_PIs,
             'active_PIs': active_PIs,
             'inactive_PIs': inactive_PIs,
-            'active_Co_PIs': active_Co_PIs,
-            'inactive_Co_PIs': inactive_Co_PIs,
+            'active_CoPIs': active_CoPIs,
+            'inactive_CoPIs': inactive_CoPIs,
+            'inactive_PIsAndCoPIs': inactive_PIsAndCoPIs,
             'active_student_leads': active_student_leads,
             'inactive_student_leads': inactive_student_leads,
             'active_postdoc_leads': active_postdoc_leads,
