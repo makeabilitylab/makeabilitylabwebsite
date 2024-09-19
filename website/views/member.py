@@ -102,8 +102,10 @@ def get_videos_by_author(person):
 
 def auto_generate_bio(person):
     """Auto-generates a bio for the given person based on their contributions to the lab"""
+
     project_count = person.projectrole_set.count()
     publication_count = person.publication_set.count()
+
     # start_date = person.projectrole_set.order_by('start_date').first().start_date
     # years_in_lab = (datetime.date.today() - start_date).days // 365
     total_time_in_lab = person.get_total_time_in_lab()
@@ -114,8 +116,14 @@ def auto_generate_bio(person):
 
     print(f"total_time_in_lab={total_time_in_lab}, humanized_duration={humanized_duration}")
     
-    bio = f"{person.first_name}"
-    if person.is_current_member:
+    bio = f"{person.get_full_name()}"
+    if not person.has_started:
+        latest_position = person.get_latest_position
+        if latest_position and latest_position.start_date:
+            bio += f" will be joining the Makeability Lab on {latest_position.start_date}."
+        else:
+            bio += " will be joining the Makeability Lab."   
+    elif person.is_current_member:
         bio += f" is a current {person.get_current_title} in the Makeability Lab."
     elif person.is_current_collaborator:
         bio += f" is a current collaborator with the Makeability Lab."
@@ -123,36 +131,106 @@ def auto_generate_bio(person):
         bio += f" was a {person.get_current_title} in the Makeability Lab"
     elif person.is_past_collaborator:
         bio += f" was a collaborator with the Makeability Lab"
-    else:
-        bio += " has"
+    
     
     if person.is_current_member:
-        bio += f" They have been in the lab for {humanized_duration} and"
+        bio += f" {person.first_name} has been in the lab for {humanized_duration}"
     elif person.is_current_collaborator:
-        bio += f" They have collaborated with the lab for {humanize_duration} and"
+        bio += f" {person.first_name} has collaborated with the lab for {humanize_duration}"
     elif person.is_alumni_member or person.is_past_collaborator:
+        bio += f" for {humanized_duration}"
         start_date_str = person.get_start_date.strftime("%b %Y")
         end_date_str = person.get_end_date.strftime("%b %Y") if person.get_end_date else "present"
             
-        bio += f" from {start_date_str} to {end_date_str} and"
+        bio += f" ({start_date_str} to {end_date_str})."
+        bio += f" {person.first_name} "
    
+    if ((person.is_current_member or person.is_current_collaborator) and
+        (project_count > 0 or publication_count > 0)): 
+        bio += " and"
+    elif not person.is_alumni_member and not person.is_past_collaborator:
+        bio += "."
+
     if project_count > 0 or publication_count > 0:
         bio += " contributed to"
-        project_word = "project" if project_count == 1 else "projects"
-        publication_word = "publication" if publication_count == 1 else "publications"
 
-        if project_count > 0:
-            bio += f" {project_count} {project_word}"
-        
-        if project_count > 0 and publication_count > 0:
-            bio += " and"
-
-        if publication_count > 0:
-            bio += f" {publication_count} {publication_word}."
+    if project_count == 1:
+        proj = person.projectrole_set.first().project;
+        bio += f" a project called <a href='/project/{proj.short_name}'>{proj.name}</a>"
+    elif project_count > 1: 
+        bio += f" {project_count} projects, including "
+        for index, project in enumerate(person.projectrole_set.all(), start=1):
+            bio += f"<a href='/project/{proj.short_name}'>{proj.name}</a>"
+            if project_count == 2 and index == 1:
+                bio += " and"
+            elif index < project_count and index != len(person.projectrole_set.all()) - 1:
+                bio += ","
+            elif index < project_count:
+                bio += ", and"
+            else:
+                bio += "."
+            
+            if index == 3:
+                break
+    
+    if publication_count > 0:
+        if publication_count == 1:
+            bio += f" as well as {publication_count} publication."
         else:
-            bio += "."
-    else:
+            bio += f" as well as {publication_count} publications."
+    elif project_count > 1:
         bio += "."
+
+    # Add mentorship information
+    grad_mentors = person.get_grad_mentors()
+    if grad_mentors.exists():
+
+        bio += f" {person.first_name}"
+
+        if person.is_active:
+            bio += " is mentored by"
+        else:
+            bio += " was mentored by"
+
+        for index, mentor in enumerate(grad_mentors, start=1):
+            bio += f" <a href='/member/{mentor.get_url_name()}'>{mentor.get_full_name()}</a>"
+            if grad_mentors.count() == 2 and index == 1:
+                bio += " and"
+            elif index < grad_mentors.count() and index != len(grad_mentors) - 1:
+                bio += ","
+            elif index < grad_mentors.count():
+                bio += ", and"
+            else:
+                bio += "." 
+
+    # Add mentee information
+    mentees = person.get_mentees()
+    if mentees.exists():
+        bio += f" {person.first_name} mentored"
+
+        if mentees.count() == 1:
+            bio += " 1 student,"
+            bio += f" <a href='/member/{mentees.first().get_url_name()}'>{mentees.first().get_full_name()}</a>."
+        else:
+
+            if mentees.count() <= 3:
+                bio += f" {mentees.count()} students:"
+            else:
+                bio += f" {mentees.count()} students, including"
+
+            for index, mentee in enumerate(mentees, start=1):
+                bio += f" <a href='/member/{mentee.get_url_name()}'>{mentee.get_full_name()}</a>"
+                if mentees.count() == 2 and index == 1:
+                    bio += " and"
+                elif index < mentees.count() and index != len(mentees) - 1:
+                    bio += ","
+                elif index < mentees.count():
+                    bio += ", and"
+                else:
+                    bio += "."
+
+                if index == 3:
+                    break
 
     return bio
 

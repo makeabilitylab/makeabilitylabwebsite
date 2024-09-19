@@ -301,6 +301,10 @@ class Person(models.Model):
 
     is_active.short_description = "Is Active?"
 
+    @cached_property
+    def has_started(self):
+        """Returns True if person has started in the lab. False otherwise."""
+        return self.get_latest_position.has_started()
 
     def get_total_time_in_role(self, role):
         """Returns the total time as in the specified role across all positions as a DurationField"""
@@ -511,6 +515,28 @@ class Person(models.Model):
         #      https://www.python.org/dev/peps/pep-0202/
         projects = set([project_role.project for project_role in project_roles])
         return projects
+
+    def get_mentees(self):
+        """
+        Returns a list of all students this person has mentored
+        """
+        grad_mentors = Position.objects.filter(grad_mentor=self).values('person')
+        return Person.objects.filter(id__in=grad_mentors)
+
+    def get_grad_mentors(self):
+        """
+        Retrieve a list of grad mentors for the current person instance.
+
+        This method filters the Person objects to find those who are listed as
+        grad mentors for the current person in the Position model. It ensures
+        that each mentor is listed only once using the distinct() method.
+
+        Returns:
+            QuerySet: A QuerySet of Person objects who are grad mentors for the current person.
+        """
+        positions = Position.objects.filter(person=self)
+        grad_mentors = positions.values('grad_mentor')
+        return Person.objects.filter(id__in=grad_mentors)
 
     def get_projects_sorted_by_contrib(self, filter_out_projs_with_zero_pubs=True):
         """Returns a set of all projects this person is involved in ordered by number of pubs"""
