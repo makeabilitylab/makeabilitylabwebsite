@@ -24,7 +24,23 @@ def humanize_duration(duration, sig_figs=1, use_abbreviated_units=False):
     return duration_str
 
 def ends_with_year(s):
-     # Check if the string s ends with a four-digit year
-    if re.search(r'\b\d{4}\b$', s):
+    """Check if the string s ends with a four-digit year"""
+
+    # The following regex included a `\b` word boundary anchor. So, it ensures that the
+    # four-digit number is a separate word. We don't want that. 
+    # Old: if re.search(r'\b\d{4}\b$', s):
+    # This regex is simpler, it simply has `\d{4}$` which matches exactly four digits
+    # and '$', which asserts that the match position be at the end of the string
+    if re.search(r'\d{4}$', s):
         return True
     return False
+
+def remove_trailing_year(s):
+    """Check if the string s ends with a four-digit year. If so, remove it."""
+
+    # Check if the string ends with a four-digit year
+    match = re.search(r'\d{4}$', s)
+    if match:
+        # Remove the year and any trailing whitespace
+        return s[:match.start()].rstrip()
+    return s

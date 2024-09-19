@@ -7,6 +7,7 @@ import random
 # for access to settings variables, see https://docs.djangoproject.com/en/4.0/topics/settings/#using-settings-in-python-code
 from django.conf import settings 
 from operator import itemgetter
+import website.utils.timeutils as ml_timeutils
 
 from django.utils.text import slugify
 
@@ -93,7 +94,6 @@ def get_video_embed(video_url):
     else:
         return "unknown video service for '{}'".format(video_url)
 
-
 def filter_incomplete_projects(projects):
     '''
     Filters out projects that don't have thumbnails, publications, an about information
@@ -148,6 +148,16 @@ def sort_projects_by_most_recent_artifact(projects, include_projects_with_no_art
         ordered_projects, temp = zip(*sorted_projects)
 
     return ordered_projects
+
+def clean_forum_name(forum_name):
+    """Cleans the forum name by removing 'Proceedings of' and trailing year"""
+    forum_name = ml_timeutils.remove_trailing_year(forum_name)
+
+    # Remove 'Proceedings of' from the beginning of the forum name
+    search_phrase = "Proceedings of"
+    pos = forum_name.lower().find(search_phrase.lower())
+    return forum_name[pos + len(search_phrase):].lstrip() if pos != -1 else forum_name
+
 
 ##### BANNER HELPER FUNCTIONS ######
 # All of these functions were written by Lee Stearns
