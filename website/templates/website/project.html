@@ -98,18 +98,6 @@
         {% endif %}
         
         {# Project leadership info #}
-        {% if active_PIs %}
-          <h3 class="sidebar-header">PI{% if active_PIs|length > 1 %}s{% endif %}{% if active_Co_PIs %} / Co-PI {% if active_Co_PIs|length > 1 %}s{% endif %}{% endif %}</h3>
-          {% with active_leads=active_PIs %}
-            {% include "snippets/display_project_lead_snippet.html" %}
-          {% endwith %}
-          {% if active_Co_PIs %}
-            {% with active_leads=active_Co_PIs %}
-              {% include "snippets/display_project_lead_snippet.html" %}
-            {% endwith %}
-          {% endif %}
-        {% endif %}
-
         {% if active_postdoc_leads %}
           <h3 class="sidebar-header">Postdoc Lead{% if active_postdoc_leads|length > 1 %}s{% endif %}</h3>
           {% with active_leads=active_postdoc_leads%}
@@ -129,6 +117,45 @@
           {% with active_leads=active_research_scientist_leads%}
             {% include "snippets/display_project_lead_snippet.html" %}
           {% endwith %}
+        {% endif %}
+
+        {% if active_PIs %}
+          <h3 class="sidebar-header">PI{% if active_PIs|length > 1 %}s{% endif %}{% if active_CoPIs %} / Co-PI {% if active_CoPIs|length > 1 %}s{% endif %}{% endif %}</h3>
+          {% with active_leads=active_PIs %}
+            {% include "snippets/display_project_lead_snippet.html" %}
+          {% endwith %}
+          {% if active_CoPIs %}
+            {% with active_leads=active_CoPIs %}
+              {% include "snippets/display_project_lead_snippet.html" %}
+            {% endwith %}
+          {% endif %}
+        {% endif %}
+
+        {% if inactive_student_leads %}
+          <h3 class="sidebar-header">Former Student Lead{% if inactive_student_leads|length > 1 %}s{% endif %}</h3>
+          {% with active_leads=inactive_student_leads %}
+            {% include "snippets/display_project_lead_snippet.html" %}
+          {% endwith %}
+        {% endif %}
+
+        {% if inactive_PIsAndCoPIs %}
+          {% if inactive_PIs and inactive_CoPIs %}
+            <h3 class="sidebar-header">Former PI{% if inactive_PIs|length > 1 %}s{% endif %}{% if inactive_CoPIs %} / Co-PI {% if inactive_CoPIs|length > 1 %}s{% endif %}{% endif %}</h3>
+          {% elif inactive_PIs %}
+            <h3 class="sidebar-header">Former PI{% if inactive_PIs|length > 1 %}s{% endif %}</h3>
+          {% elif inactive_CoPIs %}
+            <h3 class="sidebar-header">Former Co-PI{% if inactive_CoPIs|length > 1 %}s{% endif %}</h3>
+          {% endif %}
+          {% if inactive_PIs %}
+            {% with active_leads=inactive_PIs %}
+              {% include "snippets/display_project_lead_snippet.html" %}
+            {% endwith %}
+          {% endif %}
+          {% if inactive_CoPIs %}
+            {% with active_leads=inactive_CoPIs %}
+              {% include "snippets/display_project_lead_snippet.html" %}
+            {% endwith %}
+          {% endif %}
         {% endif %}
 
         <h3 class="sidebar-header"># Contributors</h3>
@@ -200,12 +227,12 @@
           </div>
           <div class="inline-sidebar-flex-item-xs">
             {% if active_PIs %}
-              <h3 class="sidebar-header">PI{% if active_PIs|length > 1 %}s{% endif %}{% if active_Co_PIs %} / Co-PI {% if active_Co_PIs|length > 1 %}s{% endif %}{% endif %}</h3>
+              <h3 class="sidebar-header">PI{% if active_PIs|length > 1 %}s{% endif %}{% if active_CoPIs %} / Co-PI {% if active_CoPIs|length > 1 %}s{% endif %}{% endif %}</h3>
               {% with active_leads=active_PIs %}
                 {% include "snippets/display_project_lead_snippet.html" %}
               {% endwith %}
-              {% if active_Co_PIs %}
-                {% with active_leads=active_Co_PIs %}
+              {% if active_CoPIs %}
+                {% with active_leads=active_CoPIs %}
                   {% include "snippets/display_project_lead_snippet.html" %}
                 {% endwith %}
               {% endif %}

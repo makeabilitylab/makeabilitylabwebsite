@@ -103,7 +103,8 @@ def get_videos_by_author(person):
 def auto_generate_bio(person):
     """Auto-generates a bio for the given person based on their contributions to the lab"""
 
-    project_count = person.projectrole_set.count()
+    projects = person.get_projects
+    project_count = len(projects)
     publication_count = person.publication_set.count()
 
     # start_date = person.projectrole_set.order_by('start_date').first().start_date
@@ -136,7 +137,7 @@ def auto_generate_bio(person):
     if person.is_current_member:
         bio += f" {person.first_name} has been in the lab for {humanized_duration}"
     elif person.is_current_collaborator:
-        bio += f" {person.first_name} has collaborated with the lab for {humanize_duration}"
+        bio += f" {person.first_name} has collaborated with the lab for {humanized_duration}"
     elif person.is_alumni_member or person.is_past_collaborator:
         bio += f" for {humanized_duration}"
         start_date_str = person.get_start_date.strftime("%b %Y")
@@ -159,11 +160,13 @@ def auto_generate_bio(person):
         bio += f" a project called <a href='/project/{proj.short_name}'>{proj.name}</a>"
     elif project_count > 1: 
         bio += f" {project_count} projects, including "
-        for index, project in enumerate(person.projectrole_set.all(), start=1):
+        
+        for index, proj_role in enumerate(projects, start=1):
+            proj = proj_role.project
             bio += f"<a href='/project/{proj.short_name}'>{proj.name}</a>"
             if project_count == 2 and index == 1:
                 bio += " and"
-            elif index < project_count and index != len(person.projectrole_set.all()) - 1:
+            elif index < project_count and index != project_count - 1:
                 bio += ","
             elif index < project_count:
                 bio += ", and"
