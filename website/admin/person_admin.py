@@ -128,7 +128,7 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
     # The list display lets us control what is shown in the default persons table at Home > Website > People
     # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
     list_display = ('get_full_name', 'get_display_thumbnail', 'get_current_title', 'get_current_role', 'is_active', 
-                    'get_start_date', 'get_end_date', 'recent_projects', 'get_project_count', 'get_pub_count',
+                    'get_start_date', 'get_cur_pos_start_date', 'get_end_date', 'recent_projects', 'get_project_count', 'get_pub_count',
                     'get_talk_count', 'display_time_current_position', 'display_total_time_as_member')
 
     list_filter = (PositionRoleListFilter, PositionTitleListFilter)

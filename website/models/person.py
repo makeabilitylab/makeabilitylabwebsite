@@ -414,6 +414,14 @@ class Person(models.Model):
             return next_position
 
     @cached_property
+    def get_earliest_position(self):
+        """Gets the earliest Position for the person or None if none exists. A cached property."""
+        if self.position_set.exists() is False:
+            return None
+        else:
+            return self.position_set.earliest('start_date')
+    
+    @cached_property
     def get_latest_position(self):
         """Gets the latest Position for the person or None if none exists. A cached property."""
         if self.position_set.exists() is False:
@@ -423,6 +431,18 @@ class Person(models.Model):
         
     @cached_property
     def get_start_date(self):
+        """Returns the overall start date of person. A cached property.
+           Used in Admin Interface. See PersonAdmin in admin.py"""
+        earliest_position = self.get_earliest_position
+        if earliest_position is not None:
+            return earliest_position.start_date
+        else:
+            return None
+
+    get_start_date.short_description = "Lab Start Date"  # This short description is used in the admin interface
+
+    @cached_property
+    def get_cur_pos_start_date(self):
         """Returns the start date of current position. A cached property.
            Used in Admin Interface. See PersonAdmin in admin.py"""
         latest_position = self.get_latest_position
@@ -431,7 +451,7 @@ class Person(models.Model):
         else:
             return None
 
-    get_start_date.short_description = "Start Date"  # This short description is used in the admin interface
+    get_cur_pos_start_date.short_description = "Cur Pos Start"  # This short description is used in the admin interface
 
     @cached_property
     def get_end_date(self):
