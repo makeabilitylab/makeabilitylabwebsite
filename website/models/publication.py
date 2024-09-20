@@ -94,6 +94,11 @@ class Publication(Artifact):
     
     def get_formatted_forum_name(self):
         """Returns the formatted forum name with 'Proceedings of' prepended and year appended"""
+        
+        # If there's no forum name, return an empty string
+        if not self.forum_name:
+            return ""
+        
         formatted_forum_name = ""
 
         if self.pub_venue_type == PubType.CONFERENCE:
