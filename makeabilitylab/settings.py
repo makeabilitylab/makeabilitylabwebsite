@@ -72,7 +72,7 @@ else:
     ALLOWED_HOSTS = ['*']
 
 # Makeability Lab Global Variables
-ML_WEBSITE_VERSION = "1.9.4.2 (fixed get_formatted_forum_name if forum_name null)"
+ML_WEBSITE_VERSION = "1.9.4.3 (fixed auto-bio bug #1179)"
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 

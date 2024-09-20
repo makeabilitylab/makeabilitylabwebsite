@@ -161,8 +161,7 @@ def auto_generate_bio(person):
     elif project_count > 1: 
         bio += f" {project_count} projects, including "
         
-        for index, proj_role in enumerate(projects, start=1):
-            proj = proj_role.project
+        for index, proj in enumerate(projects, start=1):
             bio += f"<a href='/project/{proj.short_name}'>{proj.name}</a>"
             if project_count == 2 and index == 1:
                 bio += " and"
