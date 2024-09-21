@@ -44,3 +44,4 @@ static/*
 .DS_Store
 
 nbproject
+docker_makelab_build.log
