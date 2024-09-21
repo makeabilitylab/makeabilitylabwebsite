@@ -15,7 +15,9 @@
             alt="This is a default news page icon for when there are no thumbnails" />
   {% endif %}
   <div class="news-item-sidebar-content">
-      <div class="news-item-sidebar-title"><a href="#">{{recent_news_item.title}}</a></div>
+      <div class="news-item-sidebar-title">
+        <a href="{% url 'website:news_item_by_slug' slug=recent_news_item.slug %}">{{recent_news_item.title}}</a>
+      </div>
       <div class="news-item-sidebar-date">{{recent_news_item.short_date}}</div>
   </div>
 </li>
