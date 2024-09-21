@@ -125,9 +125,9 @@ def auto_generate_bio(person):
         else:
             bio += " will be joining the Makeability Lab."   
     elif person.is_current_member:
-        bio += f" is a current {person.get_current_title} in the Makeability Lab."
+        bio += f" is currently a {person.get_current_title} in the Makeability Lab."
     elif person.is_current_collaborator:
-        bio += f" is a current collaborator with the Makeability Lab."
+        bio += f" is currently a collaborator with the Makeability Lab."
     elif person.is_alumni_member:
         bio += f" was a {person.get_current_title} in the Makeability Lab"
     elif person.is_past_collaborator:
@@ -159,16 +159,16 @@ def auto_generate_bio(person):
         proj = person.projectrole_set.first().project;
         bio += f" a project called <a href='/project/{proj.short_name}'>{proj.name}</a>"
     elif project_count > 1: 
-        bio += f" {project_count} projects, including "
+        bio += f" {project_count} projects, including"
         
         for index, proj in enumerate(projects, start=1):
-            bio += f"<a href='/project/{proj.short_name}'>{proj.name}</a>"
+            bio += f" <a href='/project/{proj.short_name}'>{proj.name}</a>"
             if project_count == 2 and index == 1:
                 bio += " and"
             elif index < project_count and index != project_count - 1:
-                bio += ","
+                bio += " ,"
             elif index < project_count:
-                bio += ", and"
+                bio += " , and"
             else:
                 bio += "."
             
@@ -208,17 +208,17 @@ def auto_generate_bio(person):
     # Add mentee information
     mentees = person.get_mentees()
     if mentees.exists():
-        bio += f" {person.first_name} mentored"
+        bio += f" During their time in the lab, {person.first_name} mentored"
 
         if mentees.count() == 1:
-            bio += " 1 student,"
+            bio += " 1 Makeability Lab student,"
             bio += f" <a href='/member/{mentees.first().get_url_name()}'>{mentees.first().get_full_name()}</a>."
         else:
 
             if mentees.count() <= 3:
-                bio += f" {mentees.count()} students:"
+                bio += f" {mentees.count()} Makeability Lab students:"
             else:
-                bio += f" {mentees.count()} students, including"
+                bio += f" {mentees.count()} Makeability Lab students, including"
 
             for index, mentee in enumerate(mentees, start=1):
                 bio += f" <a href='/member/{mentee.get_url_name()}'>{mentee.get_full_name()}</a>"

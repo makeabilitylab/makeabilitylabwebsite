@@ -536,12 +536,18 @@ class Person(models.Model):
         projects = set([project_role.project for project_role in project_roles])
         return projects
 
-    def get_mentees(self):
+    def get_mentees(self, randomize=False):
         """
         Returns a list of all students this person has mentored
         """
         grad_mentors = Position.objects.filter(grad_mentor=self).values('person')
-        return Person.objects.filter(id__in=grad_mentors)
+        mentees = Person.objects.filter(id__in=grad_mentors)
+        
+        # Randomize the order of the mentees if randomize is True
+        if randomize:
+            mentees = mentees.order_by('?')
+        
+        return mentees
 
     def get_grad_mentors(self):
         """
