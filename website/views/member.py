@@ -166,9 +166,9 @@ def auto_generate_bio(person):
             if project_count == 2 and index == 1:
                 bio += " and"
             elif index < project_count and index != project_count - 1:
-                bio += " ,"
+                bio += ","
             elif index < project_count:
-                bio += " , and"
+                bio += ", and"
             else:
                 bio += "."
             
