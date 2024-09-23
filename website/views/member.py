@@ -205,8 +205,8 @@ def auto_generate_bio(person):
             else:
                 bio += "." 
 
-    # Add mentee information
-    mentees = person.get_mentees()
+    # Add mentee information; get a random set
+    mentees = person.get_mentees(randomize=True)
     if mentees.exists():
         bio += f" During their time in the lab, {person.first_name} mentored"
 
