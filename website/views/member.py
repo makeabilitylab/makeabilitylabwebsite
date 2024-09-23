@@ -185,6 +185,7 @@ def auto_generate_bio(person):
 
     # Add mentorship information
     grad_mentors = person.get_grad_mentors()
+    mentor_count = grad_mentors.count()
     if grad_mentors.exists():
 
         bio += f" {person.first_name}"
@@ -194,16 +195,16 @@ def auto_generate_bio(person):
         else:
             bio += " was mentored by"
 
-        for index, mentor in enumerate(grad_mentors, start=1):
+        for index, mentor in enumerate(grad_mentors):
             bio += f" <a href='/member/{mentor.get_url_name()}'>{mentor.get_full_name()}</a>"
-            if grad_mentors.count() == 2 and index == 1:
+            if mentor_count == 2 and index == 0:
                 bio += " and"
-            elif index < grad_mentors.count() and index != len(grad_mentors) - 1:
+            elif index < mentor_count and index < mentor_count - 1:
                 bio += ","
-            elif index < grad_mentors.count():
+            elif index >= mentor_count - 1:
                 bio += ", and"
-            else:
-                bio += "." 
+            
+        bio += "." 
 
     # Add mentee information; get a random set
     mentees = person.get_mentees(randomize=True)
@@ -222,19 +223,19 @@ def auto_generate_bio(person):
             else:
                 bio += f" {mentees.count()} Makeability Lab students, including"
 
-            for index, mentee in enumerate(mentees, start=1):
+            for index, mentee in enumerate(mentees):
                 bio += f" <a href='/member/{mentee.get_url_name()}'>{mentee.get_full_name()}</a>"
-                if (mentee_count == 2 or max_mentees_to_display == 2) and index == 1:
+                if (mentee_count == 2 or max_mentees_to_display == 2) and index == 0:
                     bio += " and"
                 elif index < mentee_count and index < max_mentees_to_display - 1:
                     bio += ","
                 elif index == max_mentees_to_display - 1:
                     bio += ", and"
-                else:
-                    bio += "."
 
-                if index == max_mentees_to_display:
+                if index >= (max_mentees_to_display - 1):
                     break
+
+            bio += "."
 
     return bio
 
