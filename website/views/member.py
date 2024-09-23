@@ -207,6 +207,8 @@ def auto_generate_bio(person):
 
     # Add mentee information; get a random set
     mentees = person.get_mentees(randomize=True)
+    mentee_count = mentees.count()
+    max_mentees_to_display = 3
     if mentees.exists():
         bio += f" During their time in the lab, {person.first_name} mentored"
 
@@ -222,16 +224,16 @@ def auto_generate_bio(person):
 
             for index, mentee in enumerate(mentees, start=1):
                 bio += f" <a href='/member/{mentee.get_url_name()}'>{mentee.get_full_name()}</a>"
-                if mentees.count() == 2 and index == 1:
+                if (mentee_count == 2 or max_mentees_to_display == 2) and index == 1:
                     bio += " and"
-                elif index < mentees.count() and index != len(mentees) - 1:
+                elif index < mentee_count and index < max_mentees_to_display - 1:
                     bio += ","
-                elif index < mentees.count():
+                elif index == max_mentees_to_display - 1:
                     bio += ", and"
                 else:
                     bio += "."
 
-                if index == 3:
+                if index == max_mentees_to_display:
                     break
 
     return bio
