@@ -9,8 +9,18 @@
 # If you need to install new packages in the Docker container, you can try:
 # 1. docker ps // this gets a list of current processes/containers running
 # 2. docker exec -it -u root <container_id> /bin/bash
+# 3. Then here, you can install a new package like: > pip3 install django==4.2.16 
+#    or you could even run: > pip3 install -r requirements.txt
+# 
+# You can also try to see which version of libraries are installed by running:
+# 1. docker run -it makelab_image bash
+# 2. pip3 list
+# Or even commands like: python -m django --version
 
-django==4.2.7 # upgraded on 11/07/2023: https://www.djangoproject.com/download/
+# Django upgrade notes: https://www.djangoproject.com/download/
+# Upgraded to 4.2.7 on 11/07/2023
+# Upgraded to 4.2.16 on 09/23/2024
+django==4.2.16 
 
 django-debug-toolbar==4.2.0 # Used for debugging: https://django-debug-toolbar.readthedocs.io/en/latest/
 psycopg2==2.9.5 # Psycopg is the most popular PostgreSQL database adapter for Python. https://pypi.org/project/psycopg2/

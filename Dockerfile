@@ -43,8 +43,12 @@ WORKDIR /code
 # As an fyi: Layering RUN instructions and generating commits conforms to the core concepts 
 # of Docker where commits are cheap and containers can be created from any point in an image’s history, much like source control.
 # See: https://docs.docker.com/engine/reference/builder/#run
+# The -r flag is used to install all the packages in the requirements.txt file
 COPY requirements.txt /code/
+RUN cat requirements.txt
 RUN pip3 install -r requirements.txt
+# RUN pip install --no-cache-dir -r requirements.txt
+# RUN pip install django==4.2.16
 
 ## TEMP related to: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/866
 #RUN pip install django-ckeditor
