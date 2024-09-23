@@ -33,4 +33,6 @@ class Command(BaseCommand):
         for old_name, pub in changed_forum_names:
             _logger.debug(f"{pub.title}: changed {old_name} to {pub.forum_name}")
 
+        _logger.debug("Completed remove_year_from_forum_name.py")
+
             
