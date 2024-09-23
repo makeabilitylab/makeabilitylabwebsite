@@ -199,7 +199,7 @@ def auto_generate_bio(person):
             bio += f" <a href='/member/{mentor.get_url_name()}'>{mentor.get_full_name()}</a>"
             if mentor_count == 2 and index == 0:
                 bio += " and"
-            elif index < mentor_count and index < mentor_count - 1:
+            elif index < mentor_count - 1:
                 bio += ","
             elif index >= mentor_count - 1:
                 bio += ", and"
@@ -227,7 +227,7 @@ def auto_generate_bio(person):
                 bio += f" <a href='/member/{mentee.get_url_name()}'>{mentee.get_full_name()}</a>"
                 if (mentee_count == 2 or max_mentees_to_display == 2) and index == 0:
                     bio += " and"
-                elif index < mentee_count and index < max_mentees_to_display - 1:
+                elif index < mentee_count - 1 and index < max_mentees_to_display - 1:
                     bio += ","
                 elif index == max_mentees_to_display - 1:
                     bio += ", and"
