@@ -209,30 +209,31 @@ def auto_generate_bio(person):
     # Add mentee information; get a random set
     mentees = person.get_mentees(randomize=True)
     mentee_count = mentees.count()
-    max_mentees_to_display = 3
+    max_mentees_to_display = min(3, mentees.count())
     if mentees.exists():
         bio += f" During their time in the lab, {person.first_name} mentored"
 
-        if mentees.count() == 1:
+        if mentee_count == 1:
             bio += " 1 Makeability Lab student,"
             bio += f" <a href='/member/{mentees.first().get_url_name()}'>{mentees.first().get_full_name()}</a>."
         else:
 
             if mentees.count() <= 3:
-                bio += f" {mentees.count()} Makeability Lab students:"
+                bio += f" {mentee_count} Makeability Lab students:"
             else:
-                bio += f" {mentees.count()} Makeability Lab students, including"
+                bio += f" {mentee_count} Makeability Lab students, including"
 
             for index, mentee in enumerate(mentees):
                 bio += f" <a href='/member/{mentee.get_url_name()}'>{mentee.get_full_name()}</a>"
-                if (mentee_count == 2 or max_mentees_to_display == 2) and index == 0:
+                if max_mentees_to_display == 2 and index == 0:
                     bio += " and"
-                elif index < mentee_count - 1 and index < max_mentees_to_display - 1:
+                elif index < max_mentees_to_display - 1:
                     bio += ","
-                elif index == max_mentees_to_display - 1:
-                    bio += ", and"
+                
+                if mentee_count > 2 and index == max_mentees_to_display - 2:
+                    bio += " and"
 
-                if index >= (max_mentees_to_display - 1):
+                if index >= max_mentees_to_display - 1:
                     break
 
             bio += "."
