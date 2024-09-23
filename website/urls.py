@@ -26,6 +26,7 @@ urlpatterns = [
     re_path(r'^project/(?P<project_name>[a-zA-Z\- ]+)/$', views.project, name='project'),
     re_path(r'^news/$', views.news_listing, name='news_listing'),
     path('view-project-people/', views.view_project_people, name='view_project_people'),
+    path('media/publications/<str:filename>', views.serve_pdf, name='serve_pdf'),
 
     # First try to match on the news id (for historical compatibility) then match on the slug
     path('news/<int:id>/', views.news_item, name='news_item_by_id'),
