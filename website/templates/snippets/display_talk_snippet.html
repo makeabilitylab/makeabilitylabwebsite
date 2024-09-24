@@ -23,9 +23,11 @@
             {% if talk.location %}<p class="artifact-venue line-clamp-one-line">{{ talk.location }}</p>{% endif %}
 
             <p class="artifact-authors line-clamp-one-line">
-                {% for speaker in talk.speakers.all %}
-                    <a href="{% url 'website:member' speaker.url_name %}" style="color:#464D59">{{ speaker.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
-                {% endfor %}
+                {% if talk.speakers %}
+                    {% for speaker in talk.speakers.all %}
+                        <a href="{% url 'website:member' speaker.url_name %}" style="color:#464D59">{{ speaker.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                {% endif %}
             </p>
 
             <p class="pub-download-links line-clamp-one-line" style="margin: 0px; margin-top: 2px; bottom:auto">
