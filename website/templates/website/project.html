@@ -87,15 +87,28 @@
           <a href="{{website}}">{{website}}</a>
         {% endif %}
 
-        {% if featured_code_repo_url %}
-          <h3 class="sidebar-header">Code</h3>
-          <a href="{{featured_code_repo_url}}">Open Source Link</a>
+        {% if featured_code_repo_url or data_url %}
+          <h3 class="sidebar-header">Open
+          {% if featured_code_repo_url %}
+            Code
+            {% if data_url %}
+              / Data
+            {% endif %}
+            </h3>
+          {% elif data_url %}
+            Data</h3>
+          {% endif %}
+          {% if featured_code_repo_url %}
+            <a href="{{featured_code_repo_url}}"><i class="fab fa-github"></i> Explore the Code</a>
+          {% endif %}
+          {% if data_url %}
+            <div style="{% if featured_code_repo_url %}margin-top: 3px;"{% endif %}>
+              <a href="{{data_url}}"><i class="fas fa-database"></i> Download the Dataset</a>
+            </div>
+          {% endif %}
         {% endif %}
-
-        {% if data_url %}
-          <h3 class="sidebar-header">Data Repo</h3>
-          <a href="{{data_url}}">Data Link</a>
-        {% endif %}
+       
+        
         
         {# Project leadership info #}
         {% if active_postdoc_leads %}
@@ -265,8 +278,26 @@
         <div class="inline-sidebar-flex-container-xs">
           {% if featured_code_repo_url %}
             <div class="inline-sidebar-flex-item-xs">
-              <h3 class="sidebar-header">Code</h3>
-              <a href="{{featured_code_repo_url}}">GitHub Link</a>
+              {% if featured_code_repo_url or data_url %}
+                <h3 class="sidebar-header">Open
+                {% if featured_code_repo_url %}
+                  Code
+                  {% if data_url %}
+                    / Data
+                  {% endif %}
+                  </h3>
+                {% elif data_url %}
+                  Data</h3>
+                {% endif %}
+                {% if featured_code_repo_url %}
+                  <a href="{{featured_code_repo_url}}"><i class="fab fa-github"></i> Explore the Code</a>
+                {% endif %}
+                {% if data_url %}
+                  <div style="{% if featured_code_repo_url %}margin-top: 3px;"{% endif %}>
+                    <a href="{{data_url}}"><i class="fas fa-database"></i> Download the Dataset</a>
+                  </div>
+                {% endif %}
+              {% endif %}
             </div>
           {% endif %}
           <div class="inline-sidebar-flex-item-xs">

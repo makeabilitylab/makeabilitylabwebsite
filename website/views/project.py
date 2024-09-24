@@ -51,6 +51,8 @@ def project(request, project_name):
     _logger.debug(f"Project sponsorship: {sponsors}")
     _logger.debug(f"Project grants: {Grant.objects.filter(projects__in=[project])}")
     _logger.debug(f"The featured video: {featured_video}. Has videos beyond featured? {has_videos_beyond_featured_video}")
+    _logger.debug(f"The featured project code repo: {code_repo_url}")
+    _logger.debug(f"The data url: {project.data_url}")
     _logger.debug(f"The project start date: {project.start_date} and end date: {project.end_date}")
     
     # Get PIs, Co-PIs, and lead graduate students for this project
@@ -71,7 +73,7 @@ def project(request, project_name):
                'news': news,
                'photos': photos,
                'sponsors': sponsors,
-               'code_repo_url': code_repo_url,
+               'featured_code_repo_url': code_repo_url,
                'featured_video': featured_video,
                'website': project.website,
                'data_url': project.data_url,
