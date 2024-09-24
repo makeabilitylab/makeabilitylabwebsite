@@ -21,7 +21,7 @@ class Command(BaseCommand):
             old_forum_name = pub.forum_name
             new_forum_name = ml_utils.clean_forum_name(old_forum_name)  
 
-            if old_forum_name != new_forum_name:  
+            if new_forum_name and old_forum_name != new_forum_name:  
                 pub.forum_name = new_forum_name  
                 pub.save(update_fields=['forum_name'])
 
