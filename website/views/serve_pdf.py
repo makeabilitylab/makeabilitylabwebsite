@@ -33,13 +33,13 @@ def serve_pdf(request, filename):
     except ObjectDoesNotExist:
         # If the artifact does not exist, try to find the closest matching filename in pub database
         _logger.debug(f"{filename} not found in database, looking for closest match in pub database")
-        closest_filename = get_closest_filename_from_database(filename)
+        closest_filename = get_closest_filename_from_database(filename, 0.7)
         _logger.debug(f"Closest match to {filename} in database is {closest_filename}")
         if closest_filename:
             closest_filename = os.path.basename(closest_filename)
             redirect_path = f'/media/publications/{closest_filename}'
             _logger.debug(f"Redirecting to {redirect_path}")
-            return redirect(redirect_path, filename=closest_filename)
+            return redirect(redirect_path)
         else:
             error_message = f"The PDF {filename} was not found."
             if closest_filename:
