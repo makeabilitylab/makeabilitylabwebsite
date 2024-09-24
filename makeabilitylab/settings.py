@@ -136,6 +136,9 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
+        'django.utils.autoreload': {
+            'level': 'INFO',  # Change to 'INFO' or 'WARNING'
+        },
     },
 }
 
