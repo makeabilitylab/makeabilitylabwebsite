@@ -3,45 +3,48 @@
 {% load cropping %}
 {% load ml_tags %}
 
-
 <div class="col-ts-12 col-xs-6 col-sm-4 col-lg-3 talk-column" style="margin-bottom:20px">
-    <div style="width: 100%; height: 300px; contain: content;">
-        <div class="talk2-thumbnail"> {# Add in style="border:thin; border-color:lightgrey; border-style: solid;" for a border #}
-            {#  TODO: Update to use .css rather than inline styles  #}
-            <a href="../../media/{{ talk.pdf_file }}" target="_blank">
-                <div style="background: white; width:100%; height: 180px; contain: content;">
-                    <img style="border: 1px solid #dddddd; border-radius: 5%; width:100%; height: auto; position: relative;top: 50%; left: 50%;transform: translate(-50%,-50%);object-fit: cover" 
-                    src="{% thumbnail talk.thumbnail 420x0 detail %}" class="talk2-thumbnail-image img-responsive">
-                </div>
-            </a>
+  <div style="width: 100%; height: 300px; contain: content;">
+    <div class="talk2-thumbnail"> {# Add in style="border:thin; border-color:lightgrey; border-style: solid;" for a border #}
+      {#  TODO: Update to use .css rather than inline styles  #}
+      <a href="{{ MEDIA_URL }}{{ talk.pdf_file }}" target="_blank">
+        <div style="background: white; width:100%; height: 180px; contain: content;">
+          <img style="border: 1px solid #dddddd; border-radius: 5%; width:100%; height: auto; position: relative;top: 50%; left: 50%;transform: translate(-50%,-50%);object-fit: cover" 
+            src="{% thumbnail talk.thumbnail 420x0 detail %}" class="talk2-thumbnail-image img-responsive">
         </div>
-        <div class="talk-text">
-            <a href="../../media/{{ talk.pdf_file }}" target="_blank"><span class="artifact-title line-clamp">{{ talk.title }}</span></a>
-            <p class="artifact-venue line-clamp-one-line" style="margin-bottom: 0px;">
-                {{ talk.date }} | {{ talk.forum_name }}
-            </p>
-            {% if talk.location %}<p class="artifact-venue line-clamp-one-line">{{ talk.location }}</p>{% endif %}
-
-            <p class="artifact-authors line-clamp-one-line">
-                {% if talk.speakers %}
-                    {% for speaker in talk.speakers.all %}
-                        <a href="{% url 'website:member' speaker.url_name %}" style="color:#464D59">{{ speaker.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                {% endif %}
-            </p>
-
-            <p class="pub-download-links line-clamp-one-line" style="margin: 0px; margin-top: 2px; bottom:auto">
-                <a href="../../media/{{ talk.pdf_file }}">PDF</a>
-                {% if talk.raw_file %}| <a href="../../media/{{ talk.raw_file }}">PPTX</a>{% endif %}
-                {% if talk.video %}| <a href="{{ talk.video.video_url }}">Video</a>{% endif %}
-                {% if talk.slideshare_url %}| <a href="{{ talk.slideshare_url }}">SlideShare</a>{% endif %}
-                {% for pub in talk.publication_set.all %}
-                    | <a href="../../media/{{ pub.pdf_file }}">Paper</a>
-                {% endfor %}
-                {% for project in talk.projects.all %}
-                    | <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>
-                {% endfor %}
-            </p>
-        </div>
+      </a>
     </div>
+    <div class="talk-text">
+      <a href="{{ MEDIA_URL }}{{ talk.pdf_file }}" target="_blank"><span class="artifact-title line-clamp">{{ talk.title }}</span></a>
+      <p class="artifact-venue line-clamp-one-line" style="margin-bottom: 0px;">
+        {{ talk.date }} | {{ talk.forum_name }}
+      </p>
+      {% if talk.location %}<p class="artifact-venue line-clamp-one-line">{{ talk.location }}</p>{% endif %}
+
+      <p class="artifact-authors line-clamp-one-line">
+        {% if talk.speakers %}
+          {% for speaker in talk.speakers.all %}
+            <a href="{% url 'website:member' speaker.url_name %}" style="color:#464D59">{{ speaker.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
+          {% endfor %}
+        {% endif %}
+      </p>
+
+      <p class="pub-download-links line-clamp-one-line" style="margin: 0px; margin-top: 2px; bottom:auto">
+        <a href="{{ MEDIA_URL }}{{ talk.pdf_file }}">PDF</a>
+        {% if talk.raw_file %}| <a href="{{ MEDIA_URL }}{{ talk.raw_file }}">PPTX</a>{% endif %}
+        {% if talk.video %}| <a href="{{ talk.video.video_url }}">Video</a>{% endif %}
+        {% if talk.slideshare_url %}| <a href="{{ talk.slideshare_url }}">SlideShare</a>{% endif %}
+        {% if talk.publication_set %}
+          {% for pub in talk.publication_set.all %}
+              <a href="{{ MEDIA_URL }}{{ pub.pdf_file }}">Paper</a>
+          {% endfor %}
+        {% endif %}
+        {% if talk.projects %}
+          {% for project in talk.projects.all %}
+              <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>
+          {% endfor %}
+        {% endif %}
+      </p>
+    </div>
+  </div>
 </div>
