@@ -21,11 +21,9 @@
       {# which if you define a OneToOneField on your model--as we did in Publication for video-- #}
       {# then we can access the related object like this: video.publication #}
       {% if video.has_publication %}
-          |<a href="{{ MEDIA_URL }}{ video.publication.pdf_file }}">Paper</a>
+        | <a href="{{ MEDIA_URL }}{ video.publication.pdf_file }}">Paper</a>
       {% endif %}
-      {% if video.project %}
-          |<a href="{% url 'website:project' video.project.short_name %}">{{ video.project.name }}</a>
-      {% endif %}
+      
       {% for project in video.projects.all %}
         {% if forloop.first and video.projects.all|length > 0 %}| {% endif %}
         {% if project.can_show_online %}
