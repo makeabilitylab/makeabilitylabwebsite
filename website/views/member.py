@@ -186,6 +186,7 @@ def auto_generate_bio(person):
     # Add mentorship information
     grad_mentors = person.get_grad_mentors()
     mentor_count = grad_mentors.count()
+    _logger.debug(f"{person.first_name} has grad_mentors={grad_mentors}, mentor_count={mentor_count}")
     if grad_mentors.exists():
 
         bio += f" {person.first_name}"
@@ -210,6 +211,8 @@ def auto_generate_bio(person):
     mentees = person.get_mentees(randomize=True)
     mentee_count = mentees.count()
     max_mentees_to_display = min(3, mentees.count())
+    _logger.debug(f"""{person.first_name} has mentees={mentees}, mentee_count={mentee_count}, 
+                  max_mentees_to_display={max_mentees_to_display}""")
     if mentees.exists():
         bio += f" During their time in the lab, {person.first_name} mentored"
 
