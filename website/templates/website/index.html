@@ -91,9 +91,9 @@
       {% for video in videos %}
         {% include "snippets/display_video_snippet.html" %}
       {% endfor %}
-      <div class="col-xs-12 see-all-artifacts">
+      {% comment %} <div class="col-xs-12 see-all-artifacts">
         <a href="{% url 'website:videos' %}">See All Videos ></a>
-      </div>
+      </div> {% endcomment %}
     </div>
   </div>
 
@@ -103,9 +103,9 @@
       {% for talk in talks %}
         {% include "snippets/display_talk_snippet.html" %}
       {% endfor %}
-      <div class="col-xs-12 see-all-artifacts">
+      {% comment %} <div class="col-xs-12 see-all-artifacts">
         <a href="{% url 'website:talks' %}">See All Talks ></a>
-      </div>
+      </div> {% endcomment %}
     </div>
   </div>
 
