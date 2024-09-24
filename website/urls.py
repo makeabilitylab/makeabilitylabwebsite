@@ -75,7 +75,7 @@ urlpatterns = [
     # This is a catch-all pattern that should be placed at the end to avoid catching other patterns.
     # For example, http://makeabilitylab.cs.uw.edu/soundwatch will go to
     # http://makeabilitylab.cs.uw.edu/project/soundwatch 
-    re_path(r'(?P<project_name>[a-zA-Z\- ]+)/$', views.redirect_project, name='project'),
+    # re_path(r'(?P<project_name>[a-zA-Z\- ]+)/$', views.redirect_project, name='project'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
