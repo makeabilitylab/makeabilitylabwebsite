@@ -53,10 +53,10 @@
         {% if pub.poster and pub.poster.pdf_file %}| <a href="{{ pub.poster.pdf_file.url }}">Poster</a>{% endif %}
 
         {% for project in pub.projects.all %}
-            {% if forloop.first and pub.projects.all|length > 0 %}| {% endif %}
-            {% if project.can_show_online %}
-                <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>{% if not forloop.last %} • {% endif %}
-            {% endif %}
+          {% if forloop.first and pub.projects.all|length > 0 %}| {% endif %}
+          {% if project.can_show_online %}
+            <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>{% if not forloop.last %} • {% endif %}
+          {% endif %}
         {% endfor %}
       </p>
     {% endif %}
