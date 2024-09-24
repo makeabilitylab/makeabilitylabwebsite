@@ -29,7 +29,7 @@ class Command(BaseCommand):
                 changed_forum_names.append((old_forum_name, pub))
         
         # Print out stats about the changes
-        _logger.debug(f"Checked {Publication.objects.all().count()} publications, changed {len(changed_forum_names)} forum names.")
+        _logger.debug(f"Checked {Publication.objects.all().count()} publications, changed {len(changed_forum_names)} forum name(s).")
         for old_name, pub in changed_forum_names:
             _logger.debug(f"{pub.title}: changed {old_name} to {pub.forum_name}")
 
