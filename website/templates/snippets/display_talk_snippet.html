@@ -41,7 +41,10 @@
         {% endif %}
         {% if talk.projects %}
           {% for project in talk.projects.all %}
-              <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>
+            {% if forloop.first and talk.projects.all|length > 0 %}| {% endif %}
+            {% if project.can_show_online %}
+              <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>{% if not forloop.last %} • {% endif %}
+            {% endif %}
           {% endfor %}
         {% endif %}
       </p>
