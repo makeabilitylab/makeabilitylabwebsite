@@ -41,6 +41,19 @@ class Talk(Artifact):
         """Gets the upload thumbnail directory for this artifact. This is required by the parent class."""
         return os.path.join(self.THUMBNAIL_DIR, filename)
     
+    def has_speakers(self):
+        """
+        Returns True if the talk has at least one speaker, otherwise False.
+        """
+        return self.authors.exists()
+    
+    def get_speakers(self):
+        """
+        Just a convenience method to get all speakers for this talk but underneath
+        calls the authors field of the parent class Artifact
+        """
+        return self.authors.all()
+    
     def get_speakers_as_csv(self):
         """Gets the list of speakers as a csv string"""
         return ', '.join(speaker.get_full_name() for speaker in self.authors.all())
