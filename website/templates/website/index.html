@@ -22,14 +22,23 @@
   {# humanize-duration is used to pretty print date ages, see https://github.com/EvanHahn/HumanizeDuration.js #}
   {# we use it, for example, to pretty print the age of videos #}
   <script src="{% static 'website/js/humanize-duration.js' %}"></script>
+
+  {% comment %} <script type="module" src="https://cdn.jsdelivr.net/gh/makeabilitylab/js@main/dist/makelab.logo.js"></script> {% endcomment %}
+  <script type="module" src="{% static 'website/js/makelab-logo.js' %}"></script>
 {% endblock %}
 
 {% block scripts %}
+
   $(document).ready(function() {
-  // find the citation links and set up the popover content and behavior for each
-  var citationLinks = $(".publication-citation-link");
-  for(var i = 0; i < citationLinks.length; i++) { $(citationLinks[i]).citationPopover(); } }); 
-{% endblock %} 
+    // find the citation links and set up the popover content and behavior for each
+    var citationLinks = $(".publication-citation-link");
+    for(var i = 0; i < citationLinks.length; i++) 
+    { 
+      $(citationLinks[i]).citationPopover(); 
+    } 
+  });
+  
+  {% endblock %} 
   <!-- TODO:
   The navbar and banner caption should have same left and right margins as the rest of the content on page I think. As
   now, navbar is narrower -->
@@ -56,8 +65,34 @@
 
 {% block content %}
 
+  <div id="makelab-about-us" class="container-fluid makelab-content-container">
+    <h1 class="section-header" style="margin-top:25px">About Us</h1>
+    <div class="row about-us-grid">
+      <div class="col-md-6 col-sm-12">
+        <canvas id="myCanvas" width="150" height="150"></canvas>
+      </div>
+      <div class="col-md-6 col-sm-12">
+        <p>
+          The Makeability Lab is an <strong>advanced research lab in Human-AI</strong> directed by <a href="{url: }">Jon E. Froehlich</a> in the 
+          <a href="https://www.cs.washington.edu/">Allen School of Computer Science</a> at the University 
+          of Washington. We specialize in Human-Computer Interaction and applied machine learning for high-impact
+          problems in urban computing, accessibility, and augmented reality. To learn more, see our 
+          <a href="#recent-projects">recent projects</a> below and read about our lab culture and values in the 
+          <a href="https://docs.google.com/document/d/1YiiDsfpiolpXjUTj8xWrQwQQUzqrfqT9bocOpaYDrtI/edit">Makeability Lab handbook.</a>
+        </p>
+        <p>
+          We are always looking for talented and motivated students to join our lab. If you are a current UW student 
+          interested in our research, please <a href="https://goo.gl/forms/59lAm3CUuupiMhUt1">apply here</a>. 
+          If you are a prospective student, please apply to the <a href="https://www.cs.washington.edu/academics/phd">UW CSE Ph.D. program</a> 
+          and mention your interest in working with Professor Froehlich in your application. Before applying, please
+          read our <a href="https://docs.google.com/document/d/1YiiDsfpiolpXjUTj8xWrQwQQUzqrfqT9bocOpaYDrtI/edit">lab handbook</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+
   <div id="makelab-recent-projects" class="container-fluid makelab-content-container">
-    <h1 class="section-header" style="margin-top:25px">Recent Projects</h1>
+    <h1 class="section-header" id="recent-projects">Recent Projects</h1>
     <div class="project-grid landing-page-project-grid">
       {% for project in projects %}
       {% include "snippets/display_project_snippet.html" %}

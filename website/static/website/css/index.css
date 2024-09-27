@@ -169,3 +169,25 @@ h1 {
   padding-left: 25px;
   padding-right: 25px;
 }
+
+/* ABOUT US */
+.about-us-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.about-us-grid p {
+  font-size: 18px; /* Adjust the font size as needed */
+}
+
+.about-us-grid canvas {
+  /*width: 100%; /* Ensure canvas scales to fit container */
+  /* height: auto; */
+}
+
+@media (max-width: 767px) {
+  .about-us-grid {
+    flex-direction: column;
+  }
+}
