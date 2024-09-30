@@ -37,7 +37,7 @@
     </p>
     <p class="artifact-authors line-clamp3">
       {% for author in pub.authors.all %}
-          <a href="{% url 'website:member' author.url_name %}">{{ author.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
+          <a href="{% url 'website:member_by_name' member_name=author.url_name %}">{{ author.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
       {% endfor %}
     </p>
 
@@ -79,7 +79,7 @@
       
       <p class="pub-authors">
         {% for author in pub.authors.all %}
-            <a href="{% url 'website:member' author.url_name %}">{{ author.get_full_name }}</a>{% if not forloop.last %},{% endif %}
+            <a href="{% url 'website:member_by_name' member_name=author.url_name %}">{{ author.get_full_name }}</a>{% if not forloop.last %},{% endif %}
         {% endfor %}
       </p>
       <p class="pub-stats">

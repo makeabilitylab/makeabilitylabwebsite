@@ -24,11 +24,13 @@ urlpatterns = [
 
     # Matches URLs like "member/123/" where 123 is a numeric member ID, and routes it 
     # to the `member` view.
-    re_path(r'^member/(?P<member_id>[0-9]+)/$', views.member, name='member'),
+    # re_path(r'^member/(?P<member_id>[0-9]+)/$', views.member, name='member'),
+    path('member/<int:member_id>/', views.member, name='member_by_id'),
 
     # Matches URLs like "member/john-doe/" where "john-doe" is a member ID consisting of 
     # lowercase letters and hyphens, and routes it to the `member` view.
-    re_path(r'^member/(?P<member_id>[-a-z]+)/$', views.member, name='member'),
+    # re_path(r'^member/(?P<member_id>[-a-z]+)/$', views.member, name='member'),
+    path('member/<str:member_name>/', views.member, name='member_by_name'),
 
     # Matches the URL "publications/" and routes it to the `publications` view.
     re_path(r'^publications/$', views.publications, name='publications'),

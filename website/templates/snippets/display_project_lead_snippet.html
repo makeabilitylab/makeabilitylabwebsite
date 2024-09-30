@@ -7,12 +7,12 @@
   {% for active_lead in active_leads %}
     {% with person=active_lead.person %}
       <li class="sidebar-li">   
-        <a href="{% url 'website:member' person.url_name %}">
+        <a href="{% url 'website:member_by_name' member_name=person.url_name %}">
           <img class="sidebar-person-thumbnail" src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}" 
                 alt="{{ person.get_full_name }}"/> 
         </a>
         <div class="sidebar-content">
-          <a href="{% url 'website:member' person.url_name %}">{{ person.get_full_name }}</a>
+          <a href="{% url 'website:member_by_name' member_name=person.url_name %}">{{ person.get_full_name }}</a>
         </div>
       </li>
     {% endwith %}

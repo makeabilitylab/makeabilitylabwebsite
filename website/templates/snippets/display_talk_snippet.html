@@ -24,7 +24,7 @@
       <p class="artifact-authors line-clamp-one-line">
         {% if talk.has_speakers %}
           {% for speaker in talk.get_speakers %}
-            <a href="{% url 'website:member' speaker.url_name %}" style="color:#464D59">{{ speaker.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
+            <a href="{% url 'website:member_by_name' member_name=speaker.url_name %}" style="color:#464D59">{{ speaker.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
           {% endfor %}
         {% endif %}
       </p>

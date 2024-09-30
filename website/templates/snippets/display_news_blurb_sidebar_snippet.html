@@ -27,7 +27,7 @@
             </a>
         </div>
         <p class="news_date">{{ news_item.short_date }} | <a
-                href="{% url 'website:member' news_item.author.url_name %}">{{ news_item.author.first_name }}</a>
+                href="{% url 'website:member_by_name' member_name=news_item.author.url_name %}">{{ news_item.author.first_name }}</a>
         </p><!--</p><p class="news_date">{{news_item.author}}</p>-->
     </div>
 </div>

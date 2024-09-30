@@ -10,7 +10,7 @@
 {#<div class="item" name="member"#}
 {#     style="background:white; margin-right: 15px; width: 210px; height:391px; object-fit: contain">#}
 <div class="col-xs-6 col-sm-4 col-md-3 col-lg-5ths people-col" name="member">
-    <a href="{% url 'website:member' member.person.url_name %}">
+    <a href="{% url 'website:memberby_name' member_name=member.person.url_name %}">
         <div class="easter-egg-col">
             <img src="{% thumbnail member.person.image 245x245 box=member.person.cropping crop detail upscale %}"
                  class="img-responsive main-image"/>
@@ -21,7 +21,7 @@
         </div>
     </a>
     <div class="item-info" style="background:white">
-        <a href="{% url 'website:member' member.person.url_name %}">
+        <a href="{% url 'website:member_by_name' member_name=member.person.url_name %}">
             <h5 class="easter-egg-name">{{ member.person.get_full_name }}</h5>
         </a>
         <p class="no-margin">{{ member.get_start_date_short }} - {{ member.get_end_date_short }}</p>
