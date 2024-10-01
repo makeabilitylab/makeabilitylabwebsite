@@ -172,7 +172,7 @@ h1 {
 
 /* ABOUT US */
 .about-us-grid {
-  display: flex;
+  /* display: flex; */
   flex-wrap: wrap;
   justify-content: space-between;
 }
@@ -182,18 +182,29 @@ h1 {
 }
 
 .about-us-grid canvas {
-  /*width: 100%; /* Ensure canvas scales to fit container */
-  /* height: auto; */
+  width: 100%; /* Ensure canvas scales to fit container */
+  height: auto;
 }
 
-#makelab-logo-canvas{
+
+#makelab-logo-canvas {
   display: block;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto; /* Center the canvas horizontally */
+  width: 500px; /* Fixed width */
 }
 
-@media (max-width: 767px) {
-  .about-us-grid {
+.center-canvas {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (max-width: 992px) {
+  /* .about-us-grid {
     flex-direction: column;
+  } */
+
+  #makelab-logo-canvas {
+    margin-bottom: 15px;
   }
 }
