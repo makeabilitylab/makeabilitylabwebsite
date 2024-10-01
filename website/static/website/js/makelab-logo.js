@@ -1,16 +1,18 @@
 import { MakeabilityLabLogoExploder, MakeabilityLabLogo } from 'https://cdn.jsdelivr.net/gh/makeabilitylab/js@main/dist/makelab.logo.js';
 
 // Set up the logo animation
-let canvas = document.getElementById('myCanvas');
+let canvas = document.getElementById('makelab-logo-canvas');
 canvas.width = 500;
 canvas.height = 300;
 let triangleSize = 70;
 let ctx = canvas.getContext('2d');
-let logo = new MakeabilityLabLogo(50, 10, triangleSize);
-logo.draw(ctx);
-console.log('Logo drawn');
 
-let makeLabLogoExploder = new MakeabilityLabLogoExploder(50, 10, triangleSize);
+// let logo = new MakeabilityLabLogo(50, 10, triangleSize);
+// logo.draw(ctx);
+// console.log('Logo drawn');
+
+let startFillColor = "rgba(255, 255, 255, 0.5)";
+let makeLabLogoExploder = new MakeabilityLabLogoExploder(50, 10, triangleSize, startFillColor);
 makeLabLogoExploder.reset(canvas.width, canvas.height);
 makeLabLogoExploder.draw(ctx);
 

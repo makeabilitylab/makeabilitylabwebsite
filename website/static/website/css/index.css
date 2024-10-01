@@ -186,6 +186,12 @@ h1 {
   /* height: auto; */
 }
 
+#makelab-logo-canvas{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 @media (max-width: 767px) {
   .about-us-grid {
     flex-direction: column;
