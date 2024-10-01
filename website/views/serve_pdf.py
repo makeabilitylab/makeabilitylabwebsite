@@ -6,6 +6,7 @@ import os
 import glob
 import difflib
 import logging
+import website.utils.ml_utils as ml_utils
 
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
@@ -57,7 +58,7 @@ def get_closest_filename_from_database(query_filename, cutoff=0.8):
     """
     
     all_filenames = Publication.objects.values_list('pdf_file', flat=True)
-    return get_closest_filename(query_filename, all_filenames, cutoff)
+    return ml_utils.get_closest_match(query_filename, all_filenames, cutoff)
 
 
 def get_closest_filename_from_filesystem(query_filename, dir_path, cutoff=0.8):
@@ -73,29 +74,4 @@ def get_closest_filename_from_filesystem(query_filename, dir_path, cutoff=0.8):
     
     # Get all filenames in the directory
     all_filenames = glob.glob(dir_path + "/*.pdf")    
-    return get_closest_filename(query_filename, all_filenames, cutoff)
-    
-def get_closest_filename(query_filename, all_filenames, cutoff=0.8):
-    """
-    Finds the closest matching filename from a list of filenames based on a query filename.
-    Args:
-        query_filename (str): The filename to search for.
-        all_filenames (list of str): A list of filenames to search within.
-        cutoff (float, optional): A float in the range [0, 1] that specifies the minimum similarity 
-                                  ratio for a match to be considered. Defaults to 0.8.
-    Returns:
-        str or None: The closest matching filename if a match is found, otherwise None.
-    """
-
-    # Get the closest matching filename using difflib
-    # We specify n=3 to get the top 3 closest matches and a cutoff value of 0.8
-    # The cutoff value determines the minimum similarity ratio for a match to be considered
-    closest_match_array = difflib.get_close_matches(query_filename, all_filenames, n=3, cutoff=cutoff)
-
-    _logger.debug(f"Closest match array for {query_filename} is {closest_match_array}")
-
-    closest_match = None
-    if closest_match_array:
-        closest_match = closest_match_array[0]
-
-    return closest_match
+    return ml_utils.get_closest_match(query_filename, all_filenames, cutoff)

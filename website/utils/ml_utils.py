@@ -4,6 +4,9 @@ Hosts general utility functions for Makeability Lab Django website
 
 import datetime
 import random 
+import difflib
+import logging
+
 # for access to settings variables, see https://docs.djangoproject.com/en/4.0/topics/settings/#using-settings-in-python-code
 from django.conf import settings 
 from operator import itemgetter
@@ -11,12 +14,16 @@ import website.utils.timeutils as ml_timeutils
 
 from django.utils.text import slugify
 
-# In this function, slugify_max, we first generate the slug using slugify. Then 
-# we check if its length is less than or equal to max_length. If it is, we return the 
-# slug as is. If it’s longer, we truncate it to max_length characters. The rsplit('-', 1)[0] part 
-# ensures that we don’t cut off in the middle of a word
+# This retrieves a Python logging instance (or creates it)
+_logger = logging.getLogger(__name__)
+
 def slugify_max(text, max_length=100):
     """Returns a slugified version of a given text up to a max length"""
+
+    # We first generate the slug using slugify. Then we check if its length is less than 
+    # or equal to max_length. If it is, we return the slug as is. If it’s longer, we truncate 
+    # it to max_length characters. The rsplit('-', 1)[0] part ensures that we don’t cut off in 
+    # the middle of a word
     slug = slugify(text)
     if len(slug) <= max_length:
         return slug
@@ -97,8 +104,6 @@ def get_video_embed(video_url):
 def filter_incomplete_projects(projects):
     '''
     Filters out projects that don't have thumbnails, publications, an about information
-    :param projects:
-    :return:
     '''
     filtered = list()
     for project in projects:
@@ -158,6 +163,26 @@ def clean_forum_name(forum_name):
     pos = forum_name.lower().find(search_phrase.lower())
     return forum_name[pos + len(search_phrase):].lstrip() if pos != -1 else forum_name
 
+def get_closest_match(query, choices, cutoff=0.8):
+    """
+    Finds the closest match to a given query from a list of choices using a similarity cutoff.
+    Args:
+        query (str): The string to match against the choices.
+        choices (list of str): A list of strings to search for the closest match.
+        cutoff (float, optional): A float between 0 and 1 representing the similarity threshold. 
+                                  Defaults to 0.8.
+    Returns:
+        str or None: The closest matching string from the choices if a match is found, otherwise None.
+    """
+    
+    closest_match_array = difflib.get_close_matches(query, choices, n=13, cutoff=cutoff)
+    _logger.debug(f"Closest matches to {query} are {closest_match_array}")
+
+    closest_match = None
+    if closest_match_array:
+        closest_match = closest_match_array[0]
+    
+    return closest_match
 
 ##### BANNER HELPER FUNCTIONS ######
 # All of these functions were written by Lee Stearns

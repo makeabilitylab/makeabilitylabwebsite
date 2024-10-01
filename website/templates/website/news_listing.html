@@ -48,7 +48,7 @@
             </div>
             <h3 class="news-card-headline"><a href="{% url 'website:news_item_by_slug' slug=news_item.slug %}">{{ news_item.title }}</a></h3>
             <div class="news-card-byline">
-              <span class="news-card-author">BY <a href="{% url 'website:member' member_id=news_item.author.id %}">{{ news_item.author }}</a></span>
+              <span class="news-card-author">BY <a href="{% url 'website:member_by_name' member_id=news_item.author.url_name %}">{{ news_item.author }}</a></span>
               <span class="news-card-date">• {{ news_item.short_date }}</span>
             </div>
           </div>

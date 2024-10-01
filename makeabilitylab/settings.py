@@ -139,6 +139,25 @@ LOGGING = {
         'django.utils.autoreload': {
             'level': 'INFO',  # Change to 'INFO' or 'WARNING'
         },
+        # This logger captures information about incoming HTTP requests, including details 
+        # about the request method, URL, and any exceptions that occur during request 
+        # processing. It’s useful for getting a high-level overview of the requests 
+        # your application is handling and for debugging issues related to request handling.
+        'django.request': { 
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+
+        # This logger specifically captures information about URL resolution. It logs 
+        # details about how Django is matching incoming URLs to your URL patterns. This is 
+        # particularly useful for debugging issues where URLs are not resolving as expected, 
+        # such as NoReverseMatch errors.
+        'django.urls': { # Adds logging for URL routing
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
     },
 }
 
