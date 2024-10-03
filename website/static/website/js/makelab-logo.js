@@ -2,6 +2,9 @@
  * Sets up the logo animation on the canvas element with the ID 'makelab-logo-canvas'.
  * Initializes the MakeabilityLabLogoExploder and handles the scroll event to update the animation.
  * 
+ * You can purge the cache of the CDN by visiting the following URL:
+ * https://www.jsdelivr.com/tools/purge
+ * 
  * @file /Users/jonfroehlich/Git/makeabilitylabwebsite/website/static/website/js/makelab-logo.js
  * @module makelab-logo
  */
@@ -50,6 +53,55 @@ function scrollHandler() {
     resetAnimationParams = true;
   }
 }
+
+console.log("Setting up ResizeObserver for parent div");
+const parentDiv = document.querySelector('.col-md-6.center-canvas');
+
+const resizeObserver = new ResizeObserver(entries => {
+  
+  const newWidth = entries[0].contentRect.width;
+  console.log("Parent div width changed! ", newWidth);
+
+  const boundingClientRect = entries[0].target.getBoundingClientRect();
+  console.log("Bounding client rect: ", boundingClientRect);
+  if (newWidth < 500) {
+    // Handle the case where parent div is less than 500px wide
+    console.log(`Parent div is less than 500px wide! It's ${newWidth}px wide.`);
+    // You can potentially adjust the animation here
+    //makeLabLogoExploder.reset(newWidth, canvas.height);
+    const logoSize = Math.max(newWidth * 0.9, 200);
+    console.log("New logo size:", logoSize);
+    makeLabLogoExploder.setLogoSize(logoSize);
+    //makeLabLogoExploder.centerLogo(boundingClientRect.width, boundingClientRect.height);
+    draw(ctx);
+  }
+});
+resizeObserver.observe(parentDiv);
+
+// console.log("Setting up ResizeObserver for parent div");
+// const parentDiv = document.querySelector('.col-md-6.center-canvas');
+
+// if (parentDiv) {
+//   console.log("Parent div found:", parentDiv);
+
+//   const resizeObserver = new ResizeObserver(entries => {
+//     console.log("ResizeObserver callback triggered");
+//     for (let entry of entries) {
+//       console.log("Parent div width changed!");
+//       const newWidth = entry.contentRect.width;
+//       console.log("New width:", newWidth);
+//       if (newWidth < 500) {
+//         console.log("Parent div is less than 500px wide!");
+//         // Handle the case where parent div is less than 500px wide
+//         // You can potentially adjust the animation here
+//       }
+//     }
+//   });
+
+//   resizeObserver.observe(parentDiv);
+// } else {
+//   console.error("Parent div not found");
+// }
 
  /**
   * Draws the MakeabilityLabLogoExploder on the provided canvas context.
