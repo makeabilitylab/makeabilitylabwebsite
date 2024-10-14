@@ -9,8 +9,8 @@
  * @module makelab-logo
  */
 
-//import { MakeabilityLabLogoExploder, MakeabilityLabLogo} from 'https://cdn.jsdelivr.net/gh/makeabilitylab/js@main/dist/makelab.logo.js';
-import { MakeabilityLabLogoExploder, MakeabilityLabLogo} from './makelab.all.js';
+import { MakeabilityLabLogoExploder, MakeabilityLabLogo} from 'https://cdn.jsdelivr.net/gh/makeabilitylab/js@main/dist/makelab.logo.js';
+//import { MakeabilityLabLogoExploder, MakeabilityLabLogo} from './makelab.all.js';
 
 // Set up the logo animation
 let canvas = document.getElementById('makelab-logo-canvas');
@@ -42,8 +42,6 @@ function scrollHandler() {
   makeLabLogoExploder.update(lerpAmt);
   draw(ctx);
 
-  //console.log(`Scroll: ${scrollY}, Lerp: ${lerpAmt}, resetAnimationParams: ${resetAnimationParams}`);
-
   // Reset the animation parameters if lerpAmt reaches 1
   // But don't keep resetting unnecessarily
   if(lerpAmt >= 1){
@@ -62,76 +60,25 @@ const parentDiv = document.querySelector('.col-md-6.center-canvas');
 const resizeObserver = new ResizeObserver(entries => {
   
   const parentDivRect = entries[0].contentRect;
-  console.log("Parent div dimensions changed! ", parentDivRect);
+  // console.log("Parent div dimensions changed! ", parentDivRect);
 
   const boundingClientRect = entries[0].target.getBoundingClientRect();
-  console.log("Bounding client rect: ", boundingClientRect);
-  // if (newWidth < 500) {
-  //   // Handle the case where parent div is less than 500px wide
-  //   console.log(`Parent div is less than 500px wide! It's ${newWidth}px wide.`);
-  //   // You can potentially adjust the animation here
-  //   //makeLabLogoExploder.reset(newWidth, canvas.height);
-  //   const logoSize = Math.max(newWidth * 0.9, 200);
-  //   console.log("New logo size:", logoSize);
-  //   makeLabLogoExploder.setLogoSize(logoSize);
-  //   canvas.width = newWidth;
-  //   //makeLabLogoExploder.centerLogo(boundingClientRect.width, boundingClientRect.height);
-  //   makeLabLogoExploder.centerLogo(newWidth, boundingClientRect.height);
-  //   draw(ctx);
-  // }
+  // console.log("Bounding client rect: ", boundingClientRect);
 
-  
-  // Handle the case where parent div is less than 500px wide
-  console.log(`Parent div is ${parentDivRect.width}px wide.`);
-  // You can potentially adjust the animation here
-  //makeLabLogoExploder.reset(newWidth, canvas.height);
   const maxLogoWidth = Math.min(parentDivRect.width, canvas.width);
   const maxLogoHeight = Math.min(parentDivRect.height, canvas.height);
-  const maxLogoSize = Math.max(maxLogoWidth, maxLogoHeight);
-  console.log(`maxLogoWidth: ${maxLogoWidth}, maxLogoHeight: ${maxLogoHeight}, maxLogoSize: ${maxLogoSize}`);
-  const logoSize = maxLogoSize * 1;
-  console.log("New logo size:", logoSize);
-  //makeLabLogoExploder.setLogoSize(logoSize);
+
   makeLabLogoExploder.fitToCanvas(maxLogoWidth, maxLogoHeight);
-  //makeLabLogoExploder.setLogoSize(500);
+  
   canvas.width = parentDivRect.width;
-  canvas.height = parentDivRect.height; //Math.max(300, parentDivRect.height);
-  //makeLabLogoExploder.centerLogo(boundingClientRect.width, boundingClientRect.height);
-  //makeLabLogoExploder.centerLogo(newWidth, boundingClientRect.height);
-  //makeLabLogoExploder.setLogoPosition(0, 0);
+  canvas.height = parentDivRect.height; 
+
   makeLabLogoExploder.centerLogo(parentDivRect.width, canvas.height);
   
-  //TODO: we want to center the logo across x but not y
-
   draw(ctx);
   
 });
 resizeObserver.observe(parentDiv);
-
-// console.log("Setting up ResizeObserver for parent div");
-// const parentDiv = document.querySelector('.col-md-6.center-canvas');
-
-// if (parentDiv) {
-//   console.log("Parent div found:", parentDiv);
-
-//   const resizeObserver = new ResizeObserver(entries => {
-//     console.log("ResizeObserver callback triggered");
-//     for (let entry of entries) {
-//       console.log("Parent div width changed!");
-//       const newWidth = entry.contentRect.width;
-//       console.log("New width:", newWidth);
-//       if (newWidth < 500) {
-//         console.log("Parent div is less than 500px wide!");
-//         // Handle the case where parent div is less than 500px wide
-//         // You can potentially adjust the animation here
-//       }
-//     }
-//   });
-
-//   resizeObserver.observe(parentDiv);
-// } else {
-//   console.error("Parent div not found");
-// }
 
  /**
   * Draws the MakeabilityLabLogoExploder on the provided canvas context.
@@ -146,6 +93,16 @@ function draw(ctx){
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   makeLabLogoExploder.draw(ctx);
 
+  // Uncomment the following to debug
+  // drawDebugText(ctx);
+} 
+
+/**
+ * Draws debug text on the canvas, displaying the dimensions of the logo and the canvas.
+ *
+ * @param {CanvasRenderingContext2D} ctx - The 2D rendering context for the drawing surface of the canvas element.
+ */
+function drawDebugText(ctx){
   const parentDivDimensions = parentDiv.getBoundingClientRect();
 
   // set text properties
