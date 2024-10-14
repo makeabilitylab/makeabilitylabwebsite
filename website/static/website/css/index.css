@@ -190,13 +190,17 @@ h1 {
 #makelab-logo-canvas {
   display: block;
   margin: 0 auto; /* Center the canvas horizontally */
-  width: 500px; /* Fixed width */
+  width: 100%;
+  height: 300px;
 }
 
 .center-canvas {
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 300px;
+  /* min-height: 300px; */
+  /* height:100%; */
 }
 
 @media (max-width: 992px) {
