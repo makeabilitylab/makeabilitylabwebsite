@@ -14,8 +14,9 @@ import { MakeabilityLabLogoExploder, MakeabilityLabLogo} from 'https://cdn.jsdel
 
 // Set up the logo animation
 let canvas = document.getElementById('makelab-logo-canvas');
+const MAX_HEIGHT = 300;
 canvas.width = 500;
-canvas.height = 300;
+canvas.height = MAX_HEIGHT;
 let triangleSize = 70;
 let ctx = canvas.getContext('2d');
 
@@ -37,7 +38,7 @@ window.addEventListener('scroll', scrollHandler, { passive: true });
   */
 function scrollHandler() {
   const scrollY = window.scrollY;
-  const lerpAmt = Math.min(scrollY / 150, 1); // Adjust the 100 as needed
+  const lerpAmt = Math.min(scrollY / 300, 1); // Adjust the 100 as needed
 
   makeLabLogoExploder.update(lerpAmt);
   draw(ctx);
@@ -66,12 +67,13 @@ const resizeObserver = new ResizeObserver(entries => {
   // console.log("Bounding client rect: ", boundingClientRect);
 
   const maxLogoWidth = Math.min(parentDivRect.width, canvas.width);
-  const maxLogoHeight = Math.min(parentDivRect.height, canvas.height);
+  let maxLogoHeight = Math.min(parentDivRect.height, canvas.height);
+  maxLogoHeight = Math.min(maxLogoHeight, MAX_HEIGHT);
 
   makeLabLogoExploder.fitToCanvas(maxLogoWidth, maxLogoHeight);
   
   canvas.width = parentDivRect.width;
-  canvas.height = parentDivRect.height; 
+  canvas.height = maxLogoHeight; 
 
   makeLabLogoExploder.centerLogo(parentDivRect.width, canvas.height);
   
