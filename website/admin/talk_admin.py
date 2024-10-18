@@ -40,10 +40,10 @@ class TalkAdmin(ArtifactAdmin):
     list_filter = ('talk_type',)  # Add a filter for the talk type
 
     def get_changeform_initial_data(self, request):
-        _logger.debug("******* get_changeform_initial_data ***********")
-        initial = super().get_changeform_initial_data(request)
-        _logger.debug(f"request is {request} and request.GET is {request.GET}")
+        # _logger.debug("******* get_changeform_initial_data ***********")
+        # _logger.debug(f"request is {request} and request.GET is {request.GET}")
 
+        initial = super().get_changeform_initial_data(request)
         publication_id = request.GET.get('publication_id')
         if publication_id:
             _logger.debug(f"publication_id is {publication_id}")
@@ -82,8 +82,8 @@ class TalkAdmin(ArtifactAdmin):
         Returns:
         form (ModelForm): The form to be used in the admin interface. The 'authors' field label is changed to 'Speakers'.
         """
-        _logger.debug("******* get_form ***********")
-        _logger.debug(f"request is {request} and obj is {obj} and kwargs is {kwargs}")
+        # _logger.debug("******* get_form ***********")
+        # _logger.debug(f"request is {request} and obj is {obj} and kwargs is {kwargs}")
         form = super().get_form(request, obj, **kwargs)
         form.base_fields['authors'].label = 'Speakers'
 
