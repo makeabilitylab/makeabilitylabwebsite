@@ -1,7 +1,7 @@
 {% extends "admin/change_form.html" %}
 {% block content %}
-This is a NEW CHANGE FORM FOR PUB<br/>
-The pub id is: {{ publication_id }}
+{% comment %} This is a NEW CHANGE FORM FOR PUB<br/> {% endcomment %}
+{% comment %} The pub id is: {{ publication_id }} {% endcomment %}
 {{ block.super }}
 <script>
   document.addEventListener('DOMContentLoaded', function() {

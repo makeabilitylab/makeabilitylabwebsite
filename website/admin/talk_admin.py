@@ -1,5 +1,5 @@
 from django.contrib import admin
-from website.models import Talk, Publication
+from website.models import Talk, Publication, PubType, TalkType
 from website.admin import ArtifactAdmin
 import logging
 
@@ -62,6 +62,10 @@ class TalkAdmin(ArtifactAdmin):
                 initial['projects'] = publication.projects.all().values_list('id', flat=True)
                 initial['project_umbrellas'] = publication.project_umbrellas.all().values_list('id', flat=True)
                 initial['keywords'] = publication.keywords.all().values_list('id', flat=True)
+            
+                if publication.pub_venue_type == PubType.CONFERENCE:
+                    initial['talk_type'] = TalkType.CONFERENCE_TALK
+
             except Publication.DoesNotExist:
                 pass
         return initial
