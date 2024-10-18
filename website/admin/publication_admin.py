@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.admin import widgets
 from website.models import Publication, Poster, Video, Talk
 from website.admin_list_filters import PubVenueTypeListFilter, PubVenueListFilter
+import logging
 
 from django.utils.html import format_html # for formatting thumbnails
 from easy_thumbnails.files import get_thumbnailer # for generating thumbnails
@@ -10,6 +11,12 @@ import os # for checking if thumbnail file exists
 from sortedm2m.fields import SortedManyToManyField
 from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
 from website.admin import ArtifactAdmin
+
+from django.urls import reverse
+from django.utils.html import format_html
+
+# This retrieves a Python logging instance (or creates it)
+_logger = logging.getLogger(__name__)
 
 @admin.register(Publication)
 class PublicationAdmin(ArtifactAdmin):
@@ -112,3 +119,59 @@ class PublicationAdmin(ArtifactAdmin):
 
         # If the db_field is not one of those fields, we’re just calling the parent class’s formfield_for_foreignkey method.
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
+    def response_add(self, request, obj, post_url_continue=None):
+        _logger.debug("******* RESPONSE ADD ********")
+        _logger.debug(f"request is {request} request.GET is {request.GET}")
+        if "_popup" in request.GET:
+            _logger.debug("_popup exists in request.GET for response_add")
+            #return HttpResponseRedirect(f'/admin/website/talk/add/?_popup=1&publication_id={obj.id}')
+        return super().response_add(request, obj, post_url_continue)
+
+    def response_change(self, request, obj):
+        _logger.debug("******* RESPONSE CHANGE ********")
+        _logger.debug(f"request is {request} request.GET is {request.GET}")
+        if "_popup" in request.GET:
+             _logger.debug("_popup exists in request.GET for response_change")
+           
+            #return HttpResponseRedirect(f'/admin/website/talk/add/?_popup=1&publication_id={obj.id}')
+        return super().response_change(request, obj)
+    
+    def add_view(self, request, form_url='', extra_context=None):
+        _logger.debug("******* add_view ********")
+        _logger.debug(f"request is {request} request.GET is {request.GET}")
+        response = super().add_view(request, form_url, extra_context)
+        if "_popup" in request.GET:
+            publication_id = request.GET.get('publication_id')
+            # if publication_id:
+                # return HttpResponseRedirect(f'/admin/website/talk/add/?_popup=1&publication_id={publication_id}')
+        return response
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        _logger.debug("******* change_view ********")
+        _logger.debug(f"request is {request} request.GET is {request.GET}")
+
+        extra_context = extra_context or {}
+        extra_context['publication_id'] = object_id
+        return super().change_view(request, object_id, form_url, extra_context)
+    
+        # response = super().change_view(request, object_id, form_url, extra_context)
+        # if "_popup" in request.GET:
+        #     publication_id = object_id
+        #     # return HttpResponseRedirect(f'/admin/website/talk/add/?_popup=1&publication_id={publication_id}')
+        # return response
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        _logger.debug("******* formfield_for_foreignkey ********")
+        _logger.debug(f"db_field is {db_field} request is {request} request.GET is {request.GET}")
+        formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+        if db_field.name == "talk":
+            _logger.debug("db_field is talk")
+            publication_id = request.resolver_match.kwargs.get('object_id')
+            if publication_id:
+                _logger.debug(f"publication_id is {publication_id}")
+                related_url = reverse('admin:website_talk_add')
+                related_url += f'?_popup=1&publication_id={publication_id}'
+                formfield.widget.attrs['data-popup'] = 'yes'
+                formfield.widget.attrs['href'] = related_url
+        return formfield

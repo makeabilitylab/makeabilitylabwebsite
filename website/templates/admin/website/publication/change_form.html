@@ -1,0 +1,19 @@
+{% extends "admin/change_form.html" %}
+{% block content %}
+{% comment %} This is a NEW CHANGE FORM FOR PUB<br/> {% endcomment %}
+{% comment %} The pub id is: {{ publication_id }} {% endcomment %}
+{{ block.super }}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const addTalkLink = document.getElementById('add_id_talk');
+    if (addTalkLink) {
+      const publicationId = "{{ publication_id }}";
+      if (publicationId) {
+          const url = new URL(addTalkLink.href);
+          url.searchParams.append('publication_id', publicationId);
+          addTalkLink.href = url.toString();
+      }
+    }
+  });
+</script>
+{% endblock %}
