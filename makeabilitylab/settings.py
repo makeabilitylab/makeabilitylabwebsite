@@ -71,8 +71,8 @@ if config.has_option('Django', 'ALLOWED_HOSTS'):
 else:
     ALLOWED_HOSTS = ['*']
 
-# Makeability Lab Global Variables
-ML_WEBSITE_VERSION = "1.9.4.8b (trying to fix landing page scroll bug #1199)"
+# Makeability Lab Global Variables, including Makeability Lab version
+ML_WEBSITE_VERSION = "1.9.4.9 (added auto-fill to talks and videos)"
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
