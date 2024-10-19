@@ -48,7 +48,7 @@ class TalkAdmin(ArtifactAdmin):
         initial = super().get_changeform_initial_data(request)
         publication_id = request.GET.get('publication_id')
         if publication_id:
-            _logger.debug(f"publication_id is {publication_id}")
+            # _logger.debug(f"publication_id is {publication_id}")
             try:
                 publication = Publication.objects.get(id=publication_id)
                 initial.update({
@@ -108,8 +108,8 @@ class TalkAdmin(ArtifactAdmin):
     get_display_thumbnail.short_description = 'Thumbnail'
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
-        _logger.debug("******* change_view ********")
-        _logger.debug(f"request is {request} request.GET is {request.GET}")
+        # _logger.debug("******* change_view ********")
+        # _logger.debug(f"request is {request} request.GET is {request.GET}")
 
         # Add the talk_id to the context so that we can use it in the template
         extra_context = extra_context or {}
