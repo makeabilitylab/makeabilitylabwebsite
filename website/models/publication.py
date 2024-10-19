@@ -14,6 +14,18 @@ class PubAwardType(models.TextChoices):
     BEST_PAPER_NOMINATION = "Best Paper Nominee"
     TEN_YEAR_IMPACT_AWARD = "10-Year Impact Award"
 
+    # This is a new UIST award started in 2024
+    # Jae's CookAR paper won it
+    BEST_PAPER_BELONGING_AND_INCLUSION_AWARD = "Best Paper Belonging and Inclusion Award"
+
+    # This is a new CSCW award. Emma's paper won it in 2021
+    # Recognitions for Contribution to Diversity and Inclusion represent strong examples of 
+    # work that focuses on or serves minorities, otherwise excluded individuals or populations,
+    # or intervenes in systemic structures of inequality, and selection of these recognitions were 
+    # overseen by Equity and Accessibility Co-Chairs
+    DIVERSITY_AND_INCLUSION_AWARD = "Diversity and Inclusion Award"
+
+
 class PubType(models.TextChoices):
     CONFERENCE = "Conference"
     ARTICLE = "Article"
