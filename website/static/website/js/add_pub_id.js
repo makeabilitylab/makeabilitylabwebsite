@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  //TODO test this when on PubAdmin and clicking on add video
   //const publicationId = "{{ publication_id }}";
   console.log(`Updating links with publication id ${publicationId}`);
   updateLinkWithPublicationId('add_id_talk', publicationId);
