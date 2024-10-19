@@ -1,0 +1,21 @@
+{% extends "admin/change_form.html" %}
+{% load static %}
+
+{% block content %}
+{% comment %} This is a NEW CHANGE FORM FOR TALK<br/> {% endcomment %}
+{% comment %} The talk id is: {{ t  alk_id }} {% endcomment %}
+{{ block.super }}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const addVideoLink = document.getElementById('add_id_video');
+    if (addVideoLink) {
+      const talkId = "{{ talk_id }}";
+      if (talkId) {
+          const url = new URL(addVideoLink.href);
+          url.searchParams.append('talk_id', talkId);
+          addVideoLink.href = url.toString();
+      }
+    }
+  });
+</script>
+{% endblock %}

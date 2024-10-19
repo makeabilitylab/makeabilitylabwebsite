@@ -23,7 +23,9 @@ class TalkAdmin(ArtifactAdmin):
     #   https://docs.djangoproject.com/en/3.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields
     search_fields = ['title', 'forum_name']
 
-    autocomplete_fields = ['video']
+    # TODO JEF: This auto-complete field is not working
+    # See: https://github.com/makeabilitylab/makeabilitylabwebsite/issues/1093#issuecomment-2423843958
+    # autocomplete_fields = ['video']
 
     # fieldsets control how the "add/change" admin views look
     # Specifically, it controls the hierarchical layout of the admin form
@@ -104,3 +106,13 @@ class TalkAdmin(ArtifactAdmin):
         return 'No Thumbnail'
     
     get_display_thumbnail.short_description = 'Thumbnail'
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        _logger.debug("******* change_view ********")
+        _logger.debug(f"request is {request} request.GET is {request.GET}")
+
+        # Add the talk_id to the context so that we can use it in the template
+        extra_context = extra_context or {}
+        extra_context['talk_id'] = object_id
+        return super().change_view(request, object_id, form_url, extra_context)
+    

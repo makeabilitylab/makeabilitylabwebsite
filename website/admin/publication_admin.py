@@ -111,6 +111,18 @@ class PublicationAdmin(ArtifactAdmin):
         return form
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """
+        Customize the form field for foreign key relationships in the admin interface.
+        This method overrides the default behavior for specific foreign key fields
+        ('video', 'talk', 'poster') to order their queryset by 'date' in descending order.
+        For other fields, it falls back to the default behavior.
+        Args:
+            db_field (models.Field): The database field for which the form field is being created.
+            request (HttpRequest): The current request object.
+            **kwargs: Additional keyword arguments.
+        Returns:
+            forms.Field: The form field for the specified foreign key.
+        """
 
         # In this code, we’re checking if the db_field is one of ‘video’, ‘talk’, or ‘poster’. 
         # If it is, we’re ordering the queryset for that field by ‘date’ in descending order (hence the ‘-date’). 
@@ -120,58 +132,24 @@ class PublicationAdmin(ArtifactAdmin):
         # If the db_field is not one of those fields, we’re just calling the parent class’s formfield_for_foreignkey method.
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
     
-    def response_add(self, request, obj, post_url_continue=None):
-        _logger.debug("******* RESPONSE ADD ********")
-        _logger.debug(f"request is {request} request.GET is {request.GET}")
-        if "_popup" in request.GET:
-            _logger.debug("_popup exists in request.GET for response_add")
-            #return HttpResponseRedirect(f'/admin/website/talk/add/?_popup=1&publication_id={obj.id}')
-        return super().response_add(request, obj, post_url_continue)
-
-    def response_change(self, request, obj):
-        _logger.debug("******* RESPONSE CHANGE ********")
-        _logger.debug(f"request is {request} request.GET is {request.GET}")
-        if "_popup" in request.GET:
-             _logger.debug("_popup exists in request.GET for response_change")
-           
-            #return HttpResponseRedirect(f'/admin/website/talk/add/?_popup=1&publication_id={obj.id}')
-        return super().response_change(request, obj)
     
-    def add_view(self, request, form_url='', extra_context=None):
-        _logger.debug("******* add_view ********")
-        _logger.debug(f"request is {request} request.GET is {request.GET}")
-        response = super().add_view(request, form_url, extra_context)
-        if "_popup" in request.GET:
-            publication_id = request.GET.get('publication_id')
-            # if publication_id:
-                # return HttpResponseRedirect(f'/admin/website/talk/add/?_popup=1&publication_id={publication_id}')
-        return response
-
     def change_view(self, request, object_id, form_url='', extra_context=None):
-        _logger.debug("******* change_view ********")
-        _logger.debug(f"request is {request} request.GET is {request.GET}")
+        """
+        Overrides the change_view method to add the publication_id to the context.
+        We then use this in the custom change_form template to autofill some fields.
+        See templates/admin/website/publication/change_form.html
+        Args:
+            request (HttpRequest): The HTTP request object.
+            object_id (str): The ID of the object being changed.
+            form_url (str, optional): The URL for the form. Defaults to ''.
+            extra_context (dict, optional): Additional context data. Defaults to None.
+        Returns:
+            HttpResponse: The response object for the change view.
+        """
+        # _logger.debug("******* change_view ********")
+        # _logger.debug(f"request is {request} request.GET is {request.GET}")
 
+        # Add the publication_id to the context so we can use it in the template
         extra_context = extra_context or {}
         extra_context['publication_id'] = object_id
         return super().change_view(request, object_id, form_url, extra_context)
-    
-        # response = super().change_view(request, object_id, form_url, extra_context)
-        # if "_popup" in request.GET:
-        #     publication_id = object_id
-        #     # return HttpResponseRedirect(f'/admin/website/talk/add/?_popup=1&publication_id={publication_id}')
-        # return response
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        _logger.debug("******* formfield_for_foreignkey ********")
-        _logger.debug(f"db_field is {db_field} request is {request} request.GET is {request.GET}")
-        formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-        if db_field.name == "talk":
-            _logger.debug("db_field is talk")
-            publication_id = request.resolver_match.kwargs.get('object_id')
-            if publication_id:
-                _logger.debug(f"publication_id is {publication_id}")
-                related_url = reverse('admin:website_talk_add')
-                related_url += f'?_popup=1&publication_id={publication_id}'
-                formfield.widget.attrs['data-popup'] = 'yes'
-                formfield.widget.attrs['href'] = related_url
-        return formfield
