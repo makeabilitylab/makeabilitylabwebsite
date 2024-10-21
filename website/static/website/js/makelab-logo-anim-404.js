@@ -60,6 +60,33 @@ document.addEventListener('mousemove', function(event) {
   
 });
 
+
+const parentDiv = document.getElementById('makelab-404');
+
+const resizeObserver = new ResizeObserver(entries => {
+  
+  const parentDivRect = entries[0].contentRect;
+  // console.log("Parent div dimensions changed! ", parentDivRect);
+
+  const boundingClientRect = entries[0].target.getBoundingClientRect();
+  // console.log("Bounding client rect: ", boundingClientRect);
+
+  const maxLogoWidth = Math.min(parentDivRect.width, canvas.width);
+  let maxLogoHeight = Math.min(parentDivRect.height, canvas.height);
+  maxLogoHeight = Math.min(maxLogoHeight, MAX_HEIGHT);
+
+  makeLabLogoExploder.fitToCanvas(maxLogoWidth, maxLogoHeight);
+  
+  canvas.width = parentDivRect.width;
+  canvas.height = maxLogoHeight; 
+
+  makeLabLogoExploder.centerLogo(parentDivRect.width, canvas.height);
+  
+  draw(ctx);
+  
+});
+resizeObserver.observe(parentDiv);
+
 /**
   * Draws the MakeabilityLabLogoExploder on the provided canvas context.
   * Clears the canvas before drawing.

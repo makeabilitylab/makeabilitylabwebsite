@@ -1,6 +1,19 @@
-# Django 4+ removed django.conf.urls.url()
-# https://stackoverflow.com/a/70319607
-# from django.conf.urls import url
+# JEF Note (10/21/2024)
+# I'm writing this note because urls.py is confusing. There are multiple urls.py: one in the root directory 
+# and one for each app. This file is an app-level urls.py file!
+#
+# 1. The top-level urls.py is the one that Django uses to route URLs to the correct app.
+#    You can find this file in makeabilitylab/urls.py. It's located in the root directory of 
+#    the Django project and includes URL patterns for the entire project and often routes 
+#    requests to the appropriate app-level urls.py file. Notice how its urlpatterns includes
+#    include('website.urls') which routes requests to the website app.
+#
+# 2. Then we also have app-level urls.py files, which is what this file is! These files are located in 
+#    each app directory. Currently, this Django project only has one app: the website app. 
+#    The app-level urls.py file is in website/urls.py. Note custom 404 routing and other error handling
+#    must be handled in the root urls.py, which is in makeabilitylab/urls.py
+# 
+
 from django.urls import re_path, path
 
 from . import views
@@ -11,7 +24,11 @@ from rest_framework.urlpatterns import format_suffix_patterns
 # then website will try to load http://makeabilitylab.cs.uw.edu/project/soundwatch 
 from django.contrib import admin
 
+
+# You need to set the app_name attribute
+# See https://docs.djangoproject.com/en/5.1/topics/http/urls/#:~:text=and%20included%20URLconfs-,%C2%B6,-Application%20namespaces%20of
 app_name = "website"
+
 urlpatterns = [
     # Matches the URL starting with "admin/" and routes it to the Django admin site.
     re_path(r"^admin/", admin.site.urls),

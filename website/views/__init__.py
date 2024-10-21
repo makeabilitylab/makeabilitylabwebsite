@@ -11,4 +11,5 @@ from .talks import *
 from .videos import *
 from .view_project_people import *
 from .serve_pdf import *
+from .custom_404 import *
 
