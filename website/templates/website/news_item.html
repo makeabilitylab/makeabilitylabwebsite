@@ -36,7 +36,7 @@ See: https://getbootstrap.com/docs/3.4/css/#overview-container
 				<h1 class="news-item-title">{{news_item.title}}</h1>
 				<div class="news-byline">
 					{% with author=news_item.author %}
-						<a href="{% url 'website:member' author.url_name %}">
+						<a href="{% url 'website:member_by_name' member_name=author.url_name %}">
 							<img src="{% thumbnail author.image author.get_thumbnail_size_as_str box=author.cropping crop=True upscale=True detail=True%}" 
 									alt="{{ author.get_full_name }}"/>
 						</a>
@@ -97,12 +97,12 @@ See: https://getbootstrap.com/docs/3.4/css/#overview-container
 					{% endfor %}
 					{% for person in people_mentioned %}
 						<li class="news-item-sidebar-li">   
-              <a href="{% url 'website:member' person.url_name %}">
+              <a href="{% url 'website:member_by_name' member_name=person.url_name %}">
                 <img src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}" 
                       alt="{{ person.get_full_name }}"/> 
               </a>
               <div class="news-item-sidebar-content">
-                <a href="{% url 'website:member' person.url_name %}">{{ person.get_full_name }}</a>
+                <a href="{% url 'website:member_by_name' member_name=person.url_name %}">{{ person.get_full_name }}</a>
               </div>
 						</li>
 					{% endfor %}		

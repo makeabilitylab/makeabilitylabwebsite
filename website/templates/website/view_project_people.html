@@ -13,14 +13,14 @@
 <div class="people-grid">
   {% for person in people_only %}
     <div class="person">
-      <a href="{% url 'website:member' person.url_name %}">
+      <a href="{% url 'website:member_by_name' member_name=person.url_name %}">
         <img src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}" 
             alt="{{ person.get_full_name }}" 
             data-alt-src="{% thumbnail person.easter_egg person.get_thumbnail_size_as_str box=person.easter_egg_crop crop=True upscale=True detail=True %}" 
             width=90%"/>
       </a>
       <div class="person-name">
-        <a href="{% url 'website:member' person.url_name %}">
+        <a href="{% url 'website:member_by_name' member_name=person.url_name %}">
           {{ person.get_full_name }}
         </a>
       </div>

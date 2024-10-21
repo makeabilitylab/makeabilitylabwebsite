@@ -24,11 +24,13 @@ urlpatterns = [
 
     # Matches URLs like "member/123/" where 123 is a numeric member ID, and routes it 
     # to the `member` view.
-    re_path(r'^member/(?P<member_id>[0-9]+)/$', views.member, name='member'),
+    # re_path(r'^member/(?P<member_id>[0-9]+)/$', views.member, name='member'),
+    path('member/<int:member_id>/', views.member, name='member_by_id'),
 
     # Matches URLs like "member/john-doe/" where "john-doe" is a member ID consisting of 
     # lowercase letters and hyphens, and routes it to the `member` view.
-    re_path(r'^member/(?P<member_id>[-a-z]+)/$', views.member, name='member'),
+    # re_path(r'^member/(?P<member_id>[-a-z]+)/$', views.member, name='member'),
+    path('member/<str:member_name>/', views.member, name='member_by_name'),
 
     # Matches the URL "publications/" and routes it to the `publications` view.
     re_path(r'^publications/$', views.publications, name='publications'),
@@ -59,8 +61,11 @@ urlpatterns = [
     # Matches URLs like "media/publications/filename.pdf" where "filename.pdf" can be any string, 
     # and routes it to the `serve_pdf` view. 
     # serve_pdf uses fuzzy matching to find the closest matching filename (within a threshold)
+    # Match files directly in the "publications" path
+    # re_path(r'^media/publications/(?P<filename>[^/]+)$', views.serve_pdf, name='serve_pdf'),
+    re_path(r'^media/publications/([^/]+)$', views.serve_pdf, name='serve_pdf'),
     # re_path(r'^media/publications/(?P<filename>.+)$', views.serve_pdf, name='serve_pdf'),
-    path('media/publications/<path:filename>', views.serve_pdf, name='serve_pdf'),
+    # path('media/publications/<path:filename>', views.serve_pdf, name='serve_pdf'),
 
     # Matches URLs like "news/123/" where 123 is a numeric news ID, and routes it to the `news_item` view.
     path('news/<int:id>/', views.news_item, name='news_item_by_id'),

@@ -29,7 +29,7 @@
         {% for position in current_members %}
           {% with person=position.person %}
             <div class="person">
-              <a href="{% url 'website:member' person.url_name %}">
+              <a href="{% url 'website:member_by_name' member_name=person.url_name %}">
                 {% comment %}
                   We have a fun little "easter egg" here that swaps out a person's image on mouseover.
                   Also, we use easy-thumbnails to create thumbnail image: https://easy-thumbnails.readthedocs.io/en/latest/usage/#templates
@@ -44,7 +44,7 @@
                     width=90%"/>
               </a>
               <div class="person-name">
-                <a href="{% url 'website:member' person.url_name %}">
+                <a href="{% url 'website:member_by_name' member_name=person.url_name %}">
                   {{ person.get_full_name }}
                 </a>
               </div>
@@ -66,7 +66,7 @@
           <div class="graduated-phds-grid">
             {% for person in graduated_phd_students %}
               <div class="person graduated-phd">
-                <a href="{% url 'website:member' person.url_name %}">
+                <a href="{% url 'website:member_by_name' member_name=person.url_name %}">
                   <img class="swap-image" onmouseover="swapImage(this)" onmouseout="swapImage(this)"
                         src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop detail upscale %}" 
                         alt="{{ person.get_full_name }}" 
@@ -74,7 +74,7 @@
                         width=90%"/>
                 </a>
                 <div class="graduated-phd-name">
-                  <a href="{% url 'website:member' person.url_name %}">
+                  <a href="{% url 'website:member_by_name' member_name=person.url_name %}">
                     Dr. {{ person.get_full_name }}
                   </a>
                 </div>
@@ -123,7 +123,7 @@
                 <div class="past-member-grid-item">
                   {% comment %} TODO check if high school student and don't print out department {% endcomment %}
                   <span class="past-member-name"> 
-                    <a href="{% url 'website:member' position.person.url_name %}">{{ position.person.get_full_name }}</a>,
+                    <a href="{% url 'website:member_by_name' member_name=position.person.url_name %}">{{ position.person.get_full_name }}</a>,
                   </span>
                   <span class="past-member-affiliation">
                     {% if position.is_high_school %}

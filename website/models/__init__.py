@@ -10,7 +10,10 @@ from .project import Project
 from .project_role import ProjectRole
 from .project_umbrella import ProjectUmbrella
 from .publication import Publication
+from .publication import PubAwardType
+from .publication import PubType
 from .sponsor import Sponsor
 from .talk import Talk
+from .talk import TalkType
 from .video import Video
 from .grant import Grant

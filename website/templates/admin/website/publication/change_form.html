@@ -1,0 +1,20 @@
+{% extends "admin/change_form.html" %}
+{% load static %}
+
+{% block content %}
+{% comment %} This is a NEW CHANGE FORM FOR PUB<br/>
+The pub id is: {{ publication_id }} {% endcomment %}
+{{ block.super }}
+
+{% comment %} 
+When you move JavaScript code from inline in the HTML to an external file, Django 
+template tags like {{ publication_id }} won’t be processed because the external 
+JavaScript file isn’t parsed by Django’s template engine. To solve this, you can 
+pass the publication_id from your Django template to your JavaScript file using a 
+script tag in your HTML. 
+{% endcomment %}
+<script>
+  var publicationId = "{{ publication_id }}";
+</script>
+<script src="{% static 'website/js/add_pub_id.js' %}"></script>
+{% endblock %}

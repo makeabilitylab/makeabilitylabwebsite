@@ -59,7 +59,7 @@ def people(request):
         list_of_graduated_phd_students.append(grad_student)
         exclude_member_ids.append(grad_student.id)
 
-    print("exclude_member_ids", exclude_member_ids)
+    _logger.debug("exclude_member_ids", exclude_member_ids)
     
     # Get past members
     past_member_positions = (Position.objects.filter(Q(start_date__lte=date.today()), # start date is in the past

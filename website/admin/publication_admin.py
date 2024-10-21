@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.admin import widgets
 from website.models import Publication, Poster, Video, Talk
 from website.admin_list_filters import PubVenueTypeListFilter, PubVenueListFilter
+import logging
 
 from django.utils.html import format_html # for formatting thumbnails
 from easy_thumbnails.files import get_thumbnailer # for generating thumbnails
@@ -10,6 +11,12 @@ import os # for checking if thumbnail file exists
 from sortedm2m.fields import SortedManyToManyField
 from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
 from website.admin import ArtifactAdmin
+
+from django.urls import reverse
+from django.utils.html import format_html
+
+# This retrieves a Python logging instance (or creates it)
+_logger = logging.getLogger(__name__)
 
 @admin.register(Publication)
 class PublicationAdmin(ArtifactAdmin):
@@ -104,6 +111,18 @@ class PublicationAdmin(ArtifactAdmin):
         return form
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """
+        Customize the form field for foreign key relationships in the admin interface.
+        This method overrides the default behavior for specific foreign key fields
+        ('video', 'talk', 'poster') to order their queryset by 'date' in descending order.
+        For other fields, it falls back to the default behavior.
+        Args:
+            db_field (models.Field): The database field for which the form field is being created.
+            request (HttpRequest): The current request object.
+            **kwargs: Additional keyword arguments.
+        Returns:
+            forms.Field: The form field for the specified foreign key.
+        """
 
         # In this code, we’re checking if the db_field is one of ‘video’, ‘talk’, or ‘poster’. 
         # If it is, we’re ordering the queryset for that field by ‘date’ in descending order (hence the ‘-date’). 
@@ -112,3 +131,25 @@ class PublicationAdmin(ArtifactAdmin):
 
         # If the db_field is not one of those fields, we’re just calling the parent class’s formfield_for_foreignkey method.
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
+    
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        """
+        Overrides the change_view method to add the publication_id to the context.
+        We then use this in the custom change_form template to autofill some fields.
+        See templates/admin/website/publication/change_form.html
+        Args:
+            request (HttpRequest): The HTTP request object.
+            object_id (str): The ID of the object being changed.
+            form_url (str, optional): The URL for the form. Defaults to ''.
+            extra_context (dict, optional): Additional context data. Defaults to None.
+        Returns:
+            HttpResponse: The response object for the change view.
+        """
+        # _logger.debug("******* change_view ********")
+        # _logger.debug(f"request is {request} request.GET is {request.GET}")
+
+        # Add the publication_id to the context so we can use it in the template
+        extra_context = extra_context or {}
+        extra_context['publication_id'] = object_id
+        return super().change_view(request, object_id, form_url, extra_context)
