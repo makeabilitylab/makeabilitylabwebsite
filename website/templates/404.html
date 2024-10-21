@@ -1,0 +1,25 @@
+{% extends "website/base.html" %}
+
+{% block pagetitle %}
+  Makeability 404 Page
+{% endblock %}
+
+{% load static %}
+{% comment %} {% load thumbnail %}
+{% load cropping %}
+{% load ml_tags %} {% endcomment %}
+
+{% block maincarousel %}
+    {% comment %} Keep this empty to not have a carousel {% endcomment %}
+{% endblock %}
+
+{% block content %}
+
+  <div id="content" class="container">
+      <div id="makelab-404" class="makelab-content-container" style="margin-top: 90px;">
+        <h1>404</h1>
+        <p>Page not found.</p>
+      </div>
+  </div>
+
+{% endblock %}

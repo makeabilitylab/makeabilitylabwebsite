@@ -38,6 +38,13 @@ requests==2.31.0
 django-sortedm2m-filter-horizontal-widget==2.0.1 # Used for SortedManyToManyFields in admin interface: https://pypi.org/project/django-sortedm2m-filter-horizontal-widget/
 django-ckeditor==6.5.1 # Used for news editor https://pypi.org/project/django-ckeditor/
 
+# Careful, we only want to use whitenoise in development for testing 404 pages
+# It allows us to serve static files in development with DEBUG=False
+# See: 
+# - https://stackoverflow.com/questions/63116823/django-not-applying-css-file-from-app-on-404-page#:~:text=for%20the%20shortcut.-,Share,-Edit
+# - https://stackoverflow.com/questions/5836674/why-does-debug-false-setting-make-my-django-static-files-access-fail
+# whitenoise==6.7.0 # Used for serving static files: https://pypi.org/project/whitenoise/
+
 # bibtexparser==1.4.0 # We used to use this for importing data: https://pypi.org/project/bibtexparser/
 # beautifulsoup4==4.11.1 # JEF (Oct 16, 2023); not sure why/when we used this
 # django-extensions==3.2.1 # JEF (Oct 16, 2023); not sure why we want this

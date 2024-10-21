@@ -111,8 +111,22 @@ python manage.py remove_year_from_forum_name
 # python manage.py rename_talk_files
 
 # Start server
+# Important Debugging Note:
+# If you want to serve static files with DEBUG=False using a local development server, 
+# you need to use the --insecure flag. We set DEBUG=FALSE in local dev, for example,
+# when we are trying to build and test our custom 404 page
+# > python manage.py runserver --insecure
+# See: 
+# - https://stackoverflow.com/questions/63116823/django-not-applying-css-file-from-app-on-404-page#:~:text=for%20the%20shortcut.-,Share,-Edit
+# - https://stackoverflow.com/questions/5836674/why-does-debug-false-setting-make-my-django-static-files-access-fail
+# But then the problem is that there is nothing to serve the static files (like Apache). Hmm.
+# Could use a middleware to serve static files like WhiteNoise: https://whitenoise.readthedocs.io/en/stable/
 echo "Starting server"
 echo "****************** STEP 5/5: docker-entrypoint.sh ************************"
 echo "5. Starting server with 'python manage.py runserver 0.0.0.0:8000'"
 echo "******************************************"
-python manage.py runserver 0.0.0.0:8000
+# python manage.py runserver 0.0.0.0:8000
+
+# Start server with --insecure flag to serve static files with DEBUG=False
+# WARNING: Never do this on production
+python manage.py runserver 0.0.0.0:8000 --insecure

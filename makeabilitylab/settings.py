@@ -61,6 +61,10 @@ else:
     # DEBUG_SET = "Debug set to True because we appear not to be on production or using an .ini file"
     DEBUG_SET = "Debug set to False as a default (appear not to be on production or using an .ini file)"
 
+# If you want to test the 404 page locally, you must set DEBUG to False
+# See: https://learndjango.com/tutorials/customizing-django-404-and-500-error-pages
+DEBUG = False 
+
 print(f"DJANGO_ENV: {DJANGO_ENV}")
 print(f"DEBUG_SET: {DEBUG_SET}")
 print(f"DEBUG: {DEBUG}")
@@ -93,6 +97,10 @@ CSRF_TRUSTED_ORIGINS = ['https://*.cs.washington.edu']
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+
+    # require_debug_false: Uses the RequireDebugFalse filter from django.utils.log. This filter 
+    # only allows log records to pass through if the DEBUG setting in Django is False. It’s useful 
+    # for filtering out debug logs in a production environment.
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse',
@@ -120,7 +128,8 @@ LOGGING = {
         },
         'console': {
             'level': 'DEBUG',
-            'filters': ['require_debug_true'],
+            # TEMPORARILY COMMENT THIS OUT
+            # 'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
         },
@@ -207,6 +216,8 @@ if DEBUG:
 MIDDLEWARE = [
     # 'website.middleware.RenderTimingMiddleware', # couldn't get this work, see file for details
 
+    
+
     # JEF (9/22/2023) The order of MIDDLEWARE is important. You should include the Debug Toolbar middleware as 
     # early as possible in the list. However, it must come after any other middleware that 
     # encodes the response’s content, such as GZipMiddleware.
@@ -214,6 +225,13 @@ MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 
     'django.middleware.security.SecurityMiddleware',
+
+    # JEF (10/21/2024): We only want to use WhiteNoise in development
+    # to test 404 pages when running in -insecure mode. This should
+    # not be used in production!
+    # Update, I never got this to work properly
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
