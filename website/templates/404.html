@@ -5,9 +5,14 @@
 {% endblock %}
 
 {% load static %}
-{% comment %} {% load thumbnail %}
-{% load cropping %}
-{% load ml_tags %} {% endcomment %}
+
+{% block stylesheets %}
+  <link rel="stylesheet" href="{% static 'website/css/404.css' %}">
+{% endblock %}
+
+{% block external_scripts %}
+  <script type="module" src="{% static 'website/js/makelab-logo-anim-404.js' %}"></script>
+{% endblock %}
 
 {% block maincarousel %}
     {% comment %} Keep this empty to not have a carousel {% endcomment %}
@@ -15,11 +20,16 @@
 
 {% block content %}
 
+  
+
   <div id="content" class="container">
-      <div id="makelab-404" class="makelab-content-container" style="margin-top: 90px;">
-        <h1>404</h1>
-        <p>Page not found.</p>
-      </div>
+    <div id="makelab-404" class="makelab-content-container" style="margin-top: 90px;">
+      <h1>404</h1>
+      <p>Page not found.</p>
+      <canvas id="makelab-logo-canvas"></canvas>
+    </div>
+    <h1>Track Mouse Position</h1>
+    <div id="position">Move your mouse!</div>
   </div>
 
 {% endblock %}

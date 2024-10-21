@@ -1,0 +1,6 @@
+#makelab-logo-canvas {
+  display: block;
+  margin: 0 auto; /* Center the canvas horizontally */
+  width: 100%;
+  height: 300px;
+}

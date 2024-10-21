@@ -1,16 +1,4 @@
-/**
- * Sets up the logo animation on the canvas element with the ID 'makelab-logo-canvas'.
- * Initializes the MakeabilityLabLogoExploder and handles the scroll event to update the animation.
- * 
- * You can purge the cache of the CDN by visiting the following URL:
- * https://www.jsdelivr.com/tools/purge
- * 
- * @file /Users/jonfroehlich/Git/makeabilitylabwebsite/website/static/website/js/makelab-logo.js
- * @module makelab-logo
- */
-
 import { MakeabilityLabLogoExploder, MakeabilityLabLogo} from 'https://cdn.jsdelivr.net/gh/makeabilitylab/js@main/dist/makelab.logo.js';
-//import { MakeabilityLabLogoExploder, MakeabilityLabLogo} from './makelab.all.js';
 
 // Set up the logo animation
 let canvas = document.getElementById('makelab-logo-canvas');
@@ -26,61 +14,51 @@ let startFillColor = "rgba(255, 255, 255, 0.5)";
 let xPos = canvas.width/2 - MakeabilityLabLogo.getWidth(triangleSize) / 2;
 let makeLabLogoExploder = new MakeabilityLabLogoExploder(xPos, 10, triangleSize, startFillColor);
 makeLabLogoExploder.reset(canvas.width, canvas.height);
+makeLabLogoExploder.update(1);
 makeLabLogoExploder.draw(ctx);
 let resetAnimationParams = false;
 
-window.addEventListener('scroll', scrollHandler, { passive: true });
+// Enable anti-aliasing
+ctx.imageSmoothingEnabled = true;
 
- /**
-  * Handles the scroll event to update the MakeabilityLabLogoExploder animation.
-  * 
-  * @function scrollHandler
-  */
-function scrollHandler() {
-  const scrollY = window.scrollY;
-  const lerpAmt = Math.min(scrollY / 300, 1); // Adjust the 100 as needed
+draw(ctx);
 
-  makeLabLogoExploder.update(lerpAmt);
-  draw(ctx);
+document.addEventListener('mousemove', function(event) {
+  const x = event.clientX;
+  const y = event.clientY;
+  // const windowWidth = window.innerWidth * 0.8;
+  // const lerpAmt = Math.min(x / windowWidth, 1);
+
+  // We're going to animate the logo explosion based on the mouse position
+  // If it's in the middle of the window, the logo will be fully together (lerpAmt = 1)
+  // If it's to the left or right edge, the logo will be fully exploded (lerpAmt = 0)
+  // if the mouse is in the center of the screen and within the buffer, the logo is fully together
+  const middleBuffer = 50; 
+  const leftEdge = window.innerWidth / 2 - middleBuffer / 2;
+  const rightEdge = window.innerWidth / 2 + middleBuffer / 2;
+  let lerpAmt = 1;
+  if (x < leftEdge || x > rightEdge) {
+    const totalWidth = window.innerWidth / 2 - middleBuffer / 2;
+    const distanceToEdge = x < leftEdge ? leftEdge - x : x - rightEdge;
+    lerpAmt = 1 - distanceToEdge / totalWidth;
+  }
 
   // Reset the animation parameters if lerpAmt reaches 1
-  // But don't keep resetting unnecessarily
   if(lerpAmt >= 1){
     if(resetAnimationParams){
       makeLabLogoExploder.reset(canvas.width, canvas.height);
       resetAnimationParams = false;
-    } 
-  }else if(lerpAmt < 1){
+      // console.log("Resetting explosion positions");
+    }     
+  }else{
     resetAnimationParams = true;
   }
-}
-
-console.log("Setting up ResizeObserver for parent div");
-const parentDiv = document.querySelector('.col-md-6.center-canvas');
-
-const resizeObserver = new ResizeObserver(entries => {
   
-  const parentDivRect = entries[0].contentRect;
-  // console.log("Parent div dimensions changed! ", parentDivRect);
-
-  const boundingClientRect = entries[0].target.getBoundingClientRect();
-  // console.log("Bounding client rect: ", boundingClientRect);
-
-  const maxLogoWidth = Math.min(parentDivRect.width, canvas.width);
-  let maxLogoHeight = Math.min(parentDivRect.height, canvas.height);
-  maxLogoHeight = Math.min(maxLogoHeight, MAX_HEIGHT);
-
-  makeLabLogoExploder.fitToCanvas(maxLogoWidth, maxLogoHeight);
-  
-  canvas.width = parentDivRect.width;
-  canvas.height = maxLogoHeight; 
-
-  makeLabLogoExploder.centerLogo(parentDivRect.width, canvas.height);
-  
+  document.getElementById('position').textContent = 'X: ' + x + ', Y: ' + y + ', Lerp: ' + lerpAmt;;
+  makeLabLogoExploder.update(lerpAmt);
   draw(ctx);
   
 });
-resizeObserver.observe(parentDiv);
 
 /**
   * Draws the MakeabilityLabLogoExploder on the provided canvas context.
