@@ -24,7 +24,10 @@ from django.contrib import admin
 from django.conf.urls.static import static
 from django.views.static import serve
 from django.conf import settings
+from website import views
+from django.conf.urls import handler404
 
+handler404 = views.custom_404
 urlpatterns = [
     #Info on how to route root to website was found here http://stackoverflow.com/questions/7580220/django-urls-howto-map-root-to-app
     re_path(r'', include('website.urls')),

@@ -61,6 +61,7 @@ else:
     # DEBUG_SET = "Debug set to True because we appear not to be on production or using an .ini file"
     DEBUG_SET = "Debug set to False as a default (appear not to be on production or using an .ini file)"
 
+DEBUG = False
 print(f"DJANGO_ENV: {DJANGO_ENV}")
 print(f"DEBUG_SET: {DEBUG_SET}")
 print(f"DEBUG: {DEBUG}")
