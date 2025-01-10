@@ -30,7 +30,7 @@ This repository contains the [Makeability Lab's website](https://makeabilitylab.
 
 4. Running the container. Once the image has built, run `docker-compose -f docker-compose-local-dev.yml up`, this will bring up both the postgres container for the database and the website containers. For future reference, running `docker-compose up -d` will allow you to continue using the same terminal and none of the output messages will be displayed. Alternatively, we have created this convenient bash shell script `run-docker-local-dev.sh`, which you can use instead.
 
-5. Create the superuser. In another terminal, navigate to the project home directory using the `cd` command and open an interactive bash terminal in the website container using `docker exec -it makeabilitylabwebsite_website_1 bash`. Once inside the bash terminal, run `python manage.py createsuperuser`.
+5. Create the superuser. In another terminal, navigate to the project home directory using the `cd` command and open an interactive bash terminal in the website container using `docker exec -it makeabilitylabwebsite-website-1 bash`. Once inside the bash terminal, run `python manage.py createsuperuser`.
 
 6. Open the development server in the web browser. At this point the development server should be running via step 4. You will find the website at `localhost:8571` as specified in the `docker-compose.yml` file.
 
