@@ -123,6 +123,28 @@
   .navbar-collapse ul {
     background-color: var(--navbar-bg-color);
   }
+  
+  .navbar-fixed-top .navbar-collapse,
+  .navbar-fixed-bottom .navbar-collapse {
+    max-height: none !important; /* override 340px limit */
+  }
+
+  .navbar-collapse .navbar-nav > li > a {
+    font-size: 18px; /* increase font size */
+    padding: 15px 20px;
+    line-height: 1.5;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: block;
+  }
+  
+  .navbar-collapse .navbar-nav > li {
+    margin: 5px 0;
+  }
+  
+  .navbar-collapse {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
 }
 
 /******************************************************************************************/
