@@ -24,7 +24,6 @@ This document covers the Makeability Lab website's production infrastructure, de
   - [Data Management](#data-management)
     - [Uploaded Files](#uploaded-files)
     - [Database Access](#database-access)
-  - [Server Architecture Summary](#server-architecture-summary)
 
 ## Server Overview
 
@@ -46,16 +45,13 @@ Each server has its own:
 
 Deployments are automated via GitHub webhooks:
 
-```
-┌─────────────┐      ┌─────────────────┐      ┌─────────────────────┐
-│ Push to     │ ───► │ Webhook fires   │ ───► │ makeabilitylab-test │
-│ master      │      │                 │      │ auto-deploys        │
-└─────────────┘      └─────────────────┘      └─────────────────────┘
+```mermaid
+graph LR
+    A[Push to<br/>master] --> B(Webhook fires)
+    B --> C[makeabilitylab-test<br/>auto-deploys]
 
-┌─────────────┐      ┌─────────────────┐      ┌─────────────────────┐
-│ Push a tag  │ ───► │ Webhook fires   │ ───► │ makeabilitylab      │
-│ (e.g. 2.1.0)│      │                 │      │ (production)        │
-└─────────────┘      └─────────────────┘      └─────────────────────┘
+    D[Push a tag<br/>e.g. 2.1.0] --> E(Webhook fires)
+    E --> F[makeabilitylab<br/>production]
 ```
 
 ### Deploying to Test
@@ -212,23 +208,3 @@ ssh recycle.cs.washington.edu
 ```
 
 For routine data management, use the Django admin interface instead.
-
-## Server Architecture Summary
-
-```
-┌────────────────────────────────────────────────────────────────┐
-│                        GitHub                                  │
-│                    (makeabilitylab/makeabilitylabwebsite)      │
-└───────────────────────────┬────────────────────────────────────┘
-                            │ webhooks
-              ┌─────────────┴─────────────┐
-              ▼                           ▼
-┌─────────────────────────┐   ┌─────────────────────────┐
-│   makeabilitylab-test   │   │    makeabilitylab       │
-│   (push to master)      │   │    (push tags)          │
-├─────────────────────────┤   ├─────────────────────────┤
-│ Docker container        │   │ Docker container        │
-│ PostgreSQL (local)      │   │ PostgreSQL (grabthar)   │
-│ Media: www-test/media   │   │ Media: www/media        │
-└─────────────────────────┘   └─────────────────────────┘
-```
