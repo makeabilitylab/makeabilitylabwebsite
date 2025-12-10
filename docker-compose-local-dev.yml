@@ -16,11 +16,6 @@
 #
 # =============================================================================
 
-# The 'version' key specifies the Compose file format version.
-# Version '3' is widely compatible. Newer Docker versions ignore this field,
-# but it's harmless to keep for compatibility with older Docker installations.
-version: '3'
-
 services:
   # ===========================================================================
   # DATABASE SERVICE
