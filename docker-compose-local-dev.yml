@@ -1,37 +1,111 @@
+# =============================================================================
+# Docker Compose Configuration for LOCAL DEVELOPMENT
+# =============================================================================
+#
+# This file defines two services that run together:
+#   1. db      - A PostgreSQL database container
+#   2. website - The Django application container
+#
+# Usage:
+#   docker-compose -f docker-compose-local-dev.yml up
+#
+# After running, the website is available at: http://localhost:8571
+#
+# To stop:
+#   docker-compose down
+#
+# =============================================================================
+
+# The 'version' key specifies the Compose file format version.
+# Version '3' is widely compatible. Newer Docker versions ignore this field,
+# but it's harmless to keep for compatibility with older Docker installations.
 version: '3'
 
 services:
+  # ===========================================================================
+  # DATABASE SERVICE
+  # ===========================================================================
+  # We use the official PostgreSQL Docker image from Docker Hub.
+  # See: https://hub.docker.com/_/postgres
   db:
-     image: 'postgres:16' # We use the official Docker postgres image: https://hub.docker.com/_/postgres
-     restart: always
-     ports:
-       # if you want to expose the postgres instance to a tool on localhost, use this instead:
-       # see: https://stackoverflow.com/a/55259785
-       - '6543:5432'
-       # - '5432'
-     environment:
-      - POSTGRES_DB=makeability
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=password
-     volumes:
+    image: 'postgres:16'
+
+    # Restart policy: 'always' means Docker will restart this container
+    # automatically if it crashes or if Docker itself restarts.
+    restart: always
+
+    ports:
+      # Port mapping format: 'HOST_PORT:CONTAINER_PORT'
+      #
+      # PostgreSQL runs on port 5432 inside the container. We map it to 6543
+      # on localhost so you can connect with external tools (pgAdmin, DBeaver,
+      # VS Code extensions, etc.) without conflicting with any local PostgreSQL.
+      #
+      # To connect externally: localhost:6543
+      # The website container connects internally via: db:5432
+      - '6543:5432'
+
+    environment:
+      # These environment variables configure the PostgreSQL instance.
+      # The Django app uses these same credentials to connect.
+      - POSTGRES_DB=makeability      # Database name
+      - POSTGRES_USER=admin          # Username
+      - POSTGRES_PASSWORD=password   # Password (fine for local dev, never use in production!)
+
+    volumes:
+      # Named volume for persistent database storage.
+      # Without this, all data would be lost when the container stops.
+      # The volume 'postgres-data' is defined at the bottom of this file.
       - postgres-data:/var/lib/postgresql/data
-  website:    
+
+    healthcheck:
+      # Healthcheck ensures the DB is ready before the website tries to connect.
+      # This fixes the "first-time run" migration crashes.
+      test: ["CMD-SHELL", "pg_isready -U admin -d makeability"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ===========================================================================
+  # WEBSITE SERVICE (Django Application)
+  # ===========================================================================
+  website:
+    # Build the image using the Dockerfile in the current directory.
     build:
       context: .
       dockerfile: Dockerfile
+
     restart: always
+
     ports:
+      # Map container port 8000 (Django's default) to localhost:8571.
+      # The '127.0.0.1:' prefix ensures only local connections are accepted
+      # (not connections from other machines on your network).
       - '127.0.0.1:8571:8000'
+
     volumes:
+      # Mount the current directory (.) to /code inside the container.
+      # This enables "live reloading"—when you edit local files, the changes
+      # are immediately visible inside the container without rebuilding.
       - .:/code
-      # you must comment out the following line for local host development
-      #- /cse/web/research/makelab/www:/code/media
-      #- /cse/web/research/makelab/secret/config.ini:/code/config.ini # for loading vars into ConfigParser in Django
-      #- /cse/web/research/makelab/secret/config-test.ini:/code/config-test.ini # for loading vars into ConfigParser in Django
+
+    # Wait for the database to be "healthy" (fully started) before running
     depends_on:
-      - db
-    command: ["./docker-entrypoint.sh", "db", "python", "manage.py"]
-    links:
-      - "db:database"
+      db:
+        condition: service_healthy
+
+    # The command to run when the container starts.
+    # This executes the docker-entrypoint.sh script, which handles:
+    #   - Collecting static files
+    #   - Running database migrations
+    #   - Starting the Django development server
+    command: ["./docker-entrypoint.sh"]
+
+# =============================================================================
+# NAMED VOLUMES
+# =============================================================================
+# Named volumes persist data outside the container lifecycle.
+# Run 'docker volume ls' to see all volumes.
+# Run 'docker volume rm postgres-data' to delete (WARNING: destroys all data).
 volumes:
-    postgres-data:   
+  postgres-data:

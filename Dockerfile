@@ -8,67 +8,75 @@
 # So, instead, we start from an official Docker-created base image of Python.
 FROM python:3.11.6
 
-# Echo out the start of the Dockerfile
-RUN echo "Running the Makeability Lab Dockerfile!"
+RUN echo "Building the Makeability Lab Docker image..."
 
-# Sometimes we get warnings about old pip, so take care of that here
+# The ENV instruction sets environment variables.
+# See: https://docs.docker.com/engine/reference/builder/#environment-replacement
+#
+# PYTHONUNBUFFERED=1: Ensures stdout/stderr streams are unbuffered for real-time logging
+# PYTHONDONTWRITEBYTECODE=1: Prevents Python from writing .pyc bytecode files to 
+#                            __pycache__ directories, keeping the container cleaner.
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# Upgrade pip to avoid version warnings during package installation
 RUN pip install --upgrade pip 
 
-# See: https://www.quora.com/How-does-one-install-pip-in-a-Docker-container-using-a-Dockerfile
-RUN apt-get update && apt-get --assume-yes install imagemagick ghostscript sqlite3
+# Install system dependencies required by the application:
+# - imagemagick: Image processing for thumbnails and conversions
+# - ghostscript: PDF processing (required by imagemagick for PDFs)
+# - sqlite3: Useful for debugging, though we use PostgreSQL in production
+#
+# We clean up the apt cache afterward to reduce the final image size.
+RUN apt-get update \
+    && apt-get --assume-yes install --no-install-recommends \
+        imagemagick \
+        ghostscript \
+        sqlite3 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# The ENV instruction sets the environment variable <key> to the <value> in ENV <key> <value>. 
-# See: https://docs.docker.com/engine/reference/builder/#environment-replacement
-# In this case, we are setting the stdout/stderr streams in Python to be unbuffered
-ENV PYTHONUNBUFFERED 1
+# Create a system user for running the application.
+# We use 'apache' with UID/GID 48 to match the user mapping on the UW production
+# servers. The name is arbitrary but 'apache' is convenient for this purpose.
+RUN useradd -u 48 apache && groupmod -g 48 apache
 
-#Create a system user which we'll use later.
-#We're using the 'apache' user since that's what we're trying to map
-#outside the container -- it could be called anything, but apache is convenient
-RUN useradd -u 48 apache
-RUN groupmod -g 48 apache
-
-# The RUN instruction will execute any commands in a new layer on top of the current image and commit the results. 
-# The resulting committed image will be used for the next step in the Dockerfile.
-# See: https://docs.docker.com/engine/reference/builder/#run
-RUN mkdir /code
-
-# The WORKDIR instruction sets the working directory for any RUN, CMD, ENTRYPOINT, COPY and ADD instructions 
-# that follow it in the Dockerfile. If the WORKDIR doesn’t exist, it will be created even if it’s not used 
-# in any subsequent Dockerfile instruction. 
+# The WORKDIR instruction sets the working directory for subsequent instructions.
+# If the directory doesn't exist, it will be created automatically.
 # See: https://docs.docker.com/engine/reference/builder/#workdir
 WORKDIR /code
 
-# COPY the requirements.txt into the docker container
-# As an fyi: Layering RUN instructions and generating commits conforms to the core concepts 
-# of Docker where commits are cheap and containers can be created from any point in an image’s history, much like source control.
+# Copy and install Python dependencies first, before copying the rest of the code.
+# This leverages Docker's layer caching: if requirements.txt hasn't changed,
+# Docker reuses the cached layer and skips the slow pip install step.
+#
+# The -r flag tells pip to install all packages listed in the requirements file.
+# The --no-cache-dir flag prevents pip from caching downloaded packages,
+# reducing the final image size.
 # See: https://docs.docker.com/engine/reference/builder/#run
-# The -r flag is used to install all the packages in the requirements.txt file
 COPY requirements.txt /code/
-RUN cat requirements.txt
-RUN pip3 install -r requirements.txt
-# RUN pip install --no-cache-dir -r requirements.txt
-# RUN pip install django==4.2.16
+RUN pip3 install --no-cache-dir -r requirements.txt
 
-## TEMP related to: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/866
-#RUN pip install django-ckeditor
-
-# Our local user needs write access to a website and static files
-RUN chown -R apache /code/
-
-# Despite the above, still getting permission errors on WSL2
-# -- PermissionError: [Errno 13] Permission denied: '/code/static'
-# -- PermissionError: [Errno 13] Permission denied: '/code/website/migrations'
-# RUN chown apache:apache -R /code/
-
+# Copy the application code into the container.
+# This is done after pip install so code changes don't invalidate the
+# dependency cache layer.
 COPY . /code/
 
-# Copy over the new ImageMagick policy, see:
-# https://github.com/makeabilitylab/makeabilitylabwebsite/issues/974
+# Copy custom ImageMagick policy to allow PDF processing.
+# See: https://github.com/makeabilitylab/makeabilitylabwebsite/issues/974
 COPY imagemagick-policy.xml /etc/ImageMagick-6/policy.xml
 
-# Run the process as our local user:
+# Set ownership so the apache user can write to necessary directories
+# (static files, migrations, media uploads, etc.)
+#
+# Note: On WSL2, you may still encounter permission errors. If so, ensure
+# you've run the chmod commands from CONTRIBUTING.md before building.
+RUN chown -R apache:apache /code/
+
+# Switch to non-root user for security.
+# All subsequent commands (and the running container) will use this user.
 USER apache
 
-COPY docker-entrypoint.sh docker-entrypoint.sh
-CMD ["/code/docker-entrypoint.sh"] 
+# Start the application via the entrypoint script, which handles
+# migrations, static file collection, and starting the dev server.
+CMD ["/code/docker-entrypoint.sh"]
