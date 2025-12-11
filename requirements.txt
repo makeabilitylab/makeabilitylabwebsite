@@ -1,4 +1,10 @@
+# =============================================================================
+# Python Requirements for Makeability Lab Website
+# =============================================================================
+#
 # Run `pip3 install -r requirements.txt` to install dependencies
+#
+# Compatible with: Python 3.13.x, Django 5.2.x
 #
 # If you want to view the installed Python packages on the Docker container:
 # 1. Make sure the Makeability Lab website container is running
@@ -9,37 +15,105 @@
 # If you need to install new packages in the Docker container, you can try:
 # 1. docker ps // this gets a list of current processes/containers running
 # 2. docker exec -it -u root <container_id> /bin/bash
-# 3. Then here, you can install a new package like: > pip3 install django==4.2.16 
+# 3. Then here, you can install a new package like: > pip3 install django==5.2.9
 #    or you could even run: > pip3 install -r requirements.txt
-# 
+#
 # You can also try to see which version of libraries are installed by running:
 # 1. docker run -it makelab_image bash
 # 2. pip3 list
 # Or even commands like: python -m django --version
+#
+# =============================================================================
+# UPGRADE NOTES (December 2025)
+# =============================================================================
+# Upgraded from Django 4.2.16 to Django 5.2.9 (LTS)
+# Upgraded from Python 3.11.6 to Python 3.13.x
+#
+# Key Django 5.2 changes to be aware of:
+# - PostgreSQL 14+ required (we use PostgreSQL 16, so we're good)
+# - MySQL connections now default to utf8mb4 character set
+# - See: https://docs.djangoproject.com/en/5.2/releases/5.2/
+# =============================================================================
 
-# Django upgrade notes: https://www.djangoproject.com/download/
-# Upgraded to 4.2.7 on 11/07/2023
-# Upgraded to 4.2.16 on 09/23/2024
-django==4.2.16 
+# -----------------------------------------------------------------------------
+# Core Framework
+# -----------------------------------------------------------------------------
+# Django 5.2 is an LTS release with support until April 2028
+# See: https://www.djangoproject.com/download/
+django==5.2.9
 
-django-debug-toolbar==4.2.0 # Used for debugging: https://django-debug-toolbar.readthedocs.io/en/latest/
-psycopg2==2.9.5 # Psycopg is the most popular PostgreSQL database adapter for Python. https://pypi.org/project/psycopg2/
-wand==0.6.10 # Used for generating thumbnails of PDFs and other image manipulation: https://pypi.org/project/Wand/
-Pillow==9.3.0 # Used for image manipulation: https://pypi.org/project/Pillow/
+# -----------------------------------------------------------------------------
+# Database
+# -----------------------------------------------------------------------------
+# PostgreSQL adapter - the most popular PostgreSQL database adapter for Python
+# Note: psycopg2 requires libpq-dev and python3-dev for building from source
+# See: https://pypi.org/project/psycopg2/
+psycopg2==2.9.11
 
-django-image-cropping==1.7 # Used for cropping images https://pypi.org/project/django-image-cropping/
-easy_thumbnails==2.8.3 # Used in concert with django-image-cropping to generate thumbnails https://pypi.org/project/easy-thumbnails/
-django-sortedm2m==3.1.1 # Used for SortedManyToManyFields: https://pypi.org/project/django-sortedm2m/
-djangorestframework==3.14 # JEF (Oct 16, 2023); we use this in urls.py but not sure if we need to. Needs to be checked
+# -----------------------------------------------------------------------------
+# Development & Debugging
+# -----------------------------------------------------------------------------
+# Django Debug Toolbar - useful for debugging queries, templates, etc.
+# See: https://django-debug-toolbar.readthedocs.io/en/latest/
+django-debug-toolbar==5.0.1
 
-pyOpenSSL==22.1.0
-requests==2.31.0
+# Django REST Framework - for API endpoints
+# See: https://www.django-rest-framework.org/
+djangorestframework==3.15.2
 
-django-sortedm2m-filter-horizontal-widget==2.0.1 # Used for SortedManyToManyFields in admin interface: https://pypi.org/project/django-sortedm2m-filter-horizontal-widget/
-django-ckeditor==6.5.1 # Used for news editor https://pypi.org/project/django-ckeditor/
+# -----------------------------------------------------------------------------
+# Image Processing
+# -----------------------------------------------------------------------------
+# Wand - ImageMagick binding for Python, used for PDF thumbnails
+# See: https://pypi.org/project/Wand/
+wand==0.6.13
 
-# bibtexparser==1.4.0 # We used to use this for importing data: https://pypi.org/project/bibtexparser/
-# beautifulsoup4==4.11.1 # JEF (Oct 16, 2023); not sure why/when we used this
-# django-extensions==3.2.1 # JEF (Oct 16, 2023); not sure why we want this
-# xmltodict==0.13.0 # JEF (Oct 16, 2023); we used to use this for importing data but no longer need it
+# Pillow - Python Imaging Library fork, for image manipulation
+# Note: Pillow 10.0+ dropped Python 3.7 support; 11.0+ dropped Python 3.8
+# See: https://pypi.org/project/Pillow/
+Pillow==11.1.0
 
+# Django Image Cropping - for cropping images in admin
+# Note: Last release Feb 2022, but should work with Django 5.2
+# See: https://pypi.org/project/django-image-cropping/
+django-image-cropping==1.7
+
+# Easy Thumbnails - thumbnail generation, works with django-image-cropping
+# See: https://pypi.org/project/easy-thumbnails/
+easy_thumbnails==2.10.1
+
+# -----------------------------------------------------------------------------
+# Admin & Forms
+# -----------------------------------------------------------------------------
+# Sorted Many-to-Many Field - for sortable M2M relationships
+# Note: Version 4.0.0 is required for Django 5.x compatibility
+# The built-in drag-and-drop admin widget still works; we just can't use
+# the filter_horizontal-style widget (django-sortedm2m-filter-horizontal-widget)
+# because it's unmaintained and incompatible with sortedm2m 4.x
+# See: https://pypi.org/project/django-sortedm2m/
+django-sortedm2m==4.0.0
+
+# NOTE: django-sortedm2m-filter-horizontal-widget has been REMOVED
+# It requires django-sortedm2m<4.0.0, which doesn't support Django 5.x
+# If you need the filter_horizontal styling, you'll need to either:
+#   1. Fork and update the widget package yourself
+#   2. Stay on Django 4.2 LTS (supported until April 2026)
+
+# Django CKEditor - rich text editor for news/content
+# WARNING: This package (despite being version 6.7.3) bundles CKEditor 4, which
+# is the underlying JavaScript editor. CKEditor 4 has reached end-of-life and
+# has unfixed security issues. Consider migrating to one of these alternatives:
+#   - django-ckeditor-5 (separate package that uses CKEditor 5 JS editor)
+#   - django-prose-editor
+# See: https://pypi.org/project/django-ckeditor/
+django-ckeditor==6.7.3
+
+
+# -----------------------------------------------------------------------------
+# Security & Networking
+# -----------------------------------------------------------------------------
+# pyOpenSSL - Python wrapper around OpenSSL
+pyOpenSSL==24.3.0
+
+# Requests - HTTP library for Python
+requests==2.32.3

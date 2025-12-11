@@ -181,7 +181,8 @@ INSTALLED_APPS = [
     'sortedm2m', # Used for SortedManyToManyFields in admin interface: https://pypi.org/project/django-sortedm2m-filter-horizontal-widget/
     'ckeditor', # Used for news page editing in admin interface: https://pypi.org/project/django-ckeditor/
     'ckeditor_uploader',
-    'sortedm2m_filter_horizontal_widget', # https://github.com/svleeuwen/sortedm2m-filter-horizontal-widget
+    
+    # 'sortedm2m_filter_horizontal_widget', # https://github.com/svleeuwen/sortedm2m-filter-horizontal-widget
     'rest_framework',
 
     # Adding django-debug-toolbar, which is recommended by Django

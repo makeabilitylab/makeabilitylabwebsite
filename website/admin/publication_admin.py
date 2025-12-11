@@ -9,7 +9,7 @@ from easy_thumbnails.files import get_thumbnailer # for generating thumbnails
 import os # for checking if thumbnail file exists
 
 from sortedm2m.fields import SortedManyToManyField
-from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
+# from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
 from website.admin import ArtifactAdmin
 
 from django.urls import reverse

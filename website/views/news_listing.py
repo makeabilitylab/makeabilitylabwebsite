@@ -4,7 +4,6 @@ import datetime
 import website.utils.ml_utils as ml_utils 
 from django.shortcuts import render
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.utils.timezone import utc
 
 # For logging
 import time
