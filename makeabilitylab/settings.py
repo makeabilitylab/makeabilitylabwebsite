@@ -182,7 +182,11 @@ INSTALLED_APPS = [
     'ckeditor', # Used for news page editing in admin interface: https://pypi.org/project/django-ckeditor/
     'ckeditor_uploader',
     
-    # 'sortedm2m_filter_horizontal_widget', # https://github.com/svleeuwen/sortedm2m-filter-horizontal-widget
+    # This sortedm2m_filter_horizontal_widget widget was originally from:
+    # https://github.com/svleeuwen/sortedm2m-filter-horizontal-widget
+    # However, it was incompatible with Django 5.2.9, so we forked it and made some changes.
+    # The new version is local to our project under the sortedm2m_filter_horizontal_widget directory.
+    'sortedm2m_filter_horizontal_widget', 
     'rest_framework',
 
     # Adding django-debug-toolbar, which is recommended by Django

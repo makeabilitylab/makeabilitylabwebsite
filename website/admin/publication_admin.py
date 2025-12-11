@@ -9,7 +9,7 @@ from easy_thumbnails.files import get_thumbnailer # for generating thumbnails
 import os # for checking if thumbnail file exists
 
 from sortedm2m.fields import SortedManyToManyField
-# from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
+from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
 from website.admin import ArtifactAdmin
 
 from django.urls import reverse
@@ -110,6 +110,17 @@ class PublicationAdmin(ArtifactAdmin):
         form.base_fields['talk'].widget.attrs['style'] = custom_style
         return form
     
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        """
+        Use the two-panel sorted filter widget for the authors field.
+        
+        This replaces the default sortedm2m checkbox list with a filter_horizontal
+        style interface that's much easier to use with 100s of authors.
+        """
+        if db_field.name == 'authors':
+            kwargs['widget'] = SortedFilteredSelectMultiple()
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         """
         Customize the form field for foreign key relationships in the admin interface.
