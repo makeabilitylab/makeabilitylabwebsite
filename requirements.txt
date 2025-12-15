@@ -116,4 +116,4 @@ django-ckeditor==6.7.3
 pyOpenSSL==24.3.0
 
 # Requests - HTTP library for Python
-requests==2.32.3
+requests==2.32.4
