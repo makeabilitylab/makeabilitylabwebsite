@@ -5,10 +5,12 @@
  * with ordering controls. Based on Django admin's SelectFilter2 but
  * with added support for maintaining selection order.
  *
- * @version 2.1.0 - Django 5.x compatible
+ * @version 2.1.1 - Django 5.x compatible
  * @requires OrderedSelectBox.js
  * @requires Django admin's core.js (for quickElement, gettext, interpolate)
  */
+
+console.log('[OrderedSelectBox] Loaded version 2.1.1 - 2025-12-15');
 
 /**
  * Find the form element containing a given node.

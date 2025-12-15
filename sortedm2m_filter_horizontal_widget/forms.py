@@ -28,7 +28,14 @@ from django.db.models.query import QuerySet
 from django.utils.encoding import force_str
 from django.utils.html import conditional_escape, escape, escapejs
 from django.utils.safestring import mark_safe
+import logging
 
+logger = logging.getLogger(__name__)
+
+# Version identifier for debugging deployment issues
+_WIDGET_VERSION = "2.1.1 2025-12-15"
+logger.info(f"[sortedm2m_filter_horizontal_widget] Loaded forms.py version {_WIDGET_VERSION}")
+print(f"[sortedm2m_filter_horizontal_widget] Loaded forms.py version {_WIDGET_VERSION}")
 
 class SortedMultipleChoiceField(forms.ModelMultipleChoiceField):
     """

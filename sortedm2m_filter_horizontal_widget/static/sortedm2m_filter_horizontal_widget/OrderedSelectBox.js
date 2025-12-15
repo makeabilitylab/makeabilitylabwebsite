@@ -6,9 +6,11 @@
  *
  * Used by OrderedSelectFilter for the sorted many-to-many widget.
  *
- * @version 2.1.0 - jQuery-free version for Django 5.x
+ * @version 2.1.1 - jQuery-free version for Django 5.x
  * @requires None (vanilla JavaScript)
  */
+
+console.log('[OrderedSelectBox] Loaded version 2.1.1 - 2025-12-15');
 
 var OrderedSelectBox = {
   /**
