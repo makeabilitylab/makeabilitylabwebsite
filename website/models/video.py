@@ -11,7 +11,7 @@ class Video(models.Model):
     caption = models.CharField(max_length=255, blank=True, null=True)
     date = models.DateField(null=True)
 
-    projects = models.ManyToManyField('Project', blank=True, null=True, related_name='videos')
+    projects = models.ManyToManyField('Project', blank=True, related_name='videos')
     #project = models.ForeignKey('Project', blank=True, null=True, on_delete=models.SET_NULL)
 
     def get_video_host_str(self):

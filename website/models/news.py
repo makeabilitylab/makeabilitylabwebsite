@@ -59,9 +59,9 @@ class News(models.Model):
     alt_text = models.CharField(max_length=1024, blank=True, null=True)
 
     # Set related projects to this news post
-    project = models.ManyToManyField(Project, blank=True, null=True)
+    project = models.ManyToManyField(Project, blank=True)
     project.help_text = "Manually add any projects that are related to this news item, which allows the news item to show on the appropriate project pages"
-    people = models.ManyToManyField(Person, blank=True, null=True, related_name='related_news')
+    people = models.ManyToManyField(Person, blank=True, related_name='related_news')
     people.help_text = "Manually add any people that are related to this news item, which allows the news item to show on the appropriate people pages"
 
     @property

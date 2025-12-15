@@ -6,7 +6,7 @@
 # See: https://hub.docker.com/_/django/
 # 
 # So, instead, we start from an official Docker-created base image of Python.
-FROM python:3.11.6
+FROM python:3.13.1
 
 RUN echo "Building the Makeability Lab Docker image..."
 

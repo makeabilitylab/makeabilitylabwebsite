@@ -72,7 +72,7 @@ else:
     ALLOWED_HOSTS = ['*']
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "1.9.5 (trying to fix the YouTube embed issue)"
+ML_WEBSITE_VERSION = "1.9.6 (upgraded to Django 5.2.9)" # Makeability Lab website version
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
@@ -181,7 +181,12 @@ INSTALLED_APPS = [
     'sortedm2m', # Used for SortedManyToManyFields in admin interface: https://pypi.org/project/django-sortedm2m-filter-horizontal-widget/
     'ckeditor', # Used for news page editing in admin interface: https://pypi.org/project/django-ckeditor/
     'ckeditor_uploader',
-    'sortedm2m_filter_horizontal_widget', # https://github.com/svleeuwen/sortedm2m-filter-horizontal-widget
+    
+    # This sortedm2m_filter_horizontal_widget widget was originally from:
+    # https://github.com/svleeuwen/sortedm2m-filter-horizontal-widget
+    # However, it was incompatible with Django 5.2.9, so we forked it and made some changes.
+    # The new version is local to our project under the sortedm2m_filter_horizontal_widget directory.
+    'sortedm2m_filter_horizontal_widget', 
     'rest_framework',
 
     # Adding django-debug-toolbar, which is recommended by Django

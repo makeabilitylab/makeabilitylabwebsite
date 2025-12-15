@@ -2,43 +2,43 @@ from datetime import timedelta
 import re
 
 def humanize_duration(duration, sig_figs=1, use_abbreviated_units=False):
-    # Convert the duration to fractional years, months, or weeks
+    """Convert the duration to fractional years, months, weeks, or days"""
     duration_str = ""
-    if duration >= timedelta(days=365):
-        # If the duration is more than or equal to 1 year, convert it to fractional years
-        total_time_in_years = duration.total_seconds() / (60 * 60 * 24 * 365)
-        duration_str = f"{total_time_in_years:.{sig_figs}f}"
-        duration_str += " years" if not use_abbreviated_units else " yrs" 
-    elif duration >= timedelta(days=30):
-        # If the duration is more than or equal to 1 month but less than 1 year, convert it to fractional months
-        total_time_in_months = duration.total_seconds() / (60 * 60 * 24 * 30)
-        duration_str = f"{total_time_in_months:.{sig_figs}f}"
-        duration_str += " months" if not use_abbreviated_units else " mos"
-    else:
-        # If the duration is less than 1 month, convert it to fractional weeks
-        total_time_in_weeks = duration.total_seconds() / (60 * 60 * 24 * 7)
-        duration_str = f"{total_time_in_weeks:.{sig_figs}f}"
-
-        duration_str += " weeks" if not use_abbreviated_units else " wks"
+    total_seconds = duration.total_seconds()
     
+    if duration >= timedelta(days=365):
+        val = total_seconds / (60 * 60 * 24 * 365)
+        unit = "yrs" if use_abbreviated_units else "years"
+    elif duration >= timedelta(days=30):
+        val = total_seconds / (60 * 60 * 24 * 30)
+        unit = "mos" if use_abbreviated_units else "months"
+    elif duration >= timedelta(days=7):
+        val = total_seconds / (60 * 60 * 24 * 7)
+        unit = "wks" if use_abbreviated_units else "weeks"
+    else:
+        # Fallback for durations less than a week
+        val = total_seconds / (60 * 60 * 24)
+        unit = "days" # You could abbreviate to 'd' if preferred
+
+    # Simple logic to remove ".0" if sig_figs is 0 or if you prefer clean integers
+    duration_str = f"{val:.{sig_figs}f} {unit}"
     return duration_str
 
 def ends_with_year(s):
     """Check if the string s ends with a four-digit year"""
+    if s is None:
+        return False
 
-    # The following regex included a `\b` word boundary anchor. So, it ensures that the
-    # four-digit number is a separate word. We don't want that. 
-    # Old: if re.search(r'\b\d{4}\b$', s):
-    # This regex is simpler, it simply has `\d{4}$` which matches exactly four digits
-    # and '$', which asserts that the match position be at the end of the string
+    # Note: \d{4}$ is greedy. It will match "User1234" as having a year.
     if re.search(r'\d{4}$', s):
         return True
     return False
 
 def remove_trailing_year(s):
     """Check if the string s ends with a four-digit year. If so, remove it."""
+    if s is None:
+        return "" # or return None, depending on preference
 
-    # Check if the string ends with a four-digit year
     match = re.search(r'\d{4}$', s)
     if match:
         # Remove the year and any trailing whitespace

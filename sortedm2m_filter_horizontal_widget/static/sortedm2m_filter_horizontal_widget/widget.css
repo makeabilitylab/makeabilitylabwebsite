@@ -1,0 +1,345 @@
+/**
+ * Sorted M2M Filter Horizontal Widget Styles
+ *
+ * Styles for the two-panel filter interface with ordering controls.
+ * Designed to match Django admin's visual style.
+ *
+ * @version 2.1.0 - Django 5.x compatible, no external image dependencies
+ */
+
+/* ============================================
+   Base selector container
+   ============================================ */
+
+.selector {
+  width: 860px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.selector.stacked {
+  display: block;
+  width: 400px;
+}
+
+.selector.stacked .selector-available,
+.selector.stacked .selector-chosen {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+/* ============================================
+   Available & Chosen panels
+   ============================================ */
+
+.selector .selector-available,
+.selector .selector-chosen {
+  width: 380px;
+}
+
+.selector .selector-available h2,
+.selector .selector-chosen h2 {
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 8px;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.selector .selector-available select,
+.selector .selector-chosen select {
+  width: 100%;
+  height: 200px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border-color, #ccc);
+  border-top: none;
+}
+
+.selector .selector-available select option,
+.selector .selector-chosen select option {
+  padding: 4px 8px;
+}
+
+/* ============================================
+   Filter input
+   ============================================ */
+
+.selector .selector-filter {
+  background: var(--darkened-bg, #f8f8f8);
+  border: 1px solid var(--border-color, #ccc);
+  border-top: none;
+  padding: 8px;
+  margin: 0;
+}
+
+.selector .selector-filter label {
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.selector .selector-filter input {
+  width: calc(100% - 30px);
+  padding: 6px 8px;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.selector .selector-filter input:focus {
+  outline: none;
+  border-color: var(--primary, #79aec8);
+  box-shadow: 0 0 0 2px rgba(121, 174, 200, 0.25);
+}
+
+/* Help/tooltip icons */
+.selector .help-tooltip {
+  cursor: help;
+}
+
+/* ============================================
+   Choose All / Remove All links
+   ============================================ */
+
+.selector .selector-chooseall,
+.selector .selector-clearall {
+  display: block;
+  padding: 8px;
+  background: var(--darkened-bg, #f8f8f8);
+  border: 1px solid var(--border-color, #ccc);
+  border-top: none;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--body-quiet-color, #666);
+  text-decoration: none;
+}
+
+.selector .selector-chooseall:hover,
+.selector .selector-clearall:hover {
+  background: var(--border-color, #ddd);
+  color: var(--body-fg, #333);
+}
+
+.selector .selector-chooseall:not(.active),
+.selector .selector-clearall:not(.active) {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ============================================
+   Unified Control Buttons (Transfer & Ordering)
+   ============================================ */
+
+/* Button containers */
+.selector ul.selector-chooser,
+.selector ul.selector-ordering {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  padding: 0;
+  margin: 60px 5px 0 5px;
+  list-style: none;
+}
+
+.selector ul.selector-chooser li,
+.selector ul.selector-ordering li {
+  margin: 4px 0;
+}
+
+/* Base button styles */
+.selector .selector-add,
+.selector .selector-remove,
+.selector .selector-up,
+.selector .selector-down {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-weight: bold;
+  line-height: 1;
+  text-indent: 0 !important;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Inactive state (default) */
+.selector a:not(.active) {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  color: #ccc;
+  cursor: default;
+  opacity: 0.6;
+}
+
+/* Active state (when items are selected) */
+.selector a.active {
+  background: #fff;
+  border: 1px solid #999;
+  color: #333;
+  cursor: pointer;
+  opacity: 1.0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Hover state (only applies to active buttons) */
+.selector a.active:hover {
+  background: #79aec8;
+  color: white;
+  border-color: #79aec8;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================
+   Dark mode support (Django 4.1+)
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  /* Button states in dark mode */
+  .selector a:not(.active) {
+    background: #2b2b2b;
+    border-color: #444;
+    color: #555;
+  }
+
+  .selector a.active {
+    background: #444;
+    border-color: #666;
+    color: #eee;
+  }
+
+  .selector a.active:hover {
+    background: #609ab6;
+    border-color: #609ab6;
+  }
+
+  /* Panel headers in dark mode */
+  .selector .selector-available h2,
+  .selector .selector-chosen h2 {
+    background: var(--primary, #264b5d);
+  }
+}
+
+/* Support for Django's explicit dark theme toggle */
+html[data-theme="dark"] .selector a:not(.active) {
+  background: #2b2b2b;
+  border-color: #444;
+  color: #555;
+}
+
+html[data-theme="dark"] .selector a.active {
+  background: #444;
+  border-color: #666;
+  color: #eee;
+}
+
+html[data-theme="dark"] .selector a.active:hover {
+  background: #609ab6;
+  border-color: #609ab6;
+}
+
+html[data-theme="dark"] .selector .selector-available h2,
+html[data-theme="dark"] .selector .selector-chosen h2 {
+  background: var(--primary, #264b5d);
+}
+
+/* ============================================
+   Responsive styles
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .selector {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .selector .selector-available,
+  .selector .selector-chosen {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .selector ul.selector-chooser,
+  .selector ul.selector-ordering {
+    flex-direction: row;
+    width: 100%;
+    margin: 10px 0;
+    justify-content: center;
+  }
+
+  .selector .selector-chooser li,
+  .selector .selector-ordering li {
+    margin: 0 5px;
+  }
+}
+
+/* ============================================
+   Legacy support - original widget classes
+   
+   These styles maintain compatibility with the
+   original sortedm2m widget markup structure.
+   ============================================ */
+
+.sortedm2m-container {
+  margin-right: 10px;
+  width: 570px;
+}
+
+.sortedm2m-container p.selector-filter {
+  width: 570px;
+  padding: 0;
+  margin: 0;
+}
+
+.sortedm2m-container p.selector-filter input {
+  width: 532px;
+  margin: 5px 4px;
+}
+
+ul.sortedm2m {
+  display: block;
+  width: 554px;
+  min-height: 200px;
+  max-height: 400px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  margin: 0;
+  padding: 6px 8px;
+  list-style-type: none;
+  text-align: left;
+}
+
+ul.sortedm2m li {
+  list-style-type: none;
+  text-align: left;
+  width: 550px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: pre;
+}
+
+ul.sortedm2m li,
+ul.sortedm2m label {
+  cursor: move;
+}
+
+/* Required for proper float behavior in Django admin */
+body.change-form .sortedm2m-container {
+  float: left;
+}
+
+.module ul.sortedm2m {
+  margin: 0;
+  padding: 6px 8px;
+}
+
+/* Utility class */
+.hide {
+  display: none;
+}
