@@ -1,5 +1,5 @@
 """
-Sorted Filter Horizontal Widget - Django 5.x Compatible Version
+Sorted Filter Horizontal Widget - Django 5.x Compatible Version.
 
 A fixed/updated version of django-sortedm2m-filter-horizontal-widget that works
 with Django 5.x. Original: https://github.com/svleeuwen/sortedm2m-filter-horizontal-widget
@@ -9,6 +9,7 @@ Changes from original:
 - Removed deprecated ADMIN_MEDIA_PREFIX usage
 - Fixed Media class to use proper static file references
 - Updated render() signature for Django 4.0+ (renderer parameter)
+- Added proper JavaScript escaping to prevent XSS vulnerabilities
 - Minor code cleanup and Python 3.10+ compatibility
 
 Usage:
@@ -21,13 +22,11 @@ Usage:
             return super().formfield_for_manytomany(db_field, request, **kwargs)
 """
 
-from itertools import chain
-
 from django import forms
 from django.conf import settings
 from django.db.models.query import QuerySet
 from django.utils.encoding import force_str
-from django.utils.html import conditional_escape, escape
+from django.utils.html import conditional_escape, escape, escapejs
 from django.utils.safestring import mark_safe
 
 
@@ -37,9 +36,24 @@ class SortedMultipleChoiceField(forms.ModelMultipleChoiceField):
 
     Works with django-sortedm2m's SortedManyToManyField to maintain
     the order in which items were selected/arranged.
+
+    Example:
+        >>> field = SortedMultipleChoiceField(
+        ...     queryset=Author.objects.all(),
+        ...     is_stacked=False
+        ... )
     """
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the field with an optional is_stacked parameter.
+
+        Args:
+            *args: Positional arguments passed to parent class.
+            **kwargs: Keyword arguments. Special handling for:
+                - is_stacked (bool): If True, stack panels vertically.
+                - widget: Custom widget (defaults to SortedFilteredSelectMultiple).
+        """
         if not kwargs.get("widget"):
             kwargs["widget"] = SortedFilteredSelectMultiple(
                 is_stacked=kwargs.pop("is_stacked", False)
@@ -52,6 +66,12 @@ class SortedMultipleChoiceField(forms.ModelMultipleChoiceField):
 
         Returns a list of model instances in the order they were selected,
         rather than the default queryset ordering.
+
+        Args:
+            value: The submitted form value (list of PKs).
+
+        Returns:
+            list: Model instances in selection order.
         """
         queryset = super().clean(value)
         if value is None or not isinstance(queryset, QuerySet):
@@ -61,7 +81,16 @@ class SortedMultipleChoiceField(forms.ModelMultipleChoiceField):
         return [object_dict[str(pk)] for pk in value if str(pk) in object_dict]
 
     def has_changed(self, initial, data):
-        """Check if the field value has changed, considering order."""
+        """
+        Check if the field value has changed, considering order.
+
+        Args:
+            initial: Initial value.
+            data: Submitted data.
+
+        Returns:
+            bool: True if the value or order has changed.
+        """
         if initial is None:
             initial = []
         if data is None:
@@ -80,8 +109,9 @@ class SortedFilteredSelectMultiple(forms.SelectMultiple):
     Displays a two-panel interface similar to Django admin's filter_horizontal,
     but with additional up/down buttons for ordering the selected items.
 
-    Requires jQuery and Django admin's JavaScript utilities to be loaded.
-    The widget automatically includes the necessary static files.
+    The widget automatically includes the necessary static files. It requires
+    Django admin's JavaScript utilities (quickElement, gettext) to be loaded,
+    which are automatically available in the admin interface.
 
     Attributes:
         is_stacked: If True, displays panels vertically instead of horizontally.
@@ -96,6 +126,8 @@ class SortedFilteredSelectMultiple(forms.SelectMultiple):
     """
 
     class Media:
+        """Define static files required by the widget."""
+
         css = {
             "screen": ("sortedm2m_filter_horizontal_widget/widget.css",)
         }
@@ -109,9 +141,9 @@ class SortedFilteredSelectMultiple(forms.SelectMultiple):
         Initialize the widget.
 
         Args:
-            is_stacked: If True, stack panels vertically (default: False)
-            attrs: Additional HTML attributes for the select element
-            choices: Initial choices (usually set by the form field)
+            is_stacked: If True, stack panels vertically (default: False).
+            attrs: Additional HTML attributes for the select element.
+            choices: Initial choices (usually set by the form field).
         """
         self.is_stacked = is_stacked
         super().__init__(attrs, choices)
@@ -124,11 +156,11 @@ class SortedFilteredSelectMultiple(forms.SelectMultiple):
         and optionally 'stacked' class for styling.
 
         Args:
-            base_attrs: Base attributes from the widget
-            extra_attrs: Additional attributes to merge
+            base_attrs: Base attributes from the widget.
+            extra_attrs: Additional attributes to merge.
 
         Returns:
-            dict: Merged attributes dictionary
+            dict: Merged attributes dictionary.
         """
         attrs = super().build_attrs(base_attrs, extra_attrs)
         classes = attrs.get("class", "").split()
@@ -146,13 +178,13 @@ class SortedFilteredSelectMultiple(forms.SelectMultiple):
         into the two-panel filter interface with ordering controls.
 
         Args:
-            name: The field name
-            value: Current selected values (list of PKs)
-            attrs: Additional HTML attributes
-            renderer: The form renderer (Django 4.0+)
+            name: The field name.
+            value: Current selected values (list of PKs).
+            attrs: Additional HTML attributes.
+            renderer: The form renderer (Django 4.0+).
 
         Returns:
-            SafeString: The complete widget HTML including initialization script
+            SafeString: The complete widget HTML including initialization script.
         """
         if attrs is None:
             attrs = {}
@@ -172,7 +204,7 @@ class SortedFilteredSelectMultiple(forms.SelectMultiple):
         final_attrs["id"] = widget_id
 
         # Build the select element
-        output = [f'<select multiple="multiple"']
+        output = ['<select multiple="multiple"']
         for attr_name, attr_value in final_attrs.items():
             output.append(f' {attr_name}="{escape(str(attr_value))}"')
         output.append(">")
@@ -187,19 +219,27 @@ class SortedFilteredSelectMultiple(forms.SelectMultiple):
 
         output.append("</select>")
 
+        # Escape values for safe JavaScript insertion (prevents XSS)
+        safe_widget_id = escapejs(widget_id)
+        safe_verbose_name = escapejs(verbose_name)
+        safe_admin_static = escapejs(admin_static)
+        is_stacked_js = "true" if self.is_stacked else "false"
+
         # Add initialization script (runs after page load)
         output.append('<script>window.addEventListener("load", function(e) {')
         output.append(
-            f"OrderedSelectFilter.init('{widget_id}', '{verbose_name}', "
-            f"{int(self.is_stacked)}, '{admin_static}')"
+            f"OrderedSelectFilter.init('{safe_widget_id}', '{safe_verbose_name}', "
+            f"{is_stacked_js}, '{safe_admin_static}')"
         )
         output.append("});</script>\n")
 
         # Add script for handling dynamically added formsets (inlines)
+        # This requires jQuery (django.jQuery) which is available in Django admin
         output.append(
             f"""
         <script>
         (function($) {{
+            if (!$) return;  // Guard against missing jQuery
             $(document).ready(function() {{
                 var updateOrderedSelectFilter = function() {{
                     if (typeof OrderedSelectFilter !== "undefined") {{
@@ -207,12 +247,12 @@ class SortedFilteredSelectMultiple(forms.SelectMultiple):
                             // Skip if already initialized (has _from suffix)
                             if (value.id.endsWith('_from')) return;
                             var namearr = value.name.split('-');
-                            OrderedSelectFilter.init(value.id, namearr[namearr.length-1], false, "{admin_static}");
+                            OrderedSelectFilter.init(value.id, namearr[namearr.length-1], false, '{safe_admin_static}');
                         }});
                         $(".sortedm2mstacked").each(function(index, value) {{
                             if (value.id.endsWith('_from')) return;
                             var namearr = value.name.split('-');
-                            OrderedSelectFilter.init(value.id, namearr[namearr.length-1], true, "{admin_static}");
+                            OrderedSelectFilter.init(value.id, namearr[namearr.length-1], true, '{safe_admin_static}');
                         }});
                     }}
                 }};
@@ -234,22 +274,23 @@ class SortedFilteredSelectMultiple(forms.SelectMultiple):
         their order when the widget initializes.
 
         Args:
-            selected_choices: List of currently selected values (as strings)
-            option_value: The option's value
-            option_label: The option's display label
+            selected_choices: List of currently selected values (as strings).
+            option_value: The option's value.
+            option_label: The option's display label.
 
         Returns:
-            str: HTML for the option element
+            str: HTML for the option element.
         """
-        option_value = force_str(option_value)
-        escaped_value = escape(option_value)
+        option_value_str = force_str(option_value)
+        escaped_value = escape(option_value_str)
         escaped_label = conditional_escape(force_str(option_label))
 
         # Check if selected and get sort order
-        if option_value in selected_choices:
+        if option_value_str in selected_choices:
             selected_html = ' selected="selected"'
             try:
-                index = selected_choices.index(escaped_value)
+                # Use the string version for index lookup to match the list
+                index = selected_choices.index(option_value_str)
                 selected_html = f' data-sort-value="{index}"{selected_html}'
             except ValueError:
                 pass
@@ -263,10 +304,10 @@ class SortedFilteredSelectMultiple(forms.SelectMultiple):
         Render all option elements.
 
         Args:
-            selected_choices: List of currently selected values
+            selected_choices: List of currently selected values.
 
         Returns:
-            str: HTML for all option elements
+            str: HTML for all option elements.
         """
         # Normalize selected choices to strings
         selected_choices = [force_str(v) for v in (selected_choices or [])]
@@ -293,11 +334,11 @@ class SortedFilteredSelectMultiple(forms.SelectMultiple):
         this also checks if the order has changed.
 
         Args:
-            initial: Initial value
-            data: Submitted data
+            initial: Initial value.
+            data: Submitted data.
 
         Returns:
-            bool: True if the value or order has changed
+            bool: True if the value or order has changed.
         """
         if initial is None:
             initial = []

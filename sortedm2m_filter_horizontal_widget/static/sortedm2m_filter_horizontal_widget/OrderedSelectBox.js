@@ -1,19 +1,20 @@
 /**
- * OrderedSelectBox - Manage select box contents with ordering support
+ * OrderedSelectBox - Manage select box contents with ordering support.
  *
  * Provides caching and manipulation of select box options, including
  * filtering, moving between boxes, and reordering.
  *
  * Used by OrderedSelectFilter for the sorted many-to-many widget.
  *
- * @version 2.0.0 - jQuery-free version for Django 5.x
+ * @version 2.1.0 - jQuery-free version for Django 5.x
+ * @requires None (vanilla JavaScript)
  */
 
 var OrderedSelectBox = {
   /**
    * Cache of select box contents.
    * Keys are select element IDs, values are arrays of option objects.
-   * @type {Object.<string, Array>}
+   * @type {Object.<string, Array<{value: string, text: string, displayed: boolean, order: number}>>}
    */
   cache: {},
 
@@ -21,10 +22,13 @@ var OrderedSelectBox = {
    * Initialize the cache for a select box.
    *
    * @param {string} id - The select element ID
+   * @returns {void}
    */
   init: function(id) {
     var box = document.getElementById(id);
-    if (!box) return;
+    if (!box) {
+      return;
+    }
 
     OrderedSelectBox.cache[id] = [];
 
@@ -39,10 +43,13 @@ var OrderedSelectBox = {
    * Only shows items marked as 'displayed'.
    *
    * @param {string} id - The select element ID
+   * @returns {void}
    */
   redisplay: function(id) {
     var box = document.getElementById(id);
-    if (!box) return;
+    if (!box) {
+      return;
+    }
 
     // Clear existing options
     box.options.length = 0;
@@ -63,6 +70,11 @@ var OrderedSelectBox = {
    *
    * @param {string} id - The select element ID
    * @param {string} text - Filter text (space-separated words)
+   * @returns {void}
+   *
+   * @example
+   * // Filter to show only options containing both "john" and "doe"
+   * OrderedSelectBox.filter('my_select', 'john doe');
    */
   filter: function(id, text) {
     var tokens = text.toLowerCase().split(/\s+/);
@@ -91,17 +103,22 @@ var OrderedSelectBox = {
    *
    * @param {string} id - The select element ID
    * @param {HTMLOptionElement} option - The option element to add
+   * @returns {void}
    */
   add_to_cache: function(id, option) {
     if (!OrderedSelectBox.cache[id]) {
       OrderedSelectBox.cache[id] = [];
     }
 
-    // Get sort order from data attribute
+    // Get sort order from data attribute, defaulting to 0
     var order = 0;
     var sortValue = option.getAttribute('data-sort-value');
-    if (sortValue) {
-      order = parseInt(sortValue, 10);
+    if (sortValue !== null && sortValue !== '') {
+      var parsed = parseInt(sortValue, 10);
+      // Only use parsed value if it's a valid number
+      if (!isNaN(parsed)) {
+        order = parsed;
+      }
     }
 
     OrderedSelectBox.cache[id].push({
@@ -122,6 +139,7 @@ var OrderedSelectBox = {
    *
    * @param {string} id - The select element ID
    * @param {string} value - The option value to remove
+   * @returns {void}
    */
   delete_from_cache: function(id, value) {
     var cache = OrderedSelectBox.cache[id] || [];
@@ -153,22 +171,36 @@ var OrderedSelectBox = {
   },
 
   /**
+   * Reset order values in the cache to zero.
+   * Used before moving items to ensure proper append behavior.
+   *
+   * @param {string} id - The select element ID
+   * @private
+   */
+  _reset_order_values: function(id) {
+    var cache = OrderedSelectBox.cache[id] || [];
+    for (var i = 0; i < cache.length; i++) {
+      cache[i].order = 0;
+    }
+  },
+
+  /**
    * Move selected options from one select to another.
    *
    * @param {string} from - Source select element ID
    * @param {string} to - Destination select element ID
+   * @returns {void}
    */
   move: function(from, to) {
     var from_box = document.getElementById(from);
     var to_box = document.getElementById(to);
 
-    if (!from_box || !to_box) return;
+    if (!from_box || !to_box) {
+      return;
+    }
 
     // Reset order values in destination (items are appended in order)
-    var to_cache = OrderedSelectBox.cache[to] || [];
-    for (var i = 0; i < to_cache.length; i++) {
-      to_cache[i].order = 0;
-    }
+    OrderedSelectBox._reset_order_values(to);
 
     // Move selected items
     for (var i = 0; i < from_box.options.length; i++) {
@@ -188,11 +220,17 @@ var OrderedSelectBox = {
    *
    * @param {string} from - Source select element ID
    * @param {string} to - Destination select element ID
+   * @returns {void}
    */
   move_all: function(from, to) {
     var from_box = document.getElementById(from);
 
-    if (!from_box) return;
+    if (!from_box) {
+      return;
+    }
+
+    // Reset order values in destination for consistent behavior with move()
+    OrderedSelectBox._reset_order_values(to);
 
     // Move all visible items
     for (var i = 0; i < from_box.options.length; i++) {
@@ -208,9 +246,10 @@ var OrderedSelectBox = {
   },
 
   /**
-   * Sort the cache alphabetically by text.
+   * Sort the cache alphabetically by text and redisplay.
    *
    * @param {string} id - The select element ID
+   * @returns {void}
    */
   sort: function(id) {
     var cache = OrderedSelectBox.cache[id] || [];
@@ -222,16 +261,22 @@ var OrderedSelectBox = {
       if (aText < bText) return -1;
       return 0;
     });
+
+    // Redisplay to reflect the new order
+    OrderedSelectBox.redisplay(id);
   },
 
   /**
    * Move selected options up in the list.
    *
    * @param {string} id - The select element ID
+   * @returns {void}
    */
   orderUp: function(id) {
     var box = document.getElementById(id);
-    if (!box) return;
+    if (!box) {
+      return;
+    }
 
     // Get selected indices
     var selected = [];
@@ -274,10 +319,13 @@ var OrderedSelectBox = {
    * Move selected options down in the list.
    *
    * @param {string} id - The select element ID
+   * @returns {void}
    */
   orderDown: function(id) {
     var box = document.getElementById(id);
-    if (!box) return;
+    if (!box) {
+      return;
+    }
 
     // Get selected indices (in reverse order for proper processing)
     var selected = [];
@@ -321,10 +369,13 @@ var OrderedSelectBox = {
    * Used after reordering to ensure cache matches visible order.
    *
    * @param {string} id - The select element ID
+   * @returns {void}
    */
   sync_cache_from_dom: function(id) {
     var box = document.getElementById(id);
-    if (!box) return;
+    if (!box) {
+      return;
+    }
 
     OrderedSelectBox.cache[id] = [];
     for (var i = 0; i < box.options.length; i++) {
@@ -342,10 +393,13 @@ var OrderedSelectBox = {
    * Called before form submission to ensure all chosen items are submitted.
    *
    * @param {string} id - The select element ID
+   * @returns {void}
    */
   select_all: function(id) {
     var box = document.getElementById(id);
-    if (!box) return;
+    if (!box) {
+      return;
+    }
 
     for (var i = 0; i < box.options.length; i++) {
       box.options[i].selected = true;
@@ -359,42 +413,157 @@ var OrderedSelectBox = {
  * When adding a related object via the popup, the new item needs to be added
  * to the OrderedSelectBox cache, not just the raw select element.
  */
-if (typeof window.showAddAnotherPopup !== 'undefined' || typeof window.showRelatedObjectPopup !== 'undefined') {
-  // Store original function
-  var originalDismissAddRelatedObjectPopup = window.dismissAddRelatedObjectPopup;
+(function() {
+  'use strict';
 
-  window.dismissAddRelatedObjectPopup = function(win, newId, newRepr) {
-    // Get the target element name from the popup window name
-    var name = win.name.replace(/^add_/, '').replace(/_\d+$/, '');
+  /**
+   * Find an OrderedSelectBox element by various lookup strategies.
+   * Returns the "_from" select element if found, otherwise null.
+   *
+   * @param {string} windowName - The popup window name (e.g., "add_id_authors_12345")
+   * @returns {HTMLSelectElement|null} The matching select element or null
+   */
+  function findOrderedSelectBoxElement(windowName) {
+    // Extract base name from window name (remove "add_" prefix and trailing "_<digits>")
+    var name = windowName.replace(/^add_/, '').replace(/_+\d+$/, '');
 
-    // Try to find the element - might be the _from version
+    console.log('[OrderedSelectBox] Looking for element, windowName:', windowName, '-> parsed name:', name);
+
+    // Strategy 1: Direct ID lookup (for non-transformed elements)
     var elem = document.getElementById(name);
-    if (!elem) {
-      elem = document.getElementById(name + '_from');
+    if (elem && elem.classList.contains('filtered')) {
+      console.log('[OrderedSelectBox] Found via Strategy 1 (direct ID):', elem.id);
+      return elem;
     }
 
-    if (!elem) {
-      // Fall back to finding by name attribute
-      var selects = document.querySelectorAll('select[name="' + name + '_old"]');
-      if (selects.length > 0) {
-        elem = selects[0];
+    // Strategy 2: Look for the "_from" version (our widget renames the original)
+    elem = document.getElementById(name + '_from');
+    if (elem && elem.classList.contains('filtered')) {
+      console.log('[OrderedSelectBox] Found via Strategy 2 (_from suffix):', elem.id);
+      return elem;
+    }
+
+    // Strategy 3: Find by name attribute with "_old" suffix
+    // (our widget changes the name from "fieldname" to "fieldname_old")
+    var selects = document.querySelectorAll('select.filtered[name$="_old"]');
+    console.log('[OrderedSelectBox] Strategy 3: Found', selects.length, 'select.filtered[name$="_old"] elements');
+    for (var i = 0; i < selects.length; i++) {
+      var selectName = selects[i].getAttribute('name');
+      // Strip "_old" and check if it matches
+      var baseName = selectName.replace(/_old$/, '');
+      console.log('[OrderedSelectBox] Strategy 3: Checking', selectName, '-> baseName:', baseName);
+      // The name attribute won't have "id_" prefix, so check both
+      if (baseName === name || 'id_' + baseName === name) {
+        console.log('[OrderedSelectBox] Found via Strategy 3 (name attribute):', selects[i].id);
+        return selects[i];
       }
     }
 
-    if (elem && elem.className.indexOf('filtered') !== -1) {
-      // This is an OrderedSelectBox - add to the "to" (chosen) box
-      var toId = elem.id.replace('_from', '_to');
-      if (toId === elem.id) {
-        toId = elem.id + '_to';
+    // Strategy 4: Check if any of our cached elements match
+    // This handles cases where ID patterns don't match expectations
+    console.log('[OrderedSelectBox] Strategy 4: Checking cache keys:', Object.keys(OrderedSelectBox.cache));
+    for (var cacheId in OrderedSelectBox.cache) {
+      if (OrderedSelectBox.cache.hasOwnProperty(cacheId) && cacheId.endsWith('_from')) {
+        var baseId = cacheId.replace(/_from$/, '');
+        // Check if the base ID is related to the window name
+        if (name === baseId || name.endsWith(baseId) || baseId.endsWith(name)) {
+          elem = document.getElementById(cacheId);
+          if (elem && elem.classList.contains('filtered')) {
+            console.log('[OrderedSelectBox] Found via Strategy 4 (cache inspection):', elem.id);
+            return elem;
+          }
+        }
+      }
+    }
+
+    console.warn('[OrderedSelectBox] No element found for windowName:', windowName);
+    return null;
+  }
+
+  /**
+   * Set up the popup override once Django's functions are available.
+   */
+  var setupPopupOverride = function() {
+    // Check if popup functions exist
+    if (typeof window.dismissAddRelatedObjectPopup === 'undefined') {
+      console.log('[OrderedSelectBox] setupPopupOverride: dismissAddRelatedObjectPopup not yet defined');
+      return;
+    }
+
+    console.log('[OrderedSelectBox] setupPopupOverride: Installing custom dismissAddRelatedObjectPopup');
+
+    // Store original function
+    var originalDismissAddRelatedObjectPopup = window.dismissAddRelatedObjectPopup;
+
+    /**
+     * Custom dismissAddRelatedObjectPopup that handles OrderedSelectBox widgets.
+     *
+     * @param {Window} win - The popup window object
+     * @param {string} newId - The ID of the newly created object
+     * @param {string} newRepr - The string representation of the new object
+     */
+    window.dismissAddRelatedObjectPopup = function(win, newId, newRepr) {
+      console.log('[OrderedSelectBox] dismissAddRelatedObjectPopup called:', {
+        windowName: win.name,
+        newId: newId,
+        newRepr: newRepr
+      });
+
+      var elem = findOrderedSelectBoxElement(win.name);
+
+      if (elem) {
+        // This is an OrderedSelectBox widget
+        // Determine the "_to" box ID (where chosen items go)
+        var toId;
+        if (elem.id.endsWith('_from')) {
+          toId = elem.id.replace(/_from$/, '_to');
+        } else {
+          toId = elem.id + '_to';
+        }
+
+        console.log('[OrderedSelectBox] Target toId:', toId);
+
+        // Verify the "_to" box exists and is initialized
+        var toBox = document.getElementById(toId);
+        var cacheExists = OrderedSelectBox.cache[toId] !== undefined;
+
+        console.log('[OrderedSelectBox] toBox element:', toBox ? 'found' : 'NOT FOUND');
+        console.log('[OrderedSelectBox] cache[toId] exists:', cacheExists);
+
+        if (toBox && cacheExists) {
+          // Add the new option to the chosen box
+          var newOption = new Option(newRepr, newId);
+          OrderedSelectBox.add_to_cache(toId, newOption);
+          OrderedSelectBox.redisplay(toId);
+
+          // Refresh icons if OrderedSelectFilter is available
+          if (typeof OrderedSelectFilter !== 'undefined') {
+            var fieldId = elem.id.replace(/_from$/, '');
+            OrderedSelectFilter.refresh_icons(fieldId);
+          }
+
+          console.log('[OrderedSelectBox] Successfully added new item and closing popup');
+          win.close();
+          return;
+        } else {
+          console.error('[OrderedSelectBox] Cannot add to cache - toBox or cache missing!');
+        }
       }
 
-      var newOption = new Option(newRepr, newId);
-      OrderedSelectBox.add_to_cache(toId, newOption);
-      OrderedSelectBox.redisplay(toId);
-      win.close();
-    } else if (originalDismissAddRelatedObjectPopup) {
-      // Fall back to original behavior
-      originalDismissAddRelatedObjectPopup(win, newId, newRepr);
-    }
+      // Fall back to original behavior for non-OrderedSelectBox widgets
+      console.log('[OrderedSelectBox] Falling back to original dismissAddRelatedObjectPopup');
+      if (originalDismissAddRelatedObjectPopup) {
+        originalDismissAddRelatedObjectPopup(win, newId, newRepr);
+      }
+    };
   };
-}
+
+  // Set up immediately if functions are available, otherwise wait for load
+  if (document.readyState === 'complete') {
+    console.log('[OrderedSelectBox] Document complete, setting up popup override now');
+    setupPopupOverride();
+  } else {
+    console.log('[OrderedSelectBox] Document not complete, waiting for load event');
+    window.addEventListener('load', setupPopupOverride);
+  }
+})();

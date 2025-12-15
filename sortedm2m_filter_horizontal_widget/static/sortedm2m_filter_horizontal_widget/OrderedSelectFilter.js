@@ -1,30 +1,44 @@
 /**
- * OrderedSelectFilter - Filter interface for sorted many-to-many fields
+ * OrderedSelectFilter - Filter interface for sorted many-to-many fields.
  *
  * Transforms a multiple-select box into a two-panel filter interface
  * with ordering controls. Based on Django admin's SelectFilter2 but
  * with added support for maintaining selection order.
  *
- * Requires: OrderedSelectBox.js, Django admin's core.js (for quickElement, gettext)
- *
- * @version 2.0.0 - Django 5.x compatible
+ * @version 2.1.0 - Django 5.x compatible
+ * @requires OrderedSelectBox.js
+ * @requires Django admin's core.js (for quickElement, gettext, interpolate)
  */
 
 /**
  * Find the form element containing a given node.
- * Used to attach submit handlers.
+ * Traverses up the DOM tree to find the parent form.
  *
  * @param {HTMLElement} node - Starting node
- * @returns {HTMLFormElement} The containing form
+ * @returns {HTMLFormElement|null} The containing form, or null if not found
  */
 function findForm(node) {
-  if (node.tagName.toLowerCase() !== 'form') {
-    return findForm(node.parentNode);
+  // Guard against null/undefined nodes
+  if (!node || !node.tagName) {
+    return null;
   }
-  return node;
+
+  if (node.tagName.toLowerCase() === 'form') {
+    return node;
+  }
+
+  // Recurse up the tree
+  return findForm(node.parentNode);
 }
 
 var OrderedSelectFilter = {
+  /**
+   * Track forms that already have submit handlers to prevent duplicates.
+   * @type {WeakSet<HTMLFormElement>}
+   * @private
+   */
+  _formsWithHandlers: new WeakSet(),
+
   /**
    * Initialize the filter widget for a select element.
    *
@@ -35,6 +49,7 @@ var OrderedSelectFilter = {
    * @param {string} field_name - Human-readable name for labels
    * @param {boolean} is_stacked - If true, use vertical layout
    * @param {string} admin_media_prefix - Path to admin static files (unused in Django 5+)
+   * @returns {void}
    */
   init: function(field_id, field_name, is_stacked, admin_media_prefix) {
     // Don't initialize placeholder elements in empty inline forms
@@ -58,10 +73,10 @@ var OrderedSelectFilter = {
     // Clean up info/help paragraphs
     var ps = from_box.parentNode.getElementsByTagName('p');
     for (var i = ps.length - 1; i >= 0; i--) {
-      if (ps[i].className.indexOf("info") !== -1) {
+      if (ps[i].className.indexOf('info') !== -1) {
         // Remove info paragraphs - they clutter the interface
         from_box.parentNode.removeChild(ps[i]);
-      } else if (ps[i].className.indexOf("help") !== -1) {
+      } else if (ps[i].className.indexOf('help') !== -1) {
         // Move help text to top
         from_box.parentNode.insertBefore(ps[i], from_box.parentNode.firstChild);
       }
@@ -113,17 +128,17 @@ var OrderedSelectFilter = {
     var selector_chooser = quickElement('ul', selector_div);
     selector_chooser.className = 'selector-chooser';
 
-    // Create the "Choose" (Right Arrow) Link
+    // Create the "Choose" (Right Arrow) link
     var add_link = quickElement('a', quickElement('li', selector_chooser),
-        '', 'title', gettext('Choose'), 'href', '#', 'id', field_id + '_add_link');
+      '', 'title', gettext('Choose'), 'href', '#', 'id', field_id + '_add_link');
     add_link.className = 'selector-add';
-    add_link.innerHTML = '&rarr;'; // Explicit HTML Entity for Right Arrow
+    add_link.innerHTML = '&rarr;';
 
-    // Create the "Remove" (Left Arrow) Link
+    // Create the "Remove" (Left Arrow) link
     var remove_link = quickElement('a', quickElement('li', selector_chooser),
-        '', 'title', gettext('Remove'), 'href', '#', 'id', field_id + '_remove_link');
+      '', 'title', gettext('Remove'), 'href', '#', 'id', field_id + '_remove_link');
     remove_link.className = 'selector-remove';
-    remove_link.innerHTML = '&larr;'; // Explicit HTML Entity for Left Arrow
+    remove_link.innerHTML = '&larr;';
 
     // ===== CHOSEN (right) panel =====
     var selector_chosen = quickElement('div', selector_div, '');
@@ -180,10 +195,15 @@ var OrderedSelectFilter = {
     // ===== EVENT HANDLERS =====
 
     /**
-     * Handle move actions with active state checking
+     * Handle move actions with active state checking.
+     * @param {Event} e - The click event
+     * @param {HTMLElement} elem - The clicked element
+     * @param {Function} move_func - The move function to call
+     * @param {string} from - Source select ID
+     * @param {string} to - Destination select ID
      */
     var move_selection = function(e, elem, move_func, from, to) {
-      if (elem.className.indexOf('active') !== -1) {
+      if (elem.classList.contains('active')) {
         move_func(from, to);
         OrderedSelectFilter.refresh_icons(field_id);
       }
@@ -250,10 +270,18 @@ var OrderedSelectFilter = {
       }
     });
 
-    // Select all chosen items before form submission
-    findForm(from_box).addEventListener('submit', function() {
-      OrderedSelectBox.select_all(field_id + '_to');
-    });
+    // Select all chosen items before form submission (only add handler once per form)
+    var form = findForm(from_box);
+    if (form && !OrderedSelectFilter._formsWithHandlers.has(form)) {
+      form.addEventListener('submit', function() {
+        // Select all items in all _to boxes within this form
+        var toBoxes = form.querySelectorAll('select.filtered[id$="_to"]');
+        toBoxes.forEach(function(box) {
+          OrderedSelectBox.select_all(box.id);
+        });
+      });
+      OrderedSelectFilter._formsWithHandlers.add(form);
+    }
 
     // Initialize the OrderedSelectBox caches
     OrderedSelectBox.init(field_id + '_from');
@@ -292,19 +320,26 @@ var OrderedSelectFilter = {
    * Update the active/inactive state of all action buttons.
    *
    * @param {string} field_id - Base field ID (without _from/_to suffix)
+   * @returns {void}
    */
   refresh_icons: function(field_id) {
     var from_box = document.getElementById(field_id + '_from');
     var to_box = document.getElementById(field_id + '_to');
 
-    if (!from_box || !to_box) return;
+    if (!from_box || !to_box) {
+      return;
+    }
 
     var is_from_selected = from_box.querySelector('option:checked') !== null;
     var is_to_selected = to_box.querySelector('option:checked') !== null;
     var is_from_non_empty = from_box.options.length > 0;
     var is_to_non_empty = to_box.options.length > 0;
 
-    // Helper to toggle 'active' class
+    /**
+     * Toggle 'active' class on an element.
+     * @param {string} id - Element ID
+     * @param {boolean} condition - Whether to add or remove the class
+     */
     var toggleActive = function(id, condition) {
       var elem = document.getElementById(id);
       if (elem) {
@@ -312,24 +347,27 @@ var OrderedSelectFilter = {
       }
     };
 
-    // Existing lines (Keep these)
+    // Transfer buttons
     toggleActive(field_id + '_add_link', is_from_selected);
     toggleActive(field_id + '_remove_link', is_to_selected);
     toggleActive(field_id + '_add_all_link', is_from_non_empty);
     toggleActive(field_id + '_remove_all_link', is_to_non_empty);
 
-    // --- NEW LINES TO FIX UP/DOWN HOVER ---
-    // If items are selected in the "To" box, we should be able to move them Up or Down
+    // Ordering buttons (active when items are selected in the "to" box)
     toggleActive(field_id + '_up_link', is_to_selected);
     toggleActive(field_id + '_down_link', is_to_selected);
   },
 
   /**
    * Handle keypress in filter input (prevent form submission on Enter).
+   *
+   * @param {KeyboardEvent} event - The keyboard event
+   * @param {string} field_id - Base field ID
+   * @returns {boolean|undefined}
    */
   filter_key_press: function(event, field_id) {
     // Prevent form submission on Enter
-    if (event.keyCode === 13) {
+    if (event.key === 'Enter' || event.keyCode === 13) {
       event.preventDefault();
       return false;
     }
@@ -337,12 +375,16 @@ var OrderedSelectFilter = {
 
   /**
    * Handle keyup in filter input (filter list and handle Enter).
+   *
+   * @param {KeyboardEvent} event - The keyboard event
+   * @param {string} field_id - Base field ID
+   * @returns {boolean}
    */
   filter_key_up: function(event, field_id) {
     var from_box = document.getElementById(field_id + '_from');
 
     // On Enter, transfer first visible item
-    if (event.keyCode === 13) {
+    if (event.key === 'Enter' || event.keyCode === 13) {
       from_box.selectedIndex = 0;
       OrderedSelectBox.move(field_id + '_from', field_id + '_to');
       from_box.selectedIndex = 0;
@@ -361,12 +403,18 @@ var OrderedSelectFilter = {
 
   /**
    * Handle keydown in filter input (arrow key navigation and quick transfer).
+   *
+   * @param {KeyboardEvent} event - The keyboard event
+   * @param {string} field_id - Base field ID
+   * @returns {boolean}
    */
   filter_key_down: function(event, field_id) {
     var from_box = document.getElementById(field_id + '_from');
+    var key = event.key || '';
+    var keyCode = event.keyCode;
 
     // Right arrow: transfer selected item
-    if (event.keyCode === 39) {
+    if (key === 'ArrowRight' || keyCode === 39) {
       var old_index = from_box.selectedIndex;
       OrderedSelectBox.move(field_id + '_from', field_id + '_to');
       from_box.selectedIndex = (old_index === from_box.length) ? from_box.length - 1 : old_index;
@@ -375,12 +423,12 @@ var OrderedSelectFilter = {
     }
 
     // Down arrow: wrap around to top
-    if (event.keyCode === 40) {
+    if (key === 'ArrowDown' || keyCode === 40) {
       from_box.selectedIndex = (from_box.length === from_box.selectedIndex + 1) ? 0 : from_box.selectedIndex + 1;
     }
 
     // Up arrow: wrap around to bottom
-    if (event.keyCode === 38) {
+    if (key === 'ArrowUp' || keyCode === 38) {
       from_box.selectedIndex = (from_box.selectedIndex === 0) ? from_box.length - 1 : from_box.selectedIndex - 1;
     }
 
