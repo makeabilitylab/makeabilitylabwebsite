@@ -41,11 +41,12 @@
       {% endfor %}
     </p>
 
-    <!-- We only show the download bar if there is a paper to download. And, thankfully, this if condition checks that
+    <!-- We only show the download bar if there is a paper or arxiv to download. And, thankfully, this if condition checks that
           pub.pdf_file exists, is not empty, and is not a false boolean value. See https://docs.djangoproject.com/en/1.9/ref/templates/builtins/#if-->
     {% if pub.pdf_file %}
       <p class="pub-download-links">
         <a href="{{ pub.pdf_file.url }}">PDF</a>
+        {% if pub.arxiv_url %}| <a href="{{ pub.arxiv_url }}">arXiv</a>{% endif %}
         {% if pub.official_url %}| <a href="{{ pub.official_url }}">doi</a>{% endif %}
         {% include "snippets/display_citation_link_snippet.html" %}
         {% if pub.code_repo_url %}| <a href="{{ pub.code_repo_url }}">Code</a>{% endif %}
@@ -128,6 +129,7 @@
       {% if pub.pdf_file %}
         <p class="pub-download-links">
           <a href="{{ pub.pdf_file.url }}">PDF</a>
+          {% if pub.arxiv_url %}| <a href="{{ pub.arxiv_url }}">arXiv</a>{% endif %}
           {% if pub.official_url %}| <a href="{{ pub.official_url }}">doi</a>{% endif %}
           {% include "snippets/display_citation_link_snippet.html" %}
           {% if pub.code_repo_url %}| <a href="{{ pub.code_repo_url }}">Code</a>{% endif %}

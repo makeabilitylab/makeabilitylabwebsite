@@ -58,6 +58,9 @@ class Publication(Artifact):
     official_url = models.URLField(blank=True, null=True)
     official_url.help_text = "The official url link to the paper, often a DOI url like https://doi.org/10.1145/3441852.3476542"
 
+    arxiv_url = models.URLField(blank=True, null=True)
+    arxiv_url.help_text = "The arXiv url link to the paper, if available (e.g., https://arxiv.org/abs/2508.08524)"
+
     # Publications can have corresponding videos, talks, posters, etc.
     video = models.OneToOneField('Video', on_delete=models.DO_NOTHING, null=True, blank=True)
     talk = models.ForeignKey('Talk', blank=True, null=True, on_delete=models.DO_NOTHING)
