@@ -72,7 +72,7 @@ else:
     ALLOWED_HOSTS = ['*']
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "1.9.6 (upgraded to Django 5.2.9)" # Makeability Lab website version
+ML_WEBSITE_VERSION = "1.9.7 (Fixed pub_admin_custom.js null issue)" # Makeability Lab website version
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
