@@ -153,37 +153,43 @@ def auto_generate_bio(person):
     bio_sentences = [" ".join(role_parts).replace(" .", ".")]
 
     # 2. Generate the Contributions Sentence
-    projects = person.get_projects
+    # FIX: Ensure projects is a list and sorted
+    projects = list(person.get_projects)
+    projects.sort(key=lambda x: x.name) 
+    
     proj_count = len(projects)
     pub_count = person.publication_set.count()
 
     if proj_count > 0 or pub_count > 0:
         contrib_str = f"{person.first_name} contributed to"
         
-        # Build Project String
+        # --- Build Project String ---
         if proj_count > 0:
             if proj_count == 1:
-                proj = person.projectrole_set.first().project
+                proj = projects[0]
                 contrib_str += f" a project called <a href='/project/{proj.short_name}'>{proj.name}</a>"
             else:
-                # Handle the "Top 3" logic cleanly
-                shown_projects = list(projects)[:3]
+                shown_projects = projects[:3]
                 proj_links = [f"<a href='/project/{p.short_name}'>{p.name}</a>" for p in shown_projects]
                 
-                if proj_count <= 3:
-                     # "A, B, and C"
-                     if len(proj_links) > 1:
-                         proj_links[-1] = "and " + proj_links[-1]
-                     project_list_str = ", ".join(proj_links) if len(proj_links) > 2 else " ".join(proj_links)
-                     contrib_str += f" {proj_count} projects: {project_list_str}"
+                # FIX: Standard English list formatting
+                if len(proj_links) == 2:
+                    # Case: "Project A and Project B"
+                    list_str = " and ".join(proj_links)
                 else:
-                    # "5 projects, including A, B, and C"
+                    # Case: "Project A, Project B, and Project C"
                     proj_links[-1] = "and " + proj_links[-1]
-                    contrib_str += f" {proj_count} projects, including {', '.join(proj_links)}"
+                    list_str = ", ".join(proj_links)
 
-        # Build Publication String
+                if proj_count <= 3:
+                     contrib_str += f" {proj_count} projects: {list_str}"
+                else:
+                     contrib_str += f" {proj_count} projects, including {list_str}"
+
+        # --- Build Publication String ---
         if pub_count > 0:
-            connector = " as well as" if proj_count > 0 else ""
+            # We add a comma before "as well as" if there was a project list preceding it
+            connector = ", as well as" if proj_count > 0 else ""
             plural = "s" if pub_count > 1 else ""
             contrib_str += f"{connector} {pub_count} publication{plural}"
         
