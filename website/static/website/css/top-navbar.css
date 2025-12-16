@@ -1,24 +1,39 @@
 /*
- * The code below is based on the Grayscale Bootstrap Theme (http://startbootstrap.com)
- * Only the navbar styles were preserved and even then some of these styles have been modified
+ * top-navbar.css
+ * 
+ * Navbar styles for the Makeability Lab website.
+ * Based on the Grayscale Bootstrap Theme (http://startbootstrap.com)
+ * with modifications for improved mobile touch targets and icon support.
+ * 
+ * Mobile Improvements (Dec 2025):
+ * - Increased touch target sizes to meet Apple HIG (44px) and Material Design (48dp) guidelines
+ * - Added icon support with proper spacing
+ * - Improved collapsed menu readability on mobile
  */
 
- :root {
-  --navbar-dark-bg-color: rgba(0,0,0,0.75);
+/* ==========================================================================
+   CSS Custom Properties (Variables)
+   ========================================================================== */
+
+:root {
+  /* Dark navbar theme */
+  --navbar-dark-bg-color: rgba(0, 0, 0, 0.75);
   --navbar-dark-bg-color-scrolled: black;
   --navbar-dark-text-color: white;
-  --navbar-dark-text-color-hover: rgba(255,255,255,.5);
+  --navbar-dark-text-color-hover: rgba(255, 255, 255, 0.5);
   --navbar-dark-font-weight: 300;
   --navbar-dark-font-weight-active: 500;
   --navbar-dark-ml-logo-src: url("/static/website/img/logos/makelab_logo_white_no_text_100x67.png");
 
+  /* Light navbar theme */
   --navbar-light-bg-color: rgba(255, 255, 255, 0.9);
   --navbar-light-text-color: black;
-  --navbar-light-text-color-hover: rgba(0,0,0,.5);
+  --navbar-light-text-color-hover: rgba(0, 0, 0, 0.5);
   --navbar-light-font-weight: 300;
   --navbar-light-font-weight-active: 500;
   --navbar-light-ml-logo-src: url("/static/website/img/logos/makelab_logo_v3_white_with_colors_no_text_100x68.png");
 
+  /* Active theme (defaults to dark) */
   --navbar-bg-color: var(--navbar-dark-bg-color);
   --navbar-bg-color-scrolled: var(--navbar-dark-bg-scrolled-color);
   --navbar-text-color: var(--navbar-dark-text-color);
@@ -26,9 +41,18 @@
   --navbar-font-weight: var(--navbar-dark-font-weight);
   --navbar-font-weight-active: var(--navbar-dark-font-weight-active);
   --navbar-ml-logo-src: var(--navbar-dark-ml-logo-src);
- }
 
- .dark-navbar-theme {
+  /* Mobile menu spacing */
+  --navbar-mobile-link-padding: 12px 20px;
+  --navbar-mobile-font-size: 16px;
+  --navbar-mobile-icon-width: 24px;
+}
+
+/* ==========================================================================
+   Theme Classes
+   ========================================================================== */
+
+.dark-navbar-theme {
   --navbar-bg-color: var(--navbar-dark-bg-color);
   --navbar-bg-color-scrolled: var(--navbar-dark-bg-scrolled-color);
   --navbar-text-color: var(--navbar-dark-text-color);
@@ -36,9 +60,9 @@
   --navbar-font-weight: var(--navbar-dark-font-weight);
   --navbar-font-weight-active: var(--navbar-dark-font-weight-active);
   --navbar-ml-logo-src: var(--navbar-dark-ml-logo-src);
- }
+}
 
- .light-navbar-theme {
+.light-navbar-theme {
   --navbar-bg-color: var(--navbar-light-bg-color);
   --navbar-bg-color-scrolled: var(--navbar-light-bg-scrolled-color);
   --navbar-text-color: var(--navbar-light-text-color);
@@ -46,115 +70,241 @@
   --navbar-font-weight: var(--navbar-light-font-weight);
   --navbar-font-weight-active: var(--navbar-light-font-weight-active);
   --navbar-ml-logo-src: var(--navbar-light-ml-logo-src);
- }
-
- .navbar-container{
-  width:100%; 
-  max-width:1170px;
-  margin:auto;
- }
-
-.navbar-custom .navbar-toggle {
-  padding: 0px; /* default in bootstrap.css is 9px 10px */
-  margin-top: 0px; /* default in bootstrap.css is 2px */
-  margin-bottom: 0px; /* default in bootstrap.css is 2px */
 }
 
+/* ==========================================================================
+   Navbar Container
+   ========================================================================== */
+
+.navbar-container {
+  width: 100%;
+  max-width: 1170px;
+  margin: auto;
+}
+
+/* ==========================================================================
+   Base Navbar Styles
+   ========================================================================== */
+
 .navbar-custom {
-  text-transform: uppercase; /* TODO consider removing all uppercase */
-  font-family: Roboto;
+  text-transform: uppercase;
+  font-family: Roboto, sans-serif;
   font-weight: var(--navbar-font-weight);
   background-color: var(--navbar-bg-color);
   font-variant: normal;
   color: var(--navbar-text-color);
   letter-spacing: 1.1px;
-  border-width: 0px;
-  margin: 0px;
-
-  min-height: 10px;   /* default in bootstrap.css is 50px */
-  border-radius: 0px; /* default in bootstrap.css is 4px */
-  margin-bottom: 0px; /* default in bootstrap.css is 20px */
-  /* max-height: 40px; */
+  border-width: 0;
+  margin: 0;
+  min-height: 10px;
+  border-radius: 0;
+  margin-bottom: 0;
   height: 40px;
-  padding: 10px 0px 0px 0px;
+  padding: 10px 0 0 0;
 }
 
 .navbar-custom a {
   color: inherit;
-  padding: 0px;
+  padding: 0;
 }
 
-/* Overriding Bootstrap 3 defaults for navbar */
-.navbar-nav>li>a{
-  padding-top: 0px; /* default in bootstrap.css is 15px */
-  padding-bottom: 0px; /* default in bootstrap.css is 15px */
+/* ==========================================================================
+   Navbar Toggle Button (Hamburger Menu)
+   ========================================================================== */
+
+.navbar-custom .navbar-toggle {
+  padding: 0;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
-.nav>li>a{
-  padding-left: 12px; /* default in bootstrap.css is 15px */
-  padding-right: 12px; /* default in bootstrap.css is 15px */
+/* ==========================================================================
+   Navigation Links - Desktop
+   ========================================================================== */
+
+/* Override Bootstrap defaults for navbar links */
+.navbar-nav > li > a {
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
-@media only screen and (max-width: 900px) {
-  .nav>li>a{
-    padding-left: 5px; /* default in bootstrap.css is 15px */
-    padding-right: 5px; /* default in bootstrap.css is 15px */
-  }
+.nav > li > a {
+  padding-left: 12px;
+  padding-right: 12px;
 }
 
+/* Smooth transition on hover */
 .navbar-custom .nav li a {
-  -webkit-transition: background .3s ease-in-out;
-  -moz-transition: background .3s ease-in-out;
-  transition: background .3s ease-in-out;
+  -webkit-transition: background 0.3s ease-in-out;
+  -moz-transition: background 0.3s ease-in-out;
+  transition: background 0.3s ease-in-out;
 }
 
-.navbar-custom a:hover, .nav>li>a:hover{
-  background-color: transparent; /* default in bootstrap.css is #eee */
-  text-decoration: underline; /* default in bootstrap.css is none */
+/* Hover states */
+.navbar-custom a:hover,
+.nav > li > a:hover {
+  background-color: transparent;
+  text-decoration: underline;
   color: var(--navbar-text-color-hover);
 }
 
+/* Active link styling */
 .navbar-custom .nav li.active a {
   font-weight: var(--navbar-font-weight-active);
 }
 
-@media only screen and (max-width: 789px) {
-  /* From experimentation, I believe the Bootstrap 3 navbar only collapses at 789px wide */
-  .navbar-collapse ul {
-    background-color: var(--navbar-bg-color);
-  }
+/* ==========================================================================
+   Navbar Icon Styles
+   ========================================================================== */
+
+/* Icons in navbar links */
+.navbar-custom .nav-icon {
+  display: none; /* Hidden by default on desktop */
+  width: var(--navbar-mobile-icon-width);
+  text-align: center;
+  margin-right: 10px;
 }
 
-/******************************************************************************************/
-/***** BRANDING SECTION: The Makeability Lab img logo and text on left side of navbar *****/
+/* ==========================================================================
+   Branding Section (Logo and Text)
+   ========================================================================== */
 
 .navbar-custom .makeabilitylab-text {
   display: inline;
-  /* vertical-align: text-top; */
 }
 
-/* This is the "MAKE" part of the text in the MAKEABILITYLAB text in the navbar */
+/* "MAKE" portion of the logo text */
 .makeabilitylab-make-text {
   font-weight: 300;
   margin-left: 2px;
 }
 
-.navbar-brand img{
+.navbar-brand img {
   content: var(--navbar-ml-logo-src);
 }
 
-/* .navbar-custom .navbar-brand > img is a selector that targets img elements that are 
-   direct children of an element with the class navbar-brand, which itself is a descendant of an 
-   element with the class navbar-custom. 
-   > is a child combinator. It selects only direct children of an element. */
-.navbar-custom .navbar-brand>img {
+.navbar-custom .navbar-brand > img {
   display: inline;
 }
 
 .navbar-custom .navbar-brand {
-  padding-left: 0px;
+  padding-left: 0;
   height: auto;
-  font-size: inherit; /* default in bootstrap.css is 18px */
+  font-size: inherit;
 }
 
+/* ==========================================================================
+   Responsive Styles - Tablet (reduce padding)
+   ========================================================================== */
 
+@media only screen and (max-width: 900px) {
+  .nav > li > a {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+}
+
+/* ==========================================================================
+   Responsive Styles - Mobile (Collapsed Menu)
+   
+   Bootstrap 3 navbar collapses at 768px by default, but experimentally
+   this occurs at 789px for this navbar configuration.
+   
+   Key mobile improvements:
+   - Minimum 44px touch targets (Apple HIG guideline)
+   - Larger font size for readability
+   - Icons visible for quick recognition
+   - Clear visual separation between items
+   ========================================================================== */
+
+@media only screen and (max-width: 789px) {
+  /* Collapsed menu background */
+  .navbar-collapse ul {
+    background-color: var(--navbar-bg-color);
+  }
+
+  /* 
+   * Mobile navigation links
+   * Touch target sizing follows Apple HIG (44pt minimum) and 
+   * Google Material Design (48dp recommended) guidelines
+   */
+  .navbar-custom .navbar-nav > li > a {
+    padding: var(--navbar-mobile-link-padding);
+    font-size: var(--navbar-mobile-font-size);
+    line-height: 1.5;
+    display: flex;
+    align-items: center;
+    min-height: 44px; /* Apple HIG minimum touch target */
+  }
+
+  /* Show icons on mobile */
+  .navbar-custom .nav-icon {
+    display: inline-block;
+    font-size: 18px;
+  }
+
+  /* Add subtle separator between menu items */
+  .navbar-custom .navbar-nav > li {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Remove border from last item */
+  .navbar-custom .navbar-nav > li:last-child {
+    border-bottom: none;
+  }
+
+  /* Active state styling for mobile */
+  .navbar-custom .navbar-nav > li.active > a {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  /* Hover/focus states for mobile - larger touch feedback area */
+  .navbar-custom .navbar-nav > li > a:hover,
+  .navbar-custom .navbar-nav > li > a:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+    text-decoration: none;
+  }
+
+  /* Ensure proper spacing for collapsed menu */
+  .navbar-collapse {
+    max-height: calc(100vh - 50px) !important; /* Prevent overflow on small screens */
+    overflow-y: auto;
+  }
+}
+
+/* ==========================================================================
+   Light Theme Mobile Adjustments
+   ========================================================================== */
+
+@media only screen and (max-width: 789px) {
+  .light-navbar-theme .navbar-nav > li {
+    border-bottom-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .light-navbar-theme .navbar-nav > li.active > a {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  .light-navbar-theme .navbar-nav > li > a:hover,
+  .light-navbar-theme .navbar-nav > li > a:focus {
+    background-color: rgba(0, 0, 0, 0.08);
+  }
+}
+
+/* ==========================================================================
+   Extra Small Screens (phones in portrait)
+   ========================================================================== */
+
+@media only screen and (max-width: 480px) {
+  /* Slightly larger touch targets for very small screens */
+  .navbar-custom .navbar-nav > li > a {
+    padding: 14px 20px;
+    font-size: 17px;
+    min-height: 48px; /* Material Design recommended size */
+  }
+
+  .navbar-custom .nav-icon {
+    font-size: 20px;
+    margin-right: 12px;
+  }
+}
