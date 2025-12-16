@@ -124,147 +124,105 @@ def get_videos_by_author(person):
     return videos
 
 def auto_generate_bio(person):
-    """Auto-generates a bio for the given person based on their contributions to the lab"""
-
-    projects = person.get_projects
-    project_count = len(projects)
-    publication_count = person.publication_set.count()
-
-    # start_date = person.projectrole_set.order_by('start_date').first().start_date
-    # years_in_lab = (datetime.date.today() - start_date).days // 365
-    total_time_in_lab = person.get_total_time_in_lab()
-    #total_time_in_role = person.get_total_time_in_current_position()
-    humanized_duration = None
-    if total_time_in_lab:
-        humanized_duration = humanize_duration(total_time_in_lab)
-
-    print(f"total_time_in_lab={total_time_in_lab}, humanized_duration={humanized_duration}")
+    """Auto-generates a bio using list construction to prevent grammar errors."""
     
-    bio = f"{person.get_full_name()}"
+    # 1. Generate the Role Sentence
+    role_parts = [person.get_full_name()]
+    
+    # Calculate duration safely
+    total_time = person.get_total_time_in_lab()
+    duration_str = humanize_duration(total_time) if total_time else ""
+
     if not person.has_started:
-        latest_position = person.get_latest_position
-        if latest_position and latest_position.start_date:
-            bio += f" will be joining the Makeability Lab on {latest_position.start_date}."
-        else:
-            bio += " will be joining the Makeability Lab."   
+        date_str = f" on {person.get_latest_position.start_date}" if person.get_latest_position and person.get_latest_position.start_date else ""
+        role_parts.append(f"will be joining the Makeability Lab{date_str}.")
     elif person.is_current_member:
-        bio += f" is currently a {person.get_current_title} in the Makeability Lab."
-    elif person.is_current_collaborator:
-        bio += f" is currently a collaborator with the Makeability Lab."
+        role_parts.append(f"is currently a {person.get_current_title} in the Makeability Lab.")
+        if duration_str:
+            role_parts.append(f"{person.first_name} has been in the lab for {duration_str}.")
     elif person.is_alumni_member:
-        bio += f" was a {person.get_current_title} in the Makeability Lab"
-    elif person.is_past_collaborator:
-        bio += f" was a collaborator with the Makeability Lab"
-    
-    
-    if person.is_current_member:
-        bio += f" {person.first_name} has been in the lab for {humanized_duration}"
-    elif person.is_current_collaborator:
-        bio += f" {person.first_name} has collaborated with the lab for {humanized_duration}"
-    elif person.is_alumni_member or person.is_past_collaborator:
-        bio += f" for {humanized_duration}"
-        start_date_str = person.get_start_date.strftime("%b %Y")
-        end_date_str = person.get_end_date.strftime("%b %Y") if person.get_end_date else "present"
-            
-        bio += f" ({start_date_str} to {end_date_str})."
-        bio += f" {person.first_name} "
-   
-    if ((person.is_current_member or person.is_current_collaborator) and
-        (project_count > 0 or publication_count > 0)): 
-        bio += " and"
-    elif not person.is_alumni_member and not person.is_past_collaborator:
-        bio += "."
-
-    if project_count > 0 or publication_count > 0:
-        bio += " contributed to"
-
-    if project_count == 1:
-        proj = person.projectrole_set.first().project;
-        bio += f" a project called <a href='/project/{proj.short_name}'>{proj.name}</a>"
-    elif project_count > 1: 
-        bio += f" {project_count} projects, including"
+        role_parts.append(f"was a {person.get_current_title} in the Makeability Lab")
+        if duration_str:
+            role_parts.append(f"for {duration_str}")
         
-        for index, proj in enumerate(projects, start=1):
-            bio += f" <a href='/project/{proj.short_name}'>{proj.name}</a>"
-            if project_count == 2 and index == 1:
-                bio += " and"
-            elif index < project_count and index != project_count - 1:
-                bio += ","
-            elif index < project_count:
-                bio += ", and"
+        start = person.get_start_date.strftime("%b %Y")
+        end = person.get_end_date.strftime("%b %Y") if person.get_end_date else "present"
+        role_parts.append(f"({start} to {end}).")
+
+    # Combine the introductory sentences
+    bio_sentences = [" ".join(role_parts).replace(" .", ".")]
+
+    # 2. Generate the Contributions Sentence
+    projects = person.get_projects
+    proj_count = len(projects)
+    pub_count = person.publication_set.count()
+
+    if proj_count > 0 or pub_count > 0:
+        contrib_str = f"{person.first_name} contributed to"
+        
+        # Build Project String
+        if proj_count > 0:
+            if proj_count == 1:
+                proj = person.projectrole_set.first().project
+                contrib_str += f" a project called <a href='/project/{proj.short_name}'>{proj.name}</a>"
             else:
-                bio += "."
-            
-            if index == 3:
-                break
-    
-    if publication_count > 0:
-        if publication_count == 1:
-            bio += f" as well as {publication_count} publication."
-        else:
-            bio += f" as well as {publication_count} publications."
-    elif project_count > 1:
-        bio += "."
+                # Handle the "Top 3" logic cleanly
+                shown_projects = list(projects)[:3]
+                proj_links = [f"<a href='/project/{p.short_name}'>{p.name}</a>" for p in shown_projects]
+                
+                if proj_count <= 3:
+                     # "A, B, and C"
+                     if len(proj_links) > 1:
+                         proj_links[-1] = "and " + proj_links[-1]
+                     project_list_str = ", ".join(proj_links) if len(proj_links) > 2 else " ".join(proj_links)
+                     contrib_str += f" {proj_count} projects: {project_list_str}"
+                else:
+                    # "5 projects, including A, B, and C"
+                    proj_links[-1] = "and " + proj_links[-1]
+                    contrib_str += f" {proj_count} projects, including {', '.join(proj_links)}"
 
-    # Add mentorship information
-    grad_mentors = person.get_grad_mentors()
-    mentor_count = grad_mentors.count()
-    _logger.debug(f"{person.first_name} has grad_mentors={grad_mentors}, mentor_count={mentor_count}")
-    if grad_mentors.exists():
+        # Build Publication String
+        if pub_count > 0:
+            connector = " as well as" if proj_count > 0 else ""
+            plural = "s" if pub_count > 1 else ""
+            contrib_str += f"{connector} {pub_count} publication{plural}"
+        
+        bio_sentences.append(contrib_str + ".")
 
-        bio += f" {person.first_name}"
+    # 3. Generate Mentor Sentence
+    grad_mentors = list(person.get_grad_mentors()) # Convert to list for easy indexing
+    if grad_mentors:
+        verb = "is" if person.is_active else "was"
+        mentor_links = [f"<a href='/member/{m.get_url_name()}'>{m.get_full_name()}</a>" for m in grad_mentors]
+        
+        if len(mentor_links) > 1:
+            mentor_links[-1] = "and " + mentor_links[-1]
+        
+        mentor_str = ", ".join(mentor_links) if len(mentor_links) > 2 else " ".join(mentor_links)
+        bio_sentences.append(f"{person.first_name} {verb} mentored by {mentor_str}.")
 
-        if person.is_active:
-            bio += " is mentored by"
-        else:
-            bio += " was mentored by"
-
-        for index, mentor in enumerate(grad_mentors):
-            bio += f" <a href='/member/{mentor.get_url_name()}'>{mentor.get_full_name()}</a>"
-            if mentor_count == 2 and index == 0:
-                bio += " and"
-            elif index < mentor_count - 1:
-                bio += ","
-            elif index >= mentor_count - 1:
-                bio += ", and"
-            
-        bio += "." 
-
-    # Add mentee information; get a random set
+    # 4. Generate Mentee Sentence (Logic simplified)
     mentees = person.get_mentees(randomize=True)
     mentee_count = mentees.count()
-    max_mentees_to_display = min(3, mentees.count())
-    _logger.debug(f"""{person.first_name} has mentees={mentees}, mentee_count={mentee_count}, 
-                  max_mentees_to_display={max_mentees_to_display}""")
-    if mentees.exists():
-        bio += f" During their time in the lab, {person.first_name} mentored"
-
+    if mentee_count > 0:
+        display_limit = 3
+        shown_mentees = [m for m in mentees[:display_limit]] # Force evaluation
+        mentee_links = [f"<a href='/member/{m.get_url_name()}'>{m.get_full_name()}</a>" for m in shown_mentees]
+        
+        intro = f"During their time in the lab, {person.first_name} mentored"
+        
         if mentee_count == 1:
-            bio += " 1 Makeability Lab student,"
-            bio += f" <a href='/member/{mentees.first().get_url_name()}'>{mentees.first().get_full_name()}</a>."
+             bio_sentences.append(f"{intro} 1 Makeability Lab student, {mentee_links[0]}.")
         else:
+            sep = ":" if mentee_count <= display_limit else ", including"
+            
+            if len(mentee_links) > 1:
+                mentee_links[-1] = "and " + mentee_links[-1]
+            
+            list_str = ", ".join(mentee_links) if len(mentee_links) > 2 else " ".join(mentee_links)
+            bio_sentences.append(f"{intro} {mentee_count} Makeability Lab students{sep} {list_str}.")
 
-            if mentees.count() <= 3:
-                bio += f" {mentee_count} Makeability Lab students:"
-            else:
-                bio += f" {mentee_count} Makeability Lab students, including"
-
-            for index, mentee in enumerate(mentees):
-                bio += f" <a href='/member/{mentee.get_url_name()}'>{mentee.get_full_name()}</a>"
-                if max_mentees_to_display == 2 and index == 0:
-                    bio += " and"
-                elif index < max_mentees_to_display - 1:
-                    bio += ","
-                
-                if mentee_count > 2 and index == max_mentees_to_display - 2:
-                    bio += " and"
-
-                if index >= max_mentees_to_display - 1:
-                    break
-
-            bio += "."
-
-    return bio
+    return " ".join(bio_sentences)
 
 def humanize_duration(duration):
     """Given a timedelta object, returns a humanized string of the duration (e.g., 1.5 years)"""
