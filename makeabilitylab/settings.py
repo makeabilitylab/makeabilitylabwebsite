@@ -72,7 +72,7 @@ else:
     ALLOWED_HOSTS = ['*']
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "1.9.9.2 (Fixes auto-generated bios v2)" # Makeability Lab website version
+ML_WEBSITE_VERSION = "1.9.9.3 (Added total funding to grants admin)" # Makeability Lab website version
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
@@ -170,6 +170,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'django.contrib.humanize', # for humanizing numbers in templates: https://docs.djangoproject.com/en/4.2/ref/contrib/humanize/
 
     # In Django, both easy-thumbnails and django-image-cropping serve different purposes 
     # and can be used together for different functionalities. So, while easy-thumbnails can handle 

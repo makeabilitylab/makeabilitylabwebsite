@@ -1,5 +1,6 @@
 from django.contrib import admin
 from website.models import Grant
+from django.db.models import Sum
 from website.admin import ArtifactAdmin
 
 @admin.register(Grant)
@@ -25,6 +26,34 @@ class GrantAdmin(ArtifactAdmin):
         ('Project Info',            {'fields': ['projects', 'project_umbrellas']}),
         ('Keyword Info',            {'fields': ['keywords']}),
     ]
+
+    def changelist_view(self, request, extra_context=None):
+        """
+        Override the changelist view to include total funding amount.
+        
+        This calculates the sum of all funding_amount values and passes it
+        to the template context for display at the top of the grants list.
+        """
+        # Get the base queryset (respects any active filters)
+        response = super().changelist_view(request, extra_context)
+        
+        # Only proceed if we have a context (not a redirect response)
+        if hasattr(response, 'context_data'):
+            # Get the filtered queryset from the changelist
+            cl = response.context_data.get('cl')
+            if cl:
+                queryset = cl.queryset
+            else:
+                queryset = self.get_queryset(request)
+            
+            # Calculate total funding from the (possibly filtered) queryset
+            total = queryset.aggregate(
+                total_funding=Sum('funding_amount')
+            )['total_funding'] or 0
+            
+            response.context_data['total_funding'] = total
+        
+        return response
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
