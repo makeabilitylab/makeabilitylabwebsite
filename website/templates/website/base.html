@@ -162,25 +162,68 @@
             </div>
 
             <div class="collapse navbar-collapse navbar-main-collapse">
+              <!-- 
+                Updated Navbar Links with Icons
+                
+                The .nav-icon class:
+                - Hidden on desktop (clean uppercase text-only look preserved)
+                - Visible on mobile (helps users quickly identify links)
+              -->
+
               <ul class="nav navbar-nav pull-right">
                 <!-- To automatically highlight active links, I followed this code:
                               http://stackoverflow.com/a/29495310 -->
                 {% with request.resolver_match.url_name as url_name %}
-                <li class="{% if url_name == 'index' %}active{% endif %}"><a href="{% url 'website:index' %}">Home</a>
+                
+                <li class="{% if url_name == 'index' %}active{% endif %}">
+                  <a href="{% url 'website:index' %}">
+                    <i class="fa-solid fa-house nav-icon" aria-hidden="true"></i>
+                    <span>Home</span>
+                  </a>
                 </li>
-                <li class="{% if url_name == 'news_listing' %}active{% endif %}"><a
-                    href="{% url 'website:news_listing' %}">News</a></li>
-                <li class="{% if url_name == 'people' %}active{% endif %}"><a href="{% url 'website:people' %}">People</a>
+                
+                <li class="{% if url_name == 'news_listing' %}active{% endif %}">
+                  <a href="{% url 'website:news_listing' %}">
+                    <i class="fa-solid fa-newspaper nav-icon" aria-hidden="true"></i>
+                    <span>News</span>
+                  </a>
                 </li>
-                <li class="{% if url_name == 'projects' %}active{% endif %}"><a
-                    href="{% url 'website:projects' %}">Projects</a></li>
-                <li class="{% if url_name == 'publications' %}active{% endif %}"><a
-                    href="{% url 'website:publications' %}">Publications</a></li>
-                <li><a href="https://docs.google.com/document/d/1YiiDsfpiolpXjUTj8xWrQwQQUzqrfqT9bocOpaYDrtI">
-                    Lab Handbook</a>
-                <li><a href="https://goo.gl/forms/59lAm3CUuupiMhUt1">
-                    Apply</a>
-
+                
+                <li class="{% if url_name == 'people' %}active{% endif %}">
+                  <a href="{% url 'website:people' %}">
+                    <i class="fa-solid fa-users nav-icon" aria-hidden="true"></i>
+                    <span>People</span>
+                  </a>
+                </li>
+                
+                <li class="{% if url_name == 'projects' %}active{% endif %}">
+                  <a href="{% url 'website:projects' %}">
+                    <i class="fa fa-flask nav-icon" aria-hidden="true"></i>
+                    <span>Projects</span>
+                  </a>
+                </li>
+                
+                <li class="{% if url_name == 'publications' %}active{% endif %}">
+                  <a href="{% url 'website:publications' %}">
+                    <i class="fa-solid fa-file-lines nav-icon" aria-hidden="true"></i>
+                    <span>Publications</span>
+                  </a>
+                </li>
+                
+                <li>
+                  <a href="https://docs.google.com/document/d/1YiiDsfpiolpXjUTj8xWrQwQQUzqrfqT9bocOpaYDrtI">
+                    <i class="fa-solid fa-book-open nav-icon" aria-hidden="true"></i>
+                    <span>Lab Handbook</span>
+                  </a>
+                </li>
+                
+                <li>
+                  <a href="https://goo.gl/forms/59lAm3CUuupiMhUt1">
+                    <i class="fa-solid fa-paper-plane nav-icon" aria-hidden="true"></i>
+                    <span>Apply</span>
+                  </a>
+                </li>
+                
                 {% comment %} JEF (Nov 3, 2022): Removing talks, videos, faq for now 
                   <li class="{% if url_name == 'talks' %}active{% endif %}"><a href="{% url 'website:talks' %}">Talks</a>
                   </li>
