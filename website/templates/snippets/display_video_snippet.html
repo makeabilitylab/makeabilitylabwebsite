@@ -33,10 +33,37 @@
 
       {# humanize-duration.js must be loaded for this to work #}
       <script>
-        {% autoescape off %}
-          age = humanizeDuration({{ video.get_age_in_ms }}, { largest: 1 })
-          document.write("• " + age + " ago")
-        {% endautoescape %}
+        /**
+         * Display video age or release date depending on whether the video
+         * has already been released or is scheduled for future release.
+         */
+        (function() {
+          {% autoescape off %}
+            const ageInMs = {{ video.get_age_in_ms }};
+            
+            // Check if the video has a future release date (negative age)
+            if (ageInMs < 0) {
+              console.log("Video age in ms: " + ageInMs);
+              console.log("Video is scheduled for future release.");
+              // Video is in the future - display the release date
+              const releaseDate = new Date("{{ video.date|date:'c' }}");
+              console.log("Posted date string: {{ video.date|date:'c' }}");
+              console.log("Release date object: " + releaseDate);
+              console.log("Release date as ISO string: " + releaseDate.toISOString());
+              const formattedDate = releaseDate.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+              });
+              console.log("Formatted release date: " + formattedDate);
+              document.write("• Releases " + formattedDate);
+            } else {
+              // Video is in the past - display time ago
+              const age = humanizeDuration(ageInMs, { largest: 1 });
+              document.write("• " + age + " ago");
+            }
+          {% endautoescape %}
+        })();
       </script>
     </p>
   </div>
