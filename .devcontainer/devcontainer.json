@@ -1,0 +1,23 @@
+{
+  "name": "Makeability Lab Website",
+  "dockerComposeFile": "../docker-compose-local-dev.yml",
+  "service": "website",
+  "workspaceFolder": "/code",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance"
+      ]
+    }
+  },
+
+  // This command runs automatically every time the container is created.
+  // It fixes the "dubious ownership" git error for Mac and Windows users alike.
+  "postCreateCommand": "git config --global --add safe.directory /code",
+
+  // Connect as the 'apache' user defined in your Dockerfile, 
+  // or 'root' if you encounter permission issues editing files.
+  "remoteUser": "root" 
+}
