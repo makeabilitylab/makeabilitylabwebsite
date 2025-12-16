@@ -30,7 +30,7 @@ class PublicationAdmin(ArtifactAdmin):
         (None,                      {'fields': ['title', 'authors', 'date']}),
         ('Files',                   {'fields': ['pdf_file']}),
         ('Pub Venue information',   {'fields': ['forum_url','pub_venue_type', 'book_title', 'forum_name', 'location', 'total_papers_submitted', 'total_papers_accepted']}),
-        ('Archival Info',           {'fields': ['official_url', 'extended_abstract', 'peer_reviewed', 'award' ]}),
+        ('Archival Info',           {'fields': ['official_url', 'arxiv_url', 'extended_abstract', 'peer_reviewed', 'award' ]}),
         ('Page Info',               {'fields': ['num_pages', 'page_num_start', 'page_num_end']}),
         ('Supplementary Artifacts', {'fields': ['poster', 'video', 'talk', 'code_repo_url']}),
         ('Project Info',            {'fields': ['projects', 'project_umbrellas']}),

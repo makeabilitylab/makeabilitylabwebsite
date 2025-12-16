@@ -72,7 +72,7 @@ else:
     ALLOWED_HOSTS = ['*']
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "1.9.9.4 (Fixed video search in video admin)" # Makeability Lab website version
+ML_WEBSITE_VERSION = "1.9.9.5 (Added arxiv urls to pub model)" # Makeability Lab website version
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
