@@ -1,6 +1,7 @@
 from django.conf import settings # for access to settings variables, see https://docs.djangoproject.com/en/4.0/topics/settings/#using-settings-in-python-code
-from website.models import Banner, Project, ProjectUmbrella, Publication
-from django.db.models import Max, Count # see https://docs.djangoproject.com/en/4.2/topics/db/aggregation/
+from django.utils import timezone # for timezone-aware date operations
+from website.models import Project, ProjectUmbrella, Publication
+from django.db.models import Count, Q # see https://docs.djangoproject.com/en/4.2/topics/db/aggregation/
 from django.db.models import OuterRef, Subquery
 from django.shortcuts import render # for render https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
 
@@ -15,19 +16,26 @@ def project_listing(request):
     func_start_time = time.perf_counter()
     _logger.debug(f"Starting views/projects at {func_start_time:0.4f}")
 
+    # Get today's date for filtering completed projects
+    today = timezone.now().date()
+
     # Get the most recent publication date for each project
     latest_publication_dates = Publication.objects.filter(projects=OuterRef('pk')).order_by('-date')
 
     # Get all projects that have at least one publication, a gallery image, and
-    # are active (i.e., have no end date)
+    # are active (i.e., have no end date OR have an end date today or in the future)
     # ordered by most recent pub date
-    active_projects = (Project.objects.filter(publication__isnull=False, gallery_image__isnull=False, end_date__isnull=True)
+    active_projects = (Project.objects.filter(
+                    publication__isnull=False, 
+                    gallery_image__isnull=False)
+                .filter(Q(end_date__isnull=True) | Q(end_date__gt=today))
                 .annotate(most_recent_publication=Subquery(latest_publication_dates.values('date')[:1]))
                 .order_by('-most_recent_publication', 'id').distinct())
     
-    # Get completed projects that have at least one publication, a gallery image, and have an end date
+    # Get completed projects that have at least one publication, a gallery image, 
+    # and have an end date that is before today
     # ordered by most recent pub date
-    completed_projects = (Project.objects.filter(publication__isnull=False, gallery_image__isnull=False, end_date__isnull=False)
+    completed_projects = (Project.objects.filter(publication__isnull=False, gallery_image__isnull=False, end_date__isnull=False, end_date__lte=today)
                 .annotate(most_recent_publication=Subquery(latest_publication_dates.values('date')[:1]))
                 .order_by('-most_recent_publication', 'id').distinct())
     
