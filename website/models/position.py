@@ -210,8 +210,11 @@ class Position(models.Model):
     @staticmethod
     def get_sorted_abstracted_titles():
         """Static method returns a sorted list of abstracted title names"""
-        return (AbstractedTitle.PROFESSOR.value, AbstractedTitle.PROFESSIONAL.value, Title.POST_DOC,
-                AbstractedTitle.GRADUATE_STUDENT.value, Title.UGRAD, Title.HIGH_SCHOOL, Title.UNKNOWN)
+        return (AbstractedTitle.PROFESSOR.value, Title.POST_DOC,
+                AbstractedTitle.GRADUATE_STUDENT.value, Title.UGRAD, 
+                Title.HIGH_SCHOOL, 
+                AbstractedTitle.PROFESSIONAL.value,
+                Title.UNKNOWN)
 
     @staticmethod
     def get_map_abstracted_title_to_order():
