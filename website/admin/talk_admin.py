@@ -42,6 +42,19 @@ class TalkAdmin(ArtifactAdmin):
     list_filter = ('talk_type',)  # Add a filter for the talk type
 
     def get_changeform_initial_data(self, request):
+        """
+        Pre-fills the talk form with data from a related publication.
+        
+        When adding a new talk from a publication's admin page, this method
+        reads the publication_id from the URL query parameters and uses that
+        publication's data to pre-populate matching fields in the talk form.
+        
+        Args:
+            request: The HTTP request object containing GET parameters.
+            
+        Returns:
+            dict: Initial form data, potentially pre-filled from a publication.
+        """
         # _logger.debug("******* get_changeform_initial_data ***********")
         # _logger.debug(f"request is {request} and request.GET is {request.GET}")
 
