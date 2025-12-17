@@ -23,6 +23,8 @@ Usage:
 from django.contrib import admin
 from django.contrib.admin.apps import AdminConfig
 from django.conf import settings
+from django.contrib.auth.models import Group, User     
+from django.contrib.auth.admin import GroupAdmin, UserAdmin 
 
 
 class MakeabilityLabAdminSite(admin.AdminSite):
@@ -61,12 +63,12 @@ class MakeabilityLabAdminSite(admin.AdminSite):
         (
             "Grants & Funding",
             ["Grant", "Sponsor"],
-            None
+            "Generally, Jon will handle these. Please contact him if you think you need to edit."
         ),
         (
             "Configuration",
             ["Keyword", "ProjectUmbrella"],
-            "These are used to tag and organize content across the site."
+            "These are used to tag and organize content across the site. You will not typically modify these keywords directly; instead, you'll add them when editing Publications, Projects, etc."
         ),
         (
             "Administration",
@@ -107,12 +109,14 @@ class MakeabilityLabAdminSite(admin.AdminSite):
         
         # Build the custom grouped list
         custom_app_list = []
+        used_models = set()  # Track which models we've placed in groups
         
         for group_name, model_names, help_text in self.CUSTOM_GROUPS:
             models = []
             for name in model_names:
                 if name in model_lookup:
                     models.append(model_lookup[name])
+                    used_models.add(name)
             
             # Only add the group if it has models the user can access
             if models:
@@ -125,11 +129,40 @@ class MakeabilityLabAdminSite(admin.AdminSite):
                     'help_text': help_text,  # Custom field for our template
                 })
         
+        # Collect any models not in our custom groups (so nothing gets lost)
+        # This ensures new models added later still appear even if we forget
+        # to add them to CUSTOM_GROUPS
+        ungrouped_models = []
+        for app in original_app_list:
+            for model in app.get('models', []):
+                model_name = model.get('object_name')
+                if model_name and model_name not in used_models:
+                    ungrouped_models.append(model)
+        
+        # If there are ungrouped models, add them in an "Other" section
+        if ungrouped_models:
+            custom_app_list.append({
+                'name': 'Other',
+                'app_label': 'other',
+                'app_url': None,
+                'has_module_perms': True,
+                'models': ungrouped_models,
+                'help_text': "Models not yet assigned to a category. Please update "
+                             "CUSTOM_GROUPS in admin_site.py to organize these.",
+            })
+        
         return custom_app_list
 
 
 # Create the custom admin site instance
 ml_admin_site = MakeabilityLabAdminSite(name='admin')
+
+# Ensure standard auth models are registered with our custom site
+if not ml_admin_site.is_registered(Group):
+    ml_admin_site.register(Group, GroupAdmin)
+
+if not ml_admin_site.is_registered(User):
+    ml_admin_site.register(User, UserAdmin)
 
 
 class MakeabilityLabAdminConfig(AdminConfig):

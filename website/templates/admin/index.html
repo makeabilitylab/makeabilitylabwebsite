@@ -1,4 +1,5 @@
 {% extends "admin/index.html" %}
+{% load i18n static %}
 
 {% block content %}
 <div class="ml-version-info">
@@ -8,12 +9,74 @@
   {% endif %}
 </div>
 
+<div id="content-main">
+  {% if app_list %}
+    {% for app in app_list %}
+      <div class="app-{{ app.app_label }} module{% if app.app_url %} collapse{% endif %}">
+        <table>
+          <caption>
+            {% if app.app_url %}
+              <a href="{{ app.app_url }}" class="section" title="{% blocktranslate with name=app.name %}Models in the {{ name }} application{% endblocktranslate %}">{{ app.name }}</a>
+            {% else %}
+              <span class="section">{{ app.name }}</span>
+            {% endif %}
+          </caption>
+
+          {# Display help text if present for this group #}
+          {% if app.help_text %}
+            <tr class="ml-help-text-row">
+              <td colspan="3">
+                <div class="ml-help-text">
+                  <span class="ml-help-icon">💡</span>
+                  {{ app.help_text }}
+                </div>
+              </td>
+            </tr>
+          {% endif %}
+
+          {% for model in app.models %}
+            <tr class="model-{{ model.object_name|lower }}">
+              {% if model.admin_url %}
+                <th scope="row"><a href="{{ model.admin_url }}"{% if model.admin_url in request.path|urlencode %} aria-current="page"{% endif %}>{{ model.name }}</a></th>
+              {% else %}
+                <th scope="row">{{ model.name }}</th>
+              {% endif %}
+
+              {% if model.add_url %}
+                <td><a href="{{ model.add_url }}" class="addlink">{% translate 'Add' %}</a></td>
+              {% else %}
+                <td></td>
+              {% endif %}
+
+              {% if model.admin_url and show_changelinks %}
+                {% if model.view_only %}
+                  <td><a href="{{ model.admin_url }}" class="viewlink">{% translate 'View' %}</a></td>
+                {% else %}
+                  <td><a href="{{ model.admin_url }}" class="changelink">{% translate 'Change' %}</a></td>
+                {% endif %}
+              {% elif show_changelinks %}
+                <td></td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>{% translate "You don't have permission to view or edit anything." %}</p>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block sidebar %}
 {{ block.super }}
 {% endblock %}
 
 {% block extrastyle %}
 {{ block.super }}
 <style>
+
+  /* Version info banner */
   .ml-version-info {
     background-color: #f8f9fa;
     border: 1px solid #dee2e6;
@@ -30,6 +93,38 @@
 
   .ml-version-description {
     color: #666;
+  }
+
+  /* Help text styling within category tables */
+  .ml-help-text-row td {
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    white-space: normal;
+  }
+
+  .ml-help-text {
+    background: linear-gradient(135deg, #fef9e7 0%, #fef5e0 100%);
+    border: 1px solid #f0d78c;
+    border-radius: 4px;
+    padding: 10px 14px;
+    margin: 8px 0 4px 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #5a5a5a;
+  }
+
+  .ml-help-icon {
+    margin-right: 6px;
+  }
+
+  /* Ensure help text looks good in dark mode if enabled */
+  @media (prefers-color-scheme: dark) {
+    .ml-help-text {
+      background: linear-gradient(135deg, #3d3a2e 0%, #35332a 100%);
+      border-color: #5a5344;
+      color: #d4d4d4;
+    }
   }
 </style>
 {% endblock %}
