@@ -7,7 +7,7 @@ import logging
 from django.utils.text import get_valid_filename
 import time # for generating unique filenames
 from wand.image import Image, Color # for creating thumbnails
-from wand.exceptions import ImageError # for creating thumbnails
+from wand.exceptions import WandException# for creating thumbnails
 
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
@@ -198,53 +198,69 @@ def rename_artifact_in_db_and_filesystem(model, file_field, new_filename, update
         return None
     
 def generate_thumbnail_for_pdf(pdf_file_field, thumbnail_image_field, thumbnail_local_path):
-    """ 
-    Generates a thumbnail for a given PDF file.
+    """
+    Generates a JPEG thumbnail from the first page of a PDF file.
 
-    Parameters:
-    pdf_file (models.FileField): The PDF file for which the thumbnail is to be generated.
-    thumbnail (models.ImageField): The image field where the generated thumbnail will be saved.
+    Uses progressive DPI fallback (144 → 72 → 36) to handle memory-intensive
+    PDFs like large posters or complex vector graphics.
+
+    Args:
+        pdf_file_field (models.FileField): The source PDF file.
+        thumbnail_image_field (models.ImageField): Field to store the thumbnail reference.
+        thumbnail_local_path (str): Relative path (from MEDIA_ROOT) for thumbnail storage.
 
     Returns:
-    str: The path of the generated thumbnail.
+        str | None: Full filesystem path to the generated thumbnail, or None if
+            generation failed at all resolutions.
+
+    Raises:
+        ValueError: If the provided file is not a PDF.
     """
-
-    # Check if the file is a PDF
-    if not pdf_file_field.name.endswith('.pdf'):
+    # Validate file type (case-insensitive)
+    if not pdf_file_field.name.lower().endswith('.pdf'):
         raise ValueError("The provided file is not a PDF.")
-    
-    _logger.debug(f"Generating thumbnail for PDF file {pdf_file_field.name} and thumbnail local path {thumbnail_local_path}")
-    
-    # Get the thumbnail dir
-    thumbnail_full_path = os.path.join(settings.MEDIA_ROOT, thumbnail_local_path)
 
-    # make sure this dir exists
-    if not os.path.exists(thumbnail_full_path):
-        os.makedirs(thumbnail_full_path)
+    _logger.debug(
+        f"Generating thumbnail for PDF: {pdf_file_field.name}, "
+        f"output path: {thumbnail_local_path}"
+    )
 
-    pdf_filename = os.path.basename(pdf_file_field.path)
-    pdf_filename_no_ext = os.path.splitext(pdf_filename)[0]
-    thumbnail_filename = "{}.{}".format(pdf_filename_no_ext, "jpg");
-    thumbnail_filename_with_full_path = os.path.join(thumbnail_full_path, thumbnail_filename)
-    thumbnail_filename_with_full_path = ensure_filename_is_unique(thumbnail_filename_with_full_path)
+    # Ensure thumbnail directory exists
+    thumbnail_dir = os.path.join(settings.MEDIA_ROOT, thumbnail_local_path)
+    os.makedirs(thumbnail_dir, exist_ok=True)
 
-    try:
-        with Image(filename="{}[0]".format(pdf_file_field.path), resolution=300) as img:
-            img.format = 'jpeg'
-            img.background_color = Color('white')
-            img.alpha_channel = 'remove'
-            img.save(filename=thumbnail_filename_with_full_path)
-    except ImageError as e:
-        _logger.debug(f"Caught ImageError when generating thumbnail at 300 DPI, retrying at 72 DPI. Error: {str(e)}")
-        with Image(filename="{}[0]".format(pdf_file_field.path), resolution=72) as img:
-            img.format = 'jpeg'
-            img.background_color = Color('white')
-            img.alpha_channel = 'remove'
-            img.save(filename=thumbnail_filename_with_full_path)
+    # Build output filename
+    pdf_filename_no_ext = os.path.splitext(os.path.basename(pdf_file_field.path))[0]
+    thumbnail_filename = f"{pdf_filename_no_ext}.jpg"
+    thumbnail_full_path = ensure_filename_is_unique(
+        os.path.join(thumbnail_dir, thumbnail_filename)
+    )
 
-    thumbnail_filename_with_local_path = os.path.join(thumbnail_local_path, thumbnail_filename)
-    thumbnail_image_field.name = thumbnail_filename_with_local_path
+    # Progressive DPI fallback for memory-constrained environments
+    # 144 = Retina/HiDPI, 72 = Standard, 36 = Large format fallback
+    dpi_options = [144, 72, 36]
 
-    return thumbnail_filename_with_full_path
+    for dpi in dpi_options:
+        try:
+            _logger.debug(f"Attempting thumbnail generation at {dpi} DPI...")
+            with Image(filename=f"{pdf_file_field.path}[0]", resolution=dpi) as img:
+                img.format = 'jpeg'
+                img.background_color = Color('white')
+                img.alpha_channel = 'remove'
+                img.save(filename=thumbnail_full_path)
+
+            _logger.debug(f"Thumbnail generated successfully at {dpi} DPI.")
+            thumbnail_image_field.name = os.path.join(
+                thumbnail_local_path, 
+                os.path.basename(thumbnail_full_path)
+            )
+            return thumbnail_full_path
+
+        except WandException as e:
+            _logger.warning(f"Thumbnail generation failed at {dpi} DPI: {e}")
+            continue
+
+    _logger.error(f"Thumbnail generation failed at all resolutions for: {pdf_file_field.name}")
+    return None
     
    
