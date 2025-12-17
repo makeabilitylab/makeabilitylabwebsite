@@ -13,4 +13,5 @@ document.addEventListener('DOMContentLoaded', function() {
   console.log(`Updating links with publication id ${publicationId}`);
   updateLinkWithPublicationId('add_id_talk', publicationId);
   updateLinkWithPublicationId('add_id_video', publicationId);
+  updateLinkWithPublicationId('add_id_poster', publicationId); 
 });
