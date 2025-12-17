@@ -1,0 +1,44 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block branding %}
+<div id="site-name">
+  <a href="{% url 'admin:index' %}">
+    <img src="{% static 'website/img/logos/MakeabilityLab-Logo-v3-w-Text-BlackAndWhite-White_978x789.png' %}" 
+         alt="Makeability Lab" 
+         height="40"
+         style="vertical-align: middle; margin-right: 10px;">
+  </a>
+  <span class="ml-version-badge">Makeability Lab Website v{{ ML_WEBSITE_VERSION }}</span>
+  {% if DEBUG %}<span class="ml-debug-badge">RUNNING DEBUG MODE</span>{% endif %}
+</div>
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  /* Version badge styling */
+  .ml-version-badge {
+    background-color: #417690;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 1.5rem;
+    font-weight: normal;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  /* Debug mode badge */
+  .ml-debug-badge {
+    background-color: #dc3545;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+</style>
+{% endblock %}

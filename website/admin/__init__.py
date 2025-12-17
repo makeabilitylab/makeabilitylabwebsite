@@ -18,6 +18,6 @@ from django.conf import settings # so we can print out the Makeability Lab websi
 #     Makeability Lab Website Version: {settings.ML_WEBSITE_VERSION} | DEBUG MODE={settings.DEBUG}\
 #     INTERNAL_IPS={settings.INTERNAL_IPS}"
 
-admin.site.site_header = f"Makeability Lab Admin v{settings.ML_WEBSITE_VERSION}"  # Top of every page
-admin.site.site_title = "Makeability Lab"   # Browser tab title
-admin.site.index_title = "Dashboard"        # Title on the index page only
+admin.site.site_header = f"Makeability Lab Website v{settings.ML_WEBSITE_VERSION}"  # Top of every page
+admin.site.site_title = "Makeability Lab Admin"   # Browser tab title
+admin.site.index_title = "Makeability Lab Admin Dashboard"        # Title on the index page only

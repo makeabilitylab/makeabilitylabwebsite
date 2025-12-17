@@ -1,0 +1,35 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+<div class="ml-version-info">
+  <strong>Version {{ ML_WEBSITE_VERSION }}</strong>
+  {% if ML_WEBSITE_VERSION_DESCRIPTION %}
+    <span class="ml-version-description">— {{ ML_WEBSITE_VERSION_DESCRIPTION }}</span>
+  {% endif %}
+</div>
+
+{{ block.super }}
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  .ml-version-info {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-left: 4px solid #417690;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .ml-version-info strong {
+    color: #417690;
+  }
+
+  .ml-version-description {
+    color: #666;
+  }
+</style>
+{% endblock %}
