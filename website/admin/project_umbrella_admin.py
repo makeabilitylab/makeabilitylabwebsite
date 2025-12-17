@@ -1,13 +1,14 @@
 from django.contrib import admin
 from django.contrib.admin import widgets
 from website.models import Project, ProjectUmbrella
+from website.admin.admin_site import ml_admin_site
 
 # To display a list of all projects associated with a specific ProjectUmbrella when you click on it 
 # in the Django admin interface, you can use Django’s InlineModelAdmin objects. 
 class ProjectInline(admin.TabularInline):  # or admin.StackedInline
     model = Project.project_umbrellas.through
 
-@admin.register(ProjectUmbrella)
+@admin.register(ProjectUmbrella, site=ml_admin_site)
 class ProjectUmbrellaAdmin(admin.ModelAdmin):
     list_display = ('name', 'short_name', 'project_count')
     inlines = [ProjectInline]

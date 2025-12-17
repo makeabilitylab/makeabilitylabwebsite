@@ -2,8 +2,9 @@ from django.contrib import admin
 from website.models import Position, Person
 from website.models.position import Title
 from website.admin.utils import get_active_professors_queryset
+from website.admin.admin_site import ml_admin_site
 
-@admin.register(Position)
+@admin.register(Position, site=ml_admin_site)
 class PositionAdmin(admin.ModelAdmin):
     """Note: We do not want users to edit positions directly. Instead, we want them to edit people and projects.
        See PositionInline in PersonAdmin"""

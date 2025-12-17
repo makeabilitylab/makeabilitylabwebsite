@@ -11,6 +11,7 @@ from django.utils.html import format_html # for formatting thumbnails
 from easy_thumbnails.files import get_thumbnailer # for generating thumbnails
 import os # for checking if thumbnail file exists
 from website.utils import timeutils
+from website.admin.admin_site import ml_admin_site
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -61,7 +62,7 @@ class ProjectRoleInline(admin.StackedInline):
     autocomplete_fields = ['project']
 
 
-@admin.register(Person)
+@admin.register(Person, site=ml_admin_site)
 class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
     fieldsets = [
         (None,                      {'fields': ['first_name', 'middle_name', 'last_name', 'image', 'cropping', 'easter_egg', 'easter_egg_crop']}),

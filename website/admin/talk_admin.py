@@ -6,11 +6,12 @@ import logging
 from django.utils.html import format_html # for formatting thumbnails
 from easy_thumbnails.files import get_thumbnailer # for generating thumbnails
 import os # for checking if thumbnail file exists
+from website.admin.admin_site import ml_admin_site
 
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
 
-@admin.register(Talk)
+@admin.register(Talk, site=ml_admin_site)
 class TalkAdmin(ArtifactAdmin):
     # The list display lets us control what is shown in the default talk table at Home > Website > Talk
     # See: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_display

@@ -2,8 +2,9 @@ from django.contrib import admin
 from website.models import Grant
 from django.db.models import Sum
 from website.admin import ArtifactAdmin
+from website.admin.admin_site import ml_admin_site
 
-@admin.register(Grant)
+@admin.register(Grant, site=ml_admin_site)
 class GrantAdmin(ArtifactAdmin):
 
     # search_fields are used for auto-complete, see:

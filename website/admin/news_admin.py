@@ -12,6 +12,7 @@ from django.db.models.functions import TruncYear # for filtering by year
 from django.utils.html import format_html # for formatting thumbnails
 from easy_thumbnails.files import get_thumbnailer # for generating thumbnails
 import os # for checking if thumbnail file exists
+from website.admin.admin_site import ml_admin_site
 
 class YearListFilter(admin.SimpleListFilter):
     title = 'year' # a label for our filter
@@ -32,7 +33,7 @@ class YearListFilter(admin.SimpleListFilter):
         if self.value():
             return queryset.filter(date__year=self.value())
 
-@admin.register(News)
+@admin.register(News, site=ml_admin_site)
 class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
     # The list display lets us control what is shown in the default table at Home > Website > News

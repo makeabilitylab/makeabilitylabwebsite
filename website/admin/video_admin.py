@@ -2,11 +2,12 @@ from django.contrib import admin
 from website.models import Video, Publication, Talk
 from django.contrib.admin import widgets
 import logging
+from website.admin.admin_site import ml_admin_site
 
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
 
-@admin.register(Video)
+@admin.register(Video, site=ml_admin_site)
 class VideoAdmin(admin.ModelAdmin):
     # The list display lets us control what is shown in the default persons table at Home > Website > Videos
     # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin

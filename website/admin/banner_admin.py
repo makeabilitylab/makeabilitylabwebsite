@@ -2,8 +2,9 @@ from django.contrib import admin
 from website.models import Banner
 from django.utils.html import format_html
 from image_cropping import ImageCroppingMixin
+from website.admin.admin_site import ml_admin_site
 
-@admin.register(Banner)
+@admin.register(Banner, site=ml_admin_site)
 class BannerAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
     # In Django, you can specify the order of fields using one of two methods:

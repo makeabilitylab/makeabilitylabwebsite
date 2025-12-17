@@ -10,6 +10,7 @@ from easy_thumbnails.files import get_thumbnailer # for generating thumbnails
 import os # for checking if thumbnail file exists
 from django import forms
 from django.db.models import F
+from website.admin.admin_site import ml_admin_site
 
 class ProjectRoleInline(admin.TabularInline):
     model = ProjectRole
@@ -45,7 +46,7 @@ class GrantInline(admin.TabularInline):
     model = Grant.projects.through
     extra = 1
 
-@admin.register(Project)
+@admin.register(Project, site=ml_admin_site)
 class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
     search_fields = ['name']  # allows you to search by the name of the project
     inlines = [GrantInline, BannerInline, PhotoInline, ProjectRoleInline]

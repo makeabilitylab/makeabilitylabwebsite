@@ -14,7 +14,7 @@ from django.contrib import admin
 app_name = "website"
 urlpatterns = [
     # Matches the URL starting with "admin/" and routes it to the Django admin site.
-    re_path(r"^admin/", admin.site.urls),
+    # re_path(r"^admin/", admin.site.urls),
 
     # Matches the root URL (i.e., the homepage) and routes it to the `index` view.
     re_path(r'^$', views.index, name='index'),
