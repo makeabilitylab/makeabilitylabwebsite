@@ -244,14 +244,36 @@ otherwise, they are hidden! */
   opacity: 1;
 }
 
+/* ============================================
+   Publication Download Links - Pill Badge Style
+   ============================================ */
 .pub-download-links {
-  font-size: 7pt;
-  color: gray;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
   margin-top: 8px !important;
-  margin: 0 20px 0 107px;
-  bottom: 0;
-  /* position: absolute; */
-  border-top: 1px solid #dddddd;
-  overflow: hidden;
-  max-height: 14px;
+  font-size: 11px;
+}
+
+.pub-download-links a {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  background: #f0f0f0;
+  border-radius: 12px;
+  color: #2980b9;  /* ← Blue foreground */
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.pub-download-links a:hover {
+  background: #e0e0e0;
+  color: #1a5276;  /* ← Darker blue on hover */
+  text-decoration: none;
+}
+
+.pub-download-links a i,
+.pub-download-links a .ai {
+  margin-right: 4px;
+  font-size: 0.95em;
 }
