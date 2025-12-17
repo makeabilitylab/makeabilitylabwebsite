@@ -1,30 +1,27 @@
 {% load ml_tags %}
 
-<span class="citation-link">
-    |
-    <!-- See https://getbootstrap.com/docs/3.3/javascript/#popovers -->
-    <!-- Typically to make an auto-closing popover when focus is lost, you use tabindex="0" role="button" data-trigger="focus"
-         however, that doesn't work for us since we want to make an *interactive* popup. Instead, we use custom code in
-         citationPopoverSimple.js to do this-->
-    <a class="publication-citation-link" data-toggle="popover" data-html="true" title="Citation" data-trigger="manual"
-       tabindex="0" data-content="
-        <div class='citation-links'>Format:
-            <button id='citation-link' class='active' onclick='$(this).citationclick()'>Text Citation</button>
-            <button id='bibtex-link' onclick='$(this).bibtexclick()'>Bibtex</button>
-        </div><br/>
-        <div class='citation-text'>
-            {{ pub.get_citation_as_html }}
-        </div>
-        <div class='bibtex-text' style='display: none'>
-            {{ pub.get_citation_as_bibtex }}
-        </div>
-        <div style='text-align: right; cursor: pointer;'>
-            <a class='citation-download' onclick='$(this).downloadCitation(&quot;{% get_pub_filename pub '' 30 %}&quot;)'>
-                <i class='icon fas fa-download'></i> Download</a> | 
-            <a class='citation-copy' onclick='$(this).copyCitation()'>
-                <i class='icon fas fa-copy'></i> Copy
-            </a>
-        </div>
-  ">Citation</a>
-  {% comment %} You could also try: <a class='citation-download' onclick='$(this).downloadCitation(&quot;{{pub.filename_no_ext}}&quot;)'> {% endcomment %}
-</span>
+<!-- See https://getbootstrap.com/docs/3.3/javascript/#popovers -->
+<!-- Typically to make an auto-closing popover when focus is lost, you use tabindex="0" role="button" data-trigger="focus"
+     however, that doesn't work for us since we want to make an *interactive* popup. Instead, we use custom code in
+     citationPopoverSimple.js to do this-->
+<a class="publication-citation-link" data-toggle="popover" data-html="true" title="Citation" data-trigger="manual"
+   tabindex="0" data-content="
+    <div class='citation-links'>Format:
+        <button id='citation-link' class='active' onclick='$(this).citationclick()'>Text Citation</button>
+        <button id='bibtex-link' onclick='$(this).bibtexclick()'>Bibtex</button>
+    </div><br/>
+    <div class='citation-text'>
+        {{ pub.get_citation_as_html }}
+    </div>
+    <div class='bibtex-text' style='display: none'>
+        {{ pub.get_citation_as_bibtex }}
+    </div>
+    <div style='text-align: right; cursor: pointer;'>
+        <a class='citation-download' onclick='$(this).downloadCitation(&quot;{% get_pub_filename pub '' 30 %}&quot;)'>
+            <i class='icon fas fa-download'></i> Download</a> | 
+        <a class='citation-copy' onclick='$(this).copyCitation()'>
+            <i class='icon fas fa-copy'></i> Copy
+        </a>
+    </div>
+"><i class="fa-solid fa-quote-left"></i>Cite</a>
+{% comment %} You could also try: <a class='citation-download' onclick='$(this).downloadCitation(&quot;{{pub.filename_no_ext}}&quot;)'> {% endcomment %}
