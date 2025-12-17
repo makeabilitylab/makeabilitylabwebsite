@@ -163,22 +163,3 @@ if not ml_admin_site.is_registered(Group):
 
 if not ml_admin_site.is_registered(User):
     ml_admin_site.register(User, UserAdmin)
-
-
-class MakeabilityLabAdminConfig(AdminConfig):
-    """
-    Custom AdminConfig that sets MakeabilityLabAdminSite as the default admin site.
-    
-    This ensures that admin.site points to our custom site before any
-    @admin.register decorators are processed, so all existing admin files
-    work without modification.
-    
-    Usage:
-        In settings.py INSTALLED_APPS, replace:
-            'django.contrib.admin'
-        with:
-            'website.admin.admin_site.MakeabilityLabAdminConfig'
-    """
-    default_site = 'website.admin.admin_site.MakeabilityLabAdminSite'
-
-    print(">>> MakeabilityLabAdminConfig loaded! *********************")  # Temporary debug line

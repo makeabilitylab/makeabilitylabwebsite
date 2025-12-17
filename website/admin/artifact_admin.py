@@ -65,7 +65,10 @@ class ArtifactAdmin(admin.ModelAdmin):
         Returns:
         None. The method saves the changes to the database.
         """
-        _logger.debug(f"Started save_model with self={self}, request={request}, obj={obj}, form={form}, change={change}")
+        
+        # _logger.debug(f"Started save_model with self={self}, request={request}, obj={obj}, form={form}, change={change}")
+        # Removed form from debug because it can be very large
+        _logger.debug(f"Started save_model with self={self}, request={request}, obj={obj}, change={change}")
 
         # Get the list of changed fields
         changed_fields = form.changed_data

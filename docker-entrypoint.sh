@@ -100,6 +100,11 @@ echo "4.4 Running 'python manage.py remove_year_from_forum_name' to remove year 
 echo "******************************************"
 python manage.py remove_year_from_forum_name
 
+echo "****************** STEP 4.5/5: docker-entrypoint.sh ************************"
+echo "3.1 Running 'python manage.py fix_sortedm2m_columns' to fix any missing sort_value columns"
+echo "******************************************"
+python manage.py fix_sortedm2m_columns
+
 # echo "****************** STEP 4.3/5: docker-entrypoint.sh ************************"
 # echo "4.3 Running 'python manage.py rename_person_images' to rename person images"
 # echo "******************************************"
