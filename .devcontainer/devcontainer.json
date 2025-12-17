@@ -7,9 +7,25 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "ms-python.python",
-        "ms-python.vscode-pylance"
-      ]
+        "ms-python.python",            // Standard Python support
+        "ms-python.vscode-pylance",    // Faster language server
+        "batisteo.vscode-django",      // Best Syntax Highlighting
+        "monosans.djlint"              // Best Formatter & Linter
+      ],
+      "settings": {
+        // This tells VS Code to use DjLint to format your HTML files
+        "[django-html]": {
+          "editor.defaultFormatter": "monosans.djlint"
+        },
+        "[html]": {
+          "editor.defaultFormatter": "monosans.djlint"
+        },
+        // Ensures .html files are treated as Django templates
+        "files.associations": {
+          "**/templates/**/*.html": "django-html",
+          "**/templates/**/*": "django-txt"
+        }
+      }
     }
   },
 
