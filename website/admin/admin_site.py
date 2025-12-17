@@ -53,7 +53,7 @@ class MakeabilityLabAdminSite(admin.AdminSite):
         (
             "People & News",
             ["Person", "News"],
-            None
+            "Please keep your ugrads up-to-date! Make sure you add them to your projects, set their mentorship info, and keep dates accurate."
         ),
         (
             "Projects & Media", 
@@ -68,7 +68,7 @@ class MakeabilityLabAdminSite(admin.AdminSite):
         (
             "Configuration",
             ["Keyword", "ProjectUmbrella"],
-            "These are used to tag and organize content across the site. You will not typically modify these keywords directly; instead, you'll add them when editing Publications, Projects, etc."
+            "These are used to tag and organize content across the site. You will not typically modify keywords directly; instead, you'll add them when editing Publications, Projects, etc."
         ),
         (
             "Administration",
