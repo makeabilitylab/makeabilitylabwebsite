@@ -3,11 +3,12 @@ from website.models import Poster
 from website.models import Talk, Publication, PubType, TalkType
 from website.admin import ArtifactAdmin
 import logging
+from website.admin.admin_site import ml_admin_site
 
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
 
-@admin.register(Poster)
+@admin.register(Poster, site=ml_admin_site)
 class PosterAdmin(ArtifactAdmin):
 
     # search_fields are used for auto-complete, see:

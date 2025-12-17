@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.db.models import Count
 from website.models import Keyword
+from website.admin.admin_site import ml_admin_site
 
-@admin.register(Keyword)
+@admin.register(Keyword, site=ml_admin_site)
 class KeywordAdmin(admin.ModelAdmin):
     list_display = ['keyword', 'project_count', 'publication_count']
 

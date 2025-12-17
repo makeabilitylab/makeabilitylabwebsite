@@ -15,10 +15,12 @@ from website.admin import ArtifactAdmin
 from django.urls import reverse
 from django.utils.html import format_html
 
+from website.admin.admin_site import ml_admin_site
+
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
 
-@admin.register(Publication)
+@admin.register(Publication, site=ml_admin_site)
 class PublicationAdmin(ArtifactAdmin):
 
     # We add in some real-time js code to check some data entry

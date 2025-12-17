@@ -1,7 +1,7 @@
 from django.contrib import admin
 from website.models import Artifact
 from django.contrib.admin import widgets
-# from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
+from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
 import logging
 
 # This retrieves a Python logging instance (or creates it)
@@ -39,18 +39,14 @@ class ArtifactAdmin(admin.ModelAdmin):
         formfield (FormField): The formfield to be used in the admin interface for the ManyToMany field. The 
         widget of the formfield is customized based on the name of the db_field.
         """
-        if db_field.name == "projects":
+        if db_field.name == "authors":
+            kwargs['widget'] = SortedFilteredSelectMultiple()
+        elif db_field.name == "projects":
             kwargs["widget"] = widgets.FilteredSelectMultiple("projects", is_stacked=False)
-        # Had to remove because sortedm2m_filter_horizontal_widget is incompatible with Django 5+
-        # if db_field.name == "authors":
-        #     # kwargs["widget"] = widgets.FilteredSelectMultiple("authors", is_stacked=False)
-        #     kwargs['widget'] = SortedFilteredSelectMultiple()
-        if db_field.name == "keywords":
+        elif db_field.name == "keywords":
             kwargs["widget"] = widgets.FilteredSelectMultiple("keywords", is_stacked=False)
-        if db_field.name == "projects":
-            kwargs["widget"] = widgets.FilteredSelectMultiple("projects", is_stacked=False)
-        if db_field.name == "project_umbrellas":
-            kwargs["widget"] = widgets.FilteredSelectMultiple("project umbrellas", is_stacked=False, )
+        elif db_field.name == "project_umbrellas":
+            kwargs["widget"] = widgets.FilteredSelectMultiple("project umbrellas", is_stacked=False)
             
         return super(ArtifactAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
     

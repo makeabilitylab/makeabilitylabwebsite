@@ -8,8 +8,9 @@ from django.utils import timezone
 from django.utils.html import format_html # for formatting thumbnails
 from easy_thumbnails.files import get_thumbnailer # for generating thumbnails
 import os # for checking if thumbnail file exists
+from website.admin.admin_site import ml_admin_site
 
-@admin.register(Sponsor)
+@admin.register(Sponsor, site=ml_admin_site)
 class SponsorAdmin(ImageCroppingMixin, admin.ModelAdmin):
     # The list display lets us control what is shown in the default talk table at Home > Website > Sponsors
     # See: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_display

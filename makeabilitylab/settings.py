@@ -72,7 +72,8 @@ else:
     ALLOWED_HOSTS = ['*']
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "1.9.9.7 (Added pill icons to download bar)" # Makeability Lab website version
+ML_WEBSITE_VERSION = "1.9.9.7" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Added pill icons to download bar"
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
@@ -246,7 +247,8 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'website.context_processors.recent_news'
+                'website.context_processors.recent_news',
+                'website.context_processors.admin_version_info',
             ],
         },
     },

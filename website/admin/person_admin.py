@@ -4,15 +4,14 @@ from website.models.position import Title
 from website.models.person import PERSON_THUMBNAIL_SIZE
 from easy_thumbnails.exceptions import InvalidImageFormatError # for handling invalid images
 from website.admin_list_filters import PositionRoleListFilter, PositionTitleListFilter
+from website.admin.utils import get_active_professors_queryset, get_active_mentors_queryset
 from image_cropping import ImageCroppingMixin
-
-from django.db.models import Q, Case, When, Value, IntegerField
-from django.utils import timezone
 
 from django.utils.html import format_html # for formatting thumbnails
 from easy_thumbnails.files import get_thumbnailer # for generating thumbnails
 import os # for checking if thumbnail file exists
 from website.utils import timeutils
+from website.admin.admin_site import ml_admin_site
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -44,62 +43,18 @@ class PositionInline(admin.StackedInline):
     autocomplete_fields = ['co_advisor', 'grad_mentor']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-
-        # Check if we're loading the advisor/co-advisor widget. If so
-        # we need to filter to professors
-        if db_field.name == "advisor" or db_field.name == "co_advisor":
-           
-            # Query the Position model for professor positions
-            prof_positions = Position.objects.filter(title__in=Position.get_prof_titles())
-
-            # Get the related Person instance for "Jon Froehlich"
-            jon_froehlich = Person.objects.filter(
-                                position__in=prof_positions, 
-                                first_name="Jon", last_name="Froehlich").distinct()
-
-            # Get today's date
-            today = timezone.now().date()
-
-            # Get the related Person instances for the professors who are still active in the lab
-            professors = (Person.objects.filter(
-                                Q(position__in=prof_positions), # filter to appropriate titles
-                                Q(position__start_date__lte=today), # must have started
-                                Q(Q(position__end_date__gte=today) | Q(position__end_date__isnull=True))) # must not have ended
-                                .order_by('first_name').distinct())
-
-            # Annotate the queryset with a custom order field that is 1 for "Jon Froehlich" and 2 for all other professors
-            professors = professors.annotate(
-                custom_order=Case(
-                    When(first_name="Jon", last_name="Froehlich", then=Value(1)),
-                    default=Value(2),
-                    output_field=IntegerField(),
-                )
-            )
-
-            # Order the queryset by the custom order field, then by first name
-            professors = professors.order_by('custom_order', 'first_name')
-
-            kwargs["queryset"] = professors
-
+        """
+        Customize foreign key dropdowns for advisor and mentor fields.
+        
+        Filters the queryset to show only active professors for advisor/co_advisor
+        fields, and active senior lab members for the grad_mentor field.
+        """
+        if db_field.name in ("advisor", "co_advisor"):
+            kwargs["queryset"] = get_active_professors_queryset()
         elif db_field.name == "grad_mentor":
-            # Define the titles we are interested in
-            titles = [Title.POST_DOC, Title.PHD_STUDENT, Title.MS_STUDENT, 
-                Title.RESEARCH_SCIENTIST, Title.DIRECTOR, Title.SOFTWARE_DEVELOPER, Title.DESIGNER]
+            kwargs["queryset"] = get_active_mentors_queryset()
 
-            # Get today's date
-            today = timezone.now().date()
-
-            # Gets all potential mentors based on the defined titles and whether they are 
-            # currently active.
-            grad_mentors = (Person.objects.filter(
-                        Q(position__title__in=titles), # filter to appropriate titles
-                        Q(position__start_date__lte=today), # must have started
-                        Q(Q(position__end_date__gte=today) | Q(position__end_date__isnull=True))) # must not have ended
-                        .order_by('first_name').distinct())
-
-            kwargs["queryset"] = grad_mentors
-
-        return super(PositionInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 class ProjectRoleInline(admin.StackedInline):
     model = ProjectRole
@@ -107,7 +62,7 @@ class ProjectRoleInline(admin.StackedInline):
     autocomplete_fields = ['project']
 
 
-@admin.register(Person)
+@admin.register(Person, site=ml_admin_site)
 class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
     fieldsets = [
         (None,                      {'fields': ['first_name', 'middle_name', 'last_name', 'image', 'cropping', 'easter_egg', 'easter_egg_crop']}),
