@@ -14,6 +14,10 @@ from django.conf import settings # so we can print out the Makeability Lab websi
 #    use admin.site.register() in your __init__.py. The decorator takes care of registering the models.
 
 # For modifying more on the front admin landing page, see https://medium.com/django-musings/customizing-the-django-admin-site-b82c7d325510
-admin.site.index_title = f"Makeability Lab Admin. Django version: {django.get_version()} \
-    Makeability Lab Website Version: {settings.ML_WEBSITE_VERSION} | DEBUG MODE={settings.DEBUG}\
-    INTERNAL_IPS={settings.INTERNAL_IPS}"
+# admin.site.index_title = f"Makeability Lab Admin. Django version: {django.get_version()} \
+#     Makeability Lab Website Version: {settings.ML_WEBSITE_VERSION} | DEBUG MODE={settings.DEBUG}\
+#     INTERNAL_IPS={settings.INTERNAL_IPS}"
+
+admin.site.site_header = f"Makeability Lab Admin v{settings.ML_WEBSITE_VERSION}"  # Top of every page
+admin.site.site_title = "Makeability Lab"   # Browser tab title
+admin.site.index_title = "Dashboard"        # Title on the index page only

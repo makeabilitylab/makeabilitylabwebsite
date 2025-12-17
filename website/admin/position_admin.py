@@ -1,8 +1,7 @@
 from django.contrib import admin
 from website.models import Position, Person
 from website.models.position import Title
-from django.db.models import Q, Case, When, Value, IntegerField
-from django.utils import timezone
+from website.admin.utils import get_active_professors_queryset
 
 @admin.register(Position)
 class PositionAdmin(admin.ModelAdmin):
@@ -20,42 +19,15 @@ class PositionAdmin(admin.ModelAdmin):
         return super().formfield_for_choice_field(db_field, request, **kwargs)
     
     def get_search_results(self, request, queryset, search_term):
+        """
+        Customize autocomplete search results for advisor fields.
+        
+        When the autocomplete is triggered from an advisor or co_advisor field,
+        filters results to show only active professors.
+        """
         queryset, use_distinct = super().get_search_results(request, queryset, search_term)
 
-        # Check if we're loading the advisor/co-advisor widget. If so
-        # we need to filter to professors
         if 'advisor' in request.path or 'co_advisor' in request.path:
-           
-            # Query the Position model for professor positions
-            prof_positions = Position.objects.filter(title__in=Position.get_prof_titles())
-
-            # Get the related Person instance for "Jon Froehlich"
-            jon_froehlich = Person.objects.filter(
-                                position__in=prof_positions, 
-                                first_name="Jon", last_name="Froehlich").distinct()
-
-            # Get today's date
-            today = timezone.now().date()
-
-            # Get the related Person instances for the professors who are still active in the lab
-            professors = (Person.objects.filter(
-                                Q(position__in=prof_positions), # filter to appropriate titles
-                                Q(position__start_date__lte=today), # must have started
-                                Q(Q(position__end_date__gte=today) | Q(position__end_date__isnull=True))) # must not have ended
-                                .order_by('first_name').distinct())
-
-            # Annotate the queryset with a custom order field that is 1 for "Jon Froehlich" and 2 for all other professors
-            professors = professors.annotate(
-                custom_order=Case(
-                    When(first_name="Jon", last_name="Froehlich", then=Value(1)),
-                    default=Value(2),
-                    output_field=IntegerField(),
-                )
-            )
-
-            # Order the queryset by the custom order field, then by first name
-            professors = professors.order_by('custom_order', 'first_name')
-
-            queryset = professors
+            queryset = get_active_professors_queryset()
 
         return queryset, use_distinct
