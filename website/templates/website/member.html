@@ -9,6 +9,25 @@
 {% load cropping %}
 {% load ml_tags %}
 
+{% block opengraph %}
+  <meta property="og:title" content="{{ person.get_full_name }} - Makeability Lab">
+  <meta property="og:type" content="profile">
+  {% if person.bio %}
+    <meta property="og:description" content="{{ person.bio|striptags|truncatewords:50 }}">
+  {% elif auto_generated_bio %}
+    <meta property="og:description" content="{{ auto_generated_bio|striptags|truncatewords:50 }}">
+  {% else %}
+    <meta property="og:description" content="{{ person.get_full_name }} is a {{ position.title }} at the Makeability Lab, an advanced research lab in Human-Computer Interaction at University of Washington.">
+  {% endif %}
+  <meta property="og:image"
+    content="{{ request.scheme }}://{{ request.get_host }}{% thumbnail person.image '1200x630' box=person.cropping crop=True upscale=True %}" />
+  <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}" />
+  
+  {# Profile-specific OpenGraph tags #}
+  <meta property="og:profile:first_name" content="{{ person.first_name }}">
+  <meta property="og:profile:last_name" content="{{ person.last_name }}">
+{% endblock %}
+
 {% block stylesheets %}
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.1/css/all.min.css">
   <link rel="stylesheet" href="{% static 'website/css/news-item.css' %}">
