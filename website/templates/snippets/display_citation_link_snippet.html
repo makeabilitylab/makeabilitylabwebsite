@@ -1,27 +1,89 @@
+{% comment %}
+================================================================================
+CITATION LINK SNIPPET
+================================================================================
+
+Renders a citation popover link for publications. When clicked, displays a
+popover with citation text and BibTeX that users can copy or download.
+
+USAGE:
+  {% include 'snippets/display_citation_link_snippet.html' %}
+
+DEPENDENCIES:
+  - Bootstrap 3 popover
+  - citationPopoverSimple.js (custom click handlers)
+  - publications.css (popover styling)
+
+ACCESSIBILITY:
+  - Link has aria-label describing its purpose
+  - aria-expanded toggled by JS when popover opens/closes
+  - Format toggle uses aria-pressed for state
+  - Action buttons are proper <button> elements
+  - Icons are hidden from screen readers (text labels provide context)
+
+CONTEXT VARIABLES:
+  - pub: Publication model instance (required, from parent template)
+
+@version 2.1.0 - Accessibility and semantics improvements
+================================================================================
+{% endcomment %}
+
 {% load ml_tags %}
 
-<!-- See https://getbootstrap.com/docs/3.3/javascript/#popovers -->
-<!-- Typically to make an auto-closing popover when focus is lost, you use tabindex="0" role="button" data-trigger="focus"
-     however, that doesn't work for us since we want to make an *interactive* popup. Instead, we use custom code in
-     citationPopoverSimple.js to do this-->
-<a class="publication-citation-link" data-toggle="popover" data-html="true" title="Citation" data-trigger="manual"
-   tabindex="0" data-content="
-    <div class='citation-links'>Format:
-        <button id='citation-link' class='active' onclick='$(this).citationclick()'>Text Citation</button>
-        <button id='bibtex-link' onclick='$(this).bibtexclick()'>Bibtex</button>
-    </div><br/>
-    <div class='citation-text'>
+<!-- 
+  Citation popover trigger
+  
+  Uses data-trigger="manual" with citationPopoverSimple.js for proper
+  open/close behavior while keeping popover content interactive.
+-->
+<a class="publication-citation-link" 
+   href="#"
+   role="button"
+   aria-label="Cite this publication: {{ pub.title }}"
+   aria-haspopup="dialog"
+   aria-expanded="false"
+   data-toggle="popover" 
+   data-html="true" 
+   title="Citation" 
+   data-trigger="manual"
+   data-content="
+    <div class='citation-format-toggle' role='group' aria-label='Citation format'>
+      <button type='button' 
+              class='citation-format-btn active' 
+              data-format='text'
+              aria-pressed='true'>
+        Text
+      </button>
+      <button type='button' 
+              class='citation-format-btn' 
+              data-format='bibtex'
+              aria-pressed='false'>
+        BibTeX
+      </button>
+    </div>
+
+    <div class='citation-content'>
+      <div class='citation-text' role='region' aria-label='Citation text'>
         {{ pub.get_citation_as_html }}
-    </div>
-    <div class='bibtex-text' style='display: none'>
+      </div>
+      <div class='bibtex-text' role='region' aria-label='BibTeX citation' style='display: none;'>
         {{ pub.get_citation_as_bibtex }}
+      </div>
     </div>
-    <div style='text-align: right; cursor: pointer;'>
-        <a class='citation-download' onclick='$(this).downloadCitation(&quot;{% get_pub_filename pub '' 30 %}&quot;)'>
-            <i class='icon fas fa-download'></i> Download</a> | 
-        <a class='citation-copy' onclick='$(this).copyCitation()'>
-            <i class='icon fas fa-copy'></i> Copy
-        </a>
+
+    <div class='citation-actions'>
+      <button type='button' 
+              class='citation-action-btn citation-download' 
+              data-filename='{% get_pub_filename pub '' 30 %}'
+              aria-label='Download citation file'>
+        <i class='fa fa-download' aria-hidden='true'></i>
+        <span>Download</span>
+      </button>
+      <button type='button' 
+              class='citation-action-btn citation-copy' 
+              aria-label='Copy citation to clipboard'>
+        <i class='fa fa-copy' aria-hidden='true'></i>
+        <span>Copy</span>
+      </button>
     </div>
-"><i class="fa-solid fa-quote-left"></i>Cite</a>
-{% comment %} You could also try: <a class='citation-download' onclick='$(this).downloadCitation(&quot;{{pub.filename_no_ext}}&quot;)'> {% endcomment %}
+"><i class="fa-solid fa-quote-left" aria-hidden="true"></i>Cite</a>

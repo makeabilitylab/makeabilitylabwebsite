@@ -1,15 +1,5 @@
 @import "footer.css";
 
-@font-face {
-  font-family: roboto;
-  src: url(../fonts/roboto/Roboto-Thin.ttf);
-}
-
-@font-face {
-  font-family: roboto-bold;
-  src: url(../fonts/roboto/Roboto-Light.ttf);
-}
-
 /* General styles */
 
 body {
@@ -17,12 +7,12 @@ body {
 }
 
 h1 {
-  font-family: 'Raleway', sans-serif;
-  font-weight: 700;
-  font-size: 36px;
-  margin-bottom: 0;
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-4xl);
+  margin-bottom: var(--space-2);
   padding-bottom: 0;
-  margin-left: -1px;
+  color: var(--color-text-primary);
 }
 
 h4 {
@@ -278,20 +268,6 @@ h5 {
 @media (max-width: 989px) {
   .carousel-indicators {
     display: none;
-  }
-}
-
-/**************** FOR TOCBOT *****************/
-/** See: https://tscanlin.github.io/tocbot/ **/
-.toc {
-  position: fixed;
-  top: 170px;
-  transform: translateX(-80px);
-}
-
-@media (max-width: 989px) {
-  .toc {
-    display:none;
   }
 }
 
