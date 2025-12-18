@@ -3,6 +3,7 @@ from website.models import Banner, Person, News, Talk, Video, Publication
 import website.utils.ml_utils as ml_utils 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
+from django.core.exceptions import MultipleObjectsReturned
 
 # For logging
 import time
@@ -36,6 +37,13 @@ def member(request, member_name=None, member_id=None):
         try:
             # Try a case-insensitive exact match
             person = get_object_or_404(Person, url_name__iexact=member_name)
+        except MultipleObjectsReturned:
+            # This should not happen if url_name uniqueness is working correctly
+            # Log error and return the most recently modified person as fallback
+            _logger.error(f"Multiple people found with url_name={member_name}! This indicates url_name uniqueness is broken. Returning most recent.")
+            person = Person.objects.filter(url_name__iexact=member_name).order_by('-modified_date').first()
+            if person is None:
+                raise Http404("No person matches the given query.")
         except Http404:
             _logger.debug(f"{member_name} not found for url_name, looking for closest match in database")
             closest_urlname = get_closest_urlname_in_database(member_name)
