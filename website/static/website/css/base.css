@@ -1,6 +1,10 @@
 @import "footer.css";
 
 /* General styles */
+html {
+  /* Override Bootstrap 3's default of 10px */
+  font-size: 100%; /* Resets to browser default (usually 16px) */
+}
 
 body {
   font-family: 'Raleway', sans-serif;
