@@ -41,7 +41,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         {% for pub_year, pub_list in map_year_to_pub_list.items %}
         <section aria-labelledby="year-{{ pub_year }}">
-          <h2 id="{{ pub_year }}">{{ pub_year }}</h2>
+          <h2 id="year-{{ pub_year }}" class="heading-with-anchor">
+            {{ pub_year }}
+            <a href="#year-{{ pub_year }}" 
+              class="header-anchor" 
+              aria-label="Link to {{ pub_year }} publications">
+              <i class="fa-solid fa-link" aria-hidden="true"></i>
+            </a>
+          </h2>
           
           {% for pub in pub_list %}
           <div class="row" style="margin-left: 5px;">

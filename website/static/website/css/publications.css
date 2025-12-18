@@ -38,6 +38,17 @@
    PUBLICATION LIST HEADINGS (Year Headers)
    ============================================================================= */
 
+/* Ensure the background is explicitly white for contrast checks */
+#makelab-recent-publications {
+  background-color: var(--color-bg-page); /* #FFFFFF */
+  padding-bottom: var(--space-5);
+}
+
+/* Ensure the H1 is dark enough */
+#makelab-recent-publications h1 {
+  color: var(--color-text-primary); /* #212121 */
+}
+
 .pub-list h1 {
   color: var(--color-text-secondary);
   font-size: var(--font-size-2xl);
@@ -165,16 +176,18 @@
    PUBLICATION TEXT STYLES
    ============================================================================= */
 
-.pub-title {
-  font-weight: var(--font-weight-semibold);
-}
-
 .artifact-title {
-  color: var(--color-text-primary);
+  /* CHANGE: Use link color so users know it's clickable; required to pass accessibility checks */
+  color: var(--color-link);
+  /* color: var(--color-text-primary); */
   font-weight: var(--font-weight-medium);
   word-wrap: break-word;
   text-overflow: ellipsis;
   /* max-width: 320px; */
+}
+
+.pub-title {
+  font-weight: var(--font-weight-semibold);
 }
 
 .pub-authors a {

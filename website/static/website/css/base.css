@@ -129,6 +129,33 @@ h5 {
   padding-left: 0;
 }
 
+/* REUSABLE HEADING ANCHORS 
+   Pattern: <h2 class="heading-with-anchor">Title <a class="header-anchor">...</a></h2>
+*/
+
+.header-anchor {
+  font-size: 0.7em;                 /* Smaller than the heading text */
+  margin-left: var(--space-2);      /* Uses design token for spacing */
+  color: var(--color-text-muted);   /* Subtle gray by default */
+  opacity: 0;                       /* Hidden by default */
+  transition: opacity var(--transition-fast), color var(--transition-fast);
+  vertical-align: middle;
+  text-decoration: none;
+  border-bottom: none;              /* Prevent underline if links are underlined globally */
+}
+
+/* Show the anchor when hovering the parent heading OR focusing the link itself */
+.heading-with-anchor:hover .header-anchor,
+.header-anchor:focus {
+  opacity: 1;
+  text-decoration: none;            /* Keep it clean */
+}
+
+/* Make it pop with the primary color when interacting */
+.header-anchor:hover {
+  color: var(--color-primary);
+}
+
 /**********************************************************/
 /************** Carousel (Banner) styles ******************/
 #main-carousel{
