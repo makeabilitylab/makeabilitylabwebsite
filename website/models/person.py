@@ -623,8 +623,20 @@ class Person(models.Model):
             if bool(re.search('[^a-zA-Z]', c)) and c in special_chars:
                 url_name_cleaned = url_name_cleaned.replace(c, special_chars.get(c))
 
-        # Finally, clean remaining characters (EX: dashes, periods).
+        # Clean remaining characters (EX: dashes, periods).
         url_name_cleaned = re.sub('[^a-zA-Z]', '', url_name_cleaned)
+
+        # Check for collisions and append numeric suffix if needed
+        # We exclude the current person (by pk) when checking for duplicates to allow updates
+        base_url_name = url_name_cleaned
+        counter = 2
+
+        # Keep incrementing counter until we find a unique url_name
+        while Person.objects.filter(url_name=url_name_cleaned).exclude(pk=self.pk).exists():
+            url_name_cleaned = f"{base_url_name}{counter}"
+            counter += 1
+            _logger.debug(f"URL name collision detected for {self.get_full_name()}. Trying {url_name_cleaned}")
+
         self.url_name = url_name_cleaned
 
         # Next, automatically set the bio_date_modified field
