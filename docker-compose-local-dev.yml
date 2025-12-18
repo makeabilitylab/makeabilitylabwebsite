@@ -5,9 +5,20 @@
 # This file defines two services that run together:
 #   1. db      - A PostgreSQL database container
 #   2. website - The Django application container
+# As well as a third service that checks website accessibility:
+#   3. a11y    - An accessibility testing container using Pa11y + Axe
 #
 # Usage:
 #   docker-compose -f docker-compose-local-dev.yml up
+#
+# Access checks:
+#  docker-compose -f docker-compose-local-dev.yml --profile testing run --rm a11y
+#
+# Access check with report generation:
+# docker-compose -f docker-compose-local-dev.yml --profile testing run --rm a11y sh -c "
+#  npm install -g pa11y-ci &&
+#  pa11y-ci --config /workspace/.pa11yci.json --json | tee /workspace/a11y-report.json
+# "
 #
 # After running, the website is available at: http://localhost:8571
 #
@@ -84,6 +95,14 @@ services:
       # are immediately visible inside the container without rebuilding.
       - .:/code
 
+    healthcheck:
+      # Check if Django is responding
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 90s  # Give Django time for migrations on first run
+
     # Wait for the database to be "healthy" (fully started) before running
     depends_on:
       db:
@@ -95,6 +114,42 @@ services:
     #   - Running database migrations
     #   - Starting the Django development server
     command: ["./docker-entrypoint.sh"]
+
+  # ===========================================================================
+  # ACCESSIBILITY TESTING SERVICE (Pa11y + Axe)
+  # ===========================================================================
+  # Runs automated accessibility scans against the website container.
+  # Uses the Axe engine (same core engine as DubBot/Deque tools).
+  #
+  # Usage:
+  #   docker-compose -f docker-compose-local-dev.yml run --rm a11y
+  #
+  # Note: The website must be running first. Start it with:
+  #   docker-compose -f docker-compose-local-dev.yml up -d website
+  # ===========================================================================
+  a11y:
+    # Puppeteer image includes Chrome and all required dependencies
+    image: ghcr.io/puppeteer/puppeteer:latest
+    user: root  # Needed for npm global install
+
+    # Install pa11y-ci and run it with our config file
+    command: >
+      sh -c "
+        npm install -g pa11y-ci &&
+        pa11y-ci --config /workspace/.pa11yci.json
+      "
+
+    volumes:
+      # Mount entire project directory for config input and report output
+      - .:/workspace
+
+    depends_on:
+      website:
+        condition: service_healthy
+
+    # Optional: Prevent running during normal 'docker-compose up'
+    profiles:
+      - testing
 
 # =============================================================================
 # NAMED VOLUMES

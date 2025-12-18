@@ -22,4 +22,5 @@
     "[html]": {
         "editor.tabSize": 2
     },
+    "djlint.showInstallError": false,
 }
