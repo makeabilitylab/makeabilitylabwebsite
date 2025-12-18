@@ -1,3 +1,38 @@
+{% comment %}
+================================================================================
+BASE TEMPLATE - Makeability Lab
+================================================================================
+
+This is the foundational template that all pages extend. It provides:
+- Document structure and meta tags
+- CSS and JavaScript loading
+- Navigation header
+- Footer with affiliations
+- Block hooks for child templates
+
+ACCESSIBILITY FEATURES:
+- Skip link for keyboard navigation
+- Semantic HTML5 elements (header, nav, main, footer)
+- ARIA labels on icon-only links
+- Alt text on all images
+- Visible focus indicators (via design-tokens.css)
+- Proper heading hierarchy
+
+TEMPLATE BLOCKS:
+- pagetitle: Page title in <title> tag
+- opengraph: Open Graph meta tags
+- stylesheets: Additional CSS files
+- external_scripts: Additional JS libraries
+- scripts: Inline JavaScript
+- navbar: Navigation header
+- maincarousel: Hero carousel/banner
+- content: Main page content
+- footer: Page footer
+
+@version 2.0.0 - Accessibility refactor
+@author Makeability Lab
+================================================================================
+{% endcomment %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,173 +41,139 @@
   {% load static %}
   {% load cropping %}
 
-  <!-- The following code includes dynamic comments that we generate to help with debugging. Do not remove! -->
+  <!-- Build info (helps with debugging) -->
   <!-- Makeability Lab website version {% get_settings_value "ML_WEBSITE_VERSION" %} -->
-  <!-- DEBUG mode set to {% get_settings_value "DEBUG" %}-->
-  {% var_exists 'view_prep_time' as view_prep_time_time_exists %}
-  {% if view_prep_time_time_exists %}
-  <!-- Took {{ view_prep_time|floatformat:3 }} secs for Django view prep -->{% endif %}
-  <!-- Took DEBUG_INSERT_RENDER_TIMING for Django to render this page -->
+  <!-- DEBUG mode: {% get_settings_value "DEBUG" %} -->
+  {% var_exists 'view_prep_time' as view_prep_time_exists %}
+  {% if view_prep_time_exists %}
+  <!-- Django view prep: {{ view_prep_time|floatformat:3 }}s -->
+  {% endif %}
+  <!-- Django render: DEBUG_INSERT_RENDER_TIMING -->
 
+  <!-- Meta tags -->
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="referrer" content="strict-origin-when-cross-origin" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="The Makeability Lab was founded in 2012 by Professor Jon Froehlich and students.
-    The lab's mission is to 'empower everyone to make things that matter.'' 
-    We believe that making can be a powerful tool for learning, creativity, and social change.">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="description" content="The Makeability Lab is an advanced research lab in Human-Computer Interaction and AI directed by Professor Jon E. Froehlich at University of Washington's Allen School of Computer Science.">
   <meta name="author" content="Jon E. Froehlich and Makeability Lab members">
 
+  <!-- Open Graph meta tags for social sharing -->
   {% block opengraph %}
-    <meta property="og:title" content="Makeability Lab Website">
-    <meta property="og:type" content="website">
-    <meta property="og:description" content="The Makeability Lab is an advanced research lab in Human-Computer Interaction directed by Professor Jon E. Froehlich at University of Washington's Allen School of Computer Science.">
-    <meta property="og:image"
-      content="{{ request.scheme }}://{{ request.get_host }}{% static 'website/img/logos/makelab_logo_v3_white_with_colors_and_text_og_image_ratio_1200w.png' %}" />
-    <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}" />
+  <meta property="og:title" content="Makeability Lab">
+  <meta property="og:type" content="website">
+  <meta property="og:description" content="The Makeability Lab is an advanced research lab in Human-Computer Interaction directed by Professor Jon E. Froehlich at University of Washington's Allen School of Computer Science.">
+  <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'website/img/logos/makelab_logo_v3_white_with_colors_and_text_og_image_ratio_1200w.png' %}">
+  <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
   {% endblock %}
 
-  <link rel="shortcut icon" href="{% static 'website/img/ml-favicon.png' %}" />
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="{% static 'website/img/ml-favicon.png' %}">
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,500,600,700" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap"
-    rel="stylesheet">
+  <!-- Web fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-  <!-- Stylesheets -->
-  <link rel="stylesheet" type="text/css" href="{% static 'website/css/bootstrap.min.css' %}" />
-  <link rel="stylesheet" href="{% static 'website/css/carousel_fade.css' %}" />
-  <link rel="stylesheet" href="{% static 'website/css/base.css' %}" />
-  <link rel="stylesheet" href="{% static 'website/css/autocomplete.css' %}" />
-  <link rel="stylesheet" type="text/css" href="{% static 'website/css/top-navbar.css' %}" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <!-- 
+    Stylesheets - Load order matters!
+    1. design-tokens.css first (defines CSS custom properties)
+    2. Bootstrap framework
+    3. Site components (consume the tokens)
+    4. Icon libraries
+  -->
+  <link rel="stylesheet" href="{% static 'website/css/design-tokens.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/carousel_fade.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/base.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/autocomplete.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/top-navbar.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/backtop.css' %}">
+  <link rel="stylesheet" 
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" 
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" 
+      crossorigin="anonymous" 
+      referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-  <link rel="stylesheet" href="{% static 'website/css/backtop.css' %}" />
 
-  {% block stylesheets %}
-    {# Empty block but allows derivative templates to add in their own stylesheets #}
-  {% endblock %}
+  {% block stylesheets %}{% endblock %}
 
-  <!-- Load all required JavaScript libraries used in base and all Makeability Lab pages -->
+  <!-- JavaScript libraries (jQuery 1.9.1 required by Bootstrap 3.3.6) -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <!-- jQuery: v1.9.1 required by Bootstrap's JavaScript plugins -->
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
-    integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous">
-  </script> <!-- Bootstrap: Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" 
+          integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" 
+          crossorigin="anonymous"></script>
   <script src="{% static 'website/js/jquery.easing.min.js' %}"></script>
   <script src="{% static 'website/js/top-navbar.js' %}"></script>
-  {% comment %} <script src="{% static 'website/js/backtop.js' %}"></script> {% endcomment %}
 
-  {% block external_scripts %}
-    {# Empty block but allows derivative templates to load their own JavaScript #}
-  {% endblock %}
+  {% block external_scripts %}{% endblock %}
 
-  <title>
-    {% block pagetitle %}
-    {{ request.resolver_match.url_name }}
-    {% endblock %}
-  </title>
+  <title>{% block pagetitle %}{{ request.resolver_match.url_name }}{% endblock %} | Makeability Lab</title>
 
-  <script type="text/javascript">
-    {% block scripts %}
+  <script>
+    {% block scripts %}{% endblock %}
 
-    {% endblock %}
-
-    $(document).ready(function () {
+    $(document).ready(function() {
       $('.carousel').carousel();
-      // $("#back-top").hide();
     });
-
-    // allow for smooth scrolling to anchor links
-    {% comment %}
-    $(document).click(function (event) {
-      var target = event.originalEvent.target;
-      if (target.className === "scroll" || target.parentElement.className === "scroll") {
-        //prevent the default action for the click event
-        event.preventDefault();
-
-        var element = target.className === "scroll" ? target : target.parentElement;
-
-        //get the top offset of the target anchor
-        var hashName = element.hash.substring(1);
-        //hashName = parseHashtoAnchor(hashName);
-        console.log(hashName)
-        var target_offset = $('[name=' + hashName + ']').offset();
-        console.log(target_offset)
-        var target_top = target_offset.top - 60;
-
-        //goto that anchor by setting the body scroll top to anchor top
-        //http://api.jquery.com/animate/
-        $('html, body').animate({
-          scrollTop: target_top
-        }, 500);
-      }
-    }); {%endcomment %}
   </script>
 
   {% if debug %}
-    <!-- No google analytics will be loaded as you are in development -->
-    <script>
-      console.log("We are in debug mode so no Google Analytics loaded");
-    </script>
+  <script>console.log("Development mode: Google Analytics disabled");</script>
   {% else %}
-    <script>
-      (function (i, s, o, g, r, a, m) {
-        i['GoogleAnalyticsObject'] = r;
-        i[r] = i[r] || function () {
-          (i[r].q = i[r].q || []).push(arguments)
-        }, i[r].l = 1 * new Date();
-        a = s.createElement(o),
-          m = s.getElementsByTagName(o)[0];
-        a.async = 1;
-        a.src = g;
-        m.parentNode.insertBefore(a, m)
-      })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
-
-      ga('create', 'UA-79723676-1', 'auto');
-      ga('send', 'pageview');
-    </script>
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-79723676-1', 'auto');
+    ga('send', 'pageview');
+  </script>
   {% endif %}
 </head>
 
 <body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
 
+  <!-- Skip link for keyboard users (WCAG 2.4.1: Bypass Blocks) -->
+  <a href="#content" class="skip-link">Skip to main content</a>
+
+  <!-- ============================== Navigation ============================== -->
   {% block navbar %}
-    <!-- Navigation -->
-    <nav class="navbar navbar-custom
-            {% var_exists 'navbar_white' as navbar_white_exists %}
-            {% if navbar_white_exists and navbar_white%}light-navbar-theme{% endif %}
-            navbar-fixed-top" role="navigation">
+  <header role="banner">
+    <nav class="navbar navbar-custom navbar-fixed-top
+                {% var_exists 'navbar_white' as navbar_white_exists %}
+                {% if navbar_white_exists and navbar_white %}light-navbar-theme{% endif %}" 
+         role="navigation"
+         aria-label="Main navigation">
       <div class="container-fluid navbar-container">
         <div class="row">
           <div class="col-xs-12">
 
             <div class="navbar-header">
-              <button style="" type="button" class="navbar-toggle" data-toggle="collapse"
-                data-target=".navbar-main-collapse">
-                <i class="fa fa-bars"></i>
+              <button type="button" 
+                      class="navbar-toggle" 
+                      data-toggle="collapse"
+                      data-target=".navbar-main-collapse"
+                      aria-expanded="false"
+                      aria-controls="navbar-main-collapse"
+                      aria-label="Toggle navigation menu">
+                <i class="fa fa-bars" aria-hidden="true"></i>
+                <span class="sr-only">Menu</span>
               </button>
 
               <a class="navbar-brand page-scroll" href="{% url 'website:index' %}">
-                <img src="{% static 'website/img/logos/makelab_logo_white_no_text_100x67.png' %}" height="20" />
+                <img src="{% static 'website/img/logos/makelab_logo_white_no_text_100x67.png' %}" 
+                     alt=""
+                     height="20"
+                     aria-hidden="true">
                 <span class="makeabilitylab-text">
                   <span class="makeabilitylab-make-text">Make</span>ability Lab
                 </span>
               </a>
             </div>
 
-            <div class="collapse navbar-collapse navbar-main-collapse">
-              <!-- 
-                Updated Navbar Links with Icons
-                
-                The .nav-icon class:
-                - Hidden on desktop (clean uppercase text-only look preserved)
-                - Visible on mobile (helps users quickly identify links)
-              -->
-
+            <div id="navbar-main-collapse" class="collapse navbar-collapse navbar-main-collapse">
               <ul class="nav navbar-nav pull-right">
-                <!-- To automatically highlight active links, I followed this code:
-                              http://stackoverflow.com/a/29495310 -->
                 {% with request.resolver_match.url_name as url_name %}
                 
                 <li class="{% if url_name == 'index' %}active{% endif %}">
@@ -211,158 +212,170 @@
                 </li>
                 
                 <li>
-                  <a href="https://docs.google.com/document/d/1YiiDsfpiolpXjUTj8xWrQwQQUzqrfqT9bocOpaYDrtI">
+                  <a href="https://docs.google.com/document/d/1YiiDsfpiolpXjUTj8xWrQwQQUzqrfqT9bocOpaYDrtI" rel="noopener">
                     <i class="fa-solid fa-book-open nav-icon" aria-hidden="true"></i>
                     <span>Lab Handbook</span>
                   </a>
                 </li>
                 
                 <li>
-                  <a href="https://goo.gl/forms/59lAm3CUuupiMhUt1">
+                  <a href="https://goo.gl/forms/59lAm3CUuupiMhUt1" rel="noopener">
                     <i class="fa-solid fa-paper-plane nav-icon" aria-hidden="true"></i>
                     <span>Apply</span>
                   </a>
                 </li>
                 
-                {% comment %} JEF (Nov 3, 2022): Removing talks, videos, faq for now 
-                  <li class="{% if url_name == 'talks' %}active{% endif %}"><a href="{% url 'website:talks' %}">Talks</a>
-                  </li>
-                  <li class="{% if url_name == 'videos' %}active{% endif %}"><a href="{% url 'website:videos' %}">Videos</a>
-                  </li>
-                  <li class="{% if url_name == 'faq' %}active{% endif %}"><a href="{% url 'website:faq' %}">FAQ</a></li>
-                {% endcomment %}
                 {% endwith %}
               </ul>
             </div>
+
           </div>
         </div>
       </div>
     </nav>
+  </header>
   {% endblock %}
 
+  <!-- ============================= Hero Carousel ============================= -->
   {% block maincarousel %}
-    <div id="main-carousel" class="carousel slide carousel-fade" data-ride="carousel" data-interval="10000"
-      data-pause="true">
-      <!-- Wrapper for slides -->
-      <div class="carousel-inner" role="listbox">
-        {% for banner in banners %}
-          <div class="item {% if forloop.first %}active{% endif %}">
-            
-            {% if banner.video %}
-              <video class="fill banner-video" playsinline="playsinline" autoplay="autoplay" muted="muted" loop="loop">
-                <source src="{{ MEDIA_URL }}{{ banner.video }}" type="video/mp4">
-              </video>
-            {% elif banner.image %}
-              <div class="fill" style="background-image:url({% cropped_thumbnail banner "cropping" scale=1.0 %})"
-                aria-label="{% if banner.alt_text %}{{ banner.alt_text }}{% else %}{{ banner.caption }}{% endif %}"
-                title="{% if banner.alt_text %}{{ banner.alt_text }}{% else %}{{ banner.caption }}{% endif %}">
-              </div>
-            {% endif %}
+  <div id="main-carousel" 
+       class="carousel slide carousel-fade" 
+       data-ride="carousel" 
+       data-interval="10000"
+       data-pause="true"
+       aria-label="Featured projects and news">
+    
+    <div class="carousel-inner" role="listbox">
+      {% for banner in banners %}
+      <div class="item {% if forloop.first %}active{% endif %}"
+           role="option"
+           aria-label="{% if banner.alt_text %}{{ banner.alt_text }}{% elif banner.caption %}{{ banner.caption }}{% else %}{{ banner.title }}{% endif %}">
+        
+        {% if banner.video %}
+        <video class="fill banner-video" playsinline autoplay muted loop aria-hidden="true">
+          <source src="{{ MEDIA_URL }}{{ banner.video }}" type="video/mp4">
+        </video>
+        {% elif banner.image %}
+        <div class="fill" 
+             style="background-image: url('{% cropped_thumbnail banner "cropping" scale=1.0 %}')"
+             role="img"
+             aria-label="{% if banner.alt_text %}{{ banner.alt_text }}{% else %}{{ banner.caption }}{% endif %}">
+        </div>
+        {% endif %}
 
-            {% if banner.link %}
-              <a href="{{ banner.link }}">
-            {% elif banner.project and not project %}
-              {# We only want to link to a project when we're not on a project page #}
-              <a href="{% url 'website:project' banner.project.short_name %}">
-            {% endif %}
-            <div class="overlay shadow-left" style="pointer-events: none;">
-              <div class="container carousel-container">
-                <div class="carousel-caption carousel-caption-left" style="pointer-events: auto;">
-                  {% if banner.title %}
-                    {% autoescape off %}
-                      <div class="carousel-caption-title">
-                        {{ banner.title }}<br />
-                      </div>
-                      {% if banner.caption %}
-                        <div class="carousel-caption-text">
-                          {{ banner.caption }}
-                        </div>
-                      {% endif %}
-                    {% endautoescape %}
-                  {% elif banner.project.name %}
-                    <div class="carousel-caption-title">
-                      {{ banner.project.name }}
-                    </div>
-                  {% endif %}
-                </div>
-              </div>
+        {% if banner.link %}
+        <a href="{{ banner.link }}">
+        {% elif banner.project and not project %}
+        <a href="{% url 'website:project' banner.project.short_name %}">
+        {% endif %}
+        
+        <div class="overlay shadow-left" style="pointer-events: none;">
+          <div class="container carousel-container">
+            <div class="carousel-caption carousel-caption-left" style="pointer-events: auto;">
+              {% if banner.title %}
+              {% autoescape off %}
+              <div class="carousel-caption-title">{{ banner.title }}</div>
+              {% if banner.caption %}
+              <div class="carousel-caption-text">{{ banner.caption }}</div>
+              {% endif %}
+              {% endautoescape %}
+              {% elif banner.project.name %}
+              <div class="carousel-caption-title">{{ banner.project.name }}</div>
+              {% endif %}
             </div>
-            {% if banner.link %}</a>{% elif banner.project and not project %}</a>{% endif %}
           </div>
-        {% endfor %}
+        </div>
+        
+        {% if banner.link %}</a>{% elif banner.project and not project %}</a>{% endif %}
       </div>
-      <ol class="carousel-indicators" {% if banners|length < 2 %} style="display: none" {% endif %}>
-        {% for banner in banners %}
-          <li data-target="#main-carousel" 
-              data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
-        {% endfor %}
-      </ol>
+      {% endfor %}
     </div>
+
+    <ol class="carousel-indicators" 
+        {% if banners|length < 2 %}style="display: none"{% endif %}
+        aria-label="Carousel navigation">
+      {% for banner in banners %}
+      <li data-target="#main-carousel" 
+          data-slide-to="{{ forloop.counter0 }}" 
+          {% if forloop.first %}class="active"{% endif %}
+          aria-label="Slide {{ forloop.counter }}">
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
   {% endblock %}
 
-  {% block content %}
-    Put main content here!
-  {% endblock %}
+  <!-- ============================== Main Content ============================== -->
+  <main id="content" role="main">
+    {% block content %}
+    <p>Override this block with page content.</p>
+    {% endblock %}
+  </main>
 
+  <!-- ================================= Footer ================================= -->
   {% block footer %}
-  <div class="makelab-footer">
+  <footer class="makelab-footer" role="contentinfo">
     <div class="row makelab-footer-row">
 
+      <!-- Logo -->
       <div class="col-xs-2 makelab-footer-col">
-        <a href="{% url 'website:index' %}">
+        <a href="{% url 'website:index' %}" aria-label="Makeability Lab home">
           <img src="{% static 'website/img/logos/MakeabilityLab-Logo-v3-w-Text-BlackAndWhite-White_978x789.png' %}"
-            class="img-responsive makelab-footer-logo" />
+               alt="Makeability Lab"
+               class="img-responsive makelab-footer-logo">
         </a>
       </div>
 
+      <!-- About + Social Links -->
       <div class="col-xs-2 makelab-footer-col">
-        <p style="margin-top:0px; font-size:smaller">
+        <p style="margin-top: 0; font-size: smaller;">
           We design, build, and evaluate new interactive tools and techniques to address pressing societal
           challenges. <strong>Make</strong>ability refers both to how our technological innovations make new abilities
-          possible for humans as well as
-          our educational mission to help students gain new abilities as they learn and grow through research,
-          invention, and human-centered design.
+          possible for humans as well as our educational mission to help students gain new abilities as they learn 
+          and grow through research, invention, and human-centered design.
         </p>
 
-        <div class="makelab-footer-connect-links">
+        <nav class="makelab-footer-connect-links" aria-label="Social media">
           <ul>
             <li>
-              <a href="https://www.linkedin.com/company/makeabilitylab">
-                  <i class="fab fa-2x fa-linkedin w3-hover-opacity"></i>
+              <a href="https://www.linkedin.com/company/makeabilitylab" aria-label="Makeability Lab on LinkedIn">
+                <i class="fab fa-2x fa-linkedin" aria-hidden="true"></i>
               </a>
             </li>
             <li>
-              <a href="https://twitter.com/makeabilitylab">
-                <i class="fab fa-2x fa-twitter w3-hover-opacity"></i>
+              <a href="https://bsky.app/profile/makeabilitylab.bsky.social" aria-label="Makeability Lab on Bluesky">
+                <i class="fab fa-2x fa-bluesky" aria-hidden="true"></i>
               </a>
             </li>
             <li>
-              <a href="mailto:jonf@cs.uw.edu">
-                <i class="fa fa-2x fa-envelope w3-hover-opacity"></i>
+              <a href="https://twitter.com/makeabilitylab" aria-label="Makeability Lab on Twitter">
+                <i class="fab fa-2x fa-twitter" aria-hidden="true"></i>
               </a>
             </li>
             <li>
-              <a href="https://github.com/makeabilitylab">
-                <i class="fab fa-2x fa-github-square w3-hover-black"></i>
+              <a href="mailto:jonf@cs.uw.edu" aria-label="Email the Makeability Lab">
+                <i class="fa fa-2x fa-envelope" aria-hidden="true"></i>
+              </a>
+            </li>
+            <li>
+              <a href="https://github.com/makeabilitylab" aria-label="Makeability Lab on GitHub">
+                <i class="fab fa-2x fa-github-square" aria-hidden="true"></i>
               </a>
             </li>
           </ul>
-        </div>
+        </nav>
       </div>
 
+      <!-- Recent News -->
       <div class="col-xs-2 makelab-footer-col makelab-footer-recent-news">
-        <h1>Recent News</h1>
-        {# To add news dynamically, we need to use a context processor. See our custom process in context_processors.py #}
-        {# See: https://stackoverflow.com/questions/36093221/how-to-put-variable-from-database-into-base-html-template #}
-
+        <h2 class="makelab-footer-heading">Recent News</h2>
         {% for news_item in recent_news %}
         <div class="row">
           <a href="{% url 'website:news_item_by_slug' slug=news_item.slug %}">
-            <div class="col-xs-3" style="white-space:nowrap;min-width:115px">
-              {#  Date formats here: https://docs.djangoproject.com/en/1.11/ref/templates/builtins/#std:templatefilter-date #}
+            <div class="col-xs-3" style="white-space: nowrap; min-width: 115px;">
               <p>{{ news_item.date|date:"N d, Y" }}</p>
             </div>
-            <div style="max-width: 300px; width:100%;">
+            <div style="max-width: 300px; width: 100%;">
               <p class="line-clamp">{{ news_item.title }}</p>
             </div>
           </a>
@@ -370,107 +383,107 @@
         {% endfor %}
       </div>
 
-      <div class="col-xs-2 makelab-footer-col makelab-footer-links">
-        <h1>Links</h1>
+      <!-- Site Links -->
+      <nav class="col-xs-2 makelab-footer-col makelab-footer-links" aria-label="Site links">
+        <h2 class="makelab-footer-heading">Links</h2>
         <ul>
           {% with request.resolver_match.url_name as url_name %}
-          {#                            <li>url_name: {{ url_name  }}</li>#}
-          <li style="white-space:nowrap;" class="{% if url_name == 'index' %}active{% endif %}"><a
-              href="{% url 'website:index' %}"> &nbsp;> &nbsp; Home</a></li>
-          {#                        <li>About Us</li>#}
-          <li style="white-space:nowrap;" class="{% if url_name == 'people' %}active{% endif %}"><a
-              href="{% url 'website:people' %}">&nbsp;> &nbsp; People</a></li>
-          <li style="white-space:nowrap;" class="{% if url_name == 'news_listing' %}active{% endif %}"><a
-              href="{% url 'website:news_listing' %}">&nbsp;> &nbsp; News</a></li>
-          <li class="{% if url_name == 'projects' %}active{% endif %}"><a href="{% url 'website:projects' %}">&nbsp;> &nbsp; Projects</a></li>
-          <li style="white-space:nowrap;" class="{% if url_name == 'publications' %}active{% endif %}"><a
-              href="{% url 'website:publications' %}">&nbsp;> &nbsp; Publications</a></li>
-          <li style="white-space:nowrap;"><a href="https://docs.google.com/document/d/1YiiDsfpiolpXjUTj8xWrQwQQUzqrfqT9bocOpaYDrtI">&nbsp;> &nbsp; Lab Handbook</a></li>
-          {% comment %} <li style="white-space:nowrap;" class="{% if url_name == 'talks' %}active{% endif %}"><a
-              href="{% url 'website:talks' %}">&nbsp;> &nbsp; Talks</a></li>
-          <li style="white-space:nowrap;" class="{% if url_name == 'videos' %}active{% endif %}"><a
-              href="{% url 'website:videos' %}">&nbsp;> &nbsp; Videos</a></li> {% endcomment %}
+          <li class="{% if url_name == 'index' %}active{% endif %}">
+            <a href="{% url 'website:index' %}">&nbsp;>&nbsp; Home</a>
+          </li>
+          <li class="{% if url_name == 'people' %}active{% endif %}">
+            <a href="{% url 'website:people' %}">&nbsp;>&nbsp; People</a>
+          </li>
+          <li class="{% if url_name == 'news_listing' %}active{% endif %}">
+            <a href="{% url 'website:news_listing' %}">&nbsp;>&nbsp; News</a>
+          </li>
+          <li class="{% if url_name == 'projects' %}active{% endif %}">
+            <a href="{% url 'website:projects' %}">&nbsp;>&nbsp; Projects</a>
+          </li>
+          <li class="{% if url_name == 'publications' %}active{% endif %}">
+            <a href="{% url 'website:publications' %}">&nbsp;>&nbsp; Publications</a>
+          </li>
+          <li>
+            <a href="https://docs.google.com/document/d/1YiiDsfpiolpXjUTj8xWrQwQQUzqrfqT9bocOpaYDrtI" rel="noopener">&nbsp;>&nbsp; Lab Handbook</a>
+          </li>
           {% endwith %}
         </ul>
-        <div class="makelab-footer-connect-links-mobile">
+
+        <!-- Mobile social links (shown via CSS on small screens) -->
+        <nav class="makelab-footer-connect-links-mobile" aria-label="Social media">
           <ul>
             <li>
-              <a href="https://www.linkedin.com/company/makeabilitylab">
-                <i class="fab fa-2x fa-linkedin w3-hover-opacity"></i>
+              <a href="https://www.linkedin.com/company/makeabilitylab" aria-label="Makeability Lab on LinkedIn">
+                <i class="fab fa-2x fa-linkedin" aria-hidden="true"></i>
               </a>
             </li>
             <li>
-              <a href="https://twitter.com/makeabilitylab">
-                <i class="fab fa-2x fa-twitter w3-hover-opacity"></i>
+              <a href="https://bsky.app/profile/makeabilitylab.bsky.social" aria-label="Makeability Lab on Bluesky">
+                <i class="fab fa-2x fa-bluesky" aria-hidden="true"></i>
               </a>
             </li>
             <li>
-              <a href="mailto:jonf@cs.uw.edu">
-                <i class="fa fa-2x fa-envelope w3-hover-opacity"></i>
+              <a href="https://twitter.com/makeabilitylab" aria-label="Makeability Lab on Twitter">
+                <i class="fab fa-2x fa-twitter" aria-hidden="true"></i>
               </a>
             </li>
             <li>
-              <a href="https://github.com/jonfroehlich/makeabilitylabwebsite">
-                <i class="fab fa-2x fa-github-square w3-hover-black"></i>
+              <a href="mailto:jonf@cs.uw.edu" aria-label="Email the Makeability Lab">
+                <i class="fa fa-2x fa-envelope" aria-hidden="true"></i>
+              </a>
+            </li>
+            <li>
+              <a href="https://github.com/jonfroehlich/makeabilitylabwebsite" aria-label="Makeability Lab website source on GitHub">
+                <i class="fab fa-2x fa-github-square" aria-hidden="true"></i>
               </a>
             </li>
           </ul>
-        </div>
-      </div>
+        </nav>
+      </nav>
+
     </div>
 
+    <!-- Affiliation logos -->
     <div class="makelab-footer-affiliations">
       <div class="row makelab-footer-affiliations-row">
+        
         <div class="makelab-footer-affiliation-col" id="uw-dub-footer-icon">
-          <a href="http://dub.uw.edu">
+          <a href="https://dub.uw.edu/">
             <img src="{% static 'website/img/logos/uw_dub_bottom_white_185x100.png' %}"
-              class="img-responsive makelab-footer-affiliation-logo" />
+                 alt="UW DUB: Design, Use, Build research community"
+                 class="img-responsive makelab-footer-affiliation-logo">
           </a>
         </div>
+        
         <div class="makelab-footer-affiliation-col" id="uw-create-footer-icon">
           <a href="https://create.uw.edu/">
             <img src="{% static 'website/img/logos/create_logo_white_cropped.png' %}"
-              class="img-responsive makelab-footer-affiliation-logo" />
+                 alt="UW CREATE: Center for Research and Education on Accessible Technology and Experiences"
+                 class="img-responsive makelab-footer-affiliation-logo">
           </a>
         </div>
+        
         <div class="makelab-footer-affiliation-col" id="uw-cse-footer-icon">
           <a href="https://www.cs.washington.edu/">
             <img src="{% static 'website/img/logos/uw_allen_school_logo_white_941x100.png' %}"
-              class="img-responsive makelab-footer-affiliation-logo" style="margin-top: 2px;">
+                 alt="Paul G. Allen School of Computer Science & Engineering"
+                 class="img-responsive makelab-footer-affiliation-logo"
+                 style="margin-top: 2px;">
           </a>
         </div>
+        
         <div class="makelab-footer-affiliation-col" id="uw-footer-icon">
           <a href="https://www.washington.edu/">
-            {#                        <img src="{% static 'website/img/logos/UW_white_vertical_203x100.png' %}"#}
-            {#                             class="img-responsive makelab-footer-affiliation-logo"/>#}
             <img src="{% static 'website/img/logos/uw_white_horizontal_1196x94.png' %}"
-              class="img-responsive makelab-footer-affiliation-logo" />
+                 alt="University of Washington"
+                 class="img-responsive makelab-footer-affiliation-logo">
           </a>
         </div>
-        <!-- <div class="makelab-footer-affiliation-col" id="umd-cse-footer-icon">
-                    <a href="https://www.cs.umd.edu">
-                        <img src="{% static 'website/img/logos/umd_cs_logo_white_850x100.png' %}"
-                             class="img-responsive makelab-footer-affiliation-logo"/>
-                    </a>
-                </div>
-                <div class="makelab-footer-affiliation-col" id="umd-footer-icon">
-                    <a href="https://www.umd.edu/">
-                        <img src="{% static 'website/img/logos/umd_logo_white_586x100.png' %}"
-                             class="img-responsive makelab-footer-affiliation-logo"/>
-                    </a>
-                </div> -->
+
       </div>
     </div>
-  </div>
+  </footer>
   {% endblock %}
-  </div>
-
-  {# TODO: Change the back-to-top button to something far more subtle. Maybe only show on mobile? #}
-  {#<p id="back-top" style="display: none">#}
-  {#    <a href="#top"><span></span>Back to Top</a>#}
-  {#</p>#}
-
 
 </body>
-
 </html>
