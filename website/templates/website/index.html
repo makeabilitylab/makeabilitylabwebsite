@@ -1,5 +1,55 @@
 {% extends "website/base.html" %}
 
+{% comment %}
+================================================================================
+INDEX PAGE (LANDING PAGE) - Makeability Lab
+================================================================================
+
+The main landing page for the Makeability Lab website displaying:
+- Hero carousel with news overlay
+- About Us section with animated logo canvas
+- Recent projects grid
+- Recent publications
+- Recent videos
+- Recent talks
+- Sponsors
+
+ACCESSIBILITY FEATURES:
+- Screen-reader-only h1 for page identification
+- Semantic HTML5 elements (section, article, nav)
+- ARIA labels on sections via aria-labelledby
+- Proper heading hierarchy (sr-only h1, visible h2s for sections)
+- Alt text on all images
+- Visible focus indicators on all interactive elements
+- Anchor links on section headings for shareability
+- News banner has proper link accessibility
+
+DEPENDENCIES:
+- design-tokens.css (loaded via base.html)
+- index.css
+- project-listing.css
+- publications.css
+- video-snippet.css
+- talk-snippet.css
+- sponsor-listing.css
+- makelab-logo.js (canvas animation)
+- citationPopoverSimple.js (publication citations)
+- video-age.js (humanized video dates)
+
+CONTEXT VARIABLES:
+- banners: QuerySet of Banner objects for carousel (from base.html)
+- news: QuerySet of recent News items (for banner overlay)
+- projects: QuerySet of recent Project objects
+- publications: QuerySet of recent Publication objects
+- videos: QuerySet of recent Video objects
+- talks: QuerySet of recent Talk objects
+- sponsors: QuerySet of Sponsor objects
+
+@version 2.0.0 - Accessibility and design token refactor
+@author Makeability Lab
+================================================================================
+{% endcomment %}
+
 {% block pagetitle %}Makeability Lab{% endblock %}
 
 {% load static %}
@@ -8,175 +58,231 @@
 {% load ml_tags %}
 
 {% block stylesheets %}
-  <link rel="stylesheet" href="{% static 'website/css/index.css' %}">
-  <link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
-  <link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}">
-  <link rel="stylesheet" href="{% static 'website/css/project-listing.css' %}" />
-  <link rel="stylesheet" href="{% static 'website/css/sponsor-listing.css' %}" />
+<link rel="stylesheet" href="{% static 'website/css/index.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/project-listing.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/video-snippet.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/talk-snippet.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/sponsor-listing.css' %}">
 {% endblock %}
 
 {% block external_scripts %}
-  <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
-  <script src="{% static 'website/js/citationPopoverSimple.js' %}"></script>
-
-  {# humanize-duration is used to pretty print date ages, see https://github.com/EvanHahn/HumanizeDuration.js #}
-  {# we use it, for example, to pretty print the age of videos #}
-  <script src="{% static 'website/js/humanize-duration.js' %}"></script>
-
-  {% comment %} <script type="module" src="https://cdn.jsdelivr.net/gh/makeabilitylab/js@main/dist/makelab.logo.js"></script> {% endcomment %}
-  <script type="module" src="{% static 'website/js/makelab-logo.js' %}"></script>
+<script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
+<script src="{% static 'website/js/citationPopoverSimple.js' %}"></script>
+<script src="{% static 'website/js/humanize-duration.js' %}"></script>
+<script src="{% static 'website/js/video-age.js' %}"></script>
+<script type="module" src="{% static 'website/js/makelab-logo.js' %}"></script>
 {% endblock %}
 
 {% block scripts %}
+document.addEventListener('DOMContentLoaded', function() {
+  CitationPopover.init('.publication-citation-link');
+  VideoAge.init();
+});
+{% endblock %}
 
-  $(document).ready(function() {
-    // find the citation links and set up the popover content and behavior for each
-    var citationLinks = $(".publication-citation-link");
-    for(var i = 0; i < citationLinks.length; i++) 
-    { 
-      $(citationLinks[i]).citationPopover(); 
-    } 
-  });
-  
-  {% endblock %} 
-  <!-- TODO:
-  The navbar and banner caption should have same left and right margins as the rest of the content on page I think. As
-  now, navbar is narrower -->
-  {% block maincarousel %}
-  {{ block.super }} {# Call the parent block #}
+{% block maincarousel %}
+{{ block.super }}
 
-  <div class="container-fluid makelab-content-container news-banner-overlay-container">
-    <!-- This is a news overlay on the banner -->
-    <div class="container-fluid news-banner-listing">
-      {% for news_item in news %}
-        <p class="line-clamp news-banner-item">
-          <a href="{% url 'website:news_item_by_slug' slug=news_item.slug %}">
-            <span class="news-banner-item-date">{{ news_item.date }}.</span>
-            {{ news_item.title }}
-          </a>
-        </p>
-      {% endfor %}
-      <p class="line-clamp news-banner-item">
-        <a href="{% url 'website:news_listing' %}">See more news →</a>
-      </p>
-    </div>
-  </div>
+<!-- News Banner Overlay on Carousel -->
+<div class="container-fluid makelab-content-container news-banner-overlay-container">
+  <nav class="news-banner-listing" aria-label="Latest news">
+    {% for news_item in news %}
+    <p class="line-clamp news-banner-item">
+      <a href="{% url 'website:news_item_by_slug' slug=news_item.slug %}">
+        <span class="news-banner-item-date">{{ news_item.date }}.</span>
+        {{ news_item.title }}
+      </a>
+    </p>
+    {% endfor %}
+    <p class="news-banner-item">
+      <a href="{% url 'website:news_listing' %}" aria-label="View all news articles">
+        See more news →
+      </a>
+    </p>
+  </nav>
+</div>
 {% endblock %}
 
 {% block content %}
 
-  <div id="makelab-about-us" class="container-fluid makelab-content-container">
-    <h1 class="section-header" style="margin-top:25px">About Us</h1>
-    <div class="row about-us-grid">
-      <div class="col-md-6 center-canvas">
-        <canvas id="makelab-logo-canvas"></canvas>
+<!-- Screen-reader-only page title for accessibility -->
+<h1 class="sr-only">Makeability Lab - Home</h1>
+
+<!-- ======================== About Us Section ======================== -->
+<section id="makelab-about-us" 
+         class="container-fluid makelab-content-container"
+         aria-labelledby="about-us-heading">
+  
+  <h2 id="about-us-heading" class="section-header first-section heading-with-anchor">
+    About Us
+    <a href="#about-us-heading" 
+       class="header-anchor" 
+       aria-label="Link to About Us section">
+      <i class="fa-solid fa-link" aria-hidden="true"></i>
+    </a>
+  </h2>
+  
+  <div class="row about-us-grid">
+    <div class="col-md-6 center-canvas">
+      <canvas id="makelab-logo-canvas" 
+              role="img" 
+              aria-label="Animated Makeability Lab logo"></canvas>
+    </div>
+    <div class="col-md-6">
+      <p>
+        The Makeability Lab is an <strong>advanced research lab in Human-AI</strong> directed by
+        <a href="{% url 'website:member_by_name' member_name='jonfroehlich' %}">Professor Jon E. Froehlich</a> in the 
+        <a href="https://www.cs.washington.edu/">Allen School of Computer Science</a> at the University 
+        of Washington. We specialize in Human-Computer Interaction and applied machine learning for high-impact
+        problems in accessibility, computational urban science, and augmented reality. To learn more, see our 
+        <a href="#recent-projects-heading">recent projects</a> below and read 
+        <a href="https://docs.google.com/document/d/1YiiDsfpiolpXjUTj8xWrQwQQUzqrfqT9bocOpaYDrtI/edit">our lab handbook.</a>
+      </p>
+      <p>
+        Interested in working with us? If you are a current UW undergrad, UW MS student, or local Seattle high school student,
+        please <a href="https://goo.gl/forms/59lAm3CUuupiMhUt1">apply here</a>. 
+        If you are a prospective PhD student, apply to the <a href="https://www.cs.washington.edu/academics/phd">UW CSE PhD program</a> 
+        and mention Professor Froehlich. Before applying, please
+        read our <a href="https://docs.google.com/document/d/1YiiDsfpiolpXjUTj8xWrQwQQUzqrfqT9bocOpaYDrtI/edit">lab handbook</a>.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== Recent Projects Section ======================== -->
+<section id="makelab-recent-projects" 
+         class="container-fluid makelab-content-container"
+         aria-labelledby="recent-projects-heading">
+  
+  <h2 id="recent-projects-heading" class="section-header heading-with-anchor">
+    Recent Projects
+    <a href="#recent-projects-heading" 
+       class="header-anchor" 
+       aria-label="Link to Recent Projects section">
+      <i class="fa-solid fa-link" aria-hidden="true"></i>
+    </a>
+  </h2>
+  
+  <div class="project-grid landing-page-project-grid" role="list">
+    {% for project in projects %}
+    {% include "snippets/display_project_snippet.html" %}
+    {% endfor %}
+  </div>
+  
+  <div class="see-all-artifacts">
+    <a href="{% url 'website:projects' %}" aria-label="View all research projects">
+      See All Projects →
+    </a>
+  </div>
+</section>
+
+<!-- ======================== Recent Papers Section ======================== -->
+<section id="makelab-recent-papers" 
+         class="container-fluid makelab-content-container"
+         aria-labelledby="recent-papers-heading">
+  
+  <h2 id="recent-papers-heading" class="section-header heading-with-anchor">
+    Recent Papers
+    <a href="#recent-papers-heading" 
+       class="header-anchor" 
+       aria-label="Link to Recent Papers section">
+      <i class="fa-solid fa-link" aria-hidden="true"></i>
+    </a>
+  </h2>
+  
+  <div class="landing-publications-grid">
+    {% for pub in publications %}
+    {% include "snippets/display_pub_snippet.html" with orientation="horizontal" %}
+    {% endfor %}
+  </div>
+  
+  <div class="see-all-artifacts">
+    <a href="{% url 'website:publications' %}" aria-label="View all publications">
+      See All Papers →
+    </a>
+  </div>
+</section>
+
+<!-- ======================== Recent Videos Section ======================== -->
+<section id="makelab-recent-videos" 
+         class="container-fluid makelab-content-container"
+         aria-labelledby="recent-videos-heading">
+  
+  <h2 id="recent-videos-heading" class="section-header heading-with-anchor">
+    Recent Videos
+    <a href="#recent-videos-heading" 
+       class="header-anchor" 
+       aria-label="Link to Recent Videos section">
+      <i class="fa-solid fa-link" aria-hidden="true"></i>
+    </a>
+  </h2>
+  
+  <div class="landing-videos-grid">
+    {% for video in videos %}
+    {% include "snippets/display_video_snippet.html" %}
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ======================== Recent Talks Section ======================== -->
+<section id="makelab-recent-talks" 
+         class="container-fluid makelab-content-container"
+         aria-labelledby="recent-talks-heading">
+  
+  <h2 id="recent-talks-heading" class="section-header heading-with-anchor">
+    Recent Talks
+    <a href="#recent-talks-heading" 
+       class="header-anchor" 
+       aria-label="Link to Recent Talks section">
+      <i class="fa-solid fa-link" aria-hidden="true"></i>
+    </a>
+  </h2>
+  
+  <div class="landing-talks-grid">
+    {% for talk in talks %}
+    {% include "snippets/display_talk_snippet.html" %}
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ======================== Sponsors Section ======================== -->
+<section id="makelab-sponsors" 
+         class="container-fluid makelab-content-container"
+         aria-labelledby="sponsors-heading">
+  
+  <h2 id="sponsors-heading" class="section-header heading-with-anchor">
+    Sponsors
+    <a href="#sponsors-heading" 
+       class="header-anchor" 
+       aria-label="Link to Sponsors section">
+      <i class="fa-solid fa-link" aria-hidden="true"></i>
+    </a>
+  </h2>
+  
+  <p class="sponsorship-statement">
+    Makeability Lab research is made possible by the generous support of our sponsors. 
+    Our research findings, opinions, and/or recommendations may not reflect their views.
+  </p>
+  
+  <div class="sponsor-grid" role="list">
+    {% for sponsor in sponsors %}
+    <div class="sponsor-card" role="listitem">
+      <div class="sponsor-logo">
+        {% if sponsor.icon %}
+        <a href="{{ sponsor.url }}" 
+           aria-label="Visit {{ sponsor.name }} website">
+          <img class="sponsor-img" 
+               src="{% thumbnail sponsor.icon sponsor.get_thumbnail_size_as_str box=sponsor.icon_cropping crop=True upscale=True %}" 
+               alt="{{ sponsor.get_icon_alt_text }}"
+               title="{{ sponsor.name }}">
+        </a>
+        {% endif %}
       </div>
-      <div class="col-md-6">
-        <p>
-          The Makeability Lab is an <strong>advanced research lab in Human-AI</strong> directed by
-          <a href="{% url 'website:member_by_name' member_name='jonfroehlich' %}">Professor Jon E. Froehlich</a> in the 
-          <a href="https://www.cs.washington.edu/">Allen School of Computer Science</a> at the University 
-          of Washington. We specialize in Human-Computer Interaction and applied machine learning for high-impact
-          problems in accessibility, computational urban science, and augmented reality. To learn more, see our 
-          <a href="#recent-projects">recent projects</a> below and read 
-          <a href="https://docs.google.com/document/d/1YiiDsfpiolpXjUTj8xWrQwQQUzqrfqT9bocOpaYDrtI/edit">our lab handbook.</a>
-        </p>
-        <p>
-          Interested in working with us? If you are a current UW undergrad, UW MS student, or local Seattle high school student,
-          please <a href="https://goo.gl/forms/59lAm3CUuupiMhUt1">apply here</a>. 
-          If you are a prospective PhD student, apply to the <a href="https://www.cs.washington.edu/academics/phd">UW CSE PhD program</a> 
-          and mention Professor Froehlich. Before applying, please
-          read our <a href="https://docs.google.com/document/d/1YiiDsfpiolpXjUTj8xWrQwQQUzqrfqT9bocOpaYDrtI/edit">lab handbook</a>.
-        </p>
-      </div>
     </div>
+    {% endfor %}
   </div>
-
-  <div id="makelab-recent-projects" class="container-fluid makelab-content-container">
-    <h1 class="section-header" id="recent-projects">Recent Projects</h1>
-    <div class="project-grid landing-page-project-grid">
-      {% for project in projects %}
-      {% include "snippets/display_project_snippet.html" %}
-      {% endfor %}
-    </div>
-    <div class="row justify-content-end">
-      <div class="col-xs-12 see-all-artifacts">
-        <div class="col-xs-12" style="display:none"></div>
-        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 see-all-artifacts pull-right">
-          <a href="{% url 'website:projects' %}">See All Projects ></a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="makelab-recent-papers" class="container-fluid makelab-content-container">
-    <h1 class="section-header">Recent Papers</h1>
-    <div class="section">
-      {% for pub in publications %}
-        {% include "snippets/display_pub_snippet.html" with orientation="horizontal" %}
-      {% endfor %}
-      <div class="col-xs-12 see-all-artifacts">
-        <a href="{% url 'website:publications' %}">See All Papers ></a>
-      </div>
-    </div>
-  </div>
-
-  <div id="makelab-recent-videos" class="container-fluid makelab-content-container">
-    <h1 class="section-header">Recent Videos</h1>
-    <div class="section">
-      {% for video in videos %}
-        {% include "snippets/display_video_snippet.html" %}
-      {% endfor %}
-      {% comment %} <div class="col-xs-12 see-all-artifacts">
-        <a href="{% url 'website:videos' %}">See All Videos ></a>
-      </div> {% endcomment %}
-    </div>
-  </div>
-
-  <div id="makelab-recent-talks" class="container-fluid makelab-content-container">
-    <h1 class="section-header">Recent Talks</h1>
-    <div class="section">
-      {% for talk in talks %}
-        {% include "snippets/display_talk_snippet.html" %}
-      {% endfor %}
-      {% comment %} <div class="col-xs-12 see-all-artifacts">
-        <a href="{% url 'website:talks' %}">See All Talks ></a>
-      </div> {% endcomment %}
-    </div>
-  </div>
-
-  <div id="makelab-sponsors" class="container-fluid makelab-content-container">
-    <h1 class="section-header">Sponsors</h1>
-    <div class="sponsorship-statement">
-      Makeability Lab research is made possible by the generous support of our sponsors. 
-      Our research findings, opinions, and/or recommendations may not reflect their views.
-    </div>
-    <div class="sponsor-grid">
-      {% for sponsor in sponsors %}
-        <div class="sponsor-card">
-          <div class="sponsor-logo">
-            {% if sponsor.icon %}
-              <a href="{{sponsor.url}}">
-                <img class="sponsor-img" 
-                {% comment %}
-                    We use easy-thumbnails to create thumbnail image: https://easy-thumbnails.readthedocs.io/en/latest/usage/#templates
-                    The basic syntax is: {% thumbnail [source] [size] [options] %}
-                    For options, see: https://easy-thumbnails.readthedocs.io/en/latest/usage/#thumbnail-options 
-                {% endcomment %}
-                src="{% thumbnail sponsor.icon sponsor.get_thumbnail_size_as_str box=sponsor.icon_cropping crop=True upscale=True %}" 
-                alt="{{sponsor.get_icon_alt_text}}"
-                title="{{sponsor.name}}"/>
-              </a>
-            {% endif %}
-          </div>
-          {% comment %} Uncomment the following if you want text below the logos {% endcomment %}
-          {% comment %} <div class="sponsor-info">
-            {{ sponsor.name }}<br/>
-            ${{ sponsor.total_funding}}
-          </div> {% endcomment %}
-        </div>
-      {% endfor %}
-    </div>
-  </div>
+</section>
 
 {% endblock %}

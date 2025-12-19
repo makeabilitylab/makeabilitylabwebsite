@@ -1,0 +1,24 @@
+{
+  "defaults": {
+    "standard": "WCAG2AA",
+    "runners": ["axe", "htmlcs"],
+    "timeout": 60000,
+    "chromeLaunchConfig": {
+      "args": ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]
+    },
+    "hideElements": "",
+    "ignore": []
+  },
+  "unused_urls": [
+    "http://website:8000/",
+    "http://website:8000/projects/",
+    "http://website:8000/publications/",
+    "http://website:8000/people/",
+    "http://website:8000/talks/",
+    "http://website:8000/news/",
+    "http://website:8000/member/jonfroehlich/"
+  ],
+  "urls": [
+    "http://website:8000/news/"
+  ]
+}

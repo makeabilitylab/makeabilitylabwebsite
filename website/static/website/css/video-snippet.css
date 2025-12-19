@@ -1,0 +1,206 @@
+/**
+ * ============================================================================
+ * VIDEO SNIPPET STYLES - Makeability Lab
+ * ============================================================================
+ *
+ * Styles for video cards used across the site.
+ *
+ * ACCESSIBILITY:
+ *   - All text colors meet WCAG 2.1 AA contrast requirements
+ *   - Interactive elements have visible focus states
+ *   - Links have hover states for discoverability
+ *   - iframe has proper aspect ratio container
+ *
+ * DEPENDENCIES:
+ *   - design-tokens.css must be loaded first
+ *
+ * STRUCTURE:
+ *   .video-card
+ *   ├── .video-player-container
+ *   │   └── iframe.video-player
+ *   └── .video-info
+ *       ├── .video-title
+ *       └── .video-links
+ *           └── .video-age
+ *
+ * @version 2.0.0 - Refactored with design tokens
+ * @author Makeability Lab
+ * ============================================================================
+ */
+
+
+/* =============================================================================
+   VIDEO CARD CONTAINER
+   ============================================================================= */
+
+.video-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 280px;
+  margin-bottom: var(--space-5);
+}
+
+
+/* =============================================================================
+   VIDEO PLAYER CONTAINER
+   =============================================================================
+   Uses aspect-ratio for responsive iframe sizing.
+   Falls back to padding-bottom trick for older browsers.
+   ============================================================================= */
+
+.video-player-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: var(--color-black);
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
+}
+
+/* Fallback for browsers without aspect-ratio support */
+@supports not (aspect-ratio: 16 / 9) {
+  .video-player-container {
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  }
+}
+
+.video-player {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: var(--border-radius-sm);
+}
+
+
+/* =============================================================================
+   VIDEO INFO
+   ============================================================================= */
+
+.video-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--space-2);
+}
+
+
+/* =============================================================================
+   VIDEO TITLE
+   ============================================================================= */
+
+.video-title {
+  margin: 0 0 var(--space-2) 0;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+}
+
+.video-title a {
+  color: var(--color-link);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.video-title a:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+.video-title a:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+
+/* =============================================================================
+   VIDEO LINKS
+   =============================================================================
+   Pill-style links matching publication download links.
+   ============================================================================= */
+
+.video-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-xxs);
+}
+
+.video-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--color-bg-surface);
+  border-radius: var(--border-radius-full);
+  color: var(--color-link);
+  text-decoration: none;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.video-links a:hover {
+  background-color: var(--color-bg-muted);
+  color: var(--color-link-hover);
+  text-decoration: none;
+}
+
+.video-links a:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.video-links a i {
+  font-size: 0.95em;
+}
+
+
+/* =============================================================================
+   VIDEO AGE/DATE DISPLAY
+   ============================================================================= */
+
+.video-age {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.video-age::before {
+  content: '•';
+  margin-right: var(--space-1);
+  color: var(--color-text-muted);
+}
+
+.video-age time {
+  /* Inherit styles from parent */
+}
+
+
+/* =============================================================================
+   RESPONSIVE GRID LAYOUT
+   =============================================================================
+   When used in a grid context (e.g., person page).
+   ============================================================================= */
+
+.videos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-5);
+}
+
+@media (max-width: 992px) {
+  .videos-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .videos-grid {
+    grid-template-columns: 1fr;
+  }
+}

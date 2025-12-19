@@ -1,10 +1,45 @@
-.research-area-icon-label {
-  text-align: center;
-}
+/**
+ * ============================================================================
+ * INDEX PAGE STYLES - Makeability Lab
+ * ============================================================================
+ *
+ * Styles for the landing/home page of the Makeability Lab website.
+ *
+ * STRUCTURE:
+ *   #makelab-about-us          - About section with logo canvas and description
+ *   #makelab-recent-projects   - Recent projects grid
+ *   #makelab-recent-papers     - Recent publications grid
+ *   #makelab-recent-videos     - Recent videos grid
+ *   #makelab-recent-talks      - Recent talks grid
+ *   #makelab-sponsors          - Sponsors section
+ *   .news-banner-*             - News overlay on carousel banner
+ *
+ * ACCESSIBILITY:
+ *   - All text colors meet WCAG 2.1 AA contrast requirements
+ *   - Interactive elements have visible focus states
+ *   - Links have hover states for discoverability
+ *
+ * DEPENDENCIES:
+ *   - design-tokens.css must be loaded first
+ *   - project-listing.css (for project grid)
+ *   - publications.css (for publication snippets)
+ *   - video-snippet.css (for video cards)
+ *   - talk-snippet.css (for talk cards)
+ *   - sponsor-listing.css (for sponsor grid)
+ *
+ * @version 2.0.0 - Refactored with design tokens and accessibility
+ * @author Makeability Lab
+ * ============================================================================
+ */
 
-.banner-video{
-  /* height: auto;
-  min-width: 1000px; */
+
+/* =============================================================================
+   BANNER VIDEO
+   =============================================================================
+   Fullscreen video background in the hero carousel.
+   ============================================================================= */
+
+.banner-video {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -15,181 +50,149 @@
   transform: translate(-50%, -50%);
 }
 
-.news-banner-overlay-container{
-  z-index: 15;
-  right:0;
-  left:0;
+
+/* =============================================================================
+   NEWS BANNER OVERLAY
+   =============================================================================
+   Floating news list overlay on the hero carousel.
+   Hidden on mobile for space constraints.
+   ============================================================================= */
+
+.news-banner-overlay-container {
   position: absolute;
-  top: 100px;    
+  top: 100px;
+  left: 0;
+  right: 0;
+  z-index: 15;
+  pointer-events: none; /* Allow clicks to pass through to carousel */
 }
 
+.news-banner-listing {
+  position: relative;
+  float: right;
+  width: 240px;
+  padding: var(--space-3) var(--space-3) var(--space-1) var(--space-3);
+  margin-right: var(--space-4);
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: var(--border-radius-md);
+  pointer-events: auto; /* Re-enable clicks for the news list */
+}
+
+.news-banner-item {
+  margin-bottom: var(--space-3);
+  font-family: var(--font-family-secondary);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-tight);
+}
+
+.news-banner-item a {
+  color: var(--color-text-on-dark);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.news-banner-item a:hover {
+  color: var(--color-text-on-dark-muted);
+  text-decoration: underline;
+}
+
+.news-banner-item a:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color-on-dark);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.news-banner-item-date {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-on-dark-muted);
+}
+
+/* Hide news banner on smaller screens */
 @media (max-width: 768px) {
-  .news-banner-overlay-container{
+  .news-banner-overlay-container {
     display: none;
   }
 }
 
-.project-grid.landing-page-project-grid {
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-}
 
-@media (max-width: 950px) {
-  .project-grid.landing-page-project-grid {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .project-grid.landing-page-project-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media (max-width: 420px) {
-  .project-grid.landing-page-project-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-
-.news-banner-listing {
-  z-index: 15;
-  position: relative; 
-  background: rgba(0, 0, 0, 0.65); 
-  padding: 6px 10px 1px 10px; 
-  border-radius: 5px; 
-  margin-right: 15px;
-  float: right;
-  width: 220px;
-}
-
-.news-banner-item{
-  margin-bottom:15px; 
-  font-family:Roboto;
-}
-
-.news-banner-item a{
-  color:rgb(245,245,245);
-}
-
-.news-banner-item-date{
-  font-weight: 500;
-  color:rgb(230,230,230);
-}
-
-@media only screen and (min-width: 600px) {
-  .news-listing {
-    display: inline;
-  }
-}
-
-.research-area-icon-row img {
-  width: 100%;
-}
-
-.research-area-icon-row {
-  padding-top: 20px;
-  padding-bottom: 20px;
-}
-
-.research-area-icon-label {
-  width: 100%;
-  text-align: center;
-}
-
-.research-area-icon-col {
-  text-align: center;
-}
+/* =============================================================================
+   SECTION HEADERS
+   =============================================================================
+   Consistent styling for all section headers on the landing page.
+   ============================================================================= */
 
 .section-header {
-  margin-top: 40px;
-  margin-bottom: 15px;
+  margin-top: var(--space-10);
+  margin-bottom: var(--space-4);
   text-align: center;
-  font-size: 24px;
-  /*text-transform: uppercase;*/
-}
-
-.see-all-artifacts {
-  margin-top: 15px;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
   text-transform: uppercase;
-  text-align: right;
-  font-weight: 700;
+  color: var(--color-text-primary);
 }
 
-.news_thumbnail_image {
-  width: 50px;
+/* First section needs less top margin */
+.section-header.first-section {
+  margin-top: var(--space-6);
 }
 
-.talk-text {
-  margin-bottom: 20px;
-  vertical-align: top;
-  margin-top: 5px;
-  /*width:80%;*/
-  /*text-align: center;*/
+#makelab-about-us,
+#makelab-recent-projects,
+#makelab-recent-papers,
+#makelab-recent-videos,
+#makelab-recent-talks,
+#makelab-sponsors {
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
 }
 
-.talk2-thumbnail-image {
-  object-fit: cover;
-  width: 295.42px;
-  height: 166px;
+
+/* =============================================================================
+   ABOUT US SECTION
+   ============================================================================= */
+
+#makelab-about-us {
+  /* No extra margin/padding needed - inherits from makelab-content-container */
 }
 
-h1 {
-  text-transform: uppercase;
-  font-variant: normal;
-}
-
-#makelab-intro h1 {
-  text-align: center;
-}
-
-#makelab-intro {
-  margin: 0;
-  padding: 0;
-  background-color: #eac446;
-}
-
-.page-link {
-  margin: 0;
-  text-align: left;
-}
-
-.landing-talk-fix {
-  /*min-width: 240px;*/
-  padding-left: 0;
-}
-
-@media (min-width: 769px) {
-  .landing-content {
-    padding-right: 80px;
-  }
-}
-
-.content-container {
-  padding-left: 25px;
-  padding-right: 25px;
-}
-
-/* ABOUT US */
 .about-us-grid {
-  /* display: flex; */
+  display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  align-items: flex-start;
 }
 
 .about-us-grid p {
-  font-size: 18px; /* Adjust the font size as needed */
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-4);
 }
 
-.about-us-grid canvas {
-  width: 100%; /* Ensure canvas scales to fit container */
-  height: auto;
+.about-us-grid a {
+  color: var(--color-link);
+  text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
+.about-us-grid a:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+.about-us-grid a:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+
+/* =============================================================================
+   LOGO CANVAS
+   ============================================================================= */
 
 #makelab-logo-canvas {
   display: block;
-  margin: 0 auto; /* Center the canvas horizontally */
+  margin: 0 auto;
   width: 100%;
   height: 300px;
 }
@@ -199,16 +202,179 @@ h1 {
   justify-content: center;
   align-items: center;
   height: 300px;
-  /* min-height: 300px; */
-  /* height:100%; */
 }
 
 @media (max-width: 992px) {
-  /* .about-us-grid {
-    flex-direction: column;
-  } */
-
   #makelab-logo-canvas {
-    margin-bottom: 15px;
+    margin-bottom: var(--space-4);
+  }
+}
+
+
+/* =============================================================================
+   PROJECT GRID (Landing Page Variant)
+   =============================================================================
+   4-column grid on desktop, responsive down to 1 column on mobile.
+   ============================================================================= */
+
+.project-grid.landing-page-project-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 1200px) {
+  .project-grid.landing-page-project-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .project-grid.landing-page-project-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .project-grid.landing-page-project-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* =============================================================================
+   PUBLICATIONS GRID (Landing Page)
+   =============================================================================
+   Uses flexbox to match person page publications layout.
+   ============================================================================= */
+
+.landing-publications-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+/* Override Bootstrap's float on column children */
+.landing-publications-grid > .pub-column-horiz-layout {
+  float: none;
+  flex: 0 0 calc(33.333% - var(--space-4));
+  max-width: calc(33.333% - var(--space-4));
+}
+
+@media (max-width: 991px) {
+  .landing-publications-grid > .pub-column-horiz-layout {
+    flex: 0 0 calc(50% - var(--space-4));
+    max-width: calc(50% - var(--space-4));
+  }
+}
+
+@media (max-width: 575px) {
+  .landing-publications-grid > .pub-column-horiz-layout {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+
+/* =============================================================================
+   VIDEOS GRID (Landing Page)
+   =============================================================================
+   3-column grid using the video-snippet styles.
+   ============================================================================= */
+
+.landing-videos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-5);
+}
+
+@media (max-width: 992px) {
+  .landing-videos-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .landing-videos-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* =============================================================================
+   TALKS GRID (Landing Page)
+   =============================================================================
+   4-column grid using the talk-snippet styles.
+   ============================================================================= */
+
+.landing-talks-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-5);
+}
+
+@media (max-width: 1200px) {
+  .landing-talks-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 992px) {
+  .landing-talks-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 576px) {
+  .landing-talks-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* =============================================================================
+   "SEE ALL" LINKS
+   =============================================================================
+   Right-aligned navigation links to full listing pages.
+   ============================================================================= */
+
+.see-all-artifacts {
+  margin-top: var(--space-4);
+  text-align: right;
+}
+
+.see-all-artifacts a {
+  display: inline-block;
+  font-family: var(--font-family-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-link);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.see-all-artifacts a:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+.see-all-artifacts a:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+
+/* =============================================================================
+   CONTENT CONTAINER
+   ============================================================================= */
+
+.content-container {
+  padding-left: var(--space-6);
+  padding-right: var(--space-6);
+}
+
+@media (min-width: 769px) {
+  .landing-content {
+    padding-right: var(--space-16);
   }
 }

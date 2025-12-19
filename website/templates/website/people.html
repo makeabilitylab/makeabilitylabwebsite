@@ -1,8 +1,40 @@
 {% extends "website/base.html" %}
 
-{% block pagetitle %}
-  Makeability Lab People
-{% endblock %}
+{% comment %}
+================================================================================
+PEOPLE PAGE TEMPLATE - Makeability Lab
+================================================================================
+
+Displays lab members organized into three sections:
+1. Current Research Group - Grid of active lab members
+2. Graduated PhD Students - Detailed cards with dissertation info
+3. Past Members - Grouped lists by role (PhD students, Masters, etc.)
+
+ACCESSIBILITY FEATURES:
+- Semantic HTML5 elements (section, article, nav)
+- ARIA labels on sections via aria-labelledby
+- Proper heading hierarchy (h1 > h2 > h3)
+- Alt text on all images
+- Visible focus indicators on all interactive elements
+- Anchor links on headings for shareability
+
+DEPENDENCIES:
+- design-tokens.css (loaded via base.html)
+- people.css
+- swap-image.js (easter egg functionality)
+
+CONTEXT VARIABLES:
+- current_members: QuerySet of current Position objects
+- graduated_phd_students: QuerySet of Person objects who completed PhDs
+- map_title_to_past_members: Dict mapping role titles to Position lists
+- sorted_past_member_titles: List of role titles in display order
+
+@version 2.0.1 - Added section-heading class for proper CSS specificity
+@author Makeability Lab
+================================================================================
+{% endcomment %}
+
+{% block pagetitle %}People{% endblock %}
 
 {% load static %}
 {% load thumbnail %}
@@ -10,135 +42,193 @@
 {% load ml_tags %}
 
 {% block stylesheets %}
-  <link rel="stylesheet" href="{% static 'website/css/people.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/people.css' %}">
 {% endblock %}
 
 {% block external_scripts %}
-  <script src="{% static 'website/js/swap-image.js' %}"></script>
+<script src="{% static 'website/js/swap-image.js' %}"></script>
+{% endblock %}
+
+{% block scripts %}
+document.addEventListener('DOMContentLoaded', function() {
+  SwapImage.init();
+});
 {% endblock %}
 
 {% block maincarousel %}
-    {% comment %} Keep this empty to not have a carousel {% endcomment %}
+<!-- No carousel on people page -->
 {% endblock %}
 
 {% block content %}
-  <div id="content" class="container">
-    <div id="makelab-people" class="makelab-content-container">
-      <h1>People</h1>  
-      <div class="current-research-group-grid">
+<div class="container">
+  <div id="makelab-people" class="makelab-content-container">
+    
+    <!-- ======================== Page Header ======================== -->
+    <header>
+      <h1 id="people" class="heading-with-anchor">
+        People
+        <a href="#people" 
+           class="header-anchor" 
+           aria-label="Link to People section">
+          <i class="fa-solid fa-link" aria-hidden="true"></i>
+        </a>
+      </h1>
+    </header>
+
+    <!-- ======================== Current Research Group ======================== -->
+    <section aria-labelledby="people">
+      <div class="current-research-group-grid" role="list">
         {% for position in current_members %}
           {% with person=position.person %}
-            <div class="person">
-              <a href="{% url 'website:member_by_name' member_name=person.url_name %}">
+            <article class="person-card" role="listitem">
+              <a href="{% url 'website:member_by_name' member_name=person.url_name %}"
+                 class="person-card-image-link"
+                 aria-label="View profile of {{ person.get_full_name }}">
                 {% comment %}
-                  We have a fun little "easter egg" here that swaps out a person's image on mouseover.
-                  Also, we use easy-thumbnails to create thumbnail image: https://easy-thumbnails.readthedocs.io/en/latest/usage/#templates
-                  The basic syntax is: {% thumbnail [source] [size] [options] %}
-
-                  If box is specified, then it will crop. Otherwise, you can also set crop=True
-                {% endcomment %}       
-                <img class="swap-image" onmouseover="swapImage(this)" onmouseout="swapImage(this)"
-                    src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}" 
-                    alt="{{ person.get_full_name }}" 
-                    data-alt-src="{% thumbnail person.easter_egg person.get_thumbnail_size_as_str box=person.easter_egg_crop crop=True upscale=True detail=True %}" 
-                    width=90%"/>
+                  Easter egg: swaps to alternate "fun" image on hover.
+                  Uses easy-thumbnails for responsive images.
+                  The swap-image.js handles the interaction via event delegation.
+                {% endcomment %}
+                <img class="person-card-image swap-image"
+                     src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True %}"
+                     alt="{{ person.get_full_name }}"
+                     data-alt-src="{% thumbnail person.easter_egg person.get_thumbnail_size_as_str box=person.easter_egg_crop crop=True upscale=True detail=True %}">
               </a>
-              <div class="person-name">
+              <h3 class="person-card-name">
                 <a href="{% url 'website:member_by_name' member_name=person.url_name %}">
                   {{ person.get_full_name }}
                 </a>
-              </div>
+              </h3>
               {% if person.last_name == "Froehlich" %}
-                <div class="person-title">Lab Director</div>
+                <div class="person-card-title">Lab Director</div>
               {% else %}
-                <div class="person-title">{{ position.title }}</div>
+                <div class="person-card-title">{{ position.title }}</div>
               {% endif %}
-              <div class="person-affiliation">{{ position.get_school_abbreviated }} {{ position.get_department_abbreviated }} </div>
-            </div>
+              <div class="person-card-affiliation">
+                {{ position.get_school_abbreviated }} {{ position.get_department_abbreviated }}
+              </div>
+            </article>
           {% endwith %}
         {% endfor %}
       </div>
+    </section>
 
-      
-      {% if graduated_phd_students %}
-        <div class="graduated-phd-section">
-          <h2>Graduated PhD Students</h2>
-          <div class="graduated-phds-grid">
-            {% for person in graduated_phd_students %}
-              <div class="person graduated-phd">
-                <a href="{% url 'website:member_by_name' member_name=person.url_name %}">
-                  <img class="swap-image" onmouseover="swapImage(this)" onmouseout="swapImage(this)"
-                        src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop detail upscale %}" 
-                        alt="{{ person.get_full_name }}" 
-                        data-alt-src="{% thumbnail person.easter_egg person.get_thumbnail_size_as_str box=person.easter_egg_crop crop detail upscale %}" 
-                        width=90%"/>
-                </a>
-                <div class="graduated-phd-name">
+    <!-- ======================== Graduated PhD Students ======================== -->
+    {% if graduated_phd_students %}
+      <section class="graduated-phd-section" aria-labelledby="graduated-phd-students">
+        <h2 id="graduated-phd-students" class="section-heading heading-with-anchor">
+          Graduated PhD Students
+          <a href="#graduated-phd-students" 
+             class="header-anchor" 
+             aria-label="Link to Graduated PhD Students section">
+            <i class="fa-solid fa-link" aria-hidden="true"></i>
+          </a>
+        </h2>
+        
+        <div class="graduated-phds-grid" role="list">
+          {% for person in graduated_phd_students %}
+            <article class="graduated-phd-card" role="listitem">
+              <a href="{% url 'website:member_by_name' member_name=person.url_name %}"
+                 class="graduated-phd-image-link"
+                 aria-label="View profile of Dr. {{ person.get_full_name }}">
+                <img class="graduated-phd-image swap-image"
+                     src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop detail upscale %}"
+                     alt="Dr. {{ person.get_full_name }}"
+                     data-alt-src="{% thumbnail person.easter_egg person.get_thumbnail_size_as_str box=person.easter_egg_crop crop detail upscale %}">
+              </a>
+              
+              <div class="graduated-phd-info">
+                <h3 class="graduated-phd-name">
                   <a href="{% url 'website:member_by_name' member_name=person.url_name %}">
                     Dr. {{ person.get_full_name }}
                   </a>
-                </div>
-                {% with position=person.get_latest_phd_student_position %} 
-                  {% with dissertation=person.get_dissertation %}  
-                    <div class="person-title">
+                </h3>
+                
+                {% with position=person.get_latest_phd_student_position %}
+                  {% with dissertation=person.get_dissertation %}
+                    <div class="graduated-phd-degree">
                       PhD {{ position.get_school_abbreviated }} {{ position.get_department_abbreviated }}, {{ dissertation.date.year }}
                     </div>
-                  
+                    
                     <div class="dissertation">
-                      <span class="dissertation-header">Dissertation:</span> 
+                      <span class="dissertation-header">Dissertation:</span>
                       <span class="dissertation-title">
-                        <a href="{% get_media_prefix %}{{ dissertation.pdf_file }}">{{ dissertation }}</a><br/>
+                        <a href="{% get_media_prefix %}{{ dissertation.pdf_file }}">
+                          {{ dissertation }}
+                        </a>
                       </span>
                     </div>
 
                     {% if person.next_position %}
                       <div class="first-position">
-                        {% if person.next_position_url %}
-                          <span class="first-position-header">First Position:</span> 
-                          <span class="first-position-content"> 
+                        <span class="first-position-header">First Position:</span>
+                        <span class="first-position-content">
+                          {% if person.next_position_url %}
                             <a href="{{ person.next_position_url }}">{{ person.next_position }}</a>
-                          </span>
-                        {% else %}
-                          <span class="first-position-content"> 
+                          {% else %}
                             {{ person.next_position }}
-                          </span>
-                        {% endif %}
+                          {% endif %}
+                        </span>
                       </div>
                     {% endif %}
                   {% endwith %}
                 {% endwith %}
               </div>
-            {% endfor %}
-          </div>
+            </article>
+          {% endfor %}
         </div>
-      {% endif %}
-       
-      {% if map_title_to_past_members %}
-        <div class="past-members-section">
-          <h2>Past Members</h2>
-          {% for title in sorted_past_member_titles %}
-            <h3>{{ title }}s</h3>
+      </section>
+    {% endif %}
+
+    <!-- ======================== Past Members ======================== -->
+    {% if map_title_to_past_members %}
+      <section class="past-members-section" aria-labelledby="past-members">
+        <h2 id="past-members" class="section-heading heading-with-anchor">
+          Past Members
+          <a href="#past-members" 
+             class="header-anchor" 
+             aria-label="Link to Past Members section">
+            <i class="fa-solid fa-link" aria-hidden="true"></i>
+          </a>
+        </h2>
+        
+        {% for title in sorted_past_member_titles %}
+          {% comment %}
+            Generate a URL-safe ID from the title for anchor links.
+            We use the |slugify filter to convert "PhD Student" to "phd-student".
+          {% endcomment %}
+          <section aria-labelledby="past-{{ title|slugify }}s">
+            <h3 id="past-{{ title|slugify }}s" class="section-heading heading-with-anchor">
+              {{ title }}s
+              <a href="#past-{{ title|slugify }}s" 
+                 class="header-anchor" 
+                 aria-label="Link to {{ title }}s section">
+                <i class="fa-solid fa-link" aria-hidden="true"></i>
+              </a>
+            </h3>
+            
             <div class="past-members-grid">
               {% for position in map_title_to_past_members|get_item:title %}
-                <div class="past-member-grid-item">
-                  {% comment %} TODO check if high school student and don't print out department {% endcomment %}
-                  <span class="past-member-name"> 
-                    <a href="{% url 'website:member_by_name' member_name=position.person.url_name %}">{{ position.person.get_full_name }}</a>,
+                <div class="past-member-item">
+                  <span class="past-member-name">
+                    <a href="{% url 'website:member_by_name' member_name=position.person.url_name %}">
+                      {{ position.person.get_full_name }}</a>,
                   </span>
                   <span class="past-member-affiliation">
                     {% if position.is_high_school %}
-                      {{ position.school }}, {{position.get_date_range_as_str}}
+                      {{ position.school }}, {{ position.get_date_range_as_str }}
                     {% else %}
-                      {{ position.get_school_abbreviated }} {{ position.get_department_abbreviated }}, {{position.get_date_range_as_str}}
+                      {{ position.get_school_abbreviated }} {{ position.get_department_abbreviated }}, {{ position.get_date_range_as_str }}
                     {% endif %}
                   </span>
                 </div>
               {% endfor %}
             </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    </div>
+          </section>
+        {% endfor %}
+      </section>
+    {% endif %}
 
   </div>
+</div>
 {% endblock %}

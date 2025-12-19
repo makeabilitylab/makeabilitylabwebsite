@@ -1,0 +1,257 @@
+/**
+ * ============================================================================
+ * TALK SNIPPET STYLES - Makeability Lab
+ * ============================================================================
+ *
+ * Styles for talk/presentation cards used across the site.
+ *
+ * ACCESSIBILITY:
+ *   - All text colors meet WCAG 2.1 AA contrast requirements
+ *   - Interactive elements have visible focus states
+ *   - Links have hover states for discoverability
+ *
+ * DEPENDENCIES:
+ *   - design-tokens.css must be loaded first
+ *
+ * STRUCTURE:
+ *   .talk-card
+ *   ├── .talk-thumbnail-container
+ *   │   └── .talk-thumbnail-image
+ *   └── .talk-info
+ *       ├── .talk-title
+ *       ├── .talk-venue
+ *       ├── .talk-location
+ *       ├── .talk-speakers
+ *       └── .talk-download-links
+ *
+ * @version 2.0.0 - Refactored with design tokens
+ * @author Makeability Lab
+ * ============================================================================
+ */
+
+
+/* =============================================================================
+   TALK CARD CONTAINER
+   ============================================================================= */
+
+.talk-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 320px;
+  margin-bottom: var(--space-5);
+}
+
+
+/* =============================================================================
+   TALK THUMBNAIL
+   ============================================================================= */
+
+.talk-thumbnail-container {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  background-color: var(--color-bg-surface);
+  border-radius: var(--border-radius-sm);
+}
+
+.talk-thumbnail-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.talk-thumbnail-link:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.talk-thumbnail-image {
+  width: 100%;
+  height: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  object-fit: cover;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  transition: transform var(--transition-normal);
+}
+
+.talk-thumbnail-link:hover .talk-thumbnail-image {
+  transform: translate(-50%, -50%) scale(1.03);
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .talk-thumbnail-image {
+    transition: none;
+  }
+  
+  .talk-thumbnail-link:hover .talk-thumbnail-image {
+    transform: translate(-50%, -50%);
+  }
+}
+
+
+/* =============================================================================
+   TALK INFO
+   ============================================================================= */
+
+.talk-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--space-2);
+}
+
+
+/* =============================================================================
+   TALK TITLE
+   ============================================================================= */
+
+.talk-title {
+  margin: 0 0 var(--space-1) 0;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+}
+
+.talk-title a {
+  color: var(--color-link);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.talk-title a:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+.talk-title a:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+
+/* =============================================================================
+   TALK VENUE & LOCATION
+   ============================================================================= */
+
+.talk-venue {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  /* Prevent long venue names from breaking grid layout */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.talk-location {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+
+/* =============================================================================
+   TALK SPEAKERS
+   ============================================================================= */
+
+.talk-speakers {
+  margin: 0 0 var(--space-2) 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.talk-speakers a {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.talk-speakers a:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+.talk-speakers a:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+
+/* =============================================================================
+   TALK DOWNLOAD LINKS
+   =============================================================================
+   Pill-style links matching publication download links.
+   ============================================================================= */
+
+.talk-download-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  font-size: var(--font-size-xxs);
+}
+
+.talk-download-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--color-bg-surface);
+  border-radius: var(--border-radius-full);
+  color: var(--color-link);
+  text-decoration: none;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.talk-download-links a:hover {
+  background-color: var(--color-bg-muted);
+  color: var(--color-link-hover);
+  text-decoration: none;
+}
+
+.talk-download-links a:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.talk-download-links a i {
+  font-size: 0.95em;
+}
+
+
+/* =============================================================================
+   RESPONSIVE GRID LAYOUT
+   =============================================================================
+   When used in a grid context (e.g., person page).
+   ============================================================================= */
+
+.talks-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-5);
+}
+
+@media (max-width: 1200px) {
+  .talks-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .talks-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .talks-grid {
+    grid-template-columns: 1fr;
+  }
+}

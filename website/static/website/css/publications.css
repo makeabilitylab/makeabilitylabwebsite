@@ -1,59 +1,71 @@
-/* TODO: Cleanup the CSS in this file and start using artifact-title, artifact-venue, etc. from base.css */
+/**
+ * ============================================================================
+ * PUBLICATIONS PAGE STYLES - Makeability Lab
+ * ============================================================================
+ *
+ * Styles for the publications listing page and publication snippets used
+ * throughout the site (index, project pages, etc.).
+ *
+ * ACCESSIBILITY:
+ *   - All text colors meet WCAG 2.1 AA contrast requirements
+ *   - Interactive elements have visible focus states
+ *   - Badge/pill links have sufficient contrast
+ *
+ * DEPENDENCIES:
+ *   - design-tokens.css must be loaded first
+ *
+ * @version 2.0.0 - Refactored with design tokens
+ * ============================================================================
+ */
 
-/* TODO: update--cleanup in progress. Note that any change here may impact publications.js and filterBar.js */
 
-@media only screen and (max-width: 600px) {
-  .citation-link {
-    display: none;
-  }
-}
+/* =============================================================================
+   PUBLICATION LIST LAYOUT
+   ============================================================================= */
 
-@media (max-width: 768px) {
-  .pub-list {
-    margin-top: 25px;
-  }
+.pub-list {
+  margin-top: var(--space-6);
 }
 
 @media (min-width: 769px) {
   .pub-list {
-    padding-left: 145px;
-    /* should be greater than the filter-bar width */
-    margin-top: 25px;
+    padding-left: 145px; /* Space for filter bar */
   }
 }
 
-.citation-links {
-  text-align: left;
-  margin-bottom: -5px;
-  cursor: pointer;
+
+/* =============================================================================
+   PUBLICATION LIST HEADINGS (Year Headers)
+   ============================================================================= */
+
+/* Ensure the background is explicitly white for contrast checks */
+#makelab-recent-publications {
+  background-color: var(--color-bg-page); /* #FFFFFF */
+  padding-bottom: var(--space-5);
 }
 
-.citation-links button {
-  border-width: 1px;
-  border-radius: 3px;
-}
-
-.citation-links button.active {
-  border-width: 1.5px;
-  color: black;
-}
-
-.citation-copy {
-  cursor: pointer;
+/* Ensure the H1 is dark enough */
+#makelab-recent-publications h1 {
+  color: var(--color-text-primary); /* #212121 */
 }
 
 .pub-list h1 {
-  color: #7F7F7F;
-  font-size: 24px;
-  border-bottom: 1px solid #A6A6A6;
-  margin: 5px 0 3px 0;
-  padding-bottom: 1px;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-2xl);
+  border-bottom: 1px solid var(--color-border);
+  margin: var(--space-2) 0 var(--space-1) 0;
+  padding-bottom: var(--space-1);
 }
 
+
+/* =============================================================================
+   VERTICAL LAYOUT (Publications Page)
+   ============================================================================= */
+
 .pub-row-vert-layout {
-  padding-top: 10px;
-  padding-bottom: 10px;
-  font-size: 14px;
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-3);
+  font-size: var(--font-size-sm);
   position: relative;
   min-height: 170px;
 }
@@ -63,22 +75,35 @@
   padding: 0;
 }
 
-.pub-thumbnail-image {
-  border: 1px solid #dddddd;
-  width: 100%;
-  max-width: 135px;
-  margin: auto;
-}
-
 .pub-info {
-  padding-bottom: 20px;
-  /* height of the downloads bar */
+  padding-bottom: var(--space-5);
   display: table-cell;
   vertical-align: top;
   width: 100%;
   position: relative;
 }
 
+
+/* =============================================================================
+   PUBLICATION THUMBNAILS
+   ============================================================================= */
+
+.pub-thumbnail {
+  position: relative;
+}
+
+.pub-thumbnail-image {
+  border: 1px solid var(--color-border);
+  width: 100%;
+  max-width: 135px;
+  margin: auto;
+}
+
+.pub-thumbnail-image2 {
+  border: 1px solid var(--color-border);
+}
+
+/* Hide thumbnail on very small screens */
 @media (max-width: 374px) {
   .pub-thumbnail {
     display: none;
@@ -89,13 +114,14 @@
   }
 }
 
+/* Show thumbnail as table cell on larger screens */
 @media (min-width: 375px) {
   .pub-thumbnail {
     width: 120px;
     min-width: 120px;
     display: table-cell;
     vertical-align: top;
-    padding-right: 10px;
+    padding-right: var(--space-3);
     position: relative;
     top: 0;
     left: 0;
@@ -112,61 +138,82 @@
   }
 }
 
-@media (max-width: 768px) {
-  .pub-id {
-    font-size: 10px;
-    color: #7F7F7F;
-    min-width: 40px;
-    display: table-cell;
-    vertical-align: top;
-    text-align: left;
-    padding-right: 10px;
-  }
+
+/* =============================================================================
+   HORIZONTAL LAYOUT (Index Page, Recent Publications)
+   ============================================================================= */
+
+.pub-column-horiz-layout {
+  margin-bottom: var(--space-5);
+  padding-left: 0;
+  max-height: 129px;
 }
 
-@media (min-width: 769px) {
-  .pub-id {
-    font-size: 10px;
-    color: #7F7F7F;
-    min-width: 40px;
-    display: table-cell;
-    vertical-align: top;
-    text-align: right;
-    padding-right: 10px;
-  }
+.pub-thumbnail-horiz-layout {
+  float: left;
+  height: 129px;
+  overflow: hidden;
 }
 
-.pub-title{
-  font-weight: 600;
+.pub-thumbnail-horiz-layout img {
+  height: auto;
 }
 
-.artifact-title {
-  color: #464D59;
-  /*font-size: 16px;*/
-  font-weight: 500;
-  word-wrap: break-word;
-  text-overflow: ellipsis;
+/* Hide download links until hover (horizontal layout only) */
+.pub-column-horiz-layout .pub-download-links {
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
 
-  /* Added this max-width 01/18/2024 to address long titles messing up the project gallery
-  https://github.com/makeabilitylab/makeabilitylabwebsite/issues/1133 */
-  max-width: 320px; 
+.pub-column-horiz-layout:hover .pub-download-links,
+.pub-column-horiz-layout:focus-within .pub-download-links {
+  opacity: 1;
+}
+
+
+/* =============================================================================
+   PUBLICATION TEXT STYLES
+   ============================================================================= */
+
+.pub-title {
+  font-weight: var(--font-weight-semibold);
+}
+
+.pub-authors a {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+}
+
+.pub-authors a:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+.pub-authors a:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .pub-stats {
-  color: #7F7F7F;
+  color: var(--color-text-secondary);
 }
 
-.pub-award-text, .pub-award-icon {
-  color: #c25059;
+.pub-venue {
+  color: var(--color-text-secondary);
+  font-style: italic;
 }
 
 .pub-acceptance-rate {
-  font-style: bold;
+  font-weight: var(--font-weight-medium);
+}
+
+.pub-to-appear-text {
+  font-style: italic;
 }
 
 .pub-keywords {
-  font-size: 11px;
-  color: #7F7F7F;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
   word-break: break-all;
 }
 
@@ -174,106 +221,449 @@
   word-wrap: break-word;
 }
 
-.pub-download {
-  position: absolute;
-  font-size: 12px;
-  border-top: 1px solid #dddddd;
-  width: 100%;
-  height: 20px;
-  bottom: 0;
-  right: 0;
-  margin-left: 5px;
-}
 
-.pub-citation-link {
-  cursor: pointer;
-}
+/* =============================================================================
+   AWARD STYLES
+   ============================================================================= */
 
-.publication-citation-link {
-  cursor: pointer;
+.pub-award-text,
+.pub-award-icon {
+  color: var(--color-award);
 }
 
 .award-icon {
   border: none;
   width: 20px;
   height: auto;
-  align: left;
+  vertical-align: middle;
 }
 
-.pub-column-horiz-layout {
-  margin-bottom: 20px;
-  padding-left: 0px;
-  max-height: 129px;
-}
 
-.pub-thumbnail {
-  position: relative;
-}
+/* =============================================================================
+   PUBLICATION ID (Side Label)
+   ============================================================================= */
 
-.pub-thumbnail-horiz-layout{
-  float: left; 
-  margin-right: 7px;
-  height: 129px;
-  overflow: hidden;
-}
-
-.pub-thumbnail-horiz-layout img {
-  /* width: 100%; */
-  height: auto;
-}
-
-.pub-thumbnail-image2 {
-  border: 1px solid #dddddd;
-}
-
-.pub-to-appear-text {
-  font-style: italic;
-}
-
-.pub-text-float-left {
+.pub-id {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  min-width: 40px;
+  display: table-cell;
   vertical-align: top;
+  padding-right: var(--space-3);
 }
 
-/* This opacity stuff auto-shows the download links on mouseover ('hover');
-otherwise, they are hidden! */
-.pub-column-horiz-layout .pub-download-links {
-  opacity: 0;
+@media (max-width: 768px) {
+  .pub-id {
+    text-align: left;
+  }
 }
 
-.pub-column-horiz-layout:hover .pub-download-links {
-  opacity: 1;
+@media (min-width: 769px) {
+  .pub-id {
+    text-align: right;
+  }
 }
 
-/* ============================================
-   Publication Download Links - Pill Badge Style
-   ============================================ */
+
+/* =============================================================================
+   DOWNLOAD LINKS - Pill Badge Style
+   =============================================================================
+   ACCESSIBILITY:
+   - Background #f0f0f0 with text #0d5a8c = 5.0:1 contrast (AA ✓)
+   - Hover state uses darker blue for clear feedback
+   - Focus state uses standard focus ring
+   ============================================================================= */
+
 .pub-download-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
-  margin-top: 8px !important;
-  font-size: 11px;
+  gap: var(--space-2);
+  margin-top: var(--space-2) !important;
+  font-size: var(--font-size-xxs);
 }
 
 .pub-download-links a {
   display: inline-flex;
   align-items: center;
-  padding: 3px 8px;
-  background: #f0f0f0;
-  border-radius: 12px;
-  color: #2980b9;  /* ← Blue foreground */
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--color-bg-surface);
+  border-radius: var(--border-radius-full);
+  color: var(--color-link);
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 
 .pub-download-links a:hover {
-  background: #e0e0e0;
-  color: #1a5276;  /* ← Darker blue on hover */
+  background-color: var(--color-bg-muted);
+  color: var(--color-link-hover);
   text-decoration: none;
+}
+
+.pub-download-links a:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .pub-download-links a i,
 .pub-download-links a .ai {
-  margin-right: 4px;
+  margin-right: var(--space-1);
   font-size: 0.95em;
+}
+
+
+/* =============================================================================
+   CITATION POPOVER
+   ============================================================================= */
+
+.citation-links {
+  text-align: left;
+  margin-bottom: calc(-1 * var(--space-2));
+  cursor: pointer;
+}
+
+.citation-links button {
+  border-width: 1px;
+  border-radius: var(--border-radius-sm);
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.citation-links button:hover {
+  background-color: var(--color-bg-muted);
+}
+
+.citation-links button:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.citation-links button.active {
+  border-width: 2px;
+  border-color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.citation-copy,
+.citation-download,
+.pub-citation-link,
+.publication-citation-link {
+  cursor: pointer;
+}
+
+.citation-copy:focus,
+.citation-download:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* =============================================================================
+   TABLE OF CONTENTS (Sticky Sidebar)
+   ============================================================================= */
+
+.toc {
+  position: -webkit-sticky;
+  position: sticky;
+
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  
+  /* Remove the border/padding we added before, as the column gutter handles spacing now */
+  padding-left: 0;
+  border-left: none;
+  top: 80px;
+}
+
+/* Optional: Make the TOC links look nicer (gray to blue) */
+.toc-link {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  display: block;
+  padding: 4px 0;
+  font-family: var(--font-family-secondary);
+}
+
+.toc-link:hover {
+  color: var(--color-link-hover);
+}
+
+.toc-link:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.toc-link.is-active-link {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+  border-left: 3px solid var(--color-primary);
+  padding-left: 10px;
+  margin-left: -13px; /* Pull back to align with border */
+}
+
+
+/* =============================================================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================================================= */
+
+@media only screen and (max-width: 600px) {
+  .citation-link {
+    display: none;
+  }
+}
+
+/* Flexbox wrapper to force the sidebar column to be as tall as the content */
+.row-flex {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* Ensure the sticky sidebar stays relevant to the flex parent */
+.toc {
+  /* top: 100px;  <-- You already have this, just confirming */
+  align-self: flex-start; /* Prevents the TOC itself from stretching, just the column stretches */
+}
+
+/**
+ * ============================================================================
+ * CITATION POPOVER STYLES
+ * ============================================================================
+ * 
+ * Modern, polished styling for the citation popover component.
+ * Features a segmented toggle for format selection and clean action buttons.
+ * 
+ * ACCESSIBILITY:
+ *   - Focus states on all interactive elements
+ *   - Sufficient color contrast (AA compliant)
+ *   - Clear visual feedback for active states
+ * 
+ * @version 2.1.0
+ * ============================================================================
+ */
+
+
+/* =============================================================================
+   CITATION FORMAT TOGGLE (Segmented Control)
+   =============================================================================
+   A modern segmented button group for switching between Text and BibTeX formats.
+   ============================================================================= */
+
+.citation-format-toggle {
+  display: inline-flex;
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  border: 1px solid var(--color-border-strong);
+  margin-bottom: var(--space-3);
+}
+
+.citation-format-btn {
+  padding: var(--space-2) var(--space-4);
+  border: none;
+  background-color: var(--color-bg-page);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), 
+              color var(--transition-fast);
+  position: relative;
+}
+
+/* Divider between buttons */
+.citation-format-btn:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 25%;
+  height: 50%;
+  width: 1px;
+  background-color: var(--color-border);
+}
+
+.citation-format-btn:hover {
+  background-color: var(--color-bg-muted);
+  color: var(--color-text-primary);
+}
+
+.citation-format-btn:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: -2px; /* Inset focus ring for segmented control */
+  z-index: 1;
+}
+
+.citation-format-btn.active {
+  background-color: var(--color-primary);
+  color: var(--color-text-on-dark);
+}
+
+/* Remove divider when active button is adjacent */
+.citation-format-btn.active::after,
+.citation-format-btn.active + .citation-format-btn::before {
+  display: none;
+}
+
+
+/* =============================================================================
+   CITATION CONTENT AREA
+   ============================================================================= */
+
+.citation-content {
+  padding: var(--space-3);
+  background-color: var(--color-bg-surface);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: var(--space-3);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-primary);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.citation-text,
+.bibtex-text {
+  margin: 0;
+}
+
+/* BibTeX gets monospace font for readability */
+.bibtex-text {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: var(--font-size-xs);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+
+/* =============================================================================
+   CITATION ACTION BUTTONS (Download / Copy)
+   ============================================================================= */
+
+.citation-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.citation-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  color: var(--color-link);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-fast),
+              border-color var(--transition-fast),
+              color var(--transition-fast);
+}
+
+.citation-action-btn:hover {
+  background-color: var(--color-bg-surface);
+  border-color: var(--color-primary);
+  color: var(--color-link-hover);
+}
+
+.citation-action-btn:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.citation-action-btn i {
+  font-size: 0.9em;
+}
+
+
+/* =============================================================================
+   COPY FEEDBACK TOOLTIP
+   ============================================================================= */
+
+.citation-copied-feedback {
+  display: inline-block;
+  margin-left: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--color-success);
+  color: var(--color-white);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--border-radius-sm);
+  animation: fadeInUp 0.2s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* =============================================================================
+   BOOTSTRAP POPOVER OVERRIDES
+   =============================================================================
+   Customize the Bootstrap popover appearance to match our design system.
+   ============================================================================= */
+
+/* Popover container */
+.popover {
+  font-family: var(--font-family-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-lg);
+  max-width: 450px;
+}
+
+/* Popover title/header */
+.popover-title {
+  background-color: var(--color-bg-surface);
+  border-bottom: 1px solid var(--color-border);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--border-radius-md) var(--border-radius-md) 0 0;
+}
+
+/* Popover body/content */
+.popover-content {
+  padding: var(--space-3);
+}
+
+
+/* =============================================================================
+   LEGACY SUPPORT
+   =============================================================================
+   Styles for the old markup structure (can be removed after migration).
+   ============================================================================= */
+
+/* Old button styles (from original .citation-links) */
+.citation-links button {
+  border-width: 1px;
+  border-radius: var(--border-radius-sm);
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.citation-links button:hover {
+  background-color: var(--color-bg-muted);
+}
+
+.citation-links button:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.citation-links button.active {
+  border-width: 2px;
+  border-color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
 }

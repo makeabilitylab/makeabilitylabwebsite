@@ -115,6 +115,8 @@ class Person(models.Model):
     github = models.URLField(blank=True, null=True)
     github.help_text = 'Again, put the full url. For example, <a href="https://github.com/jonfroehlich">https://github.com/jonfroehlich</a>'
     twitter = models.URLField(blank=True, null=True)
+    bluesky = models.URLField(blank=True, null=True)
+    bluesky.help_text = 'Put the full url. For example, <a href="https://bsky.app/profile/jonfroehlich.bsky.social">https://bsky.app/profile/jonfroehlich.bsky.social</a>'
     threads = models.URLField(blank=True, null=True)
     mastodon = models.URLField(blank=True, null=True)
     linkedin = models.URLField(blank=True, null=True)

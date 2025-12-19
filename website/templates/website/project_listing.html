@@ -1,8 +1,34 @@
 {% extends 'website/base.html' %}
 
-{% block pagetitle %}
-  Makeability Lab Projects
-{% endblock %}
+{% comment %}
+================================================================================
+PROJECT LISTING PAGE - Makeability Lab
+================================================================================
+
+Displays all research projects in a filterable grid layout with:
+- Sticky sidebar filter (desktop) with keyboard navigation
+- Responsive grid of project cards
+- Separate sections for active and completed projects
+
+ACCESSIBILITY FEATURES:
+- Skip link to bypass filter navigation
+- Semantic HTML5 elements (nav, main, section, article)
+- ARIA labels and live regions for filter state
+- Keyboard-navigable filter buttons
+- Focus management for filter interactions
+- Proper heading hierarchy (h1 > h2 > h3)
+
+DEPENDENCIES:
+- design-tokens.css (loaded via base.html)
+- project-listing.css
+- project-filter.js
+
+@version 2.0.0 - Accessibility and design refactor
+@author Makeability Lab
+================================================================================
+{% endcomment %}
+
+{% block pagetitle %}Projects{% endblock %}
 
 {% load static %}
 {% load cropping %}
@@ -10,75 +36,161 @@
 {% load ml_tags %}
 
 {% block stylesheets %}
-  <link rel="stylesheet" href="{% static 'website/css/project-listing.css' %}" />
+<link rel="stylesheet" href="{% static 'website/css/project-listing.css' %}">
 {% endblock %}
 
+{% block external_scripts %}
+<script src="{% static 'website/js/project-listing-filter.js' %}"></script>
+{% endblock %}
+
+{% block scripts %}
+document.addEventListener('DOMContentLoaded', function() {
+  ProjectFilter.init();
+});
+{% endblock %}
 
 {% block maincarousel %}
-
+<!-- No carousel on projects page -->
 {% endblock %}
 
 {% block content %}
+<div id="projects-container" class="container" style="margin-top: 80px;">
   
-  <div id="content" class="container">
-    <div id="filter-sidebar">
-      {% comment %} TODO: order sidebar filters either alphabetically or by number of projects {% endcomment %}
-      <h2>Project Filter</h2>
-      <ul>
-        {% for project_umbrella_name, project_list in map_project_umbrella_to_projects.items %}
-            <li>
-              <a class="filter" data-filter="{{project_umbrella_name}}" href="#" onclick="onFilterClick(this);">
-                {{project_umbrella_name|truncatechars:14}}</a>&nbsp;({{ project_list|length }})
-            </li>
-        {% endfor %}
-        <li class="reset-filter">
-          <a class="filter" href="#" onclick="resetFilter();">Reset Filter</a>
-      </ul>
+  <!-- 
+    Skip link for keyboard users to bypass the filter sidebar.
+    Complements the main skip link in base.html.
+  -->
+  <a href="#project-grid-active" class="skip-link skip-link-filter">
+    Skip to project list
+  </a>
+
+  <div class="row row-flex">
+    
+    <!-- ======================== Filter Sidebar ======================== -->
+    <div class="col-md-2 col-lg-2 hidden-sm hidden-xs">
+      <nav id="project-filter-sidebar" 
+           class="project-filter-sidebar" 
+           aria-label="Project filter">
+        
+        <h2 class="filter-heading">Filter by Topic</h2>
+        
+        <!-- Live region announces filter changes to screen readers -->
+        <div id="filter-live-region" 
+             class="sr-only" 
+             aria-live="polite" 
+             aria-atomic="true">
+        </div>
+
+        <ul class="filter-list" role="list">
+          {% for project_umbrella_name, project_list in map_project_umbrella_to_projects.items %}
+          <li class="filter-item">
+            <button type="button"
+                    class="filter-btn"
+                    data-filter="{{ project_umbrella_name }}"
+                    aria-pressed="false"
+                    aria-describedby="filter-count-{{ forloop.counter }}">
+              <span class="filter-name">{{ project_umbrella_name }}</span>
+              <span id="filter-count-{{ forloop.counter }}" class="filter-count">
+                {{ project_list|length }}
+              </span>
+            </button>
+          </li>
+          {% endfor %}
+        </ul>
+
+        <!-- Reset button (hidden until a filter is active) -->
+        <button type="button" 
+                id="filter-reset-btn"
+                class="filter-reset-btn"
+                aria-label="Clear filter and show all projects"
+                style="display: none;">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+          Clear Filter
+        </button>
+      </nav>
     </div>
 
-    <div id="makelab-projects" class="makelab-content-container">
-      <h1>Projects</h1>
-      <!-- We only display projects that have a thumbnail and at least one publication -->
-      <div class="project-grid">
-        {% for project in active_projects %}
-          {% if project.has_thumbnail and project.has_publication %}
-            {% include 'snippets/display_project_snippet.html' %}
-          {% endif %}
-        {% endfor %}
-      </div>
-      <h2>Completed Projects</h2>
-      <div class="project-grid">
-        {% for project in completed_projects %}
-          {% if project.has_thumbnail and project.has_publication %}
-            {% include 'snippets/display_project_snippet.html' %}
-          {% endif %}
-        {% endfor %}
+    <!-- ======================== Main Content ======================== -->
+    <div class="col-md-10 col-lg-10">
+      <div id="makelab-projects" class="makelab-content-container">
+        
+        <header class="projects-header">
+          <h1>Projects</h1>
+          
+          <!-- Mobile filter dropdown (shown on small screens) -->
+          <div class="filter-mobile-container hidden-md hidden-lg">
+            <label for="filter-mobile-select" class="sr-only">
+              Filter projects by topic
+            </label>
+            <select id="filter-mobile-select" 
+                    class="filter-mobile-select"
+                    aria-describedby="filter-mobile-description">
+              <option value="">All Topics</option>
+              {% for project_umbrella_name, project_list in map_project_umbrella_to_projects.items %}
+              <option value="{{ project_umbrella_name }}">
+                {{ project_umbrella_name }} ({{ project_list|length }})
+              </option>
+              {% endfor %}
+            </select>
+            <span id="filter-mobile-description" class="sr-only">
+              Select a topic to filter the project list
+            </span>
+          </div>
+        </header>
+
+        <!-- Active Projects Section -->
+        <section id="active-projects-section" aria-labelledby="active-projects-heading">
+          <h2 id="active-projects-heading" class="section-heading heading-with-anchor">
+            Active Projects
+            <a href="#active-projects-section" 
+               class="header-anchor" 
+               aria-label="Link to active projects section">
+              <i class="fa-solid fa-link" aria-hidden="true"></i>
+            </a>
+          </h2>
+          
+          <div id="project-grid-active" class="project-grid" role="list">
+            {% for project in active_projects %}
+              {% if project.has_thumbnail and project.has_publication %}
+                {% include 'snippets/display_project_snippet.html' %}
+              {% endif %}
+            {% endfor %}
+          </div>
+
+          <!-- Empty state message (shown when filter yields no results) -->
+          <p id="no-active-results" class="no-results-message" style="display: none;">
+            No active projects match the selected filter.
+          </p>
+        </section>
+
+        <!-- Completed Projects Section -->
+        <section id="completed-projects-section" aria-labelledby="completed-projects-heading">
+          <h2 id="completed-projects-heading" class="section-heading heading-with-anchor">
+            Completed Projects
+            <a href="#completed-projects-section" 
+               class="header-anchor" 
+               aria-label="Link to completed projects section">
+              <i class="fa-solid fa-link" aria-hidden="true"></i>
+            </a>
+          </h2>
+          
+          <div id="project-grid-completed" class="project-grid" role="list">
+            {% for project in completed_projects %}
+              {% if project.has_thumbnail and project.has_publication %}
+                {% include 'snippets/display_project_snippet.html' %}
+              {% endif %}
+            {% endfor %}
+          </div>
+
+          <!-- Empty state message (shown when filter yields no results) -->
+          <p id="no-completed-results" class="no-results-message" style="display: none;">
+            No completed projects match the selected filter.
+          </p>
+        </section>
+
       </div>
     </div>
+    
   </div>
-
-  <script>
-    function onFilterClick(activeFilter) {
-      if ($(activeFilter).hasClass('active-filter')) {
-        // If we're here, the user clicked on an already active filter, so we should clear the filter
-        resetFilter();
-      }else{
-        // Otherwise, setup the filter
-        $('.filter').removeClass('active-filter');
-        $(activeFilter).addClass('active-filter');
-        $('.reset-filter').show();
-
-        let filterKeywords = $(activeFilter).data('filter');
-        $('.project-card').not('[data-project-keywords~="' + filterKeywords + '"]').fadeOut();
-        //$('.project-card').fadeOut();
-        $('.project-card[data-project-keywords~="' + filterKeywords + '"]').fadeIn();
-      }
-    }
-
-    function resetFilter(){
-      $('.filter').removeClass('active-filter');
-      $('.project-card').fadeIn(1000);
-      $('.reset-filter').hide();
-    }
-  </script>
+</div>
 {% endblock %}

@@ -2,92 +2,83 @@
 
 {% block pagetitle %}Publications{% endblock %}
 
-{% load static %} {# https://docs.djangoproject.com/en/4.2/howto/static-files/#configuring-static-files #}
+{% load static %}
 
 {% block stylesheets %}
-  <link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
-  <link rel="stylesheet" href="{% static 'website/css/jquery-ui.min.css' %}">
-  <link rel="stylesheet" href="{% static 'website/css/jquery-ui.theme.min.css' %}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.18.2/tocbot.css">
+<link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/jquery-ui.min.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/jquery-ui.theme.min.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.18.2/tocbot.css">
 {% endblock %}
 
 {% block external_scripts %}
-  {% comment %} <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.18.2/tocbot.min.js"></script> {% endcomment %}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.18.2/tocbot.js"></script>
-  <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
-  <script src="{% static 'website/js/citationPopoverSimple.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.18.2/tocbot.js"></script>
+<script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
+<script src="{% static 'website/js/citationPopoverSimple.js' %}"></script>
 {% endblock %}
 
 {% block scripts %}
-    $(document).ready(function() {
-        // find the citation links and set up the popover content and behavior for each
-        var citationLinks = $(".publication-citation-link");
-        for(var i = 0; i < citationLinks.length; i++) {
-            $(citationLinks[i]).citationPopover();
-        }
-    });
+document.addEventListener('DOMContentLoaded', function() {
+  CitationPopover.init('.publication-citation-link');
+});
 {% endblock %}
 
 {% block maincarousel %}
-    <!-- TODO: If we don't want a carousel, comment the following line of code out -->
-    {% comment %} {% include "snippets/display_short_carousel_snippet.html" %} {% endcomment %}
+<!-- No carousel on publications page -->
 {% endblock %}
 
 {% block content %}
-  {% comment %} <nav class="toc toc-right js-toc"></nav> {% endcomment %}
+<div id="publications-container" class="container" style="margin-top: 80px;">
   
-  <div id="content" class="container" style="margin-top:80px">
-    <nav id="js-toc" class="js-toc toc"></nav>
-    <div id="makelab-recent-publications" class="makelab-content-container">
-      {# We need to have headers like years #}
-      {# Consider also uses tocbot to make navigation easier #}
-      <h1>Publications</h1>
-      {% for pub_year, pub_list in map_year_to_pub_list.items %}
-        <h2 id="{{pub_year}}">{{ pub_year }}</h2>
-        {% for pub in pub_list %}
-          <div class="row" style="margin-left: 5px">
-            <div class="col-xs-12 col-md-10">
-              {% include "snippets/display_pub_snippet.html" with orientation="vertical"%}
+  <div class="row row-flex">
+    <div class="col-md-1 hidden-sm hidden-xs">
+      <nav id="js-toc" class="js-toc toc" aria-label="Table of contents"></nav>
+    </div>
+
+    <div class="col-md-11">
+      <div id="makelab-recent-publications" class="makelab-content-container">
+        <h1 style="margin-top: 0;">Publications</h1>
+        
+        {% for pub_year, pub_list in map_year_to_pub_list.items %}
+        <section aria-labelledby="year-{{ pub_year }}">
+          <h2 id="year-{{ pub_year }}" class="heading-with-anchor">
+            {{ pub_year }}
+            <a href="#year-{{ pub_year }}" 
+              class="header-anchor" 
+              aria-label="Link to {{ pub_year }} publications">
+              <i class="fa-solid fa-link" aria-hidden="true"></i>
+            </a>
+          </h2>
+          
+          {% for pub in pub_list %}
+          <div class="row" style="margin-left: 5px;">
+            <div class="col-xs-12">
+              {% include "snippets/display_pub_snippet.html" with orientation="vertical" %}
             </div>
           </div>
+          {% endfor %}
+        </section>
         {% endfor %}
-      {% endfor %}
+      </div>
     </div>
-  </div>
+  </div> 
+</div>
 
 <script>
-    tocbot.init({
-        // Where to render the table of contents.
-        tocSelector: '.js-toc',
-        // Where to grab the headings to build the table of contents.
-        contentSelector: '.makelab-content-container',
-        // Which headings to grab inside of the contentSelector element.
-        headingSelector: 'h2, h3',
-        // For headings inside relative or absolute positioned containers within content.
-        hasInnerContainers: true,
-        // Makes it so that we scroll down so that the header shows rather than just beneath it
-        scrollSmoothOffset:-50,
-        
-        headingsOffset: 200,
-        });
+  // Initialize tocbot for year-based navigation
+  tocbot.init({
+    tocSelector: '.js-toc',
+    contentSelector: '.makelab-content-container',
+    headingSelector: 'h2',
+    hasInnerContainers: true,
+    
+    // Disable Tocbot's built-in positioning. 
+    // We want our CSS (position: sticky) to handle this exclusively.
+    positionFixedSelector: null,
+    fixedSidebarOffset: null,
 
-    /* Track scrolling to show/hide the tocbot navigation bar on right side */
-    var onScrollHandler = function (event) {
-
-        /* End event listener after visitor scrolls past 500px */
-        if (window.pageYOffset >= 100) {
-          document.getElementById("js-toc").style.top = "100px";
-        }else{
-          document.getElementById("js-toc").style.top = "170px";
-        }
-        /* console.log("window scroll event:", window.pageYOffset); */
-      };
-
-      /* Listen for scroll events */
-      window.addEventListener('scroll', onScrollHandler, false);
+    scrollSmoothOffset: -100,
+    headingsOffset: 100
+  });
 </script>
 {% endblock %}
-  
-
-
-

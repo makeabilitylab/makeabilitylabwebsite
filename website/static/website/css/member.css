@@ -1,57 +1,405 @@
-.about-header {
-  margin-top: 10px;
+/**
+ * ============================================================================
+ * PERSON PAGE STYLES - Makeability Lab
+ * ============================================================================
+ *
+ * Styles for individual lab member profile pages. Displays:
+ * - Profile header with photo, bio, and social links
+ * - Related news sidebar (on larger screens)
+ * - Sections for projects, publications, videos, and talks
+ *
+ * ACCESSIBILITY:
+ *   - All text colors meet WCAG 2.1 AA contrast requirements
+ *   - Interactive elements have visible focus states
+ *   - Links have hover states for discoverability
+ *   - Respects prefers-reduced-motion for image transitions
+ *
+ * DEPENDENCIES:
+ *   - design-tokens.css must be loaded first
+ *   - project-listing.css (for project grid styles)
+ *   - publications.css (for publication snippet styles)
+ *
+ * STRUCTURE:
+ *   .makelab-person
+ *   ├── .person-header
+ *   │   ├── .person-image-container
+ *   │   └── .person-bio-container
+ *   ├── .person-news-sidebar
+ *   └── .person-section (×n for projects, pubs, videos, talks)
+ *
+ * @version 2.0.0 - Refactored with design tokens and accessibility
+ * @author Makeability Lab
+ * ============================================================================
+ */
+
+
+/* =============================================================================
+   PAGE CONTAINER
+   ============================================================================= */
+
+.makelab-person {
+  margin-top: 80px; /* Offset for fixed navbar */
 }
 
-.content-container {
-  margin-top: 25px;
+
+/* =============================================================================
+   SECTION HEADERS
+   =============================================================================
+   Consistent styling for Projects, Publications, Videos, Talks headings.
+   ============================================================================= */
+
+.person-section-header {
+  margin-top: var(--space-10);
+  margin-bottom: var(--space-4);
+  text-align: center;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  color: var(--color-text-primary);
 }
 
-.easter-egg-col img {
-  border-radius: 50%;
-  overflow: hidden;
+.person-section-header.text-left {
+  text-align: left;
 }
 
-.easter-egg-col {
-  margin-bottom: 18px;
+
+/* =============================================================================
+   PROFILE HEADER LAYOUT
+   =============================================================================
+   Flexbox layout for profile image and bio on larger screens.
+   Stacks vertically on mobile.
+   ============================================================================= */
+
+.person-header {
+  display: block;
 }
 
-.easter-egg-col:hover > img {
-  opacity: 0;
+@media (min-width: 576px) {
+  .person-header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
 }
 
-.easter-egg-col:hover .overlay-easter-egg {
-  opacity: 1;
+
+/* =============================================================================
+   PROFILE IMAGE
+   ============================================================================= */
+
+.person-image-container {
+  flex-shrink: 0;
+  text-align: center;
+  max-width: 190px;
+  margin: 0 auto var(--space-4) auto;
 }
 
-.header-icon {
-  height: 25px;
-  width: 25px;
-  margin-right: 10px;
+@media (min-width: 576px) {
+  .person-image-container {
+    margin: 0;
+  }
 }
 
-.header-link {
-  margin-top: 5px;
-  padding-left: 10px;
+.person-image {
+  width: 100%;
+  height: auto;
+  border-radius: var(--border-radius-full);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
 }
 
-.icon-housing {
+.person-image:hover {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-md);
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .person-image {
+    transition: none;
+  }
+  
+  .person-image:hover {
+    transform: none;
+  }
+}
+
+
+/* =============================================================================
+   PROFILE BIO CONTAINER
+   ============================================================================= */
+
+.person-bio-container {
+  flex: 1;
+  min-width: 0; /* Prevent flex item from overflowing */
+}
+
+
+/* =============================================================================
+   PERSON NAME & TITLE
+   ============================================================================= */
+
+.person-name-header {
+  margin-top: var(--space-2);
+  margin-bottom: var(--space-1);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+}
+
+@media (min-width: 576px) {
+  .person-name-header {
+    margin-top: var(--space-1);
+  }
+}
+
+.person-title {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-1);
+}
+
+.person-affiliation {
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+}
+
+
+/* =============================================================================
+   SOCIAL/WEBSITE LINKS
+   =============================================================================
+   Horizontal list of icon + text links to external profiles.
+   ============================================================================= */
+
+.person-websites {
   display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  margin-bottom: var(--space-3);
 }
 
-#makelab-recent-projects .individual-project-listing {
-  padding-left: 0;
-  padding-right: 30px;
+.person-website-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-link);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  transition: color var(--transition-fast);
 }
 
-#makelab-recent-projects .news-type-label {
-  margin-bottom: 10px;
+.person-website-link:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
 }
 
-.member-title {
-  margin: 0;
+.person-website-link:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
 }
 
-.person-title-text,.header-icon,.person-bio-text {
-  margin-top: 18px;
-  margin-bottom: 0;
+.person-website-link i {
+  font-size: 1.1em;
+}
+
+
+/* =============================================================================
+   BIO TEXT
+   ============================================================================= */
+
+.person-bio-text {
+  line-height: var(--line-height-relaxed);
+  margin-top: var(--space-4);
+  color: var(--color-text-primary);
+}
+
+.person-bio-text p {
+  margin-bottom: var(--space-3);
+}
+
+.person-bio-text a {
+  color: var(--color-link);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.person-bio-text a:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+.person-bio-text a:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+
+/* =============================================================================
+   BIO METADATA (Last Updated / Auto-Generated Notice)
+   ============================================================================= */
+
+.person-bio-meta {
+  margin-top: var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+
+/* =============================================================================
+   NEWS SIDEBAR
+   =============================================================================
+   Right sidebar showing recent news related to this person.
+   Hidden on small screens.
+   ============================================================================= */
+
+.person-news-sidebar {
+  margin-top: var(--space-4);
+}
+
+@media (min-width: 992px) {
+  .person-news-sidebar {
+    margin-top: 0;
+    padding-left: var(--space-10);
+  }
+}
+
+.person-news-sidebar-header {
+  margin-top: var(--space-10);
+  margin-bottom: var(--space-3);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+
+/* =============================================================================
+   CONTENT SECTIONS (Projects, Publications, Videos, Talks)
+   ============================================================================= */
+
+.person-section {
+  margin-top: var(--space-10);
+}
+
+
+/* =============================================================================
+   PROJECT GRID (Person Page Variant)
+   =============================================================================
+   Uses the same grid from project-listing.css but may have slight variations.
+   ============================================================================= */
+
+.person-project-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-5);
+  margin-top: var(--space-4);
+}
+
+@media (max-width: 1200px) {
+  .person-project-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .person-project-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .person-project-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* =============================================================================
+   PUBLICATIONS SECTION
+   =============================================================================
+   Uses flexbox to prevent Bootstrap 3 float snag issues where uneven
+   card heights cause cards to wrap incorrectly.
+   ============================================================================= */
+
+.person-publications-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+/* Override Bootstrap's float on column children to prevent snag issues */
+.person-publications-grid > .pub-column-horiz-layout {
+  float: none;
+  flex: 0 0 calc(33.333% - var(--space-4));
+  max-width: calc(33.333% - var(--space-4));
+}
+
+@media (max-width: 991px) {
+  .person-publications-grid > .pub-column-horiz-layout {
+    flex: 0 0 calc(50% - var(--space-4));
+    max-width: calc(50% - var(--space-4));
+  }
+}
+
+@media (max-width: 575px) {
+  .person-publications-grid > .pub-column-horiz-layout {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+.person-publications-list {
+  margin-top: var(--space-4);
+  margin-left: var(--space-4);
+}
+
+
+/* =============================================================================
+   LOAD MORE BUTTON (Future Enhancement)
+   ============================================================================= */
+
+.load-more-btn {
+  display: block;
+  width: fit-content;
+  margin: var(--space-6) auto 0 auto;
+  padding: var(--space-2) var(--space-6);
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  color: var(--color-link);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-fast),
+              border-color var(--transition-fast),
+              color var(--transition-fast);
+}
+
+.load-more-btn:hover {
+  background-color: var(--color-bg-surface);
+  border-color: var(--color-primary);
+  color: var(--color-link-hover);
+}
+
+.load-more-btn:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+
+/* =============================================================================
+   UTILITY CLASSES
+   ============================================================================= */
+
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
 }

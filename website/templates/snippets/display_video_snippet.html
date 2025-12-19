@@ -1,70 +1,103 @@
-{# This is a reusable template for displaying video #}
-{# See: https://docs.djangoproject.com/en/dev/ref/templates/builtins/#include #}
+{% comment %}
+================================================================================
+VIDEO SNIPPET TEMPLATE
+================================================================================
+
+Reusable template for displaying a single video. Used on:
+- Person profile pages
+- Project pages
+- Videos listing page
+
+USAGE:
+  {% include "snippets/display_video_snippet.html" %}
+
+ACCESSIBILITY:
+- Uses <article> semantic element
+- iframe has required title attribute for screen readers
+- Links have meaningful text or aria-labels
+- Time-ago display uses <time> element with datetime attribute
+
+CONTEXT VARIABLES:
+- video: Video model instance (required)
+
+DEPENDENCIES:
+- design-tokens.css
+- video-snippet.css (styles for .video-card)
+- video-age.js (handles humanized time display)
+
+NOTE ON VIDEO AGE:
+  Previously used inline document.write() which is problematic.
+  Now uses data attributes and a separate JS module (video-age.js)
+  that runs on DOMContentLoaded to populate the time display.
+
+@version 2.0.0 - Accessibility refactor, removed inline JS
+================================================================================
+{% endcomment %}
 
 {% load static %}
 {% load thumbnail %}
 {% load cropping %}
 {% load ml_tags %}
 
-<div class="col-xs-12 col-sm-6 col-md-4 col-lg-4 video-column">
-  <div class="video" style="height: 300px; margin-bottom: 20px;">
-    {# TODO: fix this on mobile; has weird aspect ratio because of fixed height  #}
-    <iframe class="video-player" src="{{ video.get_embed }}" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+<article class="video-card">
+  
+  <!-- Video Player (iframe) -->
+  <div class="video-player-container">
+    <iframe class="video-player" 
+            src="{{ video.get_embed }}" 
+            title="Video: {{ video.title }}"
+            frameborder="0" 
+            allow="autoplay; fullscreen" 
+            allowfullscreen
+            loading="lazy">
+    </iframe>
+  </div>
 
-    <p class="artifact-title line-clamp" style="margin-top: 0px;">{{ video.title }}</p>
+  <!-- Video Info -->
+  <div class="video-info">
+    
+    <!-- Title -->
+    <h3 class="video-title">
+      <a href="{{ video.video_url }}">
+        <span class="line-clamp">{{ video.title }}</span>
+      </a>
+    </h3>
 
-    <p class="artifact-links">
-      <a href="{{ video.video_url }}">{{ video.get_video_host_str }}</a>
-      {# TODO: fix this so that we are not using a constant for the media dir link #}
+    <!-- Links & Metadata -->
+    <div class="video-links">
+      <a href="{{ video.video_url }}" 
+         aria-label="Watch on {{ video.get_video_host_str }}">
+        <i class="fa-solid fa-play" aria-hidden="true"></i>
+        <span>{{ video.get_video_host_str }}</span>
+      </a>
 
-      {# We can access the linked video publication, if one exists, using Django's 'reverse' query, #}
-      {# which if you define a OneToOneField on your model--as we did in Publication for video-- #}
-      {# then we can access the related object like this: video.publication #}
       {% if video.has_publication %}
-        | <a href="{{ MEDIA_URL }}{ video.publication.pdf_file }}">Paper</a>
+      <a href="{{ MEDIA_URL }}{{ video.publication.pdf_file }}" 
+         aria-label="Download related paper">
+        <i class="fa-solid fa-file-lines" aria-hidden="true"></i>
+        <span>Paper</span>
+      </a>
       {% endif %}
       
       {% for project in video.projects.all %}
-        {% if forloop.first and video.projects.all|length > 0 %}| {% endif %}
-        {% if project.can_show_online %}
-            <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>{% if not forloop.last %} • {% endif %}
-        {% endif %}
+      {% if project.can_show_online %}
+      <a href="{% url 'website:project' project.short_name %}" 
+         aria-label="View project: {{ project.name }}">
+        <i class="fa-solid fa-flask" aria-hidden="true"></i>
+        <span>{{ project.name }}</span>
+      </a>
+      {% endif %}
       {% endfor %}
 
-      {# humanize-duration.js must be loaded for this to work #}
-      <script>
-        /**
-         * Display video age or release date depending on whether the video
-         * has already been released or is scheduled for future release.
-         */
-        (function() {
-          {% autoescape off %}
-            const ageInMs = {{ video.get_age_in_ms }};
-            
-            // Check if the video has a future release date (negative age)
-            if (ageInMs < 0) {
-              console.log("Video age in ms: " + ageInMs);
-              console.log("Video is scheduled for future release.");
-              // Video is in the future - display the release date
-              const releaseDate = new Date("{{ video.date|date:'c' }}");
-              console.log("Posted date string: {{ video.date|date:'c' }}");
-              console.log("Release date object: " + releaseDate);
-              console.log("Release date as ISO string: " + releaseDate.toISOString());
-              const formattedDate = releaseDate.toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'short', 
-                day: 'numeric' 
-              });
-              console.log("Formatted release date: " + formattedDate);
-              document.write("• Releases " + formattedDate);
-            } else {
-              // Video is in the past - display time ago
-              const age = humanizeDuration(ageInMs, { largest: 1 });
-              document.write("• " + age + " ago");
-            }
-          {% endautoescape %}
-        })();
-      </script>
-    </p>
+      <!-- Video Age/Date -->
+      <span class="video-age" 
+            data-video-age-ms="{{ video.get_age_in_ms }}"
+            data-video-date="{{ video.date|date:'c' }}">
+        <time datetime="{{ video.date|date:'c' }}">
+          {{ video.date|date:"M d, Y" }}
+        </time>
+      </span>
+    </div>
+    
   </div>
-</div>
+</article>

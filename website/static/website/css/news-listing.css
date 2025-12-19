@@ -1,75 +1,257 @@
-#makelab-news{
-  margin-top: 80px;
+/**
+ * ============================================================================
+ * NEWS LISTING PAGE STYLES - Makeability Lab
+ * ============================================================================
+ *
+ * Styles for the news listing page displaying news items in a responsive grid.
+ *
+ * ACCESSIBILITY:
+ *   - All text colors meet WCAG 2.1 AA contrast requirements
+ *   - Interactive elements have visible focus states
+ *   - Links have hover states for discoverability
+ *   - Respects prefers-reduced-motion for image transitions
+ *
+ * DEPENDENCIES:
+ *   - design-tokens.css must be loaded first
+ *
+ * STRUCTURE:
+ *   #makelab-news
+ *   ├── h1 (page heading)
+ *   └── .news-grid
+ *       └── .news-card (×n)
+ *           ├── .news-image
+ *           ├── .news-card-headline
+ *           └── .news-card-byline
+ *
+ * @version 2.0.0 - Refactored with design tokens and accessibility
+ * @author Makeability Lab
+ * ============================================================================
+ */
+
+
+/* =============================================================================
+   PAGE CONTAINER
+   ============================================================================= */
+
+#makelab-news {
+  margin-top: 80px; /* Offset for fixed navbar */
 }
+
+#makelab-news h1 {
+  color: var(--color-text-primary);
+}
+
+
+/* =============================================================================
+   NEWS GRID
+   =============================================================================
+   Responsive grid layout for news cards.
+   - 3 columns on desktop
+   - 2 columns on tablet
+   - 1 column on mobile
+   ============================================================================= */
 
 .news-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-gap: 30px;
-  text-align: center;
-  row-gap: 35px;
-  margin-top: 20px;
-  min-width: 250px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-8);
+  margin-top: var(--space-5);
 }
 
-/* In Bootstrap, xs class is meant for phones with size <768 px.
-sm class is for tablets with size >= 768 px and <992 px.
-md class is used for desktops with size >=992 px and <1200 px.
-lg class is defined for larger desktops with size >= 1200 px. */
-
-@media screen and (max-width: 700px) {
+/* Tablet: 2 columns */
+@media screen and (max-width: 768px) {
   .news-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
   }
 }
 
-@media screen and (max-width: 400px) {
-  .news-grid  {
+/* Mobile: 1 column */
+@media screen and (max-width: 480px) {
+  .news-grid {
     grid-template-columns: 1fr;
+    gap: var(--space-5);
   }
 }
 
-.news-image{
-  overflow: hidden;
+
+/* =============================================================================
+   NEWS CARD
+   ============================================================================= */
+
+.news-card {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
 }
 
-.news-card img{
-  border-radius: 5%;
-  border: 1px solid lightgray;
+
+/* =============================================================================
+   NEWS CARD IMAGE
+   ============================================================================= */
+
+.news-image {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--border-radius-md);
+}
+
+.news-image a {
+  display: block;
+}
+
+.news-image a:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: var(--border-radius-md);
+}
+
+.news-card img {
   width: 100%;
-  transition: transform .4s;
+  height: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  transition: transform var(--transition-normal);
 }
 
 .news-card img:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .news-card img {
+    transition: none;
+  }
+  
+  .news-card img:hover {
+    transform: none;
+  }
+}
+
+
+/* =============================================================================
+   NEWS CARD HEADLINE
+   ============================================================================= */
 
 .news-card-headline {
-  font-size: 16px;
-  font-weight: 600;
-  margin-top: 6px;
-  margin-bottom: 4px;
-  text-align: left;
-  line-height: normal;
+  margin: var(--space-2) 0 var(--space-1) 0;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-primary);
 }
 
-.news-card-headline a{
-  color: inherit
+.news-card-headline a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
-.news-card-byline{
-  font-size: 10px;
-  text-align: left;
+.news-card-headline a:hover {
+  color: var(--color-link-hover);
+}
+
+.news-card-headline a:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+
+/* =============================================================================
+   NEWS CARD BYLINE
+   ============================================================================= */
+
+.news-card-byline {
+  font-family: var(--font-family-secondary);
+  font-size: var(--font-size-xs);
   text-transform: uppercase;
-  color: rgb(120, 120, 120)
+  letter-spacing: 0.03em;
+  color: var(--color-text-muted);
 }
 
-.news-card-byline a{
-  color: inherit
+.news-card-byline a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--transition-fast);
 }
+
+.news-card-byline a:hover {
+  color: var(--color-link-hover);
+}
+
+.news-card-byline a:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.news-card-author {
+  /* Inherits from .news-card-byline */
+}
+
+.news-card-date {
+  /* Inherits from .news-card-byline */
+}
+
+
+/* =============================================================================
+   PAGINATION
+   =============================================================================
+   Centered pagination controls for navigating between news pages.
+   ============================================================================= */
 
 .news-pagination {
-  text-align: center;
-  margin: auto;
-  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-10);
+  margin-bottom: var(--space-6);
+}
+
+/* Override Bootstrap pagination styles to match design system */
+.news-pagination .pagination {
+  display: flex;
+  gap: var(--space-1);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.news-pagination .pagination > li > a,
+.news-pagination .pagination > li > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: var(--space-1) var(--space-3);
+  background-color: var(--color-bg-page);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family-secondary);
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+  transition: background-color var(--transition-fast),
+              border-color var(--transition-fast),
+              color var(--transition-fast);
+}
+
+.news-pagination .pagination > li > a:hover {
+  background-color: var(--color-bg-surface);
+  border-color: var(--color-primary);
+  color: var(--color-link-hover);
+}
+
+.news-pagination .pagination > li > a:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  z-index: 1;
+}
+
+.news-pagination .pagination > li.active > span {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-on-dark);
+  font-weight: var(--font-weight-medium);
 }
