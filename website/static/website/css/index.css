@@ -136,14 +136,23 @@
   margin-top: var(--space-6);
 }
 
+#makelab-about-us,
+#makelab-recent-projects,
+#makelab-recent-papers,
+#makelab-recent-videos,
+#makelab-recent-talks,
+#makelab-sponsors {
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+}
+
 
 /* =============================================================================
    ABOUT US SECTION
    ============================================================================= */
 
 #makelab-about-us {
-  margin: 0;
-  padding: 0;
+  /* No extra margin/padding needed - inherits from makelab-content-container */
 }
 
 .about-us-grid {

@@ -141,7 +141,7 @@
    ============================================================================= */
 
 .talk-venue {
-  margin: 0 0 var(--space-1) 0;
+  margin: 0;
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
   /* Prevent long venue names from breaking grid layout */
@@ -151,7 +151,7 @@
 }
 
 .talk-location {
-  margin: 0 0 var(--space-1) 0;
+  margin: 0;
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
 }
