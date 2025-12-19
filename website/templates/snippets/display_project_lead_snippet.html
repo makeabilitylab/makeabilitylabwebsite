@@ -1,20 +1,63 @@
+{% comment %}
+================================================================================
+PROJECT LEAD SNIPPET
+================================================================================
+
+Displays a list of project leads (PIs, student leads, postdocs, etc.) in 
+sidebar format. Used on project pages to show current and former team members.
+
+USAGE:
+  {% include "snippets/display_project_lead_snippet.html" with active_leads=active_student_leads %}
+
+  Or with explicit context:
+  {% with active_leads=active_PIs %}
+    {% include "snippets/display_project_lead_snippet.html" %}
+  {% endwith %}
+
+ACCESSIBILITY:
+- Uses semantic list structure
+- Image links have aria-label for screen readers
+- Images are decorative (alt="") since name link provides context
+- Focus states defined in project.css
+
+CONTEXT VARIABLES:
+  - active_leads: QuerySet of ProjectRole objects (required)
+    Each ProjectRole must have a .person attribute with:
+    - .url_name: URL-safe name for member page
+    - .get_full_name: Display name
+    - .image: Profile image
+    - .cropping: Image crop coordinates
+    - .get_thumbnail_size_as_str: Thumbnail dimensions
+
+DEPENDENCIES:
+  - project.css (styles for .project-sidebar-list, .project-sidebar-person, etc.)
+
+@version 2.0.0 - Accessibility and design token refactor
+@author Makeability Lab
+================================================================================
+{% endcomment %}
+
 {% load static %}
 {% load thumbnail %}
 {% load cropping %}
-{% load ml_tags %}
 
-<ul class="sidebar-ul">
-  {% for active_lead in active_leads %}
-    {% with person=active_lead.person %}
-      <li class="sidebar-li">   
+<ul class="project-sidebar-list">
+  {% for lead in active_leads %}
+    {% with person=lead.person %}
+    <li class="project-sidebar-person">
+      <a href="{% url 'website:member_by_name' member_name=person.url_name %}"
+         class="project-sidebar-person-link"
+         aria-label="View profile of {{ person.get_full_name }}">
+        <img class="project-sidebar-person-image" 
+             src="{% thumbnail person.image '64x64' box=person.cropping crop=True upscale=True detail=True %}" 
+             alt="">
+      </a>
+      <span class="project-sidebar-person-name">
         <a href="{% url 'website:member_by_name' member_name=person.url_name %}">
-          <img class="sidebar-person-thumbnail" src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}" 
-                alt="{{ person.get_full_name }}"/> 
+          {{ person.get_full_name }}
         </a>
-        <div class="sidebar-content">
-          <a href="{% url 'website:member_by_name' member_name=person.url_name %}">{{ person.get_full_name }}</a>
-        </div>
-      </li>
+      </span>
+    </li>
     {% endwith %}
   {% endfor %}
 </ul>

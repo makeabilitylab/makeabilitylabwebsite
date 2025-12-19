@@ -1,197 +1,683 @@
-.content-container h1, h2, h3, h4, h5, h6 {
-  font-family: 'Montserrat', sans-serif;
-  color: #0a0a0a;
-  font-weight: 700;
+/**
+ * ============================================================================
+ * PROJECT PAGE STYLES - Makeability Lab
+ * ============================================================================
+ *
+ * Styles for individual research project pages displaying:
+ * - Project description with featured video
+ * - Sidebar with metadata, leads, sponsors, news, related projects
+ * - Sections for publications, videos, talks
+ *
+ * ACCESSIBILITY:
+ *   - All text colors meet WCAG 2.1 AA contrast requirements
+ *   - Interactive elements have visible focus states
+ *   - Respects prefers-reduced-motion for animations
+ *
+ * DEPENDENCIES:
+ *   - design-tokens.css must be loaded first
+ *   - publications.css (for publication snippets)
+ *   - video-snippet.css (for video cards)
+ *   - talk-snippet.css (for talk cards)
+ *   - sponsor-listing.css (for sponsor grid)
+ *   - news-item.css (for news sidebar items)
+ *
+ * STRUCTURE:
+ *   .makelab-project
+ *   ├── .project-layout
+ *   │   ├── .project-sidebar
+ *   │   │   ├── .project-sidebar-section (×n)
+ *   │   │   └── .project-related-projects-sidebar
+ *   │   └── .project-main-content
+ *   │       ├── .project-description
+ *   │       ├── .project-featured-video
+ *   │       ├── .project-section (×n)
+ *   │       └── .project-related-mobile
+ *
+ * RESPONSIVE BEHAVIOR:
+ *   - Desktop (≥992px): Two-column layout with sticky sidebar
+ *   - Tablet/Mobile (<992px): Stacked layout, sidebar becomes summary bar
+ *
+ * @version 2.0.0 - Refactored with design tokens and accessibility
+ * @author Makeability Lab
+ * ============================================================================
+ */
+
+
+/* =============================================================================
+   PAGE CONTAINER
+   ============================================================================= */
+
+.makelab-project {
+  margin-top: 50px;
+  padding-bottom: var(--space-10);
 }
 
-.content-container h2 {
-  font-size: 20px;
+
+/* =============================================================================
+   TWO-COLUMN LAYOUT
+   =============================================================================
+   Uses CSS Grid for the main content + sidebar layout.
+   Sidebar appears on the right on desktop, stacks on top on mobile.
+   ============================================================================= */
+
+.project-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
 }
 
-.content-container h3 {
-  font-size: 14px;
-}
-
-.content-container p {
-  margin-bottom: 20px;
-}
-
-.content-container body {
-  font-family: 'Roboto', sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.row-adjust-margins{
-  margin-left: 0px;
-  margin-right: 0px;
-}
-
-.project-description {
-  font-family: 'Roboto', sans-serif;
-  font-size: 15px;
-  line-height: 2;
-  font-weight: 400;
-  color: rgb(122, 122, 122);
-}
-
-.project-content-row {
-  width: 100%;
-}
-
-.project-row{
-  margin-left: 0px;
-  margin-right: 0px;
-}
-
-@media (min-width: 768px) {
-  .project-content-row {
-    width: 90%;
+@media (min-width: 992px) {
+  .project-layout {
+    grid-template-columns: 1fr 320px;
+    gap: var(--space-8);
   }
 }
 
-.pub-row-vert-layout {
-  margin-left: 0px;
+@media (min-width: 1200px) {
+  .project-layout {
+    grid-template-columns: 1fr 350px;
+  }
 }
 
-/* FEATURED VIDEO */
-.video-wrapper {
+
+/* =============================================================================
+   MAIN CONTENT AREA
+   ============================================================================= */
+
+.project-main-content {
+  min-width: 0; /* Prevent grid blowout from long content */
+}
+
+
+/* =============================================================================
+   PROJECT DESCRIPTION
+   ============================================================================= */
+
+.project-description {
+  font-family: var(--font-family-secondary);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-secondary);
+}
+
+.project-description p {
+  margin-bottom: var(--space-4);
+}
+
+.project-description a {
+  color: var(--color-link);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.project-description a:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+.project-description a:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Headings within the project description (from rich text) */
+.project-description h2,
+.project-description h3,
+.project-description h4,
+.project-description h5,
+.project-description h6 {
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-3);
+}
+
+.project-description h2 {
+  font-size: var(--font-size-xl);
+}
+
+.project-description h3 {
+  font-size: var(--font-size-lg);
+}
+
+.project-description h4,
+.project-description h5,
+.project-description h6 {
+  font-size: var(--font-size-base);
+}
+
+
+/* =============================================================================
+   FEATURED VIDEO
+   =============================================================================
+   Larger video player for the project's primary video.
+   Uses 16:9 aspect ratio with responsive sizing.
+   ============================================================================= */
+
+.project-featured-video {
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.project-featured-video-container {
   position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: var(--color-black);
+  border-radius: var(--border-radius-md);
   overflow: hidden;
-  padding-top: 56.25%;
 }
 
-.video-iframe {
+/* Fallback for browsers without aspect-ratio support */
+@supports not (aspect-ratio: 16 / 9) {
+  .project-featured-video-container {
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  }
+}
+
+.project-featured-video-player {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  border: none;
+  border-radius: var(--border-radius-md);
 }
 
-/* SIDEBAR CSS */
-.sidebar-header{
-  margin-top: 30px;
-  margin-bottom: 6px;
+
+/* =============================================================================
+   SECTION HEADERS
+   =============================================================================
+   Left-aligned section headers with anchor links for shareability.
+   ============================================================================= */
+
+.project-section-header {
+
+  margin-bottom: var(--space-4);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
 }
 
-.sidebar-ul{
-  list-style-type: none;
-  padding-left: 0;
+/* First section header needs less top margin */
+.project-section-header.first-section {
+  margin-top: 0;
+}
+
+
+/* =============================================================================
+   SIDEBAR
+   =============================================================================
+   Sticky sidebar on desktop, summary bar on mobile.
+   ============================================================================= */
+
+.project-sidebar {
+  /* On mobile, appears above main content due to order property */
+  order: -1;
+}
+
+@media (min-width: 992px) {
+  .project-sidebar {
+    order: 0;
+    position: sticky;
+    top: 100px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    align-self: start;
+  }
+}
+
+
+/* =============================================================================
+   SIDEBAR - Mobile Layout
+   =============================================================================
+   Horizontal summary bar on small screens.
+   ============================================================================= */
+
+.project-sidebar-mobile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-4);
+}
+
+@media (min-width: 992px) {
+  .project-sidebar-mobile-grid {
+    display: block; /* Stack vertically on desktop */
+  }
+}
+
+
+/* =============================================================================
+   SIDEBAR SECTIONS
+   ============================================================================= */
+
+.project-sidebar-section {
+  margin-bottom: var(--space-5);
+}
+
+@media (min-width: 992px) {
+  .project-sidebar-section {
+    margin-bottom: var(--space-6);
+  }
+}
+
+
+/* =============================================================================
+   SIDEBAR HEADERS
+   ============================================================================= */
+
+.project-sidebar-header {
+  margin: 0 0 var(--space-2) 0;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+
+/* =============================================================================
+   SIDEBAR TEXT & LINKS
+   ============================================================================= */
+
+.project-sidebar-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-normal);
+}
+
+.project-sidebar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-link);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+  word-break: break-word;
+}
+
+.project-sidebar-link:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+.project-sidebar-link:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.project-sidebar-link i {
+  flex-shrink: 0;
+  font-size: 1em;
+}
+
+
+/* =============================================================================
+   SIDEBAR PERSON LIST
+   =============================================================================
+   Used for project leads (PIs, student leads, etc.).
+   ============================================================================= */
+
+.project-sidebar-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.project-sidebar-person {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.project-sidebar-person:last-child {
+  margin-bottom: 0;
+}
+
+.project-sidebar-person-link {
+  flex-shrink: 0;
+  border-radius: var(--border-radius-full);
+  transition: transform var(--transition-fast);
+}
+
+.project-sidebar-person-link:hover {
+  transform: scale(1.05);
+}
+
+.project-sidebar-person-link:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: var(--border-radius-full);
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .project-sidebar-person-link:hover {
+    transform: none;
+  }
+}
+
+.project-sidebar-person-image {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--border-radius-full);
+  object-fit: cover;
+}
+
+.project-sidebar-person-name {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-tight);
+}
+
+.project-sidebar-person-name a {
+  color: var(--color-text-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.project-sidebar-person-name a:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+.project-sidebar-person-name a:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+
+/* =============================================================================
+   SIDEBAR - RELATED PROJECTS (Desktop)
+   =============================================================================
+   Compact related projects list for the sidebar.
+   Hidden on mobile (shown in main content area instead).
+   ============================================================================= */
+
+.project-related-projects-sidebar {
+  display: none;
+}
+
+@media (min-width: 992px) {
+  .project-related-projects-sidebar {
+    display: block;
+  }
+}
+
+.project-sidebar-related-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.project-sidebar-related-item:last-child {
+  margin-bottom: 0;
+}
+
+.project-sidebar-related-thumbnail-link {
+  flex-shrink: 0;
+  border-radius: var(--border-radius-sm);
+  transition: transform var(--transition-fast);
+}
+
+.project-sidebar-related-thumbnail-link:hover {
+  transform: scale(1.03);
+}
+
+.project-sidebar-related-thumbnail-link:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: var(--border-radius-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-sidebar-related-thumbnail-link:hover {
+    transform: none;
+  }
+}
+
+.project-sidebar-related-thumbnail {
+  width: 80px;
+  height: auto;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--color-border);
+}
+
+.project-sidebar-related-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.project-sidebar-related-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+  margin: 0 0 var(--space-1) 0;
+  
+  /* Line clamping for long titles */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.project-sidebar-related-title a {
+  color: var(--color-text-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.project-sidebar-related-title a:hover {
+  color: var(--color-link-hover);
+}
+
+.project-sidebar-related-title a:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.project-sidebar-related-date {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+
+/* =============================================================================
+   RELATED PROJECTS - MOBILE
+   =============================================================================
+   Grid layout for related projects shown below main content on mobile.
+   Hidden on desktop (shown in sidebar instead).
+   ============================================================================= */
+
+.project-related-mobile {
+  margin-top: var(--space-10);
+}
+
+@media (min-width: 992px) {
+  .project-related-mobile {
+    display: none;
+  }
+}
+
+.project-related-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-5);
+}
+
+.project-related-card {
+  /* Container for individual related project */
+}
+
+.project-related-thumbnail-link {
+  display: block;
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  transition: transform var(--transition-fast);
+}
+
+.project-related-thumbnail-link:hover {
+  transform: scale(1.02);
+}
+
+.project-related-thumbnail-link:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: var(--border-radius-md);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-related-thumbnail-link:hover {
+    transform: none;
+  }
+}
+
+.project-related-thumbnail {
+  width: 100%;
+  height: auto;
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.project-related-info {
+  margin-top: var(--space-2);
+}
+
+.project-related-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+  margin: 0 0 var(--space-1) 0;
+  
+  /* Line clamping */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.project-related-title a {
+  color: var(--color-text-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.project-related-title a:hover {
+  color: var(--color-link-hover);
+}
+
+.project-related-title a:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.project-related-date {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+
+/* =============================================================================
+   PUBLICATIONS LIST
+   =============================================================================
+   Overrides for publication snippets in the project context.
+   ============================================================================= */
+
+.project-publications-list {
+  margin-top: var(--space-4);
+}
+
+/* Remove left margin from pub rows in project context */
+.project-publications-list .pub-row-vert-layout {
   margin-left: 0;
 }
 
-.sidebar-ul li{
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  flex-wrap: nowrap;
+
+/* =============================================================================
+   VIDEOS & TALKS GRIDS
+   =============================================================================
+   Uses the standard grid classes from video-snippet.css and talk-snippet.css.
+   These are included here for context but the actual styles come from those files.
+   
+   .videos-grid - 3-column grid, responsive
+   .talks-grid - 4-column grid, responsive
+   ============================================================================= */
+
+/* Videos: 3 cols -> 2 cols on project pages */
+.project-main-content .videos-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.sidebar-person-thumbnail{
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-}
-
-.sidebar-content{
-  margin-left: 6px;
-}
-
-.sidebar-date{
-  font-size: smaller;
-  color: rgb(150,150,150);
-}
-
-.related-project-thumbnail{
-  width: 80px;
-  border-radius: 10%;
-}
-
-.sidebar-related-project-date{
-  font-size: smaller;
-  color: rgb(150,150,150);
-}
-
-@media (max-width: 991px) {
-  .sidebar-related-project-title{
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;  
-    overflow: hidden;
+@media (max-width: 768px) {
+  .project-main-content .videos-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
-/*** INLINE SIDEBAR FOR SMALL SCREENS ***/
-.inline-sidebar-flex-container-xs {
-  display: flex;
-  flex-wrap: wrap;
-  color: #333333;
+/* Talks: 4 cols -> 3 cols on project pages, then responsive down */
+.project-main-content .talks-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.inline-sidebar-flex-item-xs {
-  flex: 1 0 33.33%; /* flex-grow | flex-shrink | flex-basis */
-  box-sizing: border-box;
-  padding-right: 5px;
-  margin-bottom: 15px;
+@media (max-width: 1200px) {
+  .project-main-content .talks-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
-@media (min-width: 789px) {
-  .inline-sidebar-flex-container-xs {
+@media (max-width: 768px) {
+  .project-main-content .talks-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* =============================================================================
+   CONTRIBUTORS COUNT
+   ============================================================================= */
+
+.project-sidebar-contributors {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+
+/* =============================================================================
+   RESPONSIVE VISIBILITY HELPERS
+   ============================================================================= */
+
+.project-desktop-only {
+  display: none;
+}
+
+@media (min-width: 992px) {
+  .project-desktop-only {
+    display: block;
+  }
+  
+  .project-mobile-only {
     display: none;
   }
 }
 
-@media (max-width: 788px) {
-  .sidebar-header {
-    margin-top: 5px;
-    color: darkslategray;
-  }
 
-  .project-description {
-    font-size: 17px;
-  }
+/* =============================================================================
+   PUBLICATION ROW ADJUSTMENTS
+   =============================================================================
+   Fine-tuning for publication display in project context.
+   ============================================================================= */
+
+.project-main-content .pub-row-vert-layout {
+  margin-left: 0;
+  margin-right: 0;
 }
 
-/** INLINE RELATED PROJECTS **/
-@media (min-width: 789px) {
-  .main-related-projects {
-    display: none;
-  }
-}
-
-/* .main-related-projects-flex-container {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.main-related-project-flex-item{
-  flex: 1 0 0; 
-  box-sizing: border-box;
-  padding-right: 15px;
-  max-width: 250px;
-  min-width: 150px;
-} */
-
-.main-related-projects-grid-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 15px;
-}
-
-.main-related-project-grid-item{
-  box-sizing: border-box;
-}
-
-
-.main-related-project-thumbnail{
-  width: 100%;
-  border-radius: 10%;
-}
-
-.main-related-project-title {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;  
-  overflow: hidden;
-}
