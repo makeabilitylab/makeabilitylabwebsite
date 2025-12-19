@@ -1,8 +1,50 @@
 {% extends "website/base.html" %}
 
-{% block pagetitle %}
-  {{ person.get_full_name }}
-{% endblock %}
+{% comment %}
+================================================================================
+MEMBER PROFILE PAGE - Makeability Lab
+================================================================================
+
+Individual lab member profile page displaying:
+- Profile header with photo, name, title, affiliation, and social links
+- Bio text (either custom or auto-generated)
+- Related news sidebar (on larger screens)
+- Sections for projects, publications, videos, and talks
+
+ACCESSIBILITY FEATURES:
+- Semantic HTML5 elements (header, section, article, nav, aside)
+- ARIA labels on sections via aria-labelledby
+- Proper heading hierarchy (h1 for name, h2 for sections)
+- Alt text on all images
+- Icon-only links have aria-label attributes
+- Visible focus indicators on all interactive elements
+- Anchor links on section headings for shareability
+
+DEPENDENCIES:
+- design-tokens.css (loaded via base.html)
+- person-page.css
+- project-listing.css (for project card styles)
+- publications.css (for publication snippet styles)
+- news-item.css (for news sidebar styles)
+- swap-image.js (easter egg photo swap)
+
+CONTEXT VARIABLES:
+- person: Person model instance
+- position: Current/latest Position for this person
+- news: QuerySet of news items mentioning this person
+- projects: QuerySet of projects this person worked on
+- publications: QuerySet of publications authored by this person
+- videos: QuerySet of videos featuring this person
+- talks: QuerySet of talks given by this person
+- auto_generated_bio: Auto-generated bio if person.bio is empty
+- left_align_headers: Boolean to left-align section headers
+
+@version 2.0.0 - Accessibility and semantics refactor
+@author Makeability Lab
+================================================================================
+{% endcomment %}
+
+{% block pagetitle %}{{ person.get_full_name }}{% endblock %}
 
 {% load static %}
 {% load thumbnail %}
@@ -10,201 +52,273 @@
 {% load ml_tags %}
 
 {% block opengraph %}
-  <meta property="og:title" content="{{ person.get_full_name }} - Makeability Lab">
-  <meta property="og:type" content="profile">
-  {% if person.bio %}
-    <meta property="og:description" content="{{ person.bio|striptags|truncatewords:50 }}">
-  {% elif auto_generated_bio %}
-    <meta property="og:description" content="{{ auto_generated_bio|striptags|truncatewords:50 }}">
-  {% else %}
-    <meta property="og:description" content="{{ person.get_full_name }} is a {{ position.title }} at the Makeability Lab, an advanced research lab in Human-Computer Interaction at University of Washington.">
-  {% endif %}
-  <meta property="og:image"
-    content="{{ request.scheme }}://{{ request.get_host }}{% thumbnail person.image '1200x630' box=person.cropping crop=True upscale=True %}" />
-  <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}" />
-  
-  {# Profile-specific OpenGraph tags #}
-  <meta property="og:profile:first_name" content="{{ person.first_name }}">
-  <meta property="og:profile:last_name" content="{{ person.last_name }}">
+<meta property="og:title" content="{{ person.get_full_name }} - Makeability Lab">
+<meta property="og:type" content="profile">
+{% if person.bio %}
+<meta property="og:description" content="{{ person.bio|striptags|truncatewords:50 }}">
+{% elif auto_generated_bio %}
+<meta property="og:description" content="{{ auto_generated_bio|striptags|truncatewords:50 }}">
+{% else %}
+<meta property="og:description" content="{{ person.get_full_name }} is a {{ position.title }} at the Makeability Lab, an advanced research lab in Human-Computer Interaction at University of Washington.">
+{% endif %}
+<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% thumbnail person.image '1200x630' box=person.cropping crop=True upscale=True %}">
+<meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+<meta property="og:profile:first_name" content="{{ person.first_name }}">
+<meta property="og:profile:last_name" content="{{ person.last_name }}">
 {% endblock %}
 
 {% block stylesheets %}
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.1/css/all.min.css">
-  <link rel="stylesheet" href="{% static 'website/css/news-item.css' %}">
-  <link rel="stylesheet" href="{% static 'website/css/person-page.css' %}">
-  <link rel="stylesheet" href="{% static 'website/css/project-listing.css' %}">
-  <link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
-  {% comment %} <link rel="stylesheet" href="{% static 'website/css/people.css' %}"> {% endcomment %}
+<link rel="stylesheet" href="{% static 'website/css/news-item.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/member.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/project-listing.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/talk-snippet.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/video-snippet.css' %}">
 {% endblock %}
 
 {% block external_scripts %}
-  <script src="{% static 'website/js/swap-image.js' %}"></script>
-  <script src="{% static 'website/js/humanize-duration.js' %}"></script>
+<script src="{% static 'website/js/swap-image.js' %}"></script>
+<script src="{% static 'website/js/citationPopoverSimple.js' %}"></script>
+<script src="{% static 'website/js/humanize-duration.js' %}"></script>
+<script src="{% static 'website/js/video-age.js' %}"></script>
+{% endblock %}
+
+{% block scripts %}
+document.addEventListener('DOMContentLoaded', function() {
+  SwapImage.init();
+  CitationPopover.init('.publication-citation-link');
+  VideoAge.init();
+});
 {% endblock %}
 
 {% block maincarousel %}
-	{% comment %} <div style="min-height: 40px">&nbsp; {% endcomment %}
-			{# Uncomment the following if you want to have a carousel on the people page #}
-			{# {% include "snippets/display_short_carousel_snippet.html" %} #}
-	{% comment %} </div> {% endcomment %}
+<!-- No carousel on member profile pages -->
 {% endblock %}
 
 {% block content %}
-
-{% comment %}
-Bootstrap requires a containing element to wrap site contents and house our grid system. 
-You may choose one of two containers to use in your projects:
- - .container for responsive fixed width container
- - .container-fluid for full width container, spanning the entire width of your viewport. 
-Note that, due to padding and more, neither container is nestable.
-See: https://getbootstrap.com/docs/3.4/css/#overview-container
-{% endcomment %}
 <div class="container makelab-container makelab-person">
-	
-	<div class="row">
+  
+  <div class="row">
+    <!-- ======================== Profile Header & Bio ======================== -->
     {% if news %}
-      <div class="col-xs-12 col-md-8 person-image-and-bio-container">
+    <div class="col-xs-12 col-md-8">
     {% else %}
-      <div class="col-xs-12 col-md-12 person-image-and-bio-container">
+    <div class="col-xs-12 col-md-12">
     {% endif %}
-      <div class="col-xs-12 person-image">
-        <img class="swap-image" onmouseover="swapImage(this)" onmouseout="swapImage(this)"
-          src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}" 
-          alt="{{ person.get_full_name }}" 
-          data-alt-src="{% thumbnail person.easter_egg person.get_thumbnail_size_as_str box=person.easter_egg_crop crop=True upscale=True detail=True %}" 
-          width="90%"/>
-      </div>
-      <div class="col-xs-12 person-bio">
-        <h2 class="person-name-header">{{person.get_full_name}}</h2>
-        <div class="person-title">{{ position.title }}, {{ position.department}} </div>
-        <div class="person-affiliation">
-          {{ position.school }} 
+      
+      <header class="person-header">
+        <!-- Profile Image -->
+        <div class="person-image-container">
+          {% comment %}
+            Easter egg: swaps to alternate "fun" image on hover.
+            Uses SwapImage module initialized in {% block scripts %}.
+          {% endcomment %}
+          <img class="person-image swap-image"
+               src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True %}"
+               alt="{{ person.get_full_name }}"
+               data-alt-src="{% thumbnail person.easter_egg person.get_thumbnail_size_as_str box=person.easter_egg_crop crop=True upscale=True detail=True %}">
         </div>
+        
+        <!-- Bio Container -->
+        <div class="person-bio-container">
+          <h1 class="person-name-header">{{ person.get_full_name }}</h1>
+          
+          <div class="person-title">{{ position.title }}, {{ position.department }}</div>
+          <div class="person-affiliation">{{ position.school }}</div>
 
-        {% if person.has_website_links %}
-          <div class="person-websites">
+          <!-- Social & Website Links -->
+          {% if person.has_website_links %}
+          <nav class="person-websites" aria-label="External profiles">
             {% if person.personal_website %}
-                <a href="{{ person.personal_website }}"><i class="fas fa-globe"></i> Website</a>
+            <a href="{{ person.personal_website }}" 
+               class="person-website-link"
+               aria-label="Visit {{ person.first_name }}'s personal website">
+              <i class="fas fa-globe" aria-hidden="true"></i>
+              <span>Website</span>
+            </a>
             {% endif %}
             {% if person.github %}
-                <a href="{{ person.github }}"><i class="fab fa-github"></i> Github</a>
+            <a href="{{ person.github }}" 
+               class="person-website-link"
+               aria-label="{{ person.first_name }} on GitHub">
+              <i class="fab fa-github" aria-hidden="true"></i>
+              <span>GitHub</span>
+            </a>
             {% endif %}
             {% if person.twitter %}
-                <a href="{{ person.twitter }}"><i class="fab fa-twitter"></i> Twitter</a>
+            <a href="{{ person.twitter }}" 
+               class="person-website-link"
+               aria-label="{{ person.first_name }} on Twitter">
+              <i class="fab fa-twitter" aria-hidden="true"></i>
+              <span>Twitter</span>
+            </a>
             {% endif %}
             {% if person.mastodon %}
-                <a href="{{ person.mastodon }}"><i class="fab fa-mastodon"></i> Mastodon</a>
+            <a href="{{ person.mastodon }}" 
+               class="person-website-link"
+               rel="me"
+               aria-label="{{ person.first_name }} on Mastodon">
+              <i class="fab fa-mastodon" aria-hidden="true"></i>
+              <span>Mastodon</span>
+            </a>
             {% endif %}
             {% if person.threads %}
-                <a href="{{ person.threads }}"><i class="fab fa-threads"></i> Threads</a>
+            <a href="{{ person.threads }}" 
+               class="person-website-link"
+               aria-label="{{ person.first_name }} on Threads">
+              <i class="fab fa-threads" aria-hidden="true"></i>
+              <span>Threads</span>
+            </a>
             {% endif %}
             {% if person.linkedin %}
-                <a href="{{ person.linkedin }}"><i class="fab fa-linkedin"></i> LinkedIn</a>
+            <a href="{{ person.linkedin }}" 
+               class="person-website-link"
+               aria-label="{{ person.first_name }} on LinkedIn">
+              <i class="fab fa-linkedin" aria-hidden="true"></i>
+              <span>LinkedIn</span>
+            </a>
             {% endif %}
-          </div>
-        {% endif %}
+          </nav>
+          {% endif %}
 
-        {% if person.bio %}
+          <!-- Bio Text -->
+          {% if person.bio %}
           <div class="person-bio-text">
-            {{ person.bio|safe}}
+            {{ person.bio|safe }}
           </div>
-
-          <div class="person-bio-modified-timestamp">
+          <div class="person-bio-meta">
             {% if person.bio_datetime_modified %}
-              Bio last updated: {{ person.bio_datetime_modified|date:"F d, Y" }}
+            Bio last updated: {{ person.bio_datetime_modified|date:"F d, Y" }}
             {% endif %}
           </div>
-        {% elif auto_generated_bio %}
+          {% elif auto_generated_bio %}
           <div class="person-bio-text">
-            {{ auto_generated_bio|safe}}
+            {{ auto_generated_bio|safe }}
           </div>
-          <div class="person-bio-modified-timestamp">
+          <div class="person-bio-meta">
             This bio was auto-generated.
           </div>
-        {% endif %}
-      </div>
-    </div>
-		
-		<!-- Sidebar for related news -->
-    {% if news %}
-		  <div class="hidden-xs hidden-sm col-md-4 news-item-sidebar">
-				<h2 class="news-item-sidebar-header" style="margin-top: 5px;">Recent {{ person.first_name }} News</h2>
-				<ul class="news-item-sidebar-ul">
-				{% for recent_news_item in news|slice:":3" %}
-					{% include "snippets/display_news_item_sidebar_snippet.html" %}
-				{% endfor %}			
-		  </div>
-    {% endif %}
-	</div>
-
-  {% if projects %}
-    <div id="person-projects" class="container-fluid makelab-content-container">
-      {% if projects|length > 4 %}
-        <h1 class="section-header" style="margin-top:25px">Recent Projects</h1>
-      {% else %}
-        <h1 class="section-header {% if left_align_headers %}text-left{% endif %}">Projects</h1>
-      {% endif %}
-      <div class="project-grid landing-page-project-grid">
-        {% for project in projects|slice:":4" %}
-          {% include "snippets/display_project_snippet.html" %}
-        {% endfor %}
-      </div>
-      {% comment %} <div class="load-more">Load more projects...</div> {% endcomment %}
-    </div>
-  {% endif %}
-
-  {% if publications %}
-    <div id="person-pubs" class="container-fluid makelab-content-container">
-      {% if publications|length > 3 %}
-        <h1 class="section-header">Recent Papers</h1>
-      {% else %}
-        <h1 class="section-header {% if left_align_headers %}text-left{% endif %}">Papers</h1>
-      {% endif %}
+          {% endif %}
+        </div>
+      </header>
       
-      <div class="section d-flex flex-wrap">
-        {% if publications|length > 3 %}
-          {% for pub in publications|slice:":3" %}
-            {% include "snippets/display_pub_snippet.html" with orientation="horizontal" %}
-          {% endfor %}
-        {% else %}
-          <div style="margin-left:15px">
-            {% for pub in publications %}
-              {% include "snippets/display_pub_snippet.html" with orientation="vertical" %}
-            {% endfor %}
-          </div>
-        {% endif %}
-      </div>
     </div>
+
+    <!-- ======================== News Sidebar ======================== -->
+    {% if news %}
+    <aside class="hidden-xs hidden-sm col-md-4 person-news-sidebar" 
+           aria-labelledby="person-news-heading">
+      <h2 id="person-news-heading" class="person-news-sidebar-header">
+        Recent {{ person.first_name }} News
+      </h2>
+      <ul class="news-item-sidebar-ul">
+        {% for recent_news_item in news|slice:":3" %}
+        {% include "snippets/display_news_item_sidebar_snippet.html" %}
+        {% endfor %}
+      </ul>
+    </aside>
+    {% endif %}
+  </div>
+
+  <!-- ======================== Projects Section ======================== -->
+  {% if projects %}
+  <section id="person-projects" 
+           class="person-section" 
+           aria-labelledby="projects-heading">
+    <h2 id="projects-heading" 
+        class="person-section-header heading-with-anchor {% if left_align_headers %}text-left{% endif %}">
+      {% if projects|length > 4 %}Recent Projects{% else %}Projects{% endif %}
+      <a href="#person-projects" 
+         class="header-anchor" 
+         aria-label="Link to projects section">
+        <i class="fa-solid fa-link" aria-hidden="true"></i>
+      </a>
+    </h2>
+    
+    <div class="project-grid person-project-grid" role="list">
+      {% for project in projects|slice:":4" %}
+      {% include "snippets/display_project_snippet.html" %}
+      {% endfor %}
+    </div>
+  </section>
   {% endif %}
 
+  <!-- ======================== Publications Section ======================== -->
+  {% if publications %}
+  <section id="person-publications" 
+           class="person-section" 
+           aria-labelledby="publications-heading">
+    <h2 id="publications-heading" 
+        class="person-section-header heading-with-anchor {% if left_align_headers %}text-left{% endif %}">
+      {% if publications|length > 3 %}Recent Papers{% else %}Papers{% endif %}
+      <a href="#person-publications" 
+         class="header-anchor" 
+         aria-label="Link to publications section">
+        <i class="fa-solid fa-link" aria-hidden="true"></i>
+      </a>
+    </h2>
+    
+    {% if publications|length > 3 %}
+    <div class="person-publications-grid">
+      {% for pub in publications|slice:":3" %}
+      {% include "snippets/display_pub_snippet.html" with orientation="horizontal" %}
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="person-publications-list">
+      {% for pub in publications %}
+      {% include "snippets/display_pub_snippet.html" with orientation="vertical" %}
+      {% endfor %}
+    </div>
+    {% endif %}
+  </section>
+  {% endif %}
+
+  <!-- ======================== Videos Section ======================== -->
   {% if videos %}
-    <div id="person-videos" class="container-fluid makelab-content-container">
-      {% if videos|length > 3 %}
-        <h1 class="section-header">Recent Videos</h1>
-      {% else %}
-        <h1 class="section-header {% if left_align_headers %}text-left{% endif %}">Videos</h1>
-      {% endif %}
-      <div class="section">
-        {% for video in videos|slice:":3" %}
-          {% include "snippets/display_video_snippet.html" %}
-        {% endfor %}
-      </div>
+  <section id="person-videos" 
+           class="person-section" 
+           aria-labelledby="videos-heading">
+    <h2 id="videos-heading" 
+        class="person-section-header heading-with-anchor {% if left_align_headers %}text-left{% endif %}">
+      {% if videos|length > 3 %}Recent Videos{% else %}Videos{% endif %}
+      <a href="#person-videos" 
+         class="header-anchor" 
+         aria-label="Link to videos section">
+        <i class="fa-solid fa-link" aria-hidden="true"></i>
+      </a>
+    </h2>
+    
+    <div class="videos-grid">
+      {% for video in videos|slice:":3" %}
+      {% include "snippets/display_video_snippet.html" %}
+      {% endfor %}
     </div>
+  </section>
   {% endif %}
 
+  <!-- ======================== Talks Section ======================== -->
   {% if talks %}
-    <div id="person-talks" class="container-fluid makelab-content-container">
-      {% if talks|length > 4 %}
-        <h1 class="section-header">Recent Talks</h1>
-      {% else %}
-        <h1 class="section-header {% if left_align_headers %}text-left{% endif %}">Talks</h1>
-      {% endif %}
-      <div class="section">
-        {% for talk in talks|slice:":4" %}
-          {% include "snippets/display_talk_snippet.html" %}
-        {% endfor %}
-      </div>
+  <section id="person-talks" 
+           class="person-section" 
+           aria-labelledby="talks-heading">
+    <h2 id="talks-heading" 
+        class="person-section-header heading-with-anchor {% if left_align_headers %}text-left{% endif %}">
+      {% if talks|length > 4 %}Recent Talks{% else %}Talks{% endif %}
+      <a href="#person-talks" 
+         class="header-anchor" 
+         aria-label="Link to talks section">
+        <i class="fa-solid fa-link" aria-hidden="true"></i>
+      </a>
+    </h2>
+    
+    <div class="talks-grid">
+      {% for talk in talks|slice:":4" %}
+      {% include "snippets/display_talk_snippet.html" %}
+      {% endfor %}
     </div>
+  </section>
   {% endif %}
+
 </div>
 {% endblock %}

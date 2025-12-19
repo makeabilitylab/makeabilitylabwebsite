@@ -1,53 +1,132 @@
+{% comment %}
+================================================================================
+TALK SNIPPET TEMPLATE
+================================================================================
+
+Reusable template for displaying a single talk/presentation. Used on:
+- Person profile pages
+- Project pages
+- Talks listing page
+
+USAGE:
+  {% include "snippets/display_talk_snippet.html" %}
+
+ACCESSIBILITY:
+- Uses <article> semantic element
+- All images have descriptive alt text
+- Icon-only elements use aria-hidden with visible text labels
+- Links have meaningful text or aria-labels
+- Download links use proper flexbox layout (no pipe separators)
+
+CONTEXT VARIABLES:
+- talk: Talk model instance (required)
+
+DEPENDENCIES:
+- design-tokens.css
+- talk-snippet.css (styles for .talk-card)
+
+@version 2.0.0 - Accessibility and semantics refactor
+================================================================================
+{% endcomment %}
+
 {% load static %}
 {% load thumbnail %}
 {% load cropping %}
 {% load ml_tags %}
 
-<div class="col-ts-12 col-xs-6 col-sm-4 col-lg-3 talk-column" style="margin-bottom:20px">
-  <div style="width: 100%; height: 300px; contain: content;">
-    <div class="talk2-thumbnail"> {# Add in style="border:thin; border-color:lightgrey; border-style: solid;" for a border #}
-      {#  TODO: Update to use .css rather than inline styles  #}
-      <a href="{{ MEDIA_URL }}{{ talk.pdf_file }}" target="_blank">
-        <div style="background: white; width:100%; height: 180px; contain: content;">
-          <img style="border: 1px solid #dddddd; border-radius: 5%; width:100%; height: auto; position: relative;top: 50%; left: 50%;transform: translate(-50%,-50%);object-fit: cover" 
-            src="{% thumbnail talk.thumbnail 420x0 detail %}" class="talk2-thumbnail-image img-responsive">
-        </div>
-      </a>
-    </div>
-    <div class="talk-text">
-      <a href="{{ MEDIA_URL }}{{ talk.pdf_file }}" target="_blank"><span class="artifact-title line-clamp">{{ talk.title }}</span></a>
-      <p class="artifact-venue line-clamp-one-line" style="margin-bottom: 0px;">
-        {{ talk.date }} | {{ talk.forum_name }}
-      </p>
-      {% if talk.location %}<p class="artifact-venue line-clamp-one-line">{{ talk.location }}</p>{% endif %}
-
-      <p class="artifact-authors line-clamp-one-line">
-        {% if talk.has_speakers %}
-          {% for speaker in talk.get_speakers %}
-            <a href="{% url 'website:member_by_name' member_name=speaker.url_name %}" style="color:#464D59">{{ speaker.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
-          {% endfor %}
-        {% endif %}
-      </p>
-
-      <p class="pub-download-links line-clamp-one-line" style="margin: 0px; margin-top: 2px; bottom:auto">
-        <a href="{{ MEDIA_URL }}{{ talk.pdf_file }}">PDF</a>
-        {% if talk.raw_file %}| <a href="{{ MEDIA_URL }}{{ talk.raw_file }}">PPTX</a>{% endif %}
-        {% if talk.video %}| <a href="{{ talk.video.video_url }}">Video</a>{% endif %}
-        {% if talk.slideshare_url %}| <a href="{{ talk.slideshare_url }}">SlideShare</a>{% endif %}
-        {% if talk.publication_set %}
-          {% for pub in talk.publication_set.all %}
-              <a href="{{ MEDIA_URL }}{{ pub.pdf_file }}">Paper</a>
-          {% endfor %}
-        {% endif %}
-        {% if talk.projects %}
-          {% for project in talk.projects.all %}
-            {% if forloop.first and talk.projects.all|length > 0 %}| {% endif %}
-            {% if project.can_show_online %}
-              <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>{% if not forloop.last %} • {% endif %}
-            {% endif %}
-          {% endfor %}
-        {% endif %}
-      </p>
-    </div>
+<article class="talk-card">
+  
+  <!-- Talk Thumbnail -->
+  <div class="talk-thumbnail-container">
+    <a href="{{ MEDIA_URL }}{{ talk.pdf_file }}" 
+       class="talk-thumbnail-link"
+       aria-label="View slides for: {{ talk.title }}">
+      <img class="talk-thumbnail-image" 
+           src="{% thumbnail talk.thumbnail 420x0 detail %}" 
+           alt="Slide preview for: {{ talk.title }}">
+    </a>
   </div>
-</div>
+  
+  <!-- Talk Info -->
+  <div class="talk-info">
+    
+    <!-- Title -->
+    <h3 class="talk-title">
+      <a href="{{ MEDIA_URL }}{{ talk.pdf_file }}">
+        <span class="line-clamp">{{ talk.title }}</span>
+      </a>
+    </h3>
+    
+    <!-- Venue & Date -->
+    <p class="talk-venue line-clamp-one-line">
+      {{ talk.date|date:"M d, Y" }} | {{ talk.forum_name }}
+    </p>
+    
+    {% if talk.location %}
+    <p class="talk-location line-clamp-one-line">{{ talk.location }}</p>
+    {% endif %}
+
+    <!-- Speakers -->
+    {% if talk.has_speakers %}
+    <p class="talk-speakers line-clamp-one-line">
+      {% for speaker in talk.get_speakers %}
+      <a href="{% url 'website:member_by_name' member_name=speaker.url_name %}">{{ speaker.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
+      {% endfor %}
+    </p>
+    {% endif %}
+
+    <!-- Download Links -->
+    <div class="talk-download-links">
+      <a href="{{ MEDIA_URL }}{{ talk.pdf_file }}" 
+         aria-label="Download PDF slides for {{ talk.title }}">
+        <i class="fa-solid fa-file-pdf" aria-hidden="true"></i>
+        <span>PDF</span>
+      </a>
+      
+      {% if talk.raw_file %}
+      <a href="{{ MEDIA_URL }}{{ talk.raw_file }}" 
+         aria-label="Download PowerPoint for {{ talk.title }}">
+        <i class="fa-solid fa-file-powerpoint" aria-hidden="true"></i>
+        <span>PPTX</span>
+      </a>
+      {% endif %}
+      
+      {% if talk.video %}
+      <a href="{{ talk.video.video_url }}" 
+         aria-label="Watch video of {{ talk.title }}">
+        <i class="fa-solid fa-video" aria-hidden="true"></i>
+        <span>Video</span>
+      </a>
+      {% endif %}
+      
+      {% if talk.slideshare_url %}
+      <a href="{{ talk.slideshare_url }}" 
+         aria-label="View {{ talk.title }} on SlideShare">
+        <i class="fa-brands fa-slideshare" aria-hidden="true"></i>
+        <span>SlideShare</span>
+      </a>
+      {% endif %}
+      
+      {% if talk.publication_set %}
+      {% for pub in talk.publication_set.all %}
+      <a href="{{ MEDIA_URL }}{{ pub.pdf_file }}" 
+         aria-label="Download related paper: {{ pub.title }}">
+        <i class="fa-solid fa-file-lines" aria-hidden="true"></i>
+        <span>Paper</span>
+      </a>
+      {% endfor %}
+      {% endif %}
+      
+      {% for project in talk.projects.all %}
+      {% if project.can_show_online %}
+      <a href="{% url 'website:project' project.short_name %}" 
+         aria-label="View project: {{ project.name }}">
+        <i class="fa-solid fa-flask" aria-hidden="true"></i>
+        <span>{{ project.name }}</span>
+      </a>
+      {% endif %}
+      {% endfor %}
+    </div>
+    
+  </div>
+</article>
