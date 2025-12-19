@@ -1,39 +1,351 @@
-#makelab-projects{
-  margin-top: 80px;
+/**
+ * ============================================================================
+ * PROJECT LISTING PAGE STYLES - Makeability Lab
+ * ============================================================================
+ *
+ * Styles for the project listing page including the filterable project grid
+ * and the sticky filter sidebar.
+ *
+ * ACCESSIBILITY:
+ *   - All text colors meet WCAG 2.1 AA contrast requirements
+ *   - Interactive elements have visible focus states
+ *   - Filter buttons have clear active/pressed states
+ *   - Reduced motion support for animations
+ *
+ * DEPENDENCIES:
+ *   - design-tokens.css must be loaded first
+ *
+ * STRUCTURE:
+ *   .project-filter-sidebar    - Sticky filter navigation
+ *   .project-grid              - CSS Grid layout for project cards
+ *   .project-card              - Individual project card
+ *   .filter-mobile-container   - Mobile dropdown filter
+ *
+ * @version 2.0.0 - Refactored with design tokens and accessibility
+ * ============================================================================
+ */
+
+
+/* =============================================================================
+   PAGE LAYOUT
+   ============================================================================= */
+
+#makelab-projects {
+  padding-bottom: var(--space-10);
 }
 
-#makelab-projects h2{
-  margin-top: 40px;
+.projects-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
 }
 
-/***************************** PROJECT GRID ******************************/
+.projects-header h1 {
+  margin: 0;
+}
+
+
+/* =============================================================================
+   SECTION HEADINGS
+   ============================================================================= */
+
+.section-heading {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  border-bottom: 1px solid var(--color-border);
+  margin: var(--space-8) 0 var(--space-4) 0;
+  padding-bottom: var(--space-2);
+}
+
+/* First section heading doesn't need as much top margin */
+#active-projects-section .section-heading {
+  margin-top: var(--space-2);
+}
+
+
+/* =============================================================================
+   FILTER SIDEBAR (Desktop)
+   ============================================================================= */
+
+.project-filter-sidebar {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 80px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  padding-right: var(--space-3);
+  align-self: flex-start;
+}
+
+.filter-heading {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 var(--space-3) 8px;
+  padding: 0;
+}
+
+
+/* -----------------------------------------------------------------------------
+   Filter List
+   ----------------------------------------------------------------------------- */
+
+.filter-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.filter-item {
+  /* margin-bottom: var(--space-1); */
+  margin: 4px;
+  margin-bottom: 6px;
+}
+
+
+/* -----------------------------------------------------------------------------
+   Filter Buttons
+   ----------------------------------------------------------------------------- */
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-1) var(--space-1);
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius-sm);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family-secondary);
+  font-size: var(--font-size-sm);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--transition-fast),
+              border-color var(--transition-fast),
+              color var(--transition-fast);
+}
+
+.filter-btn:hover {
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-primary);
+}
+
+.filter-btn:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Active/pressed state */
+.filter-btn[aria-pressed="true"] {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-on-dark);
+  font-weight: var(--font-weight-medium);
+}
+
+.filter-btn[aria-pressed="true"]:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.filter-btn[aria-pressed="true"] .filter-count {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: var(--color-text-on-dark);
+}
+
+
+/* -----------------------------------------------------------------------------
+   Filter Count Badge
+   ----------------------------------------------------------------------------- */
+
+.filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 20px;
+  padding: 0 var(--space-2);
+  background-color: var(--color-bg-surface);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+
+/* -----------------------------------------------------------------------------
+   Reset Button
+   ----------------------------------------------------------------------------- */
+
+.filter-reset-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  margin-top: var(--space-4);
+  padding: var(--space-2) var(--space-3);
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family-secondary);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  transition: background-color var(--transition-fast),
+              border-color var(--transition-fast),
+              color var(--transition-fast);
+}
+
+.filter-reset-btn:hover {
+  background-color: var(--color-bg-muted);
+  border-color: var(--color-border-strong);
+  color: var(--color-text-primary);
+}
+
+.filter-reset-btn:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+
+/* =============================================================================
+   MOBILE FILTER (Dropdown)
+   ============================================================================= */
+
+.filter-mobile-container {
+  flex: 0 0 auto;
+}
+
+.filter-mobile-select {
+  padding: var(--space-2) var(--space-8) var(--space-2) var(--space-3);
+  background-color: var(--color-bg-page);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23595959' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-3) center;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--border-radius-sm);
+  font-family: var(--font-family-secondary);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.filter-mobile-select:hover {
+  border-color: var(--color-primary);
+}
+
+.filter-mobile-select:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+
+/* =============================================================================
+   SKIP LINK (for filter bypass)
+   ============================================================================= */
+
+.skip-link-filter {
+  /* Inherits base skip-link styles from design-tokens.css */
+  /* Position further off-screen when not focused */
+  top: -200px;
+}
+
+.skip-link-filter:focus {
+  top: 40px;
+}
+
+
+/* =============================================================================
+   PROJECT GRID
+   ============================================================================= */
+
 .project-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  grid-gap: 30px;
-  text-align: center;
-  row-gap: 35px;
-  margin-top: 20px;
-  min-width: 250px;
-  min-height: 200px;
+  gap: var(--space-8);
+  margin-top: var(--space-5);
+  /* Removed min-height - let grid size naturally based on content */
 }
 
-.project-image{
-  overflow: hidden;
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .project-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+}
+
+
+/* =============================================================================
+   PROJECT CARD
+   ============================================================================= */
+
+.project-card {
   position: relative;
+  transition: opacity 500ms ease;  /* Match FADE_DURATION in JS */
 }
 
-.project-thumbnail{
-  border-radius: 5%;
-  border: 1px solid lightgray;
-  width: 100%;
+/* Hidden state for filtered-out cards */
+.project-card.is-hidden {
+  display: none;
+}
+
+/* Fade animation for filter transitions */
+.project-card.is-fading {
+  opacity: 0;
+}
+
+
+/* -----------------------------------------------------------------------------
+   Project Image / Thumbnail
+   ----------------------------------------------------------------------------- */
+
+.project-image {
+  position: relative;
   overflow: hidden;
+  border-radius: var(--border-radius-md);
 }
 
-.project-image img:hover {
-  transform: scale(1.2);
-  transition: transform .4s;
+.project-thumbnail {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  transition: transform var(--transition-normal);
 }
+
+.project-image:hover .project-thumbnail {
+  transform: scale(1.05);
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .project-image:hover .project-thumbnail {
+    transform: none;
+  }
+}
+
+/* Focus state for the link wrapper */
+.project-image a:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: var(--border-radius-md);
+}
+
+
+/* -----------------------------------------------------------------------------
+   Project Award Banner
+   ----------------------------------------------------------------------------- */
 
 .project-award-banner {
   position: absolute;
@@ -41,43 +353,95 @@
   left: 0;
   height: 40px;
   width: 40px;
-  z-index: 20;
+  z-index: 10;
+  pointer-events: none;
 }
 
-.project-info{
+
+/* -----------------------------------------------------------------------------
+   Project Info
+   ----------------------------------------------------------------------------- */
+
+.project-info {
+  margin-top: var(--space-3);
   text-align: left;
 }
 
-/************************* SIDEBAR FILTER *************************/
-#filter-sidebar {
-  position: fixed;
-  top: 120px;
-  transform: translateX(-120px);
-  color: black;
-  font-family: Roboto;
-  font-weight: 300;
-  max-width: 110px;
-}
-
-#filter-sidebar h2{
-  font-size: 12px;
-  font-weight: 500;
-  margin-bottom: 3px;
-}
-
-#filter-sidebar ul {
-  list-style-type: none;
+.project-info .artifact-title {
   margin: 0;
-  padding: 0;
-  font-size: 12px;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-link);
+  transition: color var(--transition-fast);
 }
 
-.reset-filter{
-  font-size: smaller;
-  margin-top: 5px;
-  display: none;
+.project-info .artifact-title:hover {
+  color: var(--color-link-hover);
 }
 
-.active-filter{
-  font-weight: bold;
+.project-info a:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.project-date-range {
+  margin: var(--space-1) 0 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+
+/* =============================================================================
+   NO RESULTS MESSAGE
+   ============================================================================= */
+
+.no-results-message {
+  padding: var(--space-4) 0;
+  text-align: left;
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+
+/* =============================================================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================================================= */
+
+/* Tablet and below: adjust grid gaps */
+@media (max-width: 991px) {
+  .project-grid {
+    gap: var(--space-6);
+  }
+}
+
+/* Phone: stack layout */
+@media (max-width: 767px) {
+  .projects-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filter-mobile-container {
+    width: 100%;
+  }
+  
+  .filter-mobile-select {
+    width: 100%;
+  }
+}
+
+
+/* =============================================================================
+   FLEXBOX ROW HELPER
+   ============================================================================= */
+
+.row-flex {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* Keep sidebar column aligned to top */
+.project-filter-sidebar {
+  align-self: flex-start;
 }
