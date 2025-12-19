@@ -1,6 +1,65 @@
 {% extends 'website/base.html' %}
 
-{% block pagetitle %}{{project.name}}{% endblock %}
+{% comment %}
+================================================================================
+PROJECT PAGE - Makeability Lab
+================================================================================
+
+Individual research project page displaying:
+- Project description with optional featured video
+- Sidebar with metadata (date, leads, sponsors, news, related projects)
+- Sections for publications, videos, and talks
+
+ACCESSIBILITY FEATURES:
+- Semantic HTML5 elements (main, aside, section, article)
+- ARIA labels on sections via aria-labelledby
+- Proper heading hierarchy (h1 in carousel, h2 for sections, h3 for sidebar)
+- Alt text on all images
+- Icon-only links have aria-hidden on icons with visible text
+- Visible focus indicators on all interactive elements
+- Anchor links on section headings for shareability
+- iframe has title attribute for screen readers
+
+RESPONSIVE BEHAVIOR:
+- Desktop (≥992px): Two-column layout with sticky sidebar on right
+- Mobile (<992px): Single column, sidebar info at top, related projects at bottom
+
+DEPENDENCIES:
+- design-tokens.css (loaded via base.html)
+- project.css
+- publications.css
+- video-snippet.css
+- talk-snippet.css
+- news-item.css
+- sponsor-listing.css
+- citationPopoverSimple.js
+- video-age.js
+
+CONTEXT VARIABLES:
+- project: Project model instance
+- date_str: Formatted date range string
+- website: Project website URL (optional)
+- featured_code_repo_url: GitHub/code repository URL (optional)
+- data_url: Dataset download URL (optional)
+- featured_video: Featured Video object (optional)
+- active_postdoc_leads, active_student_leads, active_research_scientist_leads: Lead QuerySets
+- active_PIs, active_CoPIs: PI/Co-PI QuerySets
+- inactive_student_leads, inactive_PIs, inactive_CoPIs: Former lead QuerySets
+- num_contributors: Total contributor count
+- sponsors: QuerySet of Sponsor objects
+- news: QuerySet of related News items
+- related_projects: QuerySet of related Project objects
+- publications: QuerySet of Publication objects
+- videos: QuerySet of Video objects (excluding featured)
+- has_videos_beyond_featured_video: Boolean
+- talks: QuerySet of Talk objects
+
+@version 2.0.0 - Accessibility and design token refactor
+@author Makeability Lab
+================================================================================
+{% endcomment %}
+
+{% block pagetitle %}{{ project.name }}{% endblock %}
 
 {% load static %}
 {% load thumbnail %}
@@ -8,400 +67,404 @@
 {% load ml_tags %}
 
 {% block opengraph %}
-  <meta property="og:title" content="{{project.name}}">
-  <meta property="og:type" content="website">
-  {% if project.summary %}
-    <meta property="og:description" content="{{project.summary}}">
-  {% else %}
-    <meta property="og:description" content="The Makeability Lab is an advanced research lab in Human-Computer Interaction directed by Professor Jon E. Froehlich at University of Washington's Allen School of Computer Science.">
-  {% endif %}
-  {% comment %} <meta property="og:image"
-    content="{{ request.scheme }}://{{ request.get_host }}{% static 'website/img/logos/makelab_logo_v3_white_with_colors_and_text_og_image_ratio_1200w.png' %}" /> {% endcomment %}
-  <meta property="og:image"
-    content="{{ request.scheme }}://{{ request.get_host }}{% thumbnail project.gallery_image 1200x630 box=project.cropping crop=True upscale=True %}" />
-  <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}" />
+<meta property="og:title" content="{{ project.name }}">
+<meta property="og:type" content="website">
+{% if project.summary %}
+<meta property="og:description" content="{{ project.summary }}">
+{% else %}
+<meta property="og:description" content="The Makeability Lab is an advanced research lab in Human-Computer Interaction directed by Professor Jon E. Froehlich at University of Washington's Allen School of Computer Science.">
+{% endif %}
+<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% thumbnail project.gallery_image 1200x630 box=project.cropping crop=True upscale=True %}">
+<meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
 {% endblock %}
 
 {% block stylesheets %}
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'website/css/project.css' %}">
-  <link rel="stylesheet" href="{% static 'website/css/talks.css' %}">
-  <link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
-  <link rel="stylesheet" href="{% static 'website/css/index.css' %}">
-  <link rel="stylesheet" href="{% static 'website/css/news-item.css' %}">
-  <link rel="stylesheet" href="{% static 'website/css/sponsor-listing.css' %}">
-  <link rel="stylesheet" href="{% static 'website/css/bootstrap-modifications.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/project.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/video-snippet.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/talk-snippet.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/news-item.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/sponsor-listing.css' %}">
 {% endblock %}
 
 {% block external_scripts %}
-    <!-- <script src="{% static 'website/js/peopleHeightFix.js' %}"></script> -->
-    <script src="{% static 'website/js/utils.js' %}"></script>
-    <script src="{% static 'website/js/indproject.js' %}"></script>
-    <script src="{% static 'website/js/lightbox.js' %}"></script>
-
-    {# humanize-duration is used to pretty print date ages, see https://github.com/EvanHahn/HumanizeDuration.js #}
-    {# we use it, for example, to pretty print the age of videos #}
-    <script src="{% static 'website/js/humanize-duration.js' %}"></script>
-
-    <script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
-    <script src="{% static 'website/js/citationPopoverSimple.js' %}"></script> {# used for citation popups #}
+<script src="{% static 'website/js/citationPopoverSimple.js' %}"></script>
+<script src="{% static 'website/js/humanize-duration.js' %}"></script>
+<script src="{% static 'website/js/video-age.js' %}"></script>
 {% endblock %}
 
 {% block scripts %}
-    $(document).ready(function() {
-        // find the citation links and set up the popover content and behavior for each
-        var citationLinks = $(".publication-citation-link");
-        for(var i = 0; i < citationLinks.length; i++) {
-            $(citationLinks[i]).citationPopover();
-        }
-    });
+document.addEventListener('DOMContentLoaded', function() {
+  CitationPopover.init('.publication-citation-link');
+  VideoAge.init();
+});
 {% endblock %}
 
 {% block maincarousel %}
-    {# Override main carousel if we don't have any banners defined to have a gradient background #}
-    {% if not banners or banners|length <= 0 %}
-        <div id="main-carousel" class="carousel slide carousel-fade">
-            <div class="container carousel-container">
-                <div class="carousel-caption carousel-caption-left" style="pointer-events: auto;">
-                    <div class="carousel-caption-title">
-                        {{ project.name }}
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% else %}
-        {{ block.super }}
-    {% endif %}
+{% comment %}
+  Override main carousel: use gradient fallback if no banners defined,
+  otherwise use the standard carousel from base.html.
+{% endcomment %}
+{% if not banners or banners|length <= 0 %}
+<div id="main-carousel" class="carousel slide carousel-fade" role="img" aria-label="{{ project.name }}">
+  <div class="container carousel-container">
+    <div class="carousel-caption carousel-caption-left" style="pointer-events: auto;">
+      <div class="carousel-caption-title">
+        {{ project.name }}
+      </div>
+    </div>
+  </div>
+</div>
+{% else %}
+{{ block.super }}
+{% endif %}
 {% endblock %}
 
 {% block content %}
-<div id="content" class="container content-container" data-spy="scroll">
-  <div class="row project-row about-column">
-    <div class="col-sm-3 col-sm-push-9 project-sidebar hidden-xs">
-      <div class="row">
-        <h3 class="sidebar-header">Date</h3>
-        {{ date_str }}
-
-        {% if website %}
-          <h3 class="sidebar-header">Website</h3>
-          <a href="{{website}}">{{website}}</a>
-        {% endif %}
-
-        {% if featured_code_repo_url or data_url %}
-          <h3 class="sidebar-header">Open
-          {% if featured_code_repo_url %}
-            Code
-            {% if data_url %}
-              / Data
-            {% endif %}
-            </h3>
-          {% elif data_url %}
-            Data</h3>
-          {% endif %}
-          {% if featured_code_repo_url %}
-            <a href="{{featured_code_repo_url}}"><i class="fab fa-github"></i> Explore the Code</a>
-          {% endif %}
-          {% if data_url %}
-            <div style="{% if featured_code_repo_url %}margin-top: 3px;"{% endif %}>
-              <a href="{{data_url}}"><i class="fas fa-database"></i> Download the Dataset</a>
-            </div>
-          {% endif %}
-        {% endif %}
-       
-        
-        
-        {# Project leadership info #}
-        {% if active_postdoc_leads %}
-          <h3 class="sidebar-header">Postdoc Lead{% if active_postdoc_leads|length > 1 %}s{% endif %}</h3>
-          {% with active_leads=active_postdoc_leads%}
-            {% include "snippets/display_project_lead_snippet.html" %}
-          {% endwith %}
-        {% endif %}
-        
-        {% if active_student_leads %}
-          <h3 class="sidebar-header">Student Lead{% if active_student_leads|length > 1 %}s{% endif %}</h3>
-          {% with active_leads=active_student_leads %}
-            {% include "snippets/display_project_lead_snippet.html" %}
-          {% endwith %}
-        {% endif %}
-
-        {% if active_research_scientist_leads %}
-          <h3 class="sidebar-header">Research Scientist Lead{% if active_research_scientist_leads|length > 1 %}s{% endif %}</h3>
-          {% with active_leads=active_research_scientist_leads%}
-            {% include "snippets/display_project_lead_snippet.html" %}
-          {% endwith %}
-        {% endif %}
-
-        {% if active_PIs %}
-          <h3 class="sidebar-header">PI{% if active_PIs|length > 1 %}s{% endif %}{% if active_CoPIs %} / Co-PI {% if active_CoPIs|length > 1 %}s{% endif %}{% endif %}</h3>
-          {% with active_leads=active_PIs %}
-            {% include "snippets/display_project_lead_snippet.html" %}
-          {% endwith %}
-          {% if active_CoPIs %}
-            {% with active_leads=active_CoPIs %}
-              {% include "snippets/display_project_lead_snippet.html" %}
-            {% endwith %}
-          {% endif %}
-        {% endif %}
-
-        {% if inactive_student_leads %}
-          <h3 class="sidebar-header">Former Student Lead{% if inactive_student_leads|length > 1 %}s{% endif %}</h3>
-          {% with active_leads=inactive_student_leads %}
-            {% include "snippets/display_project_lead_snippet.html" %}
-          {% endwith %}
-        {% endif %}
-
-        {% if inactive_PIsAndCoPIs %}
-          {% if inactive_PIs and inactive_CoPIs %}
-            <h3 class="sidebar-header">Former PI{% if inactive_PIs|length > 1 %}s{% endif %}{% if inactive_CoPIs %} / Co-PI {% if inactive_CoPIs|length > 1 %}s{% endif %}{% endif %}</h3>
-          {% elif inactive_PIs %}
-            <h3 class="sidebar-header">Former PI{% if inactive_PIs|length > 1 %}s{% endif %}</h3>
-          {% elif inactive_CoPIs %}
-            <h3 class="sidebar-header">Former Co-PI{% if inactive_CoPIs|length > 1 %}s{% endif %}</h3>
-          {% endif %}
-          {% if inactive_PIs %}
-            {% with active_leads=inactive_PIs %}
-              {% include "snippets/display_project_lead_snippet.html" %}
-            {% endwith %}
-          {% endif %}
-          {% if inactive_CoPIs %}
-            {% with active_leads=inactive_CoPIs %}
-              {% include "snippets/display_project_lead_snippet.html" %}
-            {% endwith %}
-          {% endif %}
-        {% endif %}
-
-        <h3 class="sidebar-header"># Contributors</h3>
-        {{ num_contributors }}
-
-        {% if sponsors %}
-          <h3 class="sidebar-header">Funding</h3>
-          <div class="sponsor-sidebar-grid">
-            {% for sponsor in sponsors %}
-              <div class="sponsor-sidebar-card" {% if forloop.first %} style="margin-left:0px" {% endif %}>
-                <div class="sponsor-logo">
-                  {% if sponsor.icon %}
-                    <a href="{{sponsor.url}}">
-                      <img class="sponsor-img" 
-                        src="{% thumbnail sponsor.icon sponsor.get_thumbnail_size_as_str box=sponsor.icon_cropping crop=True upscale=True %}" 
-                        alt="{{sponsor.get_icon_alt_text}}"
-                        title="{{sponsor.name}}"/>
-                    </a>
-                  {% endif %}
-                </div>
-              </div>
-            {% endfor %}
-          </div>
-        {% endif %}
-
-        {% if news %}
-          <h3 class="sidebar-header">Related News</h3>
-          <ul class="news-item-sidebar-ul">
-            {% for recent_news_item in news|slice:":3" %}
-              {% include "snippets/display_news_item_sidebar_snippet.html" %}
-            {% endfor %}
-          </ul>			
-        {% endif %}
-
-        {% if related_projects %}
-          <h3 class="sidebar-header">Related Projects</h3>
-          <ul class="sidebar-ul">
-            {% for related_project in related_projects %}
-              {% if related_project.gallery_image %}
-                <li class="sidebar-li">   
-                  <a href="{% url 'website:project' related_project.short_name %}">
-                    <img class="related-project-thumbnail" 
-                        src="{% thumbnail related_project.gallery_image related_project.get_thumbnail_size_as_str box=related_project.cropping crop=True upscale=True %}" 
-                        alt="{{related_project.get_thumbnail_alt_text}}"/>
-                  </a>
-                  <div class="sidebar-content">
-                    <div class="sidebar-related-project-title">
-                      <a href="{% url 'website:project' related_project.short_name %}">{{ related_project.name }}</a>
-                    </div>
-                    <div class="sidebar-related-project-date">
-                      {{ related_project.get_project_dates_str }}
-                    </div>   
-                  </div>
-                </li>
-              {% endif %}
-            {% endfor %}
-          </ul>
-        {% endif %}
-      </div>
+<div class="container makelab-project">
+  
+  <div class="project-layout">
+    
+    <!-- ======================== MAIN CONTENT ======================== -->
+    <main class="project-main-content">
       
-    </div>
-    <div class="col-sm-9 col-sm-pull-3">
-      <div class="row project-content-row">
-        <h2 class="project-section-header">Project Description</h2>
-        <div class="inline-sidebar-flex-container-xs">
-          <div class="inline-sidebar-flex-item-xs">
-            <h3 class="sidebar-header">Date</h3>
-            {{ date_str }}
-          </div>
-          <div class="inline-sidebar-flex-item-xs">
-            {% if active_PIs %}
-              <h3 class="sidebar-header">PI{% if active_PIs|length > 1 %}s{% endif %}{% if active_CoPIs %} / Co-PI {% if active_CoPIs|length > 1 %}s{% endif %}{% endif %}</h3>
-              {% with active_leads=active_PIs %}
-                {% include "snippets/display_project_lead_snippet.html" %}
-              {% endwith %}
-              {% if active_CoPIs %}
-                {% with active_leads=active_CoPIs %}
-                  {% include "snippets/display_project_lead_snippet.html" %}
-                {% endwith %}
-              {% endif %}
-            {% endif %}
-          </div>
-          <div class="inline-sidebar-flex-item-xs">
-            {% if active_student_leads %}
-              <h3 class="sidebar-header">Student Lead{% if active_student_leads|length > 1 %}s{% endif %}</h3>
-              {% with active_leads=active_student_leads %}
-                {% include "snippets/display_project_lead_snippet.html" %}
-              {% endwith %}
-            {% endif %}
-          </div>
-        </div> 
+      <!-- Screen-reader-only heading (visible title is in carousel) -->
+      <h1 class="sr-only">{{ project.name }}</h1>
+      
+      <!-- Project Description Section -->
+      <section id="project-description" 
+               class="project-section"
+               aria-labelledby="description-heading">
+        <h2 id="description-heading" 
+            class="project-section-header first-section heading-with-anchor">
+          Project Description
+          <a href="#project-description" 
+             class="header-anchor" 
+             aria-label="Link to project description section">
+            <i class="fa-solid fa-link" aria-hidden="true"></i>
+          </a>
+        </h2>
         <div class="project-description">
           {% autoescape off %}
-            {{ project.about }}
+          {{ project.about }}
           {% endautoescape %}
-        </div>   
-      </div>
+        </div>
+      </section>
+      
+      <!-- Featured Video -->
       {% if featured_video %}
-        <div class="row project-content-row" style="margin-top: 20px">
-          <div class="video-wrapper">
-            <iframe class="video-iframe" src="{{ featured_video.get_embed }}" 
-              frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
-          </div>
-        </div>
-      {% endif %}
-      <div class="row project-content-row" style="margin-top: 20px">
-        <div class="inline-sidebar-flex-container-xs">
-          {% if featured_code_repo_url %}
-            <div class="inline-sidebar-flex-item-xs">
-              {% if featured_code_repo_url or data_url %}
-                <h3 class="sidebar-header">Open
-                {% if featured_code_repo_url %}
-                  Code
-                  {% if data_url %}
-                    / Data
-                  {% endif %}
-                  </h3>
-                {% elif data_url %}
-                  Data</h3>
-                {% endif %}
-                {% if featured_code_repo_url %}
-                  <a href="{{featured_code_repo_url}}"><i class="fab fa-github"></i> Explore the Code</a>
-                {% endif %}
-                {% if data_url %}
-                  <div style="{% if featured_code_repo_url %}margin-top: 3px;"{% endif %}>
-                    <a href="{{data_url}}"><i class="fas fa-database"></i> Download the Dataset</a>
-                  </div>
-                {% endif %}
-              {% endif %}
-            </div>
-          {% endif %}
-          <div class="inline-sidebar-flex-item-xs">
-            {% if sponsors %}
-              <h3 class="sidebar-header">Funding</h3>
-              <div class="sponsor-sidebar-grid">
-                {% for sponsor in sponsors %}
-                  <div class="sponsor-sidebar-card" {% if forloop.first %} style="margin-left:0px" {% endif %}>
-                    <div class="sponsor-logo">
-                      {% if sponsor.icon %}
-                        <a href="{{sponsor.url}}">
-                          <img class="sponsor-img" 
-                            src="{% thumbnail sponsor.icon sponsor.get_thumbnail_size_as_str box=sponsor.icon_cropping crop=True upscale=True %}" 
-                            alt="{{sponsor.get_icon_alt_text}}"
-                            title="{{sponsor.name}}"/>
-                        </a>
-                      {% endif %}
-                    </div>
-                  </div>
-                {% endfor %}
-              </div>
-            {% endif %}
-          </div>
+      <div class="project-featured-video">
+        <div class="project-featured-video-container">
+          <iframe class="project-featured-video-player" 
+                  src="{{ featured_video.get_embed }}" 
+                  title="Featured video: {{ featured_video.title }}"
+                  allow="autoplay; fullscreen" 
+                  allowfullscreen
+                  loading="lazy">
+          </iframe>
         </div>
       </div>
+      {% endif %}
+      
+      <!-- Publications Section -->
       {% if publications %}
-        <div class="row project-content-row"> 
-          <h2>Publications</h2>
+      <section id="project-publications" 
+               class="project-section"
+               aria-labelledby="publications-heading">
+        <h2 id="publications-heading" 
+            class="project-section-header heading-with-anchor">
+          Publications
+          <a href="#project-publications" 
+             class="header-anchor" 
+             aria-label="Link to publications section">
+            <i class="fa-solid fa-link" aria-hidden="true"></i>
+          </a>
+        </h2>
+        <div class="project-publications-list">
           {% for pub in publications %}
-              {% include "snippets/display_pub_snippet.html" with orientation="vertical"%}
+          {% include "snippets/display_pub_snippet.html" with orientation="vertical" %}
           {% endfor %}
         </div>
+      </section>
       {% endif %}
-    </div>
-  </div>
-  <div class="row project-row" id="below-sidebar">
-    {% if has_videos_beyond_featured_video %}
-      <div class="row row-adjust-margins">
-        {% if videos %}
-          <h2>Videos</h2>
-        {% endif %}
-        {% for video in videos %}
+      
+      <!-- Videos Section -->
+      {% if has_videos_beyond_featured_video and videos %}
+      <section id="project-videos" 
+               class="project-section project-videos-section"
+               aria-labelledby="videos-heading">
+        <h2 id="videos-heading" 
+            class="project-section-header heading-with-anchor">
+          Videos
+          <a href="#project-videos" 
+             class="header-anchor" 
+             aria-label="Link to videos section">
+            <i class="fa-solid fa-link" aria-hidden="true"></i>
+          </a>
+        </h2>
+        <div class="videos-grid">
+          {% for video in videos %}
           {% include "snippets/display_video_snippet.html" %}
-        {% endfor %}
-      </div>
-    {% endif %}
-
-    {% if talks %}
-      <div class="row row-adjust-margins">
-        {% if talks %}
-            <h2>Talks</h2>
-        {% endif %}
-
-        {% for talk in talks %}
-            {% include "snippets/display_talk_snippet.html" %}
-        {% endfor %}
-      </div>
-    {% endif %}
-
-    {% if related_projects %}
-      <div class="main-related-projects">
-        <h2>Related Projects</h2>
-        <div class="main-related-projects-grid-container">
-          {% for related_project in related_projects %}
-            {% if related_project.gallery_image %}
-              <div class="main-related-project-grid-item">   
-                <a href="{% url 'website:project' related_project.short_name %}">
-                  <img class="main-related-project-thumbnail" 
-                      src="{% thumbnail related_project.gallery_image related_project.get_thumbnail_size_as_str box=related_project.cropping crop=True upscale=True %}" 
-                      alt="{{related_project.get_thumbnail_alt_text}}"/>
-                </a>
-                <div class="main-related-project-text">
-                  <div class="main-related-project-title">
-                    <a href="{% url 'website:project' related_project.short_name %}">{{ related_project.name }}</a>
-                  </div>
-                  <div class="main-related-project-date">
-                    {{ related_project.get_project_dates_str }}
-                  </div>   
-                </div>
-              </div>
-            {% endif %}
           {% endfor %}
         </div>
-      </div>
-    {% endif %}
-
-    {% comment %} Take out photo gallery for now {% endcomment %}
-    {% comment %} 
-    {% if photos %}
-    <div class="row row-adjust-margins">
-        <h3 class="news-type-label">Photo Gallery</h3>
-        {% for image in photos %}
-          <div class="col-md-4 project-gallery-col" id="slide{{ forloop.counter }}">
-            <img class="project-gallery" 
-                src="{% thumbnail image.picture image.get_cropping_size_as_str box=image.cropping crop=True detail=True upscale=True %}" 
-                alt="{{image.alt_text}}" >
-            <div class="overlay-image">
-                <div class="image-gallery-caption">{{image.caption}}</div>
+      </section>
+      {% endif %}
+      
+      <!-- Talks Section -->
+      {% if talks %}
+      <section id="project-talks" 
+               class="project-section project-talks-section"
+               aria-labelledby="talks-heading">
+        <h2 id="talks-heading" 
+            class="project-section-header heading-with-anchor">
+          Talks
+          <a href="#project-talks" 
+             class="header-anchor" 
+             aria-label="Link to talks section">
+            <i class="fa-solid fa-link" aria-hidden="true"></i>
+          </a>
+        </h2>
+        <div class="talks-grid">
+          {% for talk in talks %}
+          {% include "snippets/display_talk_snippet.html" %}
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+      
+      <!-- Related Projects (Mobile only) -->
+      {% if related_projects %}
+      <section id="project-related" 
+               class="project-section project-related-mobile"
+               aria-labelledby="related-heading">
+        <h2 id="related-heading" 
+            class="project-section-header heading-with-anchor">
+          Related Projects
+          <a href="#project-related" 
+             class="header-anchor" 
+             aria-label="Link to related projects section">
+            <i class="fa-solid fa-link" aria-hidden="true"></i>
+          </a>
+        </h2>
+        <div class="project-related-grid">
+          {% for related_project in related_projects %}
+          {% if related_project.gallery_image %}
+          <article class="project-related-card">
+            <a href="{% url 'website:project' related_project.short_name %}"
+               class="project-related-thumbnail-link"
+               aria-label="View project: {{ related_project.name }}">
+              <img class="project-related-thumbnail" 
+                   src="{% thumbnail related_project.gallery_image related_project.get_thumbnail_size_as_str box=related_project.cropping crop=True upscale=True %}" 
+                   alt="{{ related_project.get_thumbnail_alt_text }}">
+            </a>
+            <div class="project-related-info">
+              <h3 class="project-related-title">
+                <a href="{% url 'website:project' related_project.short_name %}">
+                  {{ related_project.name }}
+                </a>
+              </h3>
+              <p class="project-related-date">
+                {{ related_project.get_project_dates_str }}
+              </p>
             </div>
+          </article>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+      
+    </main>
+
+    <!-- ======================== SIDEBAR ======================== -->
+    <aside class="project-sidebar" aria-labelledby="project-sidebar-heading">
+      <h2 id="project-sidebar-heading" class="sr-only">Project Information</h2>
+      
+      <div class="project-sidebar-mobile-grid">
+        
+        <!-- Date -->
+        <section class="project-sidebar-section">
+          <h3 class="project-sidebar-header">Date</h3>
+          <p class="project-sidebar-text">{{ date_str }}</p>
+        </section>
+        
+        <!-- Website -->
+        {% if website %}
+        <section class="project-sidebar-section">
+          <h3 class="project-sidebar-header">Website</h3>
+          <a href="{{ website }}" class="project-sidebar-link">
+            <i class="fa-solid fa-globe" aria-hidden="true"></i>
+            <span>{{ website }}</span>
+          </a>
+        </section>
+        {% endif %}
+        
+        <!-- Open Code / Data -->
+        {% if featured_code_repo_url or data_url %}
+        <section class="project-sidebar-section">
+          <h3 class="project-sidebar-header">
+            Open{% if featured_code_repo_url %} Code{% if data_url %} / Data{% endif %}{% elif data_url %} Data{% endif %}
+          </h3>
+          {% if featured_code_repo_url %}
+          <a href="{{ featured_code_repo_url }}" class="project-sidebar-link">
+            <i class="fa-brands fa-github" aria-hidden="true"></i>
+            <span>Explore the Code</span>
+          </a>
+          {% endif %}
+          {% if data_url %}
+          <a href="{{ data_url }}" class="project-sidebar-link" {% if featured_code_repo_url %}style="margin-top: var(--space-2); display: flex;"{% endif %}>
+            <i class="fa-solid fa-database" aria-hidden="true"></i>
+            <span>Download the Dataset</span>
+          </a>
+          {% endif %}
+        </section>
+        {% endif %}
+        
+        <!-- Postdoc Leads -->
+        {% if active_postdoc_leads %}
+        <section class="project-sidebar-section">
+          <h3 class="project-sidebar-header">Postdoc Lead{% if active_postdoc_leads|length > 1 %}s{% endif %}</h3>
+          {% include "snippets/display_project_lead_snippet.html" with active_leads=active_postdoc_leads %}
+        </section>
+        {% endif %}
+        
+        <!-- Student Leads -->
+        {% if active_student_leads %}
+        <section class="project-sidebar-section">
+          <h3 class="project-sidebar-header">Student Lead{% if active_student_leads|length > 1 %}s{% endif %}</h3>
+          {% include "snippets/display_project_lead_snippet.html" with active_leads=active_student_leads %}
+        </section>
+        {% endif %}
+        
+        <!-- Research Scientist Leads -->
+        {% if active_research_scientist_leads %}
+        <section class="project-sidebar-section">
+          <h3 class="project-sidebar-header">Research Scientist Lead{% if active_research_scientist_leads|length > 1 %}s{% endif %}</h3>
+          {% include "snippets/display_project_lead_snippet.html" with active_leads=active_research_scientist_leads %}
+        </section>
+        {% endif %}
+        
+        <!-- PIs / Co-PIs -->
+        {% if active_PIs %}
+        <section class="project-sidebar-section">
+          <h3 class="project-sidebar-header">
+            PI{% if active_PIs|length > 1 %}s{% endif %}{% if active_CoPIs %} / Co-PI{% if active_CoPIs|length > 1 %}s{% endif %}{% endif %}
+          </h3>
+          {% include "snippets/display_project_lead_snippet.html" with active_leads=active_PIs %}
+          {% if active_CoPIs %}
+          {% include "snippets/display_project_lead_snippet.html" with active_leads=active_CoPIs %}
+          {% endif %}
+        </section>
+        {% endif %}
+        
+        <!-- Former Student Leads -->
+        {% if inactive_student_leads %}
+        <section class="project-sidebar-section project-desktop-only">
+          <h3 class="project-sidebar-header">Former Student Lead{% if inactive_student_leads|length > 1 %}s{% endif %}</h3>
+          {% include "snippets/display_project_lead_snippet.html" with active_leads=inactive_student_leads %}
+        </section>
+        {% endif %}
+        
+        <!-- Former PIs / Co-PIs -->
+        {% if inactive_PIs or inactive_CoPIs %}
+        <section class="project-sidebar-section project-desktop-only">
+          <h3 class="project-sidebar-header">
+            {% if inactive_PIs and inactive_CoPIs %}
+            Former PI{% if inactive_PIs|length > 1 %}s{% endif %} / Co-PI{% if inactive_CoPIs|length > 1 %}s{% endif %}
+            {% elif inactive_PIs %}
+            Former PI{% if inactive_PIs|length > 1 %}s{% endif %}
+            {% elif inactive_CoPIs %}
+            Former Co-PI{% if inactive_CoPIs|length > 1 %}s{% endif %}
+            {% endif %}
+          </h3>
+          {% if inactive_PIs %}
+          {% include "snippets/display_project_lead_snippet.html" with active_leads=inactive_PIs %}
+          {% endif %}
+          {% if inactive_CoPIs %}
+          {% include "snippets/display_project_lead_snippet.html" with active_leads=inactive_CoPIs %}
+          {% endif %}
+        </section>
+        {% endif %}
+        
+        <!-- Contributors Count -->
+        <section class="project-sidebar-section">
+          <h3 class="project-sidebar-header"># Contributors</h3>
+          <p class="project-sidebar-contributors">{{ num_contributors }}</p>
+        </section>
+        
+        <!-- Funding / Sponsors -->
+        {% if sponsors %}
+        <section class="project-sidebar-section">
+          <h3 class="project-sidebar-header">Funding</h3>
+          <div class="sponsor-sidebar-grid">
+            {% for sponsor in sponsors %}
+            <div class="sponsor-sidebar-card">
+              <div class="sponsor-logo">
+                {% if sponsor.icon %}
+                <a href="{{ sponsor.url }}"
+                   aria-label="Visit {{ sponsor.name }} website">
+                  <img class="sponsor-img" 
+                       src="{% thumbnail sponsor.icon sponsor.get_thumbnail_size_as_str box=sponsor.icon_cropping crop=True upscale=True %}" 
+                       alt="{{ sponsor.get_icon_alt_text }}"
+                       title="{{ sponsor.name }}">
+                </a>
+                {% endif %}
+              </div>
+            </div>
+            {% endfor %}
           </div>
-        {% endfor %}
-    </div>
-    {% include "snippets/display_project_gallery_lightbox.html" %}
-    {% endif %}{% endcomment %}
-  </div> 
-</div>
+        </section>
+        {% endif %}
+        
+      </div><!-- /.project-sidebar-mobile-grid -->
+      
+      <!-- Related News (Desktop only) -->
+      {% if news %}
+      <section class="project-sidebar-section project-desktop-only">
+        <h3 class="project-sidebar-header">Related News</h3>
+        <ul class="news-item-sidebar-ul">
+          {% for recent_news_item in news|slice:":3" %}
+          {% include "snippets/display_news_item_sidebar_snippet.html" %}
+          {% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+      
+      <!-- Related Projects (Desktop sidebar) -->
+      {% if related_projects %}
+      <section class="project-sidebar-section project-related-projects-sidebar">
+        <h3 class="project-sidebar-header">Related Projects</h3>
+        <ul class="project-sidebar-list">
+          {% for related_project in related_projects %}
+          {% if related_project.gallery_image %}
+          <li class="project-sidebar-related-item">
+            <a href="{% url 'website:project' related_project.short_name %}"
+               class="project-sidebar-related-thumbnail-link"
+               aria-label="View project: {{ related_project.name }}">
+              <img class="project-sidebar-related-thumbnail" 
+                   src="{% thumbnail related_project.gallery_image '160x90' box=related_project.cropping crop=True upscale=True %}" 
+                   alt="">
+            </a>
+            <div class="project-sidebar-related-info">
+              <h4 class="project-sidebar-related-title">
+                <a href="{% url 'website:project' related_project.short_name %}">
+                  {{ related_project.name }}
+                </a>
+              </h4>
+              <p class="project-sidebar-related-date">
+                {{ related_project.get_project_dates_str }}
+              </p>
+            </div>
+          </li>
+          {% endif %}
+          {% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+      
+    </aside>
+    
+  </div><!-- /.project-layout -->
+  
+</div><!-- /.makelab-project -->
 {% endblock %}

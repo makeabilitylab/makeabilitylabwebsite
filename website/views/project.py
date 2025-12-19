@@ -60,7 +60,12 @@ def project(request, project_name):
     _logger.debug(f"The project leadership for {project_name}: {project_leadership}")
 
     # Query for related projects. Limit to top 5
-    related_projects = project.get_related_projects_by_umbrella(match_all_umbrellas=True)[:5]
+    # Get all candidates first
+    related_project_candidates = project.get_related_projects_by_umbrella(match_all_umbrellas=True)
+    
+    # Filter using Python list comprehension to ensure the attribute exists and is not empty
+    # This matches the logic used in your template: {% if related_project.gallery_image %}
+    related_projects = [p for p in related_project_candidates if p.gallery_image][:5]
 
     # related_projects_by_pub = project.get_related_projects_by_pub()
     # _logger.debug(f"Related projects by publication: {related_projects_by_pub}")
