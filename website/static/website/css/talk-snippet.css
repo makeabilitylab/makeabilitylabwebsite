@@ -144,6 +144,10 @@
   margin: 0 0 var(--space-1) 0;
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
+  /* Prevent long venue names from breaking grid layout */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .talk-location {
@@ -190,7 +194,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
-  margin-top: auto;
+  margin-top: var(--space-2);
   font-size: var(--font-size-xxs);
 }
 

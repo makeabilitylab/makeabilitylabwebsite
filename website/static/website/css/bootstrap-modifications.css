@@ -1,6 +1,48 @@
-@media (max-width: 480px) { 
-  .col-ts-12 { 
-  	float: none; 
-  	width: 100%;
+/**
+ * ============================================================================
+ * BOOTSTRAP MODIFICATIONS - Makeability Lab
+ * ============================================================================
+ *
+ * Custom column breakpoints and overrides for Bootstrap 3.
+ * These fill gaps in Bootstrap's responsive grid system.
+ *
+ * CUSTOM BREAKPOINTS:
+ *   - col-ts-*: "Tiny-Small" breakpoint at 480px for extra-small phones
+ *
+ * DEPENDENCIES:
+ *   - Must be loaded after Bootstrap CSS
+ *
+ * @version 2.0.0 - Added documentation
+ * @author Makeability Lab
+ * ============================================================================
+ */
+
+
+/* =============================================================================
+   TINY-SMALL (TS) BREAKPOINT
+   =============================================================================
+   Custom breakpoint for extra-small screens (< 480px).
+   Bootstrap 3's xs starts at 0, so this provides finer control.
+   ============================================================================= */
+
+@media (max-width: 480px) {
+  .col-ts-12 {
+    float: none;
+    width: 100%;
+  }
+  
+  .col-ts-6 {
+    float: left;
+    width: 50%;
+  }
+  
+  .col-ts-4 {
+    float: left;
+    width: 33.333%;
+  }
+  
+  .col-ts-3 {
+    float: left;
+    width: 25%;
   }
 }
