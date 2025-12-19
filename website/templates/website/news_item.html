@@ -1,6 +1,42 @@
 {% extends "website/base.html" %}
 
-{% block pagetitle %}{{news_item.title}}{% endblock %}
+{% comment %}
+================================================================================
+NEWS ITEM PAGE - Makeability Lab
+================================================================================
+
+Individual news article page displaying:
+- News header with title, author byline, and featured image
+- Full news content
+- Sidebar with related content (people, projects, recent news)
+
+ACCESSIBILITY FEATURES:
+- Semantic HTML5 elements (header, article, section, aside, nav)
+- ARIA labels on sidebar sections via aria-labelledby
+- Proper heading hierarchy (h1 for title, h2 for sidebar sections)
+- Alt text on all images
+- Visible focus indicators on all interactive elements
+
+DEPENDENCIES:
+- design-tokens.css (loaded via base.html)
+- news-item.css
+
+CONTEXT VARIABLES:
+- news_item: News model instance
+- people_mentioned: QuerySet of Person objects mentioned in the article
+- related_projects: QuerySet of Project objects related to the article
+- project_recent_news_items: QuerySet of recent news about related projects
+- recent_news_about_projects_mentioned: QuerySet of recent news about projects
+- recent_news_about_people_mentioned: QuerySet of recent news about people
+- recent_news_posts_by_author: QuerySet of recent news by the same author
+- recent_ml_news: QuerySet of recent Makeability Lab news
+
+@version 2.0.0 - Accessibility and design token refactor
+@author Makeability Lab
+================================================================================
+{% endcomment %}
+
+{% block pagetitle %}{{ news_item.title }}{% endblock %}
 
 {% load static %}
 {% load thumbnail %}
@@ -8,166 +44,197 @@
 {% load ml_tags %}
 
 {% block opengraph %}
-  {# OpenGraph meta tags for social media previews #}
-  <meta property="og:title" content="{{ news_item.title }}">
-  <meta property="og:type" content="article">
-  {% if news_item.content %}
-    <meta property="og:description" content="{{ news_item.content|striptags|truncatewords:50 }}">
-  {% else %}
-    <meta property="og:description" content="News from the Makeability Lab, an advanced research lab in Human-Computer Interaction at University of Washington.">
-  {% endif %}
-  {% if news_item.image %}
-    <meta property="og:image"
-      content="{{ request.scheme }}://{{ request.get_host }}{% thumbnail news_item.image '1200x630' box=news_item.cropping crop=True upscale=True %}" />
-  {% else %}
-    <meta property="og:image"
-      content="{{ request.scheme }}://{{ request.get_host }}{% static news_item.default_news_image_filename %}" />
-  {% endif %}
-  <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}" />
-
-  {# Article-specific OpenGraph tags #}
-  <meta property="og:article:published_time" content="{{ news_item.date|date:'c' }}">
-  {% if news_item.author %}
-    <meta property="og:article:author" content="{{ news_item.author.get_full_name }}">
-  {% endif %}
+<meta property="og:title" content="{{ news_item.title }}">
+<meta property="og:type" content="article">
+{% if news_item.content %}
+<meta property="og:description" content="{{ news_item.content|striptags|truncatewords:50 }}">
+{% else %}
+<meta property="og:description" content="News from the Makeability Lab, an advanced research lab in Human-Computer Interaction at University of Washington.">
+{% endif %}
+{% if news_item.image %}
+<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% thumbnail news_item.image '1200x630' box=news_item.cropping crop=True upscale=True %}">
+{% else %}
+<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static news_item.default_news_image_filename %}">
+{% endif %}
+<meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+<meta property="og:article:published_time" content="{{ news_item.date|date:'c' }}">
+{% if news_item.author %}
+<meta property="og:article:author" content="{{ news_item.author.get_full_name }}">
+{% endif %}
 {% endblock %}
 
 {% block stylesheets %}
-  <link rel="stylesheet" href="{% static 'website/css/news-item.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/news-item.css' %}">
 {% endblock %}
 
 {% block maincarousel %}
-	{% comment %} <div style="min-height: 40px">&nbsp; {% endcomment %}
-			{# Uncomment the following if you want to have a carousel on the people page #}
-			{# {% include "snippets/display_short_carousel_snippet.html" %} #}
-	{% comment %} </div> {% endcomment %}
+<!-- No carousel on news item pages -->
 {% endblock %}
 
 {% block content %}
-
-{% comment %}
-Bootstrap requires a containing element to wrap site contents and house our grid system. 
-You may choose one of two containers to use in your projects:
- - .container for responsive fixed width container
- - .container-fluid for full width container, spanning the entire width of your viewport. 
-Note that, due to padding and more, neither container is nestable.
-See: https://getbootstrap.com/docs/3.4/css/#overview-container
-{% endcomment %}
-<div class="container makelab-container makelab-news">
-	<div class="row">
-		<!-- Main content area -->
-		<div class="col-md-8">
-			<div class="news-item-header">
-				<h1 class="news-item-title">{{news_item.title}}</h1>
-				<div class="news-byline">
-					{% with author=news_item.author %}
-						<a href="{% url 'website:member_by_name' member_name=author.url_name %}">
-							<img src="{% thumbnail author.image author.get_thumbnail_size_as_str box=author.cropping crop=True upscale=True detail=True%}" 
-									alt="{{ author.get_full_name }}"/>
-						</a>
-						<div class="news-byline-info">
-							<p class="news-byline-author">By {{ author.get_full_name }}</p>
-							<p class="news-byline-date">{{ news_item.short_date }}</p>
-						</div>
-					{% endwith %}
-				</div>
-			</div>
-		</div>
-	</div>
-	
-	<div class="row">
-		<div class="col-md-8">
-			<div class="news-item-header">
-				<div class="news-item-header-image">
-					{% if news_item.image %}
-						<img class="img-responsive" src="{% thumbnail news_item.image 750x350 box=news_item.cropping crop=True upscale=True detail=True %}" 
-								alt="{{news_item.alt_text}}">
-					{% else %}
-						<img class="img-responsive" src="{% static news_item.default_news_image_filename %}" 
-								alt="This is a default news page icon for when there are no thumbnails" />
-					{% comment %} <img src="{% static 'website/img/news_icon.png' %}" class="big-news-image"> {% endcomment %}
-					{% endif %}
-				</div>
-				<div class="news-item-header-caption">
-					{% if news_item.image_caption %}
-						{{news_item.image_caption}}
-					{% endif %}
-				</div>
-			</div>
-			<div class="news-item-content">
-				{% comment %}
-				In Django’s template system, the |safe filter is used to mark a string as safe, which means it 
-				won’t be auto-escaped when rendered. Django’s templating engine does escaping automatically to 
-				prevent things like HTML injection
-				{% endcomment %}
-				{{news_item.content|safe}}
-			</div>
-		</div>
-		
-		<!-- Sidebar for related news -->
-		<div class="col-md-4 news-item-sidebar">
-			{% if people_mentioned or related_projects %}
-				<h2 class="news-item-sidebar-header first-subsection">More About</h2>
-				<ul class="news-item-sidebar-ul">
-					{% for project in related_projects %}
-						<li class="news-item-sidebar-li">
-              <a href="{% url 'website:project' project.short_name %}">
-                <img src="{% thumbnail project.gallery_image project.get_thumbnail_size_as_str box=project.cropping crop=True upscale=True detail=True%}" 
-                  alt="{{project.get_thumbnail_alt_text}}"/>				
-              </a>
-              <div class="news-item-sidebar-content">
+<div class="container makelab-container">
+  
+  <div class="row">
+    <!-- ======================== Main Content ======================== -->
+    <div class="col-md-8">
+      <article class="news-article">
+        
+        <!-- News Header -->
+        <header class="news-item-header">
+          <h1 class="news-item-title">{{ news_item.title }}</h1>
+          
+          <!-- Author Byline -->
+          <div class="news-byline">
+            {% with author=news_item.author %}
+            <a href="{% url 'website:member_by_name' member_name=author.url_name %}"
+               aria-label="View profile of {{ author.get_full_name }}">
+              <img src="{% thumbnail author.image author.get_thumbnail_size_as_str box=author.cropping crop=True upscale=True detail=True %}" 
+                   alt="{{ author.get_full_name }}">
+            </a>
+            <div class="news-byline-info">
+              <p class="news-byline-author">
+                By <a href="{% url 'website:member_by_name' member_name=author.url_name %}">{{ author.get_full_name }}</a>
+              </p>
+              <p class="news-byline-date">
+                <time datetime="{{ news_item.date|date:'c' }}">{{ news_item.short_date }}</time>
+              </p>
+            </div>
+            {% endwith %}
+          </div>
+        </header>
+        
+        <!-- Featured Image -->
+        <figure class="news-item-figure">
+          {% if news_item.image %}
+          <img class="img-responsive news-item-image" 
+               src="{% thumbnail news_item.image 750x350 box=news_item.cropping crop=True upscale=True detail=True %}" 
+               alt="{{ news_item.alt_text }}">
+          {% else %}
+          <img class="img-responsive news-item-image" 
+               src="{% static news_item.default_news_image_filename %}" 
+               alt="News icon">
+          {% endif %}
+          {% if news_item.image_caption %}
+          <figcaption class="news-item-caption">{{ news_item.image_caption }}</figcaption>
+          {% endif %}
+        </figure>
+        
+        <!-- News Content -->
+        <div class="news-item-content">
+          {{ news_item.content|safe }}
+        </div>
+        
+      </article>
+    </div>
+    
+    <!-- ======================== Sidebar ======================== -->
+    <aside class="col-md-4 news-item-sidebar" aria-label="Related content">
+      
+      <!-- More About Section (People & Projects) -->
+      {% if people_mentioned or related_projects %}
+      <section aria-labelledby="sidebar-more-about">
+        <h2 id="sidebar-more-about" class="news-item-sidebar-header first-subsection">
+          More About
+        </h2>
+        <ul class="news-item-sidebar-ul">
+          
+          {% for project in related_projects %}
+          <li class="news-sidebar-item">
+            <a href="{% url 'website:project' project.short_name %}"
+               class="news-sidebar-image-link"
+               aria-hidden="true"
+               tabindex="-1">
+              <img src="{% thumbnail project.gallery_image project.get_thumbnail_size_as_str box=project.cropping crop=True upscale=True detail=True %}" 
+                   alt=""
+                   class="news-sidebar-image">
+            </a>
+            <div class="news-sidebar-content">
+              <p class="news-sidebar-title">
                 <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>
-              </div>
-						</li>
-					{% endfor %}
-					{% for person in people_mentioned %}
-						<li class="news-item-sidebar-li">   
-              <a href="{% url 'website:member_by_name' member_name=person.url_name %}">
-                <img src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}" 
-                      alt="{{ person.get_full_name }}"/> 
-              </a>
-              <div class="news-item-sidebar-content">
+              </p>
+            </div>
+          </li>
+          {% endfor %}
+          
+          {% for person in people_mentioned %}
+          <li class="news-sidebar-item">
+            <a href="{% url 'website:member_by_name' member_name=person.url_name %}"
+               class="news-sidebar-image-link"
+               aria-hidden="true"
+               tabindex="-1">
+              <img src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True %}" 
+                   alt=""
+                   class="news-sidebar-image">
+            </a>
+            <div class="news-sidebar-content">
+              <p class="news-sidebar-title">
                 <a href="{% url 'website:member_by_name' member_name=person.url_name %}">{{ person.get_full_name }}</a>
-              </div>
-						</li>
-					{% endfor %}		
-			{% endif %}
+              </p>
+            </div>
+          </li>
+          {% endfor %}
+          
+        </ul>
+      </section>
+      {% endif %}
 
-			{% if project_recent_news_items %}
-				<h2 class="news-item-sidebar-header {% if not people_mentioned and not related_projects %}first-subsection{% endif %}">
+      <!-- Related News Section -->
+      {% if project_recent_news_items %}
+      <section aria-labelledby="sidebar-related-project-news">
+        <h2 id="sidebar-related-project-news" 
+            class="news-item-sidebar-header {% if not people_mentioned and not related_projects %}first-subsection{% endif %}">
           Latest Related Project News
         </h2>
-				<ul class="news-item-sidebar-ul">
-				{% for recent_news_item in recent_news_about_projects_mentioned %}
-					{% include "snippets/display_news_item_sidebar_snippet.html" %}
-				{% endfor %}			
-			{% elif recent_news_about_people_mentioned %}
-				<h2 class="news-item-sidebar-header {% if not people_mentioned and not related_projects %}first-subsection{% endif %}">
+        <ul class="news-item-sidebar-ul">
+          {% for recent_news_item in recent_news_about_projects_mentioned %}
+          {% include "snippets/display_news_item_sidebar_snippet.html" %}
+          {% endfor %}
+        </ul>
+      </section>
+      
+      {% elif recent_news_about_people_mentioned %}
+      <section aria-labelledby="sidebar-related-people-news">
+        <h2 id="sidebar-related-people-news" 
+            class="news-item-sidebar-header {% if not people_mentioned and not related_projects %}first-subsection{% endif %}">
           Latest Related People News
         </h2>
-				<ul class="news-item-sidebar-ul">
-				{% for recent_news_item in recent_news_about_people_mentioned %}
-					{% include "snippets/display_news_item_sidebar_snippet.html" %}
-				{% endfor %}
-			{% elif recent_news_posts_by_author %}
-				<h2 class="news-item-sidebar-header {% if not people_mentioned and not related_projects %}first-subsection{% endif %}">
+        <ul class="news-item-sidebar-ul">
+          {% for recent_news_item in recent_news_about_people_mentioned %}
+          {% include "snippets/display_news_item_sidebar_snippet.html" %}
+          {% endfor %}
+        </ul>
+      </section>
+      
+      {% elif recent_news_posts_by_author %}
+      <section aria-labelledby="sidebar-author-news">
+        <h2 id="sidebar-author-news" 
+            class="news-item-sidebar-header {% if not people_mentioned and not related_projects %}first-subsection{% endif %}">
           More News By {{ news_item.author }}
         </h2>
-				<ul class="news-item-sidebar-ul">
-				{% for recent_news_item in recent_news_posts_by_author %}
-					{% include "snippets/display_news_item_sidebar_snippet.html" %}
-				{% endfor %}
-			{% endif %}
+        <ul class="news-item-sidebar-ul">
+          {% for recent_news_item in recent_news_posts_by_author %}
+          {% include "snippets/display_news_item_sidebar_snippet.html" %}
+          {% endfor %}
+        </ul>
+      </section>
+      {% endif %}
 
-			{% if recent_ml_news %}
-				<h2 class="news-item-sidebar-header">Recent Makeability Lab News</h2>
-				<ul class="news-item-sidebar-ul">
-					{% for recent_news_item in recent_ml_news  %}
-						{% include "snippets/display_news_item_sidebar_snippet.html" %}
-					{% endfor %}
-			</ul>
-			{% endif %}
-		</div>
-	</div>
+      <!-- Recent Makeability Lab News -->
+      {% if recent_ml_news %}
+      <section aria-labelledby="sidebar-recent-news">
+        <h2 id="sidebar-recent-news" class="news-item-sidebar-header">
+          Recent Makeability Lab News
+        </h2>
+        <ul class="news-item-sidebar-ul">
+          {% for recent_news_item in recent_ml_news %}
+          {% include "snippets/display_news_item_sidebar_snippet.html" %}
+          {% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+      
+    </aside>
+  </div>
+  
 </div>
 {% endblock %}

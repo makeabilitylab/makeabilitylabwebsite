@@ -1,8 +1,33 @@
 {% extends 'website/base.html' %}
 
-{% block pagetitle %}
-  News
-{% endblock %}
+{% comment %}
+================================================================================
+NEWS LISTING PAGE - Makeability Lab
+================================================================================
+
+Displays all news items in a paginated, responsive grid layout.
+
+ACCESSIBILITY FEATURES:
+- Semantic HTML5 elements (section, article, header, nav)
+- ARIA labels on sections via aria-labelledby
+- Proper heading hierarchy (h1 for page title, h3 for card headlines)
+- Alt text on all images
+- Visible focus indicators on all interactive elements
+- Anchor link on page heading for shareability
+
+DEPENDENCIES:
+- design-tokens.css (loaded via base.html)
+- news-listing.css
+
+CONTEXT VARIABLES:
+- news: Paginated QuerySet of News model instances
+
+@version 2.0.0 - Accessibility and design token refactor
+@author Makeability Lab
+================================================================================
+{% endcomment %}
+
+{% block pagetitle %}News{% endblock %}
 
 {% load static %}
 {% load thumbnail %}
@@ -10,70 +35,122 @@
 {% load ml_tags %}
 
 {% block stylesheets %}
-  <link rel="stylesheet" href="{% static 'website/css/news-listing.css' %}" />
-  {% comment %} <link rel="stylesheet" href="{% static 'website/css/news-listing-old.css' %}?version=1" /> {% endcomment %}
-  <link rel="stylesheet" href="{% static 'website/css/jquery-ui.min.css' %}" />
-  <link rel="stylesheet" href="{% static 'website/css/jquery-ui.theme.min.css' %}" />
+<link rel="stylesheet" href="{% static 'website/css/news-listing.css' %}">
 {% endblock %}
 
 {% block maincarousel %}
-  {% comment %}Remove the carousel{% endcomment %}
-  {% comment %} {% include 'snippets/display_short_carousel_snippet.html' %} {% endcomment %}
+<!-- No carousel on news listing page -->
 {% endblock %}
 
 {% block content %}
-  <div id="content" class="container">
-    <div id="makelab-news" class="makelab-content-container">
-      {% comment %} TODO: add zoom in image on hover {% endcomment %}
+<div class="container">
+  <div id="makelab-news" class="makelab-content-container">
+    
+    <!-- ======================== Page Header ======================== -->
+    <header>
       {% if news.number == 1 %}
-        <h1>Latest News</h1>
+      <h1 id="news-heading" class="heading-with-anchor">
+        Latest News
+        <a href="#news-heading" 
+           class="header-anchor" 
+           aria-label="Link to news section">
+          <i class="fa-solid fa-link" aria-hidden="true"></i>
+        </a>
+      </h1>
       {% else %}
-        <h1>News</h1>
+      <h1 id="news-heading" class="heading-with-anchor">
+        News
+        <a href="#news-heading" 
+           class="header-anchor" 
+           aria-label="Link to news section">
+          <i class="fa-solid fa-link" aria-hidden="true"></i>
+        </a>
+      </h1>
       {% endif %}
+    </header>
 
-      <div class="news-grid">
+    <!-- ======================== News Grid ======================== -->
+    <section aria-labelledby="news-heading">
+      <div class="news-grid" role="list">
         {% for news_item in news %}
-          <div class="news-card">
-            <div class="news-image">
-              {% comment %} The 'news_item_by_slug' refers to the name in urls.py for the path pattern to use here {% endcomment %}
-              <a href="{% url 'website:news_item_by_slug' slug=news_item.slug %}">
-                {% if news_item.image %}
-                  <img src="{% thumbnail news_item.image news_item.get_thumbnail_size_as_str box=news_item.cropping crop=True detail=True upscale=True %}" 
-                    alt="{{news_item.alt_text}}"/>
-                {% else %}
-                  <img src="{% static news_item.default_news_image_filename %}" style="max-height:217px;" 
-                    alt="This is a default news page icon for when there are no thumbnails" />
-                {% endif %}
-              </a>
-            </div>
-            <h3 class="news-card-headline"><a href="{% url 'website:news_item_by_slug' slug=news_item.slug %}">{{ news_item.title }}</a></h3>
-            <div class="news-card-byline">
-              <span class="news-card-author">BY <a href="{% url 'website:member_by_name' member_name=news_item.author.url_name %}">{{ news_item.author }}</a></span>
-              <span class="news-card-date">• {{ news_item.short_date }}</span>
-            </div>
+        <article class="news-card" role="listitem">
+          
+          <!-- News Image -->
+          <div class="news-image">
+            <a href="{% url 'website:news_item_by_slug' slug=news_item.slug %}"
+               aria-label="Read: {{ news_item.title }}">
+              {% if news_item.image %}
+              <img src="{% thumbnail news_item.image news_item.get_thumbnail_size_as_str box=news_item.cropping crop=True detail=True upscale=True %}" 
+                   alt="{{ news_item.alt_text }}">
+              {% else %}
+              <img src="{% static news_item.default_news_image_filename %}" 
+                   alt="News icon">
+              {% endif %}
+            </a>
           </div>
+          
+          <!-- News Headline -->
+          <h3 class="news-card-headline">
+            <a href="{% url 'website:news_item_by_slug' slug=news_item.slug %}">
+              {{ news_item.title }}
+            </a>
+          </h3>
+          
+          <!-- News Byline -->
+          <div class="news-card-byline">
+            <span class="news-card-author">
+              By <a href="{% url 'website:member_by_name' member_name=news_item.author.url_name %}">{{ news_item.author }}</a>
+            </span>
+            <span class="news-card-date">• {{ news_item.short_date }}</span>
+          </div>
+          
+        </article>
         {% endfor %}
       </div>
-    </div>
+    </section>
 
-    <div class="news-pagination">
-      {% if news.has_other_pages %}
-        <ul class="pagination">
-          {% if news.has_previous %}
-            <li><a href="?page={{ news.previous_page_number }}">Newer</a></li>
-          {% endif %}
-          {% for i in news.paginator.page_range %}
-            {% if news.number == i %}
-              <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
-            {% else %}
-              <li><a href="?page={{ i }}">{{ i }}</a></li>
-            {% endif %}
-          {% endfor %}
-          {% if news.has_next %}
-            <li><a href="?page={{ news.next_page_number }}">Older</a></li>
-          {% endif %}
-        </ul>
-      {% endif %}
-    </div>
+    <!-- ======================== Pagination ======================== -->
+    {% if news.has_other_pages %}
+    <nav class="news-pagination" aria-label="News pagination">
+      <ul class="pagination">
+        
+        {% if news.has_previous %}
+        <li>
+          <a href="?page={{ news.previous_page_number }}" 
+             aria-label="Go to newer news (page {{ news.previous_page_number }})">
+            Newer
+          </a>
+        </li>
+        {% endif %}
+        
+        {% for i in news.paginator.page_range %}
+        {% if news.number == i %}
+        <li class="active">
+          <span aria-current="page">
+            {{ i }}
+            <span class="sr-only">(current page)</span>
+          </span>
+        </li>
+        {% else %}
+        <li>
+          <a href="?page={{ i }}" aria-label="Go to page {{ i }}">{{ i }}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+        
+        {% if news.has_next %}
+        <li>
+          <a href="?page={{ news.next_page_number }}" 
+             aria-label="Go to older news (page {{ news.next_page_number }})">
+            Older
+          </a>
+        </li>
+        {% endif %}
+        
+      </ul>
+    </nav>
+    {% endif %}
+
   </div>
+</div>
 {% endblock %}

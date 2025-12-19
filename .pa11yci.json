@@ -15,9 +15,10 @@
     "http://website:8000/publications/",
     "http://website:8000/people/",
     "http://website:8000/talks/",
-    "http://website:8000/news/"
+    "http://website:8000/news/",
+    "http://website:8000/member/jonfroehlich/"
   ],
   "urls": [
-    "http://website:8000/publications/"
+    "http://website:8000/news/"
   ]
 }

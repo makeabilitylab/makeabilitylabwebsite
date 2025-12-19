@@ -7,6 +7,7 @@
  *
  * STRUCTURE:
  *   .makelab-container        - Page container with navbar offset
+ *   .news-article             - Main article wrapper
  *   .news-item-*              - Full news item page styles
  *   .news-sidebar-*           - Compact sidebar snippet styles
  *   .news-byline              - Author/date byline component
@@ -19,7 +20,8 @@
  * DEPENDENCIES:
  *   - design-tokens.css must be loaded first
  *
- * @version 2.0.0 - Refactored with design tokens
+ * @version 2.1.0 - Added figure/caption styles, improved accessibility
+ * @author Makeability Lab
  * ============================================================================
  */
 
@@ -30,6 +32,24 @@
 
 .makelab-container {
   margin-top: 80px;
+}
+
+
+/* =============================================================================
+   NEWS ARTICLE
+   ============================================================================= */
+
+.news-article {
+  /* Container for the main news content */
+}
+
+
+/* =============================================================================
+   NEWS ITEM PAGE - Header
+   ============================================================================= */
+
+.news-item-header {
+  margin-bottom: var(--space-4);
 }
 
 
@@ -50,11 +70,21 @@
 .news-byline {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
   font-family: var(--font-family-secondary);
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-sm);
   margin-top: var(--space-2);
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.news-byline > a {
+  flex-shrink: 0;
+  border-radius: var(--border-radius-full);
+}
+
+.news-byline > a:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .news-byline img {
@@ -62,12 +92,23 @@
   height: 50px;
   border-radius: var(--border-radius-full);
   object-fit: cover;
+  transition: transform var(--transition-fast);
+}
+
+.news-byline > a:hover img {
+  transform: scale(1.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .news-byline > a:hover img {
+    transform: none;
+  }
 }
 
 .news-byline-info {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 0;
 }
 
 .news-byline-author {
@@ -94,7 +135,32 @@
 .news-byline-date {
   color: var(--color-text-muted);
   font-weight: var(--font-weight-light);
+  font-size: var(--font-size-xs);
   margin: 0;
+}
+
+
+/* =============================================================================
+   NEWS ITEM PAGE - Featured Image (Figure)
+   ============================================================================= */
+
+.news-item-figure {
+  margin: 0 0 var(--space-6) 0;
+}
+
+.news-item-image {
+  width: 100%;
+  height: auto;
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.news-item-caption {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-sm);
+  font-style: italic;
+  color: var(--color-text-muted);
+  line-height: var(--line-height-normal);
 }
 
 
@@ -103,10 +169,69 @@
    ============================================================================= */
 
 .news-item-content {
-  margin-top: var(--space-8);
   font-size: var(--font-size-base);
   line-height: var(--line-height-relaxed);
   color: var(--color-text-primary);
+}
+
+.news-item-content p {
+  margin-bottom: var(--space-4);
+}
+
+.news-item-content a {
+  color: var(--color-link);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.news-item-content a:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+.news-item-content a:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.news-item-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--border-radius-sm);
+}
+
+.news-item-content h2 {
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-3);
+  font-size: var(--font-size-xl);
+  color: var(--color-text-primary);
+}
+
+.news-item-content h3 {
+  margin-top: var(--space-5);
+  margin-bottom: var(--space-2);
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+}
+
+.news-item-content ul,
+.news-item-content ol {
+  margin-bottom: var(--space-4);
+  padding-left: var(--space-6);
+}
+
+.news-item-content li {
+  margin-bottom: var(--space-2);
+}
+
+.news-item-content blockquote {
+  margin: var(--space-4) 0;
+  padding: var(--space-4);
+  padding-left: var(--space-5);
+  border-left: 4px solid var(--color-primary);
+  background-color: var(--color-bg-surface);
+  font-style: italic;
+  color: var(--color-text-secondary);
 }
 
 
@@ -115,16 +240,27 @@
    ============================================================================= */
 
 .news-item-sidebar {
-  margin-top: 0;
+  margin-top: 50px;
   padding-left: var(--space-10);
   max-width: 350px;
+}
+
+/* On smaller screens, stack sidebar below content */
+@media (max-width: 991px) {
+  .news-item-sidebar {
+    margin-top: var(--space-8);
+    padding-left: 0;
+    max-width: none;
+  }
 }
 
 .news-item-sidebar-header {
   font-family: var(--font-family-secondary);
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
   margin-top: var(--space-6);
   margin-bottom: var(--space-3);
 }
