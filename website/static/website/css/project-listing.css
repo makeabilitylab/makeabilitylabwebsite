@@ -443,5 +443,6 @@
 
 /* Keep sidebar column aligned to top */
 .project-filter-sidebar {
+  margin-top: 15px;
   align-self: flex-start;
 }
