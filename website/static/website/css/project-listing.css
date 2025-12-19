@@ -363,20 +363,12 @@
    ----------------------------------------------------------------------------- */
 
 .project-info {
-  margin-top: var(--space-3);
+  margin-top: var(--space-2);
   text-align: left;
 }
 
-.project-info .artifact-title {
+.project-title {
   margin: 0;
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-link);
-  transition: color var(--transition-fast);
-}
-
-.project-info .artifact-title:hover {
-  color: var(--color-link-hover);
 }
 
 .project-info a:focus {
@@ -385,7 +377,6 @@
 }
 
 .project-date-range {
-  margin: var(--space-1) 0 0 0;
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
 }

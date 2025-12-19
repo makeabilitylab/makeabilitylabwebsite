@@ -145,6 +145,14 @@ document.addEventListener('DOMContentLoaded', function() {
               <span>GitHub</span>
             </a>
             {% endif %}
+            {% if person.bluesky %}
+            <a href="{{ person.bluesky }}" 
+               class="person-website-link"
+               aria-label="{{ person.first_name }} on Bluesky">
+              <i class="fab fa-bluesky" aria-hidden="true"></i>
+              <span>Bluesky</span>
+            </a>
+            {% endif %}
             {% if person.twitter %}
             <a href="{{ person.twitter }}" 
                class="person-website-link"

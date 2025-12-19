@@ -151,7 +151,6 @@
 
 .pub-thumbnail-horiz-layout {
   float: left;
-  margin-right: var(--space-2);
   height: 129px;
   overflow: hidden;
 }
@@ -175,16 +174,6 @@
 /* =============================================================================
    PUBLICATION TEXT STYLES
    ============================================================================= */
-
-.artifact-title {
-  /* CHANGE: Use link color so users know it's clickable; required to pass accessibility checks */
-  color: var(--color-link);
-  /* color: var(--color-text-primary); */
-  font-weight: var(--font-weight-medium);
-  word-wrap: break-word;
-  text-overflow: ellipsis;
-  /* max-width: 320px; */
-}
 
 .pub-title {
   font-weight: var(--font-weight-semibold);
