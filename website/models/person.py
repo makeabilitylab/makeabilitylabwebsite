@@ -1,13 +1,16 @@
 from django.db import models
 from django.dispatch import receiver
-from django.db.models.signals import pre_delete, post_save, m2m_changed, post_delete
+from django.db.models.signals import pre_delete
 from website.models.publication import PubType
 from website.models.position import Role, Title
 from website.models.project_role import ProjectRole
 from django.core.files import File
 import website.utils.fileutils as ml_fileutils
 
-from django.db.models import F, Q, Sum, ExpressionWrapper, fields
+from django.db.models.functions import Coalesce
+from django.conf import settings
+
+from django.db.models import Count, Max, Value, F, Q, Sum, ExpressionWrapper, fields
 from django.utils import timezone
 from django.db.models.functions import Coalesce
 
@@ -20,7 +23,7 @@ import os # for joining paths
 from uuid import uuid4 # for generating unique filenames
 
 import re
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 
 from image_cropping import ImageRatioField
 
@@ -234,11 +237,11 @@ class Person(models.Model):
         Returns the total time as a timedelta this person has worked on the given project.
         If the end_date is None, the current date/time is used.
         """
-        print(f"person {self}, project {project}")
+        _logger.debug(f"person {self}, project {project}")
         # Get the roles this person has had on the given project
         roles = ProjectRole.objects.filter(person=self, project=project)
 
-        print(f"person {self}, roles {roles}")
+        _logger.debug(f"person {self}, roles {roles}")
         # If there are no roles, return a timedelta of zero duration
         if not roles.exists():
             return timedelta()
@@ -261,7 +264,7 @@ class Person(models.Model):
             )
         ).aggregate(total_time=Sum('time_worked'))['total_time']
 
-        print(f"person {self}, total_time_worked", total_time_worked)
+        _logger.debug(f"person {self}, total_time_worked {total_time_worked}")
 
         # Returns a timedelta object, which is part of Python’s datetime module and it represents
         # a duration, or the difference between two dates or times.
@@ -306,8 +309,12 @@ class Person(models.Model):
     @cached_property
     def has_started(self):
         """Returns True if person has started in the lab. False otherwise."""
-        return self.get_latest_position.has_started()
-
+        latest_position = self.get_latest_position
+        if latest_position is None:
+            return False
+        else:
+            return latest_position.has_started()
+        
     def get_total_time_in_role(self, role):
         """Returns the total time as in the specified role across all positions as a DurationField"""
         duration = ExpressionWrapper(Coalesce(F('end_date'), date.today()) - F('start_date'), output_field=fields.DurationField())
@@ -406,11 +413,9 @@ class Person(models.Model):
                     next_position = cur_position
                 elif (next_position.start_date - cur_position.end_date) <= max_time_gap:
                     time_gap = (next_position.start_date - cur_position.end_date)
-                    # print("Met minimum time gap: gap= {} max_gap={}".format(time_gap, max_time_gap))
                     next_position = cur_position
                 else:
                     time_gap = (next_position.start_date - cur_position.end_date)
-                    # print("Exceeded minimum time gap: gap= {} max_gap={}".format(time_gap, max_time_gap))
                     break
 
             return next_position
@@ -474,9 +479,9 @@ class Person(models.Model):
         :return: the person's full name as a string
         """
         if self.middle_name and include_middle:
-            return u"{0} {1} {2}".format(self.first_name, self.middle_name, self.last_name)
+            return f"{self.first_name} {self.middle_name} {self.last_name}"
         else:
-            return u"{0} {1}".format(self.first_name, self.last_name)
+            return f"{self.first_name} {self.last_name}"
 
     get_full_name.short_description = "Full Name"
     get_full_name.admin_order_field = 'first_name'  # Allows column order sorting based on full name
@@ -540,12 +545,12 @@ class Person(models.Model):
 
     def get_mentees(self, randomize=False):
         """
-        Returns a list of all students this person has mentored
+        Returns a QuerySet of all students this person has mentored.
+        Uses the reverse relation from Position.grad_mentor.
         """
-        grad_mentors = Position.objects.filter(grad_mentor=self).values('person')
-        mentees = Person.objects.filter(id__in=grad_mentors)
+        # Use the reverse relation 'Grad_Mentor' from Position model
+        mentees = Person.objects.filter(position__grad_mentor=self).distinct()
         
-        # Randomize the order of the mentees if randomize is True
         if randomize:
             mentees = mentees.order_by('?')
         
@@ -553,63 +558,54 @@ class Person(models.Model):
 
     def get_grad_mentors(self):
         """
-        Retrieve a list of grad mentors for the current person instance.
-
-        This method filters the Person objects to find those who are listed as
-        grad mentors for the current person in the Position model. It ensures
-        that each mentor is listed only once using the distinct() method.
-
+        Retrieve a QuerySet of grad mentors for the current person instance.
+        
         Returns:
-            QuerySet: A QuerySet of Person objects who are grad mentors for the current person.
+            QuerySet: Person objects who are grad mentors for the current person.
         """
-        positions = Position.objects.filter(person=self)
-        grad_mentors = positions.values('grad_mentor')
-        return Person.objects.filter(id__in=grad_mentors)
+        # Get all grad mentors from this person's positions
+        return Person.objects.filter(
+            id__in=self.position_set.exclude(
+                grad_mentor__isnull=True
+            ).values_list('grad_mentor', flat=True)
+        ).distinct()
 
     def get_projects_sorted_by_contrib(self, filter_out_projs_with_zero_pubs=True):
-        """Returns a set of all projects this person is involved in ordered by number of pubs"""
-        map_project_name_to_tuple = dict() # tuple is (count, most_recent_pub_date, project)
-        #publications = self.publication_set.order_by('-date')
-
-        # Go through all the projects by this person and track how much
-        # they've contributed to each one (via publication)
-        #print("******{}*******".format(self.get_full_name()))
-        for pub in self.publication_set.all():
-            for proj in pub.projects.all():
-                #print("pub", pub, "proj", proj)
-                if proj.name not in map_project_name_to_tuple:
-                    most_recent_date = proj.start_date
-                    if most_recent_date is None:
-                        most_recent_date = pub.date
-                    if most_recent_date is None:
-                        most_recent_date = datetime.date(2012, 1, 1) # when the lab was founded
-
-                    map_project_name_to_tuple[proj.name] = (0, most_recent_date, proj)
-
-                tuple_cnt_proj = map_project_name_to_tuple[proj.name]
-                most_recent_date = tuple_cnt_proj[1]
-                if pub.date is not None and pub.date > most_recent_date:
-                    most_recent_date = pub.date
-
-                map_project_name_to_tuple[proj.name] = (tuple_cnt_proj[0] + 1, # pub cnt
-                                                        most_recent_date,      # most recent pub date
-                                                        tuple_cnt_proj[2])     # project
-
-        list_tuples = list([tuple_cnt_proj for tuple_cnt_proj in map_project_name_to_tuple.values()])
-        list_tuples_sorted = sorted(list_tuples, key=lambda t: (t[0], t[1]), reverse=True)
-
-        #print("list_tuples_sorted", list_tuples_sorted)
-
-        ordered_projects = []
-        if len(list_tuples_sorted) > 0:
-            list_cnts, list_dates, ordered_projects = zip(*list_tuples_sorted)
-
-        if len(ordered_projects) <= 0 and not filter_out_projs_with_zero_pubs:
-            # if a person hasn't published but is still on projects
-            # default to this
-            ordered_projects = self.get_projects()
-
-        return ordered_projects
+        """
+        Returns projects involving this person, sorted by the number of 
+        publications and the date of the most recent publication.
+        """
+        Project = apps.get_model('website', 'Project')
+        
+        # Start with projects where this person has a role
+        projects_qs = Project.objects.filter(
+            projectrole__person=self
+        ).annotate(
+            # Count publications by this person on each project
+            pub_count=Count(
+                'publication',
+                filter=Q(publication__authors=self),
+                distinct=True
+            ),
+            # Get most recent publication date by this person
+            most_recent_pub_date=Max(
+                'publication__date',
+                filter=Q(publication__authors=self)
+            )
+        ).annotate(
+            # Fallback date logic: pub date > project start > lab founding
+            sort_date=Coalesce(
+                'most_recent_pub_date',
+                'start_date',
+                Value(settings.DATE_MAKEABILITYLAB_FORMED)
+            )
+        ).order_by('-pub_count', '-sort_date').distinct()
+        
+        # Filter out projects with zero publications if requested
+        if filter_out_projs_with_zero_pubs:
+            projects_qs = projects_qs.filter(pub_count__gt=0)
+        
+        return projects_qs
 
 
     def __str__(self):
