@@ -22,7 +22,7 @@ ACCESSIBILITY FEATURES:
 
 RESPONSIVE BEHAVIOR:
 - Desktop (≥992px): Two-column layout with sticky sidebar on right
-- Mobile (<992px): Single column, sidebar info at top, related projects at bottom
+- Mobile (<992px): Single column, sidebar after description, natural flow
 
 DEPENDENCIES:
 - design-tokens.css (loaded via base.html)
@@ -54,7 +54,7 @@ CONTEXT VARIABLES:
 - has_videos_beyond_featured_video: Boolean
 - talks: QuerySet of Talk objects
 
-@version 2.0.1 - Updated sidebar spacing
+@version 2.1.0 - Repositioned sidebar for better mobile UX
 @author Makeability Lab
 ================================================================================
 {% endcomment %}
@@ -151,6 +151,194 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
       </section>
       
+      <!-- ======================== SIDEBAR ======================== -->
+      <aside class="project-sidebar" aria-labelledby="project-sidebar-heading">
+        <h2 id="project-sidebar-heading" class="sr-only">Project Information</h2>
+        
+        <div class="project-sidebar-mobile-grid">
+          
+          <!-- Date -->
+          <section class="project-sidebar-section">
+            <h3 class="project-sidebar-header first-section">Date</h3>
+            <p class="project-sidebar-text">{{ date_str }}</p>
+          </section>
+          
+          <!-- Website -->
+          {% if website %}
+          <section class="project-sidebar-section">
+            <h3 class="project-sidebar-header">Website</h3>
+            <a href="{{ website }}" class="project-sidebar-link">
+              <i class="fa-solid fa-globe" aria-hidden="true"></i>
+              <span>{{ website }}</span>
+            </a>
+          </section>
+          {% endif %}
+          
+          <!-- Open Code / Data -->
+          {% if featured_code_repo_url or data_url %}
+          <section class="project-sidebar-section">
+            <h3 class="project-sidebar-header">
+              Open{% if featured_code_repo_url %} Code{% if data_url %} / Data{% endif %}{% elif data_url %} Data{% endif %}
+            </h3>
+            {% if featured_code_repo_url %}
+            <a href="{{ featured_code_repo_url }}" class="project-sidebar-link">
+              <i class="fa-brands fa-github" aria-hidden="true"></i>
+              <span>Explore the Code</span>
+            </a>
+            {% endif %}
+            {% if data_url %}
+            <a href="{{ data_url }}" class="project-sidebar-link" {% if featured_code_repo_url %}style="margin-top: var(--space-2); display: flex;"{% endif %}>
+              <i class="fa-solid fa-database" aria-hidden="true"></i>
+              <span>Download the Dataset</span>
+            </a>
+            {% endif %}
+          </section>
+          {% endif %}
+          
+          <!-- Postdoc Leads -->
+          {% if active_postdoc_leads %}
+          <section class="project-sidebar-section">
+            <h3 class="project-sidebar-header">Postdoc Lead{% if active_postdoc_leads|length > 1 %}s{% endif %}</h3>
+            {% include "snippets/display_project_lead_snippet.html" with active_leads=active_postdoc_leads %}
+          </section>
+          {% endif %}
+          
+          <!-- Student Leads -->
+          {% if active_student_leads %}
+          <section class="project-sidebar-section">
+            <h3 class="project-sidebar-header">Student Lead{% if active_student_leads|length > 1 %}s{% endif %}</h3>
+            {% include "snippets/display_project_lead_snippet.html" with active_leads=active_student_leads %}
+          </section>
+          {% endif %}
+          
+          <!-- Research Scientist Leads -->
+          {% if active_research_scientist_leads %}
+          <section class="project-sidebar-section">
+            <h3 class="project-sidebar-header">Research Scientist Lead{% if active_research_scientist_leads|length > 1 %}s{% endif %}</h3>
+            {% include "snippets/display_project_lead_snippet.html" with active_leads=active_research_scientist_leads %}
+          </section>
+          {% endif %}
+          
+          <!-- PIs / Co-PIs -->
+          {% if active_PIs %}
+          <section class="project-sidebar-section">
+            <h3 class="project-sidebar-header">
+              PI{% if active_PIs|length > 1 %}s{% endif %}{% if active_CoPIs %} / Co-PI{% if active_CoPIs|length > 1 %}s{% endif %}{% endif %}
+            </h3>
+            {% include "snippets/display_project_lead_snippet.html" with active_leads=active_PIs %}
+            {% if active_CoPIs %}
+            {% include "snippets/display_project_lead_snippet.html" with active_leads=active_CoPIs %}
+            {% endif %}
+          </section>
+          {% endif %}
+          
+          <!-- Former Student Leads -->
+          {% if inactive_student_leads %}
+          <section class="project-sidebar-section project-desktop-only">
+            <h3 class="project-sidebar-header">Former Student Lead{% if inactive_student_leads|length > 1 %}s{% endif %}</h3>
+            {% include "snippets/display_project_lead_snippet.html" with active_leads=inactive_student_leads %}
+          </section>
+          {% endif %}
+          
+          <!-- Former PIs / Co-PIs -->
+          {% if inactive_PIs or inactive_CoPIs %}
+          <section class="project-sidebar-section project-desktop-only">
+            <h3 class="project-sidebar-header">
+              {% if inactive_PIs and inactive_CoPIs %}
+              Former PI{% if inactive_PIs|length > 1 %}s{% endif %} / Co-PI{% if inactive_CoPIs|length > 1 %}s{% endif %}
+              {% elif inactive_PIs %}
+              Former PI{% if inactive_PIs|length > 1 %}s{% endif %}
+              {% elif inactive_CoPIs %}
+              Former Co-PI{% if inactive_CoPIs|length > 1 %}s{% endif %}
+              {% endif %}
+            </h3>
+            {% if inactive_PIs %}
+            {% include "snippets/display_project_lead_snippet.html" with active_leads=inactive_PIs %}
+            {% endif %}
+            {% if inactive_CoPIs %}
+            {% include "snippets/display_project_lead_snippet.html" with active_leads=inactive_CoPIs %}
+            {% endif %}
+          </section>
+          {% endif %}
+          
+          <!-- Contributors Count -->
+          <section class="project-sidebar-section">
+            <h3 class="project-sidebar-header"># Contributors</h3>
+            <p class="project-sidebar-contributors">{{ num_contributors }}</p>
+          </section>
+          
+          <!-- Funding / Sponsors -->
+          {% if sponsors %}
+          <section class="project-sidebar-section">
+            <h3 class="project-sidebar-header">Funding</h3>
+            <div class="sponsor-sidebar-grid">
+              {% for sponsor in sponsors %}
+              <div class="sponsor-sidebar-card">
+                <div class="sponsor-logo">
+                  {% if sponsor.icon %}
+                  <a href="{{ sponsor.url }}"
+                     aria-label="Visit {{ sponsor.name }} website">
+                    <img class="sponsor-img" 
+                         src="{% thumbnail sponsor.icon sponsor.get_thumbnail_size_as_str box=sponsor.icon_cropping crop=True upscale=True %}" 
+                         alt="{{ sponsor.get_icon_alt_text }}"
+                         title="{{ sponsor.name }}">
+                  </a>
+                  {% endif %}
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </section>
+          {% endif %}
+          
+        </div><!-- /.project-sidebar-mobile-grid -->
+        
+        <!-- Related News (Desktop only) -->
+        {% if news %}
+        <section class="project-sidebar-section project-desktop-only">
+          <h3 class="project-sidebar-header">Related News</h3>
+          <ul class="news-item-sidebar-ul">
+            {% for recent_news_item in news|slice:":3" %}
+            {% include "snippets/display_news_item_sidebar_snippet.html" %}
+            {% endfor %}
+          </ul>
+        </section>
+        {% endif %}
+        
+        <!-- Related Projects (Desktop sidebar) -->
+        {% if related_projects %}
+        <section class="project-sidebar-section project-related-projects-sidebar">
+          <h3 class="project-sidebar-header">Related Projects</h3>
+          <ul class="project-sidebar-list">
+            {% for related_project in related_projects %}
+            {% if related_project.gallery_image %}
+            <li class="project-sidebar-related-item">
+              <a href="{% url 'website:project' related_project.short_name %}"
+                 class="project-sidebar-related-thumbnail-link"
+                 aria-label="View project: {{ related_project.name }}">
+                <img class="project-sidebar-related-thumbnail" 
+                     src="{% thumbnail related_project.gallery_image '160x90' box=related_project.cropping crop=True upscale=True %}" 
+                     alt="">
+              </a>
+              <div class="project-sidebar-related-info">
+                <h4 class="project-sidebar-related-title">
+                  <a href="{% url 'website:project' related_project.short_name %}">
+                    {{ related_project.name }}
+                  </a>
+                </h4>
+                <p class="project-sidebar-related-date">
+                  {{ related_project.get_project_dates_str }}
+                </p>
+              </div>
+            </li>
+            {% endif %}
+            {% endfor %}
+          </ul>
+        </section>
+        {% endif %}
+        
+      </aside>
+      
       <!-- Featured Video -->
       {% if featured_video %}
       <div class="project-featured-video">
@@ -213,7 +401,7 @@ document.addEventListener('DOMContentLoaded', function() {
       <!-- Talks Section -->
       {% if talks %}
       <section id="project-talks" 
-               class="project-section project-talks-section"
+               class="project-section"
                aria-labelledby="talks-heading">
         <h2 id="talks-heading" 
             class="project-section-header heading-with-anchor">
@@ -232,15 +420,15 @@ document.addEventListener('DOMContentLoaded', function() {
       </section>
       {% endif %}
       
-      <!-- Related Projects (Mobile only) -->
+      <!-- Related Projects - Mobile only -->
       {% if related_projects %}
-      <section id="project-related" 
+      <section id="project-related-mobile" 
                class="project-section project-related-mobile"
-               aria-labelledby="related-heading">
-        <h2 id="related-heading" 
+               aria-labelledby="related-projects-heading">
+        <h2 id="related-projects-heading" 
             class="project-section-header heading-with-anchor">
           Related Projects
-          <a href="#project-related" 
+          <a href="#project-related-mobile" 
              class="header-anchor" 
              aria-label="Link to related projects section">
             <i class="fa-solid fa-link" aria-hidden="true"></i>
@@ -254,8 +442,8 @@ document.addEventListener('DOMContentLoaded', function() {
                class="project-related-thumbnail-link"
                aria-label="View project: {{ related_project.name }}">
               <img class="project-related-thumbnail" 
-                   src="{% thumbnail related_project.gallery_image related_project.get_thumbnail_size_as_str box=related_project.cropping crop=True upscale=True %}" 
-                   alt="{{ related_project.get_thumbnail_alt_text }}">
+                   src="{% thumbnail related_project.gallery_image '400x225' box=related_project.cropping crop=True upscale=True %}" 
+                   alt="">
             </a>
             <div class="project-related-info">
               <h3 class="project-related-title">
@@ -275,194 +463,6 @@ document.addEventListener('DOMContentLoaded', function() {
       {% endif %}
       
     </main>
-
-    <!-- ======================== SIDEBAR ======================== -->
-    <aside class="project-sidebar" aria-labelledby="project-sidebar-heading">
-      <h2 id="project-sidebar-heading" class="sr-only">Project Information</h2>
-      
-      <div class="project-sidebar-mobile-grid">
-        
-        <!-- Date -->
-        <section class="project-sidebar-section">
-          <h3 class="project-sidebar-header first-section">Date</h3>
-          <p class="project-sidebar-text">{{ date_str }}</p>
-        </section>
-        
-        <!-- Website -->
-        {% if website %}
-        <section class="project-sidebar-section">
-          <h3 class="project-sidebar-header">Website</h3>
-          <a href="{{ website }}" class="project-sidebar-link">
-            <i class="fa-solid fa-globe" aria-hidden="true"></i>
-            <span>{{ website }}</span>
-          </a>
-        </section>
-        {% endif %}
-        
-        <!-- Open Code / Data -->
-        {% if featured_code_repo_url or data_url %}
-        <section class="project-sidebar-section">
-          <h3 class="project-sidebar-header">
-            Open{% if featured_code_repo_url %} Code{% if data_url %} / Data{% endif %}{% elif data_url %} Data{% endif %}
-          </h3>
-          {% if featured_code_repo_url %}
-          <a href="{{ featured_code_repo_url }}" class="project-sidebar-link">
-            <i class="fa-brands fa-github" aria-hidden="true"></i>
-            <span>Explore the Code</span>
-          </a>
-          {% endif %}
-          {% if data_url %}
-          <a href="{{ data_url }}" class="project-sidebar-link" {% if featured_code_repo_url %}style="margin-top: var(--space-2); display: flex;"{% endif %}>
-            <i class="fa-solid fa-database" aria-hidden="true"></i>
-            <span>Download the Dataset</span>
-          </a>
-          {% endif %}
-        </section>
-        {% endif %}
-        
-        <!-- Postdoc Leads -->
-        {% if active_postdoc_leads %}
-        <section class="project-sidebar-section">
-          <h3 class="project-sidebar-header">Postdoc Lead{% if active_postdoc_leads|length > 1 %}s{% endif %}</h3>
-          {% include "snippets/display_project_lead_snippet.html" with active_leads=active_postdoc_leads %}
-        </section>
-        {% endif %}
-        
-        <!-- Student Leads -->
-        {% if active_student_leads %}
-        <section class="project-sidebar-section">
-          <h3 class="project-sidebar-header">Student Lead{% if active_student_leads|length > 1 %}s{% endif %}</h3>
-          {% include "snippets/display_project_lead_snippet.html" with active_leads=active_student_leads %}
-        </section>
-        {% endif %}
-        
-        <!-- Research Scientist Leads -->
-        {% if active_research_scientist_leads %}
-        <section class="project-sidebar-section">
-          <h3 class="project-sidebar-header">Research Scientist Lead{% if active_research_scientist_leads|length > 1 %}s{% endif %}</h3>
-          {% include "snippets/display_project_lead_snippet.html" with active_leads=active_research_scientist_leads %}
-        </section>
-        {% endif %}
-        
-        <!-- PIs / Co-PIs -->
-        {% if active_PIs %}
-        <section class="project-sidebar-section">
-          <h3 class="project-sidebar-header">
-            PI{% if active_PIs|length > 1 %}s{% endif %}{% if active_CoPIs %} / Co-PI{% if active_CoPIs|length > 1 %}s{% endif %}{% endif %}
-          </h3>
-          {% include "snippets/display_project_lead_snippet.html" with active_leads=active_PIs %}
-          {% if active_CoPIs %}
-          {% include "snippets/display_project_lead_snippet.html" with active_leads=active_CoPIs %}
-          {% endif %}
-        </section>
-        {% endif %}
-        
-        <!-- Former Student Leads -->
-        {% if inactive_student_leads %}
-        <section class="project-sidebar-section project-desktop-only">
-          <h3 class="project-sidebar-header">Former Student Lead{% if inactive_student_leads|length > 1 %}s{% endif %}</h3>
-          {% include "snippets/display_project_lead_snippet.html" with active_leads=inactive_student_leads %}
-        </section>
-        {% endif %}
-        
-        <!-- Former PIs / Co-PIs -->
-        {% if inactive_PIs or inactive_CoPIs %}
-        <section class="project-sidebar-section project-desktop-only">
-          <h3 class="project-sidebar-header">
-            {% if inactive_PIs and inactive_CoPIs %}
-            Former PI{% if inactive_PIs|length > 1 %}s{% endif %} / Co-PI{% if inactive_CoPIs|length > 1 %}s{% endif %}
-            {% elif inactive_PIs %}
-            Former PI{% if inactive_PIs|length > 1 %}s{% endif %}
-            {% elif inactive_CoPIs %}
-            Former Co-PI{% if inactive_CoPIs|length > 1 %}s{% endif %}
-            {% endif %}
-          </h3>
-          {% if inactive_PIs %}
-          {% include "snippets/display_project_lead_snippet.html" with active_leads=inactive_PIs %}
-          {% endif %}
-          {% if inactive_CoPIs %}
-          {% include "snippets/display_project_lead_snippet.html" with active_leads=inactive_CoPIs %}
-          {% endif %}
-        </section>
-        {% endif %}
-        
-        <!-- Contributors Count -->
-        <section class="project-sidebar-section">
-          <h3 class="project-sidebar-header"># Contributors</h3>
-          <p class="project-sidebar-contributors">{{ num_contributors }}</p>
-        </section>
-        
-        <!-- Funding / Sponsors -->
-        {% if sponsors %}
-        <section class="project-sidebar-section">
-          <h3 class="project-sidebar-header">Funding</h3>
-          <div class="sponsor-sidebar-grid">
-            {% for sponsor in sponsors %}
-            <div class="sponsor-sidebar-card">
-              <div class="sponsor-logo">
-                {% if sponsor.icon %}
-                <a href="{{ sponsor.url }}"
-                   aria-label="Visit {{ sponsor.name }} website">
-                  <img class="sponsor-img" 
-                       src="{% thumbnail sponsor.icon sponsor.get_thumbnail_size_as_str box=sponsor.icon_cropping crop=True upscale=True %}" 
-                       alt="{{ sponsor.get_icon_alt_text }}"
-                       title="{{ sponsor.name }}">
-                </a>
-                {% endif %}
-              </div>
-            </div>
-            {% endfor %}
-          </div>
-        </section>
-        {% endif %}
-        
-      </div><!-- /.project-sidebar-mobile-grid -->
-      
-      <!-- Related News (Desktop only) -->
-      {% if news %}
-      <section class="project-sidebar-section project-desktop-only">
-        <h3 class="project-sidebar-header">Related News</h3>
-        <ul class="news-item-sidebar-ul">
-          {% for recent_news_item in news|slice:":3" %}
-          {% include "snippets/display_news_item_sidebar_snippet.html" %}
-          {% endfor %}
-        </ul>
-      </section>
-      {% endif %}
-      
-      <!-- Related Projects (Desktop sidebar) -->
-      {% if related_projects %}
-      <section class="project-sidebar-section project-related-projects-sidebar">
-        <h3 class="project-sidebar-header">Related Projects</h3>
-        <ul class="project-sidebar-list">
-          {% for related_project in related_projects %}
-          {% if related_project.gallery_image %}
-          <li class="project-sidebar-related-item">
-            <a href="{% url 'website:project' related_project.short_name %}"
-               class="project-sidebar-related-thumbnail-link"
-               aria-label="View project: {{ related_project.name }}">
-              <img class="project-sidebar-related-thumbnail" 
-                   src="{% thumbnail related_project.gallery_image '160x90' box=related_project.cropping crop=True upscale=True %}" 
-                   alt="">
-            </a>
-            <div class="project-sidebar-related-info">
-              <h4 class="project-sidebar-related-title">
-                <a href="{% url 'website:project' related_project.short_name %}">
-                  {{ related_project.name }}
-                </a>
-              </h4>
-              <p class="project-sidebar-related-date">
-                {{ related_project.get_project_dates_str }}
-              </p>
-            </div>
-          </li>
-          {% endif %}
-          {% endfor %}
-        </ul>
-      </section>
-      {% endif %}
-      
-    </aside>
     
   </div><!-- /.project-layout -->
   

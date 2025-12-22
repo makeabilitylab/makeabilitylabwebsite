@@ -24,20 +24,18 @@
  * STRUCTURE:
  *   .makelab-project
  *   ├── .project-layout
- *   │   ├── .project-sidebar
- *   │   │   ├── .project-sidebar-section (×n)
- *   │   │   └── .project-related-projects-sidebar
  *   │   └── .project-main-content
  *   │       ├── .project-description
+ *   │       ├── .project-sidebar (mobile: after description; desktop: right column)
  *   │       ├── .project-featured-video
  *   │       ├── .project-section (×n)
  *   │       └── .project-related-mobile
  *
  * RESPONSIVE BEHAVIOR:
- *   - Desktop (≥992px): Two-column layout with sticky sidebar
- *   - Tablet/Mobile (<992px): Stacked layout, sidebar becomes summary bar
+ *   - Desktop (≥992px): Two-column layout with sticky sidebar on right
+ *   - Mobile (<992px): Natural flow, sidebar appears after description
  *
- * @version 2.0.0 - Refactored with design tokens and accessibility
+ * @version 2.1.1 - Fixed grid layout and class names
  * @author Makeability Lab
  * ============================================================================
  */
@@ -56,11 +54,12 @@
 /* =============================================================================
    TWO-COLUMN LAYOUT
    =============================================================================
-   Uses CSS Grid for the main content + sidebar layout.
-   Sidebar appears on the right on desktop, stacks on top on mobile.
+   Mobile: Block layout, natural HTML flow
+   Desktop: CSS Grid with sidebar in right column using display: contents
    ============================================================================= */
 
 .project-layout {
+  /* Mobile: simple block layout, natural flow */
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-6);
@@ -68,6 +67,7 @@
 
 @media (min-width: 992px) {
   .project-layout {
+    /* Desktop: Grid container for sidebar positioning */
     grid-template-columns: 1fr 320px;
     gap: var(--space-12);
   }
@@ -82,10 +82,19 @@
 
 /* =============================================================================
    MAIN CONTENT AREA
+   =============================================================================
+   On desktop, uses display: contents to make children direct grid items
    ============================================================================= */
 
 .project-main-content {
   min-width: 0; /* Prevent grid blowout from long content */
+}
+
+@media (min-width: 992px) {
+  .project-main-content {
+    /* Remove the box from the layout tree - children become grid items */
+    display: contents;
+  }
 }
 
 
@@ -98,6 +107,16 @@
   font-size: var(--font-size-base);
   line-height: var(--line-height-relaxed);
   color: var(--color-text-secondary);
+}
+
+@media (min-width: 992px) {
+  .project-description,
+  .project-section,
+  .project-featured-video,
+  .project-related-mobile {
+    /* Explicitly place in left column */
+    grid-column: 1;
+  }
 }
 
 .project-description p {
@@ -194,8 +213,11 @@
    Left-aligned section headers with anchor links for shareability.
    ============================================================================= */
 
-.project-section-header {
+.project-section {
+  margin-top: var(--space-8);
+}
 
+.project-section-header {
   margin-bottom: var(--space-4);
   font-family: var(--font-family-primary);
   font-size: var(--font-size-xl);
@@ -208,26 +230,47 @@
   margin-top: 0;
 }
 
+@media (min-width: 992px) {
+  /* Remove margins from grid children - use grid gap instead */
+  .project-section,
+  .project-featured-video,
+  .project-sidebar {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  
+  /* Add row gap to the grid instead */
+  .project-layout {
+    row-gap: var(--space-8);
+  }
+}
+
 
 /* =============================================================================
    SIDEBAR
    =============================================================================
-   Sticky sidebar on desktop, summary bar on mobile.
+   Mobile: Appears after description in natural flow
+   Desktop: Sticky sidebar in right column spanning all rows
    ============================================================================= */
 
 .project-sidebar {
-  /* On mobile, appears above main content due to order property */
-  order: -1;
+  /* Mobile: appears in natural flow after description */
+  margin-top: var(--space-8);
+  margin-bottom: var(--space-8);
 }
 
 @media (min-width: 992px) {
   .project-sidebar {
-    order: 0;
+    /* Desktop: positioned in right column, sticky */
+    grid-column: 2;
+    grid-row: 1 / -1;
     position: sticky;
     top: 100px;
     max-height: calc(100vh - 120px);
     overflow-y: auto;
     align-self: start;
+    margin-top: 0;
+    margin-bottom: 0;
   }
 }
 
@@ -296,7 +339,7 @@
 }
 
 .project-sidebar-link {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: var(--space-2);
   font-size: var(--font-size-sm);
@@ -308,7 +351,6 @@
 
 .project-sidebar-link:hover {
   color: var(--color-link-hover);
-  text-decoration: underline;
 }
 
 .project-sidebar-link:focus {
@@ -318,14 +360,13 @@
 
 .project-sidebar-link i {
   flex-shrink: 0;
-  font-size: 1em;
 }
 
 
 /* =============================================================================
-   SIDEBAR PERSON LIST
+   SIDEBAR - PEOPLE (Leads, PIs)
    =============================================================================
-   Used for project leads (PIs, student leads, etc.).
+   Styles match the class names used in display_project_lead_snippet.html
    ============================================================================= */
 
 .project-sidebar-list {
@@ -337,8 +378,8 @@
 .project-sidebar-person {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  margin-bottom: var(--space-2);
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
 }
 
 .project-sidebar-person:last-child {
@@ -347,7 +388,7 @@
 
 .project-sidebar-person-link {
   flex-shrink: 0;
-  border-radius: var(--border-radius-full);
+  border-radius: 50%;
   transition: transform var(--transition-fast);
 }
 
@@ -358,10 +399,9 @@
 .project-sidebar-person-link:focus {
   outline: var(--focus-ring-width) solid var(--focus-ring-color);
   outline-offset: var(--focus-ring-offset);
-  border-radius: var(--border-radius-full);
+  border-radius: 50%;
 }
 
-/* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .project-sidebar-person-link:hover {
     transform: none;
@@ -369,15 +409,23 @@
 }
 
 .project-sidebar-person-image {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--border-radius-full);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
   object-fit: cover;
 }
 
 .project-sidebar-person-name {
+  flex: 1;
+  min-width: 0;
   font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   line-height: var(--line-height-tight);
+  
+  /* Prevent long names from breaking layout */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .project-sidebar-person-name a {
@@ -388,7 +436,6 @@
 
 .project-sidebar-person-name a:hover {
   color: var(--color-link-hover);
-  text-decoration: underline;
 }
 
 .project-sidebar-person-name a:focus {
@@ -684,4 +731,3 @@
   margin-left: 0;
   margin-right: 0;
 }
-
