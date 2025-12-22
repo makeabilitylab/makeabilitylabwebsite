@@ -240,6 +240,10 @@
   }
 }
 
+/* Fix grid column width - prevent long titles from expanding columns */
+.landing-page-project-grid .project-card {
+  min-width: 0;
+}
 
 /* =============================================================================
    PUBLICATIONS GRID (Landing Page)
