@@ -78,6 +78,10 @@ class Position(models.Model):
         Title.UNKNOWN: 11
     }
 
+    # BETTER - Use class constant:
+    PROFESSOR_TITLES = {Title.FULL_PROF, Title.ASSOCIATE_PROF, Title.ASSISTANT_PROF}
+    GRAD_STUDENT_TITLES = {Title.MS_STUDENT, Title.PHD_STUDENT}
+
     def save(self, *args, **kwargs):
         # Save the Position instance first
         super(Position, self).save(*args, **kwargs)  
@@ -150,15 +154,12 @@ class Position(models.Model):
         return self.role == Role.MEMBER
 
     def is_professor(self):
-        """Returns true if professor"""
-        return (self.title == Title.FULL_PROF or 
-                self.title == Title.ASSOCIATE_PROF or 
-                self.title == Title.ASSISTANT_PROF)
+        """Returns True if this position is a professor."""
+        return self.title in self.PROFESSOR_TITLES
 
     def is_grad_student(self):
-        """Returns true if grad student"""
-        return (self.title == Title.MS_STUDENT or 
-                self.title == Title.PHD_STUDENT)
+        """Returns True if this position is a grad student."""
+        return self.title in self.GRAD_STUDENT_TITLES
 
     def is_high_school(self):
         """Returns true if high school student"""
@@ -207,6 +208,35 @@ class Position(models.Model):
         return "Name={}, Role={}, Title={}, Start={} End={}".format(
             self.person.get_full_name(), self.role, self.title, self.start_date, self.end_date)
     
+    # In position.py, add to the Position class:
+
+    @staticmethod
+    def get_indefinite_article_for_title(title):
+        """
+        Returns the appropriate indefinite article ('a' or 'an') for a given title.
+        
+        Args:
+            title: Title enum value or string
+            
+        Returns:
+            'a' or 'an' depending on whether the title starts with a vowel sound
+            
+        Example:
+            >>> Position.get_indefinite_article(Title.UGRAD)
+            'an'
+            >>> Position.get_indefinite_article(Title.PHD_STUDENT)
+            'a'
+        """
+        # Titles that require "an" (start with vowel sound)
+        titles_needing_an = {
+            Title.UGRAD,           # "Undergrad"
+            Title.MS_STUDENT,      # "MS Student" (M sounds like "em")
+            Title.ASSISTANT_PROF,  # "Assistant Professor"
+            Title.ASSOCIATE_PROF,  # "Associate Professor"
+        }
+        
+        return "an" if title in titles_needing_an else "a"
+
     @staticmethod
     def get_sorted_abstracted_titles():
         """Static method returns a sorted list of abstracted title names"""

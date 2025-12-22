@@ -69,7 +69,7 @@
 @media (min-width: 992px) {
   .project-layout {
     grid-template-columns: 1fr 320px;
-    gap: var(--space-8);
+    gap: var(--space-12);
   }
 }
 
@@ -261,7 +261,7 @@
 
 @media (min-width: 992px) {
   .project-sidebar-section {
-    margin-bottom: var(--space-6);
+    margin-bottom: var(--space-7);
   }
 }
 
@@ -271,13 +271,17 @@
    ============================================================================= */
 
 .project-sidebar-header {
-  margin: 0 0 var(--space-2) 0;
+  margin: var(--space-7) 0 var(--space-2) 0;
   font-family: var(--font-family-primary);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   text-transform: uppercase;
   letter-spacing: 0.03em;
+}
+
+.project-sidebar-header.first-section{
+  margin-top: var(--space-5);
 }
 
 
