@@ -83,6 +83,7 @@
   font-family: var(--font-family-secondary);
   font-size: var(--font-size-sm);
   line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-light);
 }
 
 .news-banner-item a {
