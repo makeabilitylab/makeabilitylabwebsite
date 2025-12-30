@@ -17,7 +17,7 @@
 
 :root {
   /* Dark navbar theme */
-  --navbar-dark-bg-color: rgba(0, 0, 0, 0.75);
+  --navbar-dark-bg-color: rgba(0, 0, 0, 0.87);
   --navbar-dark-bg-color-scrolled: black;
   --navbar-dark-text-color: white;
   --navbar-dark-text-color-hover: rgba(255, 255, 255, 0.5);

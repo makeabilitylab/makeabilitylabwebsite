@@ -179,6 +179,13 @@
   font-weight: var(--font-weight-semibold);
 }
 
+/* Title is already semibold—this may actually satisfy the rule since 
+   the link isn't inline within a paragraph but is a standalone heading */
+.pub-info > a:hover .pub-title,
+.pub-info > a:focus .pub-title {
+  text-decoration: underline;
+}
+
 .pub-authors a {
   color: var(--color-text-secondary);
   text-decoration: none;
