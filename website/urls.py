@@ -35,12 +35,6 @@ urlpatterns = [
     # Matches the URL "publications/" and routes it to the `publications` view.
     re_path(r'^publications/$', views.publications, name='publications'),
 
-    # Matches the URL "talks/" and routes it to the `talks` view.
-    re_path(r'^talks/$', views.talks, name='talks'),
-
-    # Matches the URL "videos/" and routes it to the `videos` view.
-    re_path(r'^videos/$', views.videos, name='videos'),
-
     # Matches the URL "projects/" and routes it to the `project_listing` view.
     re_path(r'^projects/$', views.project_listing, name='projects'),
 
@@ -72,9 +66,6 @@ urlpatterns = [
 
     # Matches URLs like "news/some-slug/" where "some-slug" is a slug, and routes it to the `news_item` view.
     path('news/<slug:slug>/', views.news_item, name='news_item_by_slug'),
-
-    # Matches the URL "faq/" and routes it to the `faq` view.
-    re_path(r'^faq/$', views.faq, name='faq'),
 
     # Matches URLs like "project-name/" where "project-name" consists of letters, hyphens, and spaces, 
     # and routes it to the `redirect_project` view.

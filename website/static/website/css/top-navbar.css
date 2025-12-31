@@ -17,7 +17,7 @@
 
 :root {
   /* Dark navbar theme */
-  --navbar-dark-bg-color: rgba(0, 0, 0, 0.75);
+  --navbar-dark-bg-color: rgba(0, 0, 0, 0.6);
   --navbar-dark-bg-color-scrolled: black;
   --navbar-dark-text-color: white;
   --navbar-dark-text-color-hover: rgba(255, 255, 255, 0.5);
@@ -78,7 +78,7 @@
 
 .navbar-container {
   width: 100%;
-  max-width: 1170px;
+  max-width: var(--container-max-width);
   margin: auto;
 }
 
@@ -101,6 +101,18 @@
   margin-bottom: 0;
   height: 40px;
   padding: 10px 0 0 0;
+
+  /* Added to try to address access issues with opacity and images behind navbar */
+  background-color: var(--navbar-bg-color);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); /* Safari support */
+}
+
+.navbar-custom .external-link-icon {
+  font-size: 0.65em;
+  opacity: 0.9;  /* More subtle */
+  position: relative;
+  top: -4px;  /* Adjust this value to taste */
 }
 
 .navbar-custom a {
@@ -133,6 +145,7 @@
   padding-right: 12px;
 }
 
+
 /* Smooth transition on hover */
 .navbar-custom .nav li a {
   -webkit-transition: background 0.3s ease-in-out;
@@ -152,6 +165,7 @@
 .navbar-custom .nav li.active a {
   font-weight: var(--navbar-font-weight-active);
 }
+
 
 /* ==========================================================================
    Navbar Icon Styles

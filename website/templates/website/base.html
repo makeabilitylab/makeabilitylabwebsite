@@ -17,6 +17,7 @@ ACCESSIBILITY FEATURES:
 - Alt text on all images
 - Visible focus indicators (via design-tokens.css)
 - Proper heading hierarchy
+- Carousel uses role="region" with aria-roledescription (WCAG compliant)
 
 TEMPLATE BLOCKS:
 - pagetitle: Page title in <title> tag
@@ -29,7 +30,7 @@ TEMPLATE BLOCKS:
 - content: Main page content
 - footer: Page footer
 
-@version 2.0.0 - Accessibility refactor
+@version 2.1.0 - Fixed carousel ARIA pattern for accessibility compliance
 @author Makeability Lab
 ================================================================================
 {% endcomment %}
@@ -212,16 +213,22 @@ TEMPLATE BLOCKS:
                 </li>
                 
                 <li>
-                  <a href="https://docs.google.com/document/d/1YiiDsfpiolpXjUTj8xWrQwQQUzqrfqT9bocOpaYDrtI" rel="noopener">
+                  <a href="https://docs.google.com/document/d/1YiiDsfpiolpXjUTj8xWrQwQQUzqrfqT9bocOpaYDrtI" 
+                    rel="noopener" 
+                    target="_blank">
                     <i class="fa-solid fa-book-open nav-icon" aria-hidden="true"></i>
                     <span>Lab Handbook</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square external-link-icon" aria-hidden="true"></i>
                   </a>
                 </li>
-                
+
                 <li>
-                  <a href="https://goo.gl/forms/59lAm3CUuupiMhUt1" rel="noopener">
+                  <a href="https://goo.gl/forms/59lAm3CUuupiMhUt1" 
+                    rel="noopener"
+                    target="_blank">
                     <i class="fa-solid fa-paper-plane nav-icon" aria-hidden="true"></i>
                     <span>Apply</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square external-link-icon" aria-hidden="true"></i>
                   </a>
                 </li>
                 
@@ -237,18 +244,29 @@ TEMPLATE BLOCKS:
   {% endblock %}
 
   <!-- ============================= Hero Carousel ============================= -->
+  {% comment %}
+  CAROUSEL ACCESSIBILITY NOTES:
+  - Uses role="region" with aria-roledescription="carousel" (WAI-ARIA best practice)
+  - Avoids role="listbox/option" pattern which implies form input semantics
+  - Each slide has aria-roledescription="slide" for screen reader context
+  - Background images use role="img" with descriptive aria-label
+  - Nested links are allowed within region (no nested-interactive violation)
+  {% endcomment %}
   {% block maincarousel %}
   <div id="main-carousel" 
        class="carousel slide carousel-fade" 
        data-ride="carousel" 
        data-interval="10000"
        data-pause="true"
+       role="region"
+       aria-roledescription="carousel"
        aria-label="Featured projects and news">
     
-    <div class="carousel-inner" role="listbox">
+    <div class="carousel-inner">
       {% for banner in banners %}
       <div class="item {% if forloop.first %}active{% endif %}"
-           role="option"
+           role="group"
+           aria-roledescription="slide"
            aria-label="{% if banner.alt_text %}{{ banner.alt_text }}{% elif banner.caption %}{{ banner.caption }}{% else %}{{ banner.title }}{% endif %}">
         
         {% if banner.video %}
@@ -259,7 +277,7 @@ TEMPLATE BLOCKS:
         <div class="fill" 
              style="background-image: url('{% cropped_thumbnail banner "cropping" scale=1.0 %}')"
              role="img"
-             aria-label="{% if banner.alt_text %}{{ banner.alt_text }}{% else %}{{ banner.caption }}{% endif %}">
+             aria-label="{% if banner.alt_text %}{{ banner.alt_text }}{% elif banner.caption %}{{ banner.caption }}{% else %}{{ banner.title }} banner image{% endif %}">
         </div>
         {% endif %}
 

@@ -180,7 +180,7 @@
 
 .news-item-content a {
   color: var(--color-link);
-  text-decoration: none;
+  text-decoration: underline;
   transition: color var(--transition-fast);
 }
 
@@ -249,7 +249,7 @@
 @media (max-width: 991px) {
   .news-item-sidebar {
     margin-top: var(--space-8);
-    padding-left: 0;
+    padding-left: 15px; /* Bootstrap uses 15px side padding */
     max-width: none;
   }
 }

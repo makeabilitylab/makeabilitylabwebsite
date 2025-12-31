@@ -80,11 +80,11 @@ CONTEXT VARIABLES:
             <a href="{% url 'website:news_item_by_slug' slug=news_item.slug %}"
                aria-label="Read: {{ news_item.title }}">
               {% if news_item.image %}
-              <img src="{% thumbnail news_item.image news_item.get_thumbnail_size_as_str box=news_item.cropping crop=True detail=True upscale=True %}" 
-                   alt="{{ news_item.alt_text }}">
+                <img src="{% thumbnail news_item.image news_item.get_thumbnail_size_as_str box=news_item.cropping crop=True detail=True upscale=True %}" 
+                  alt="{% if news_item.alt_text %}{{ news_item.alt_text }}{% else %}{{ news_item.title }}{% endif %}">
               {% else %}
               <img src="{% static news_item.default_news_image_filename %}" 
-                   alt="News icon">
+                   alt="Default Makeability Lab news icon used as a placeholder if no image is provided for the news item.">
               {% endif %}
             </a>
           </div>

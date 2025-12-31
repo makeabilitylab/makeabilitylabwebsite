@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <p class="line-clamp news-banner-item">
       <a href="{% url 'website:news_item_by_slug' slug=news_item.slug %}">
         <span class="news-banner-item-date">{{ news_item.date }}.</span>
-        {{ news_item.title }}
+        <span class="news-banner-item-text">{{ news_item.title }}</span>
       </a>
     </p>
     {% endfor %}
@@ -131,21 +131,31 @@ document.addEventListener('DOMContentLoaded', function() {
               aria-label="Animated Makeability Lab logo"></canvas>
     </div>
     <div class="col-md-6">
-      <p>
+      <p class="about-us-first-para">
         The Makeability Lab is an <strong>advanced research lab in Human-AI</strong> directed by
         <a href="{% url 'website:member_by_name' member_name='jonfroehlich' %}">Professor Jon E. Froehlich</a> in the 
         <a href="https://www.cs.washington.edu/">Allen School of Computer Science</a> at the University 
-        of Washington. We specialize in Human-Computer Interaction and applied machine learning for high-impact
-        problems in accessibility, computational urban science, and augmented reality. To learn more, see our 
-        <a href="#recent-projects-heading">recent projects</a> below and read 
+        of Washington. 
+      </p>
+      <p>
+        We specialize in <strong>Human-Computer Interaction</strong> and <strong>applied machine learning</strong> for high-impact
+        problems in:
+        <ul class="about-us-list">
+          <li class="about-us-list-item">🌆 <strong>Urban Computing / GeoAI</strong>: Building and studying accessible, intelligent cities</li> 
+          <li class="about-us-list-item">🥽 <strong>Augmented Reality</strong>: Enhancing human capabilities</li>
+          <li class="about-us-list-item">🎨 <strong>Creativity Support Tools</strong>: Creating AI-powered imagination systems</li>
+          <li class="about-us-list-item">🦽 <strong>Accessibility</strong>: Improving access via Human-AI techniques</li>
+        </ul> 
+      </p>
+      <p>
+      To learn more, see our 
+        <a href="#recent-projects-heading">recent projects</a> and 
         <a href="https://docs.google.com/document/d/1YiiDsfpiolpXjUTj8xWrQwQQUzqrfqT9bocOpaYDrtI/edit">our lab handbook.</a>
       </p>
       <p>
-        Interested in working with us? If you are a current UW undergrad, UW MS student, or local Seattle high school student,
-        please <a href="https://goo.gl/forms/59lAm3CUuupiMhUt1">apply here</a>. 
+        <strong>Interested in working with us?</strong> If you are a current UW undergrad, UW MS student, or local Seattle high school student, please <a href="https://goo.gl/forms/59lAm3CUuupiMhUt1">apply here</a>.</li>
         If you are a prospective PhD student, apply to the <a href="https://www.cs.washington.edu/academics/phd">UW CSE PhD program</a> 
-        and mention Professor Froehlich. Before applying, please
-        read our <a href="https://docs.google.com/document/d/1YiiDsfpiolpXjUTj8xWrQwQQUzqrfqT9bocOpaYDrtI/edit">lab handbook</a>.
+        and mention Professor Froehlich. Before applying, please read the "Prospective PhD Student" section of our <a href="https://docs.google.com/document/d/1YiiDsfpiolpXjUTj8xWrQwQQUzqrfqT9bocOpaYDrtI/edit?tab=t.0#heading=h.3coycnd2v0xc">lab handbook</a>.</li>
       </p>
     </div>
   </div>

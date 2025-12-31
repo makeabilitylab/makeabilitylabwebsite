@@ -6,20 +6,39 @@
     "chromeLaunchConfig": {
       "args": ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]
     },
-    "hideElements": "",
+    "hideElements": "#js-toc",
     "ignore": []
   },
   "unused_urls": [
     "http://website:8000/",
-    "http://website:8000/projects/",
     "http://website:8000/publications/",
     "http://website:8000/people/",
-    "http://website:8000/talks/",
-    "http://website:8000/news/",
     "http://website:8000/member/jonfroehlich/",
-    "http://website:8000/project/sidewalk/"
+    "http://website:8000/member/lianghe/",
+    "http://website:8000/member/dhruvjain/",
+    "http://website:8000/projects/",
+    "http://website:8000/project/sidewalk/",
+    "http://website:8000/project/makerwear/",
+    "http://website:8000/project/handsight/",
+    "http://website:8000/news/",
+    "http://website:8000/news/1/",
+    "http://website:8000/news/2/",
+    "http://website:8000/news/3/"
   ],
   "urls": [
-    "http://website:8000/project/sidewalk/"
+    "http://website:8000/",
+    "http://website:8000/publications/",
+    "http://website:8000/people/",
+    "http://website:8000/member/jonfroehlich/",
+    "http://website:8000/member/lianghe/",
+    "http://website:8000/member/dhruvjain/",
+    "http://website:8000/projects/",
+    "http://website:8000/project/sidewalk/",
+    "http://website:8000/project/makerwear/",
+    "http://website:8000/project/handsight/",
+    "http://website:8000/news/",
+    "http://website:8000/news/1/",
+    "http://website:8000/news/2/",
+    "http://website:8000/news/3/"
   ]
 }

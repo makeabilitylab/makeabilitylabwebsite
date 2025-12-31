@@ -194,6 +194,16 @@
   /* Inherits from .news-card-byline */
 }
 
+.news-card-author a {
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+}
+
+.news-card-author a:hover,
+.news-card-author a:focus {
+  text-decoration: underline;
+}
+
 
 /* =============================================================================
    PAGINATION
