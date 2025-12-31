@@ -175,6 +175,10 @@
   .about-us-grid > .col-md-6 {
     width: 100%;  /* Force full width when stacked */
   }
+
+  .about-us-first-para {
+    margin-top: var(--space-4)
+  }
 }
 
 .about-us-grid p {
