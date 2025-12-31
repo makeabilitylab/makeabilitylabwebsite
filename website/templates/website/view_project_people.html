@@ -1,37 +1,881 @@
-{% comment %} {% extends "website/base.html" %} {% endcomment %}
+{% comment %}
+================================================================================
+VIEW PROJECT PEOPLE - Internal Lab Tool
+================================================================================
+Displays people associated with selected projects with customizable display
+options. Features a collapsible sidebar for project selection, sorting,
+grouping, and display customization.
+
+State is persisted via URL parameters for easy sharing and bookmarking.
+================================================================================
+{% endcomment %}
+
 {% load static %}
 {% load thumbnail %}
 {% load cropping %}
 {% load ml_tags %}
 
-<link rel="stylesheet" href="{% static 'website/css/people.css' %}">
-<link rel="stylesheet" href="{% static 'website/css/view_project_people.css' %}">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project People Viewer</title>
+  <link rel="stylesheet" href="{% static 'website/css/design-tokens.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/base.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/people.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/view_project_people.css' %}">
+</head>
+<body>
+  <!-- Main Layout Container -->
+  <div class="page-layout">
+    
+    <!-- Collapsible Sidebar -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-content">
+        
+        <!-- Sidebar Header with Collapse Button -->
+        <div class="sidebar-header">
+          <h2>Options</h2>
+          <button id="collapse-btn" class="collapse-btn" title="Collapse sidebar">
+            &#x2715;
+          </button>
+        </div>
 
+        <!-- Projects Section -->
+        <section class="sidebar-section">
+          <h3>Projects</h3>
+          <div class="project-search-container">
+            <input 
+              type="text" 
+              id="project-search" 
+              class="project-search" 
+              placeholder="Search projects..."
+            >
+          </div>
+          <div class="project-list-actions">
+            <button id="select-all-projects" class="btn-link">Select All</button>
+            <button id="deselect-all-projects" class="btn-link">Deselect All</button>
+          </div>
+          <div id="project-list" class="project-list">
+            <!-- Project checkboxes populated by JavaScript -->
+          </div>
+        </section>
 
-{{project}}
+        <!-- Display Options Section -->
+        <section class="sidebar-section">
+          <h3>Display Options</h3>
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="show-title" checked>
+              <span>Show title</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="show-dates">
+              <span>Show date range in lab</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="show-school" checked>
+              <span>Show school/department</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="full-school">
+              <span>Full school name (vs abbreviated)</span>
+            </label>
+          </div>
+        </section>
 
-<div class="people-grid">
-  {% for person in people_only %}
-    <div class="person">
-      <a href="{% url 'website:member_by_name' member_name=person.url_name %}">
-        <img src="{% thumbnail person.image person.get_thumbnail_size_as_str box=person.cropping crop=True upscale=True detail=True%}" 
-            alt="{{ person.get_full_name }}" 
-            data-alt-src="{% thumbnail person.easter_egg person.get_thumbnail_size_as_str box=person.easter_egg_crop crop=True upscale=True detail=True %}" 
-            width=90%"/>
-      </a>
-      <div class="person-name">
-        <a href="{% url 'website:member_by_name' member_name=person.url_name %}">
-          {{ person.get_full_name }}
-        </a>
+        <!-- Publication Indicator Section -->
+        <section class="sidebar-section">
+          <h3>Publication Indicator</h3>
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="show-published-indicator">
+              <span>Highlight published on project</span>
+            </label>
+          </div>
+          <div class="indicator-legend" id="indicator-legend">
+            <div class="legend-item">
+              <span class="legend-swatch legend-published"></span>
+              <span class="legend-label">Published on selected project(s)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch legend-not-published"></span>
+              <span class="legend-label">No publications on selected project(s)</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sort Options Section -->
+        <section class="sidebar-section">
+          <h3>Sort By</h3>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="sort" value="time_on_project" checked>
+              <span>Time on project(s)</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="sort" value="start_date">
+              <span>Start date in lab</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="sort" value="seniority">
+              <span>Seniority (title)</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="sort" value="alphabetical">
+              <span>Alphabetical</span>
+            </label>
+          </div>
+        </section>
+
+        <!-- Group Options Section -->
+        <section class="sidebar-section">
+          <h3>Group By</h3>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="group" value="none" checked>
+              <span>No grouping</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="group" value="position">
+              <span>Position (abstracted)</span>
+            </label>
+          </div>
+        </section>
+
       </div>
-      {% with position=person.get_latest_position %}
-        {% if person.last_name == "Froehlich" %}
-          <div class="person-title">Lab Director</div>
-        {% else %}
-          <div class="person-title">{{ position.title }}</div>
-        {% endif %}
-        <div class="person-affiliation">{{ position.get_school_abbreviated }} {{ position.get_department_abbreviated }} </div>
-      {% endwith %}
-    </div>
-  {% endfor %}
-</div>
+    </aside>
+
+    <!-- Expand Button (visible when sidebar is collapsed) -->
+    <button id="expand-btn" class="expand-btn" title="Expand sidebar">
+      &#9776; Options
+    </button>
+
+    <!-- Main Content Area -->
+    <main id="main-content" class="main-content">
+      
+      <!-- Header with selected projects info -->
+      <header class="content-header">
+        <h1 id="page-title">Project People Viewer</h1>
+        <p id="selected-projects-info" class="selected-projects-info">
+          Select projects from the sidebar to view associated people.
+        </p>
+        <p id="people-count" class="people-count"></p>
+      </header>
+
+      <!-- People Grid Container -->
+      <div id="people-container" class="people-container">
+        <!-- People grid populated by JavaScript -->
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Data from Django (passed as JSON) -->
+  <script>
+    const PROJECTS_DATA = {{ projects_json|safe }};
+    const PEOPLE_DATA = {{ people_json|safe }};
+    const ABSTRACTED_TITLES = {{ abstracted_titles_json|safe }};
+  </script>
+
+  <!-- Main JavaScript -->
+  <script>
+    /**
+     * =========================================================================
+     * VIEW PROJECT PEOPLE - Client-Side Logic
+     * =========================================================================
+     * Handles all filtering, sorting, grouping, and display logic client-side
+     * for instant updates without page reloads.
+     * =========================================================================
+     */
+
+    (function() {
+      'use strict';
+
+      // -----------------------------------------------------------------------
+      // DOM Element References
+      // -----------------------------------------------------------------------
+      const sidebar = document.getElementById('sidebar');
+      const collapseBtn = document.getElementById('collapse-btn');
+      const expandBtn = document.getElementById('expand-btn');
+      const mainContent = document.getElementById('main-content');
+      const projectSearch = document.getElementById('project-search');
+      const projectList = document.getElementById('project-list');
+      const selectAllBtn = document.getElementById('select-all-projects');
+      const deselectAllBtn = document.getElementById('deselect-all-projects');
+      const peopleContainer = document.getElementById('people-container');
+      const selectedProjectsInfo = document.getElementById('selected-projects-info');
+      const peopleCountEl = document.getElementById('people-count');
+      const indicatorLegend = document.getElementById('indicator-legend');
+
+      // Display option checkboxes
+      const showTitleCheckbox = document.getElementById('show-title');
+      const showDatesCheckbox = document.getElementById('show-dates');
+      const showSchoolCheckbox = document.getElementById('show-school');
+      const fullSchoolCheckbox = document.getElementById('full-school');
+      const showPublishedIndicatorCheckbox = document.getElementById('show-published-indicator');
+
+      // -----------------------------------------------------------------------
+      // State Management
+      // -----------------------------------------------------------------------
+      let state = {
+        selectedProjects: new Set(),
+        sort: 'time_on_project',
+        group: 'none',
+        showTitle: true,
+        showDates: false,
+        showSchool: true,
+        fullSchool: false,
+        showPublishedIndicator: false,
+        sidebarCollapsed: false
+      };
+
+      // -----------------------------------------------------------------------
+      // URL Parameter Management
+      // -----------------------------------------------------------------------
+      
+      /**
+       * Reads state from URL parameters and updates the state object.
+       */
+      function loadStateFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        
+        // Load selected projects
+        const projectsParam = params.get('projects');
+        if (projectsParam) {
+          const projectNames = projectsParam.split(',').map(p => p.trim()).filter(p => p);
+          state.selectedProjects = new Set(projectNames);
+        }
+        
+        // Load sort option
+        const sortParam = params.get('sort');
+        if (sortParam && ['time_on_project', 'start_date', 'seniority', 'alphabetical'].includes(sortParam)) {
+          state.sort = sortParam;
+        }
+        
+        // Load group option
+        const groupParam = params.get('group');
+        if (groupParam && ['none', 'position'].includes(groupParam)) {
+          state.group = groupParam;
+        }
+        
+        // Load display options
+        if (params.has('show_title')) {
+          state.showTitle = params.get('show_title') === '1';
+        }
+        if (params.has('show_dates')) {
+          state.showDates = params.get('show_dates') === '1';
+        }
+        if (params.has('show_school')) {
+          state.showSchool = params.get('show_school') === '1';
+        }
+        if (params.has('full_school')) {
+          state.fullSchool = params.get('full_school') === '1';
+        }
+        if (params.has('show_pub')) {
+          state.showPublishedIndicator = params.get('show_pub') === '1';
+        }
+        if (params.has('sidebar')) {
+          state.sidebarCollapsed = params.get('sidebar') === '0';
+        }
+      }
+
+      /**
+       * Updates URL parameters to reflect current state.
+       */
+      function saveStateToURL() {
+        const params = new URLSearchParams();
+        
+        // Save selected projects
+        if (state.selectedProjects.size > 0) {
+          params.set('projects', Array.from(state.selectedProjects).join(','));
+        }
+        
+        // Save sort option (only if not default)
+        if (state.sort !== 'time_on_project') {
+          params.set('sort', state.sort);
+        }
+        
+        // Save group option (only if not default)
+        if (state.group !== 'none') {
+          params.set('group', state.group);
+        }
+        
+        // Save display options (only if not default)
+        if (!state.showTitle) {
+          params.set('show_title', '0');
+        }
+        if (state.showDates) {
+          params.set('show_dates', '1');
+        }
+        if (!state.showSchool) {
+          params.set('show_school', '0');
+        }
+        if (state.fullSchool) {
+          params.set('full_school', '1');
+        }
+        if (state.showPublishedIndicator) {
+          params.set('show_pub', '1');
+        }
+        if (state.sidebarCollapsed) {
+          params.set('sidebar', '0');
+        }
+        
+        // Update URL without page reload
+        const newURL = params.toString() 
+          ? `${window.location.pathname}?${params.toString()}`
+          : window.location.pathname;
+        window.history.replaceState({}, '', newURL);
+      }
+
+      // -----------------------------------------------------------------------
+      // Sidebar Management
+      // -----------------------------------------------------------------------
+      
+      /**
+       * Toggles sidebar collapsed state.
+       * @param {boolean} collapsed - Whether sidebar should be collapsed
+       */
+      function setSidebarCollapsed(collapsed) {
+        state.sidebarCollapsed = collapsed;
+        sidebar.classList.toggle('collapsed', collapsed);
+        mainContent.classList.toggle('sidebar-collapsed', collapsed);
+        expandBtn.classList.toggle('visible', collapsed);
+        saveStateToURL();
+      }
+
+      /**
+       * Updates the legend visibility based on checkbox state.
+       */
+      function updateLegendVisibility() {
+        indicatorLegend.classList.toggle('visible', state.showPublishedIndicator);
+      }
+
+      // -----------------------------------------------------------------------
+      // Project List Management
+      // -----------------------------------------------------------------------
+      
+      /**
+       * Renders the project checkbox list in the sidebar.
+       * @param {string} [filterText=''] - Optional text to filter projects
+       */
+      function renderProjectList(filterText = '') {
+        const filter = filterText.toLowerCase().trim();
+        
+        // Sort projects: active first, then alphabetically
+        const sortedProjects = [...PROJECTS_DATA].sort((a, b) => {
+          if (a.is_active !== b.is_active) {
+            return a.is_active ? -1 : 1;
+          }
+          return a.name.localeCompare(b.name);
+        });
+        
+        // Build HTML
+        let html = '';
+        for (const project of sortedProjects) {
+          // Apply search filter
+          if (filter && !project.name.toLowerCase().includes(filter) && 
+              !project.short_name.toLowerCase().includes(filter)) {
+            continue;
+          }
+          
+          const isChecked = state.selectedProjects.has(project.short_name);
+          const statusClass = project.is_active ? 'project-active' : 'project-ended';
+          
+          html += `
+            <label class="project-item ${statusClass}">
+              <input 
+                type="checkbox" 
+                value="${project.short_name}" 
+                ${isChecked ? 'checked' : ''}
+                data-project-id="${project.id}"
+              >
+              <span class="project-name">${escapeHtml(project.name)}</span>
+              <span class="project-people-count">(${project.people_count})</span>
+            </label>
+          `;
+        }
+        
+        projectList.innerHTML = html || '<p class="no-projects">No matching projects</p>';
+        
+        // Add change listeners
+        projectList.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+          checkbox.addEventListener('change', handleProjectCheckboxChange);
+        });
+      }
+
+      /**
+       * Handles project checkbox change events.
+       * @param {Event} event - Change event
+       */
+      function handleProjectCheckboxChange(event) {
+        const shortName = event.target.value;
+        if (event.target.checked) {
+          state.selectedProjects.add(shortName);
+        } else {
+          state.selectedProjects.delete(shortName);
+        }
+        saveStateToURL();
+        renderPeople();
+      }
+
+      // -----------------------------------------------------------------------
+      // People Rendering
+      // -----------------------------------------------------------------------
+      
+      /**
+       * Filters people based on selected projects.
+       * @returns {Array} Filtered array of people objects
+       */
+      function getFilteredPeople() {
+        if (state.selectedProjects.size === 0) {
+          return [];
+        }
+        
+        return PEOPLE_DATA.filter(person => {
+          // Check if person has worked on any selected project
+          for (const projShortName of state.selectedProjects) {
+            if (person.project_roles[projShortName]) {
+              return true;
+            }
+          }
+          return false;
+        });
+      }
+
+      /**
+       * Calculates total time on selected projects for a person.
+       * @param {Object} person - Person object
+       * @returns {number} Total days on selected projects
+       */
+      function getTotalTimeOnSelectedProjects(person) {
+        let totalDays = 0;
+        for (const projShortName of state.selectedProjects) {
+          if (person.project_roles[projShortName]) {
+            totalDays += person.project_roles[projShortName].total_days;
+          }
+        }
+        return totalDays;
+      }
+
+      /**
+       * Checks if a person has published on any of the selected projects.
+       * @param {Object} person - Person object
+       * @returns {boolean} True if person has published on any selected project
+       */
+      function hasPublishedOnSelectedProjects(person) {
+        if (!person.projects_published_on) return false;
+        
+        for (const projShortName of state.selectedProjects) {
+          if (person.projects_published_on.includes(projShortName)) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      /**
+       * Sorts people array based on current sort option.
+       * @param {Array} people - Array of people to sort
+       * @returns {Array} Sorted array
+       */
+      function sortPeople(people) {
+        const sorted = [...people];
+        
+        switch (state.sort) {
+          case 'time_on_project':
+            sorted.sort((a, b) => {
+              const timeA = getTotalTimeOnSelectedProjects(a);
+              const timeB = getTotalTimeOnSelectedProjects(b);
+              return timeB - timeA; // Descending
+            });
+            break;
+            
+          case 'start_date':
+            sorted.sort((a, b) => {
+              const dateA = a.lab_start_date ? new Date(a.lab_start_date) : new Date();
+              const dateB = b.lab_start_date ? new Date(b.lab_start_date) : new Date();
+              return dateA - dateB; // Ascending (earliest first)
+            });
+            break;
+            
+          case 'seniority':
+            sorted.sort((a, b) => {
+              return a.seniority_index - b.seniority_index; // Lower = more senior
+            });
+            break;
+            
+          case 'alphabetical':
+            sorted.sort((a, b) => {
+              const nameA = `${a.last_name} ${a.first_name}`.toLowerCase();
+              const nameB = `${b.last_name} ${b.first_name}`.toLowerCase();
+              return nameA.localeCompare(nameB);
+            });
+            break;
+        }
+        
+        return sorted;
+      }
+
+      /**
+       * Groups people by abstracted title.
+       * @param {Array} people - Array of people
+       * @returns {Object} Object with group names as keys and arrays of people as values
+       */
+      function groupPeopleByPosition(people) {
+        const groups = {};
+        
+        // Initialize groups in correct order
+        for (const title of ABSTRACTED_TITLES) {
+          groups[title] = [];
+        }
+        
+        // Assign people to groups
+        for (const person of people) {
+          const group = person.abstracted_title || 'Unknown';
+          if (!groups[group]) {
+            groups[group] = [];
+          }
+          groups[group].push(person);
+        }
+        
+        // Remove empty groups
+        for (const key of Object.keys(groups)) {
+          if (groups[key].length === 0) {
+            delete groups[key];
+          }
+        }
+        
+        return groups;
+      }
+
+      /**
+       * Renders a single person card.
+       * @param {Object} person - Person object
+       * @returns {string} HTML string for person card
+       */
+      function renderPersonCard(person) {
+        // Determine display title
+        let displayTitle = person.title;
+        if (person.is_director) {
+          displayTitle = 'Lab Director';
+        }
+        
+        // Determine school/department display
+        let schoolDisplay = '';
+        if (state.showSchool) {
+          if (state.fullSchool) {
+            schoolDisplay = `${person.school} ${person.department}`;
+          } else {
+            schoolDisplay = `${person.school_abbreviated} ${person.department_abbreviated}`;
+          }
+        }
+        
+        // Build date range display
+        let dateRangeDisplay = '';
+        if (state.showDates && person.lab_start_date) {
+          const startYear = new Date(person.lab_start_date).getFullYear();
+          const endYear = person.lab_end_date 
+            ? new Date(person.lab_end_date).getFullYear() 
+            : 'Present';
+          dateRangeDisplay = startYear === endYear 
+            ? `${startYear}` 
+            : `${startYear}–${endYear}`;
+        }
+        
+        // Use the pre-computed image URL from Django
+        const imageUrl = person.image_url || '/static/website/images/placeholder-person.png';
+        
+        // Determine publication indicator class
+        let publishedClass = '';
+        if (state.showPublishedIndicator) {
+          const hasPublished = hasPublishedOnSelectedProjects(person);
+          publishedClass = hasPublished ? 'has-published' : 'no-publications';
+        }
+
+        // Build the card HTML
+        return `
+          <div class="person ${publishedClass}" data-person-id="${person.id}">
+            <a href="/people/${person.url_name}/" class="person-image-link">
+              <img 
+                src="${imageUrl}" 
+                alt="${escapeHtml(person.full_name)}"
+                class="person-image"
+              >
+            </a>
+            <div class="person-name">
+              <a href="/people/${person.url_name}/">
+                ${escapeHtml(person.full_name)}
+              </a>
+            </div>
+            ${state.showTitle ? `<div class="person-title">${escapeHtml(displayTitle)}</div>` : ''}
+            ${state.showSchool && schoolDisplay ? `<div class="person-affiliation">${escapeHtml(schoolDisplay)}</div>` : ''}
+            ${state.showDates && dateRangeDisplay ? `<div class="person-dates">${escapeHtml(dateRangeDisplay)}</div>` : ''}
+          </div>
+        `;
+      }
+
+      /**
+       * Main render function for the people grid.
+       */
+      function renderPeople() {
+        // Update selected projects info
+        updateSelectedProjectsInfo();
+        
+        // Update legend visibility
+        updateLegendVisibility();
+        
+        // Get filtered and sorted people
+        let people = getFilteredPeople();
+        
+        if (people.length === 0) {
+          peopleContainer.innerHTML = state.selectedProjects.size === 0
+            ? '<p class="no-people-message">Select one or more projects from the sidebar to view associated people.</p>'
+            : '<p class="no-people-message">No people found for the selected projects.</p>';
+          peopleCountEl.textContent = '';
+          return;
+        }
+        
+        // Sort people
+        people = sortPeople(people);
+        
+        // Count published vs not published if indicator is on
+        let publishedCount = 0;
+        if (state.showPublishedIndicator) {
+          publishedCount = people.filter(p => hasPublishedOnSelectedProjects(p)).length;
+        }
+        
+        // Update people count
+        let countText = `${people.length} ${people.length === 1 ? 'person' : 'people'}`;
+        if (state.showPublishedIndicator) {
+          countText += ` (${publishedCount} with publications on selected projects)`;
+        }
+        peopleCountEl.textContent = countText;
+        
+        // Render based on grouping
+        let html = '';
+        
+        if (state.group === 'none') {
+          // No grouping - render flat grid
+          html = '<div class="people-grid">';
+          for (const person of people) {
+            html += renderPersonCard(person);
+          }
+          html += '</div>';
+        } else if (state.group === 'position') {
+          // Group by position
+          const groups = groupPeopleByPosition(people);
+          
+          for (const [groupName, groupPeople] of Object.entries(groups)) {
+            if (groupPeople.length === 0) continue;
+            
+            // Sort within group
+            const sortedGroupPeople = sortPeople(groupPeople);
+            
+            html += `
+              <div class="people-group">
+                <h2 class="people-group-title">${escapeHtml(groupName)}</h2>
+                <div class="people-grid">
+                  ${sortedGroupPeople.map(p => renderPersonCard(p)).join('')}
+                </div>
+              </div>
+            `;
+          }
+        }
+        
+        peopleContainer.innerHTML = html;
+      }
+
+      /**
+       * Updates the selected projects info text.
+       */
+      function updateSelectedProjectsInfo() {
+        if (state.selectedProjects.size === 0) {
+          selectedProjectsInfo.textContent = 'Select projects from the sidebar to view associated people.';
+          return;
+        }
+        
+        // Get project names
+        const projectNames = [];
+        for (const shortName of state.selectedProjects) {
+          const project = PROJECTS_DATA.find(p => p.short_name === shortName);
+          if (project) {
+            projectNames.push(project.name);
+          }
+        }
+        
+        if (projectNames.length <= 3) {
+          selectedProjectsInfo.textContent = `Showing people from: ${projectNames.join(', ')}`;
+        } else {
+          selectedProjectsInfo.textContent = `Showing people from ${projectNames.length} projects`;
+        }
+      }
+
+      // -----------------------------------------------------------------------
+      // Utility Functions
+      // -----------------------------------------------------------------------
+      
+      /**
+       * Escapes HTML special characters.
+       * @param {string} text - Text to escape
+       * @returns {string} Escaped text
+       */
+      function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      // -----------------------------------------------------------------------
+      // Event Listeners
+      // -----------------------------------------------------------------------
+      
+      /**
+       * Initializes all event listeners.
+       */
+      function initEventListeners() {
+        // Sidebar collapse/expand
+        collapseBtn.addEventListener('click', () => setSidebarCollapsed(true));
+        expandBtn.addEventListener('click', () => setSidebarCollapsed(false));
+        
+        // Project search
+        projectSearch.addEventListener('input', (e) => {
+          renderProjectList(e.target.value);
+        });
+        
+        // Select/deselect all projects
+        selectAllBtn.addEventListener('click', () => {
+          const visibleCheckboxes = projectList.querySelectorAll('input[type="checkbox"]');
+          visibleCheckboxes.forEach(cb => {
+            cb.checked = true;
+            state.selectedProjects.add(cb.value);
+          });
+          saveStateToURL();
+          renderPeople();
+        });
+        
+        deselectAllBtn.addEventListener('click', () => {
+          state.selectedProjects.clear();
+          projectList.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            cb.checked = false;
+          });
+          saveStateToURL();
+          renderPeople();
+        });
+        
+        // Display options
+        showTitleCheckbox.addEventListener('change', (e) => {
+          state.showTitle = e.target.checked;
+          saveStateToURL();
+          renderPeople();
+        });
+        
+        showDatesCheckbox.addEventListener('change', (e) => {
+          state.showDates = e.target.checked;
+          saveStateToURL();
+          renderPeople();
+        });
+        
+        showSchoolCheckbox.addEventListener('change', (e) => {
+          state.showSchool = e.target.checked;
+          saveStateToURL();
+          renderPeople();
+        });
+        
+        fullSchoolCheckbox.addEventListener('change', (e) => {
+          state.fullSchool = e.target.checked;
+          saveStateToURL();
+          renderPeople();
+        });
+        
+        // Publication indicator checkbox
+        showPublishedIndicatorCheckbox.addEventListener('change', (e) => {
+          state.showPublishedIndicator = e.target.checked;
+          saveStateToURL();
+          renderPeople();
+        });
+        
+        // Sort options
+        document.querySelectorAll('input[name="sort"]').forEach(radio => {
+          radio.addEventListener('change', (e) => {
+            state.sort = e.target.value;
+            saveStateToURL();
+            renderPeople();
+          });
+        });
+        
+        // Group options
+        document.querySelectorAll('input[name="group"]').forEach(radio => {
+          radio.addEventListener('change', (e) => {
+            state.group = e.target.value;
+            saveStateToURL();
+            renderPeople();
+          });
+        });
+      }
+
+      /**
+       * Syncs UI controls with current state.
+       */
+      function syncUIWithState() {
+        // Sync display options
+        showTitleCheckbox.checked = state.showTitle;
+        showDatesCheckbox.checked = state.showDates;
+        showSchoolCheckbox.checked = state.showSchool;
+        fullSchoolCheckbox.checked = state.fullSchool;
+        showPublishedIndicatorCheckbox.checked = state.showPublishedIndicator;
+        
+        // Sync sort option
+        const sortRadio = document.querySelector(`input[name="sort"][value="${state.sort}"]`);
+        if (sortRadio) sortRadio.checked = true;
+        
+        // Sync group option
+        const groupRadio = document.querySelector(`input[name="group"][value="${state.group}"]`);
+        if (groupRadio) groupRadio.checked = true;
+        
+        // Sync sidebar state
+        if (state.sidebarCollapsed) {
+          setSidebarCollapsed(true);
+        }
+        
+        // Sync legend visibility
+        updateLegendVisibility();
+      }
+
+      // -----------------------------------------------------------------------
+      // Initialization
+      // -----------------------------------------------------------------------
+      
+      /**
+       * Main initialization function.
+       */
+      function init() {
+        // Load state from URL
+        loadStateFromURL();
+        
+        // Sync UI with state
+        syncUIWithState();
+        
+        // Initialize event listeners
+        initEventListeners();
+        
+        // Render project list
+        renderProjectList();
+        
+        // Render people
+        renderPeople();
+      }
+
+      // Start the application when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+
+    })();
+  </script>
+</body>
+</html>
