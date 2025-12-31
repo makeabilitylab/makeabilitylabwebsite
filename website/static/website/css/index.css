@@ -167,6 +167,16 @@
   align-items: flex-start;
 }
 
+@media (max-width: 991px) {
+  .about-us-grid {
+    justify-content: center;  /* Center instead of space-between */
+  }
+  
+  .about-us-grid > .col-md-6 {
+    width: 100%;  /* Force full width when stacked */
+  }
+}
+
 .about-us-grid p {
   font-size: var(--font-size-lg);
   line-height: var(--line-height-relaxed);

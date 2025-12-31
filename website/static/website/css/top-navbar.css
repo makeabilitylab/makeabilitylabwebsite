@@ -78,7 +78,7 @@
 
 .navbar-container {
   width: 100%;
-  max-width: 1170px;
+  max-width: var(--container-max-width);
   margin: auto;
 }
 
