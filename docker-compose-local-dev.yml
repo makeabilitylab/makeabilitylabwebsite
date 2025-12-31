@@ -9,13 +9,13 @@
 #   3. a11y    - An accessibility testing container using Pa11y + Axe
 #
 # Usage:
-#   docker-compose -f docker-compose-local-dev.yml up
+#   docker compose -f docker-compose-local-dev.yml up
 #
-# Access checks:
-#  docker-compose -f docker-compose-local-dev.yml --profile testing run --rm a11y
+# To run accessibility checks, you can edit .pa11yci.json and then run:
+#  docker compose -f docker-compose-local-dev.yml --profile testing run --rm a11y
 #
 # Access check with report generation:
-# docker-compose -f docker-compose-local-dev.yml --profile testing run --rm a11y sh -c "
+# docker compose -f docker-compose-local-dev.yml --profile testing run --rm a11y sh -c "
 #  npm install -g pa11y-ci &&
 #  pa11y-ci --config /workspace/.pa11yci.json --json | tee /workspace/a11y-report.json
 # "
@@ -23,7 +23,7 @@
 # After running, the website is available at: http://localhost:8571
 #
 # To stop:
-#   docker-compose down
+#   docker compose down
 #
 # =============================================================================
 

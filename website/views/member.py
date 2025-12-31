@@ -1,5 +1,5 @@
 from django.conf import settings # for access to settings variables, see https://docs.djangoproject.com/en/4.0/topics/settings/#using-settings-in-python-code
-from website.models import Banner, Person, News, Talk, Video, Publication
+from website.models import Person, News, Video, Position
 import website.utils.ml_utils as ml_utils 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
@@ -17,17 +17,11 @@ def member(request, member_name=None, member_id=None):
     func_start_time = time.perf_counter()
     _logger.debug(f"Starting views/member member_id={member_id} and member_name={member_name} at {func_start_time:0.4f}")
 
-    # person = None
     # This code block gets a person object either from the member id or the url_name.
     # If the member_id is a digit, it's assumed to be the primary key (pk) of the Person object
     # The get_object_or_404 function is then used to retrieve the Person object with this pk. 
     # If no such Person object exists, the function will raise a 404 error.
     # If the member_id is not a digit, it's assumed to be the url-friendly name (url_name).
-    # if (member_id.isdigit()):
-    #     person = get_object_or_404(Person, pk=member_id)
-    # else:
-    #     person = get_object_or_404(Person, url_name__iexact=member_id)
-
     person = None
     if member_id is not None:
         _logger.debug(f"Found a member_id={member_id}, checking for a person with that id")
@@ -69,8 +63,21 @@ def member(request, member_name=None, member_id=None):
     publications = person.publication_set.order_by('-date')
     talks = person.talk_set.order_by('-date')
     videos = get_videos_by_author(person)
-    project_roles = person.projectrole_set.order_by('start_date')
+    project_roles = person.projectrole_set.order_by('-start_date')
     projects = person.get_projects
+
+    # Sort projects: active first (not ended), then by most recent start_date
+    projects = sorted(
+        projects,
+        key=lambda proj: (
+            # First sort key: active projects first
+            # has_ended() returns False for active, True for ended
+            # Since False < True, active projects come first
+            proj.has_ended(),
+            # Second sort key: most recent start_date first (descending)
+            -(proj.start_date.toordinal() if proj.start_date else 0)
+        )
+    )
 
     left_align_headers = (len(projects) <= 4 and len(publications) <= 3 and 
                           len(talks) <= 3 and len(videos) <= 3)
@@ -119,23 +126,15 @@ def member(request, member_name=None, member_id=None):
 
 def get_videos_by_author(person):
     """Returns a queryset of videos that the given person is an author on"""
-    # Get all Publications where the given person is an author
-    publication_videos = Publication.objects.filter(authors=person).values_list('video', flat=True)
-
-    # Get all Talks where the given person is an author
-    talk_videos = Talk.objects.filter(authors=person).values_list('video', flat=True)
-
-    # Combine the two querysets and order by date
-    videos = Video.objects.filter(Q(id__in=publication_videos) | 
-                                  Q(id__in=talk_videos)).order_by('-date')
-
-    return videos
+    return Video.objects.filter(
+        Q(publication__authors=person) | Q(talk__authors=person)
+    ).distinct().order_by('-date')
 
 def auto_generate_bio(person):
-    """Auto-generates a bio using list construction to prevent grammar errors."""
+    """Auto-generates a bio using stored info about person."""
     
     # 1. Generate the Role Sentence
-    role_parts = [person.get_full_name()]
+    role_parts = []
     
     # Calculate duration safely
     total_time = person.get_total_time_in_lab()
@@ -143,19 +142,28 @@ def auto_generate_bio(person):
 
     if not person.has_started:
         date_str = f" on {person.get_latest_position.start_date}" if person.get_latest_position and person.get_latest_position.start_date else ""
-        role_parts.append(f"will be joining the Makeability Lab{date_str}.")
+        role_parts.append(f"{person.get_full_name()} will be joining the Makeability Lab{date_str}.")
     elif person.is_current_member:
-        role_parts.append(f"is currently a {person.get_current_title} in the Makeability Lab.")
+        article = Position.get_indefinite_article_for_title(person.get_current_title)
+        role_parts.append(f"{person.get_full_name()} is currently {article} {person.get_current_title} in the Makeability Lab.")
         if duration_str:
             role_parts.append(f"{person.first_name} has been in the lab for {duration_str}.")
     elif person.is_alumni_member:
-        role_parts.append(f"was a {person.get_current_title} in the Makeability Lab")
+        article = Position.get_indefinite_article_for_title(person.get_current_title)
+        role_parts.append(f"{person.get_full_name()} was {article} {person.get_current_title} in the Makeability Lab")
         if duration_str:
             role_parts.append(f"for {duration_str}")
         
         start = person.get_start_date.strftime("%b %Y")
         end = person.get_end_date.strftime("%b %Y") if person.get_end_date else "present"
         role_parts.append(f"({start} to {end}).")
+    elif person.is_current_collaborator:
+        role_parts.append(f"{person.get_full_name()} is a collaborator with the Makeability Lab.")
+    elif person.is_past_collaborator:
+        role_parts.append(f"{person.get_full_name()} was a collaborator with the Makeability Lab.")
+    else:
+        # Fallback for edge cases
+        role_parts.append(f"{person.get_full_name()} has published with the Makeability Lab.")
 
     # Combine the introductory sentences
     bio_sentences = [" ".join(role_parts).replace(" .", ".")]
@@ -169,7 +177,7 @@ def auto_generate_bio(person):
     pub_count = person.publication_set.count()
 
     if proj_count > 0 or pub_count > 0:
-        contrib_str = f"{person.first_name} contributed to"
+        contrib_str = f"They contributed to"
         
         # --- Build Project String ---
         if proj_count > 0:

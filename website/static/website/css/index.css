@@ -83,6 +83,7 @@
   font-family: var(--font-family-secondary);
   font-size: var(--font-size-sm);
   line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-light);
 }
 
 .news-banner-item a {
@@ -272,6 +273,10 @@
   }
 }
 
+/* Fix grid column width - prevent long titles from expanding columns */
+.landing-page-project-grid .project-card {
+  min-width: 0;
+}
 
 /* =============================================================================
    PUBLICATIONS GRID (Landing Page)
