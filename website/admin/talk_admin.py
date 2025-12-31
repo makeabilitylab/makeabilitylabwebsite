@@ -26,7 +26,7 @@ class TalkAdmin(ArtifactAdmin):
 
     # TODO JEF: This auto-complete field is not working
     # See: https://github.com/makeabilitylab/makeabilitylabwebsite/issues/1093#issuecomment-2423843958
-    # autocomplete_fields = ['video']
+    autocomplete_fields = ['video']
 
     # fieldsets control how the "add/change" admin views look
     # Specifically, it controls the hierarchical layout of the admin form

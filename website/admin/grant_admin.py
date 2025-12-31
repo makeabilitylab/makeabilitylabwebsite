@@ -16,7 +16,9 @@ class GrantAdmin(ArtifactAdmin):
     list_display = ('title', 'date', 'get_first_author_last_name', 'sponsor', 'funding_amount')
 
     # I want to make sponsor auto-complete but it's causing errors, so commenting out
-    # autocomplete_fields = ['sponsor']
+    # https://github.com/makeabilitylab/makeabilitylabwebsite/issues/1093
+    # Update: After upgrading to Django 5.2.9, this seems to work again!
+    autocomplete_fields = ['sponsor']
 
     ordering = ('-date',)  # sort by date, most recent first
 

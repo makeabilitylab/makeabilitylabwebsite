@@ -62,7 +62,8 @@ class PublicationAdmin(ArtifactAdmin):
     # See : https://docs.djangoproject.com/en/4.2/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields
     # Update Nov 10, 2023: This is now broken due to weirdness with Select2 fields in the admin interface
     # See: https://github.com/makeabilitylab/makeabilitylabwebsite/issues/1093
-    #autocomplete_fields = ['poster', 'video', 'talk']
+    # Update Dec 31, 2025: This seems to be working again now that we are on Django 5.2.9
+    autocomplete_fields = ['poster', 'video', 'talk']
 
     def display_projects(self, obj):
         return ", ".join([project.name for project in obj.projects.all()])
