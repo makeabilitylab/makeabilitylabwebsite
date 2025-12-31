@@ -20,6 +20,9 @@ ACCESSIBILITY:
 CONTEXT VARIABLES:
 - pub: Publication model instance (required)
 - orientation: "horizontal" or "vertical" (optional, defaults to vertical)
+
+@version 2.0.1 - Removed listing keywords from horizontal layout
+@author Makeability Lab
 ================================================================================
 {% endcomment %}
 
@@ -202,6 +205,9 @@ CONTEXT VARIABLES:
       {% endif %}
     </p>
     
+    {% comment %}
+    <!-- I am removing keywords from layout as of v2.0.1 to help with
+         access checks and reduce visual noise -->
     <!-- Keywords (hidden on extra-small screens) -->
     {% if pub.keywords and pub.keywords.count > 0 %}
     <p class="pub-keywords hidden-xs">
@@ -213,6 +219,7 @@ CONTEXT VARIABLES:
       </span>
     </p>
     {% endif %}
+    {% endcomment %}
 
     <!-- Download links -->
     {% if pub.pdf_file %}
@@ -226,7 +233,7 @@ CONTEXT VARIABLES:
       </a>
       {% endif %}
       {% if pub.official_url %}
-      <a href="{{ pub.official_url }}" aria-label="View DOI record">
+      <a href="{{ pub.official_url }}" aria-label="View DOI record for {{ pub.title }}">
         <i class="ai ai-doi" aria-hidden="true"></i>doi
       </a>
       {% endif %}

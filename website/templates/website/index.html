@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <p class="line-clamp news-banner-item">
       <a href="{% url 'website:news_item_by_slug' slug=news_item.slug %}">
         <span class="news-banner-item-date">{{ news_item.date }}.</span>
-        {{ news_item.title }}
+        <span class="news-banner-item-text">{{ news_item.title }}</span>
       </a>
     </p>
     {% endfor %}
@@ -135,8 +135,8 @@ document.addEventListener('DOMContentLoaded', function() {
         The Makeability Lab is an <strong>advanced research lab in Human-AI</strong> directed by
         <a href="{% url 'website:member_by_name' member_name='jonfroehlich' %}">Professor Jon E. Froehlich</a> in the 
         <a href="https://www.cs.washington.edu/">Allen School of Computer Science</a> at the University 
-        of Washington. We specialize in Human-Computer Interaction and applied machine learning for high-impact
-        problems in accessibility, computational urban science, and augmented reality. To learn more, see our 
+        of Washington. We specialize in <strong>Human-Computer Interaction</strong> and <strong>applied machine learning</strong> for high-impact
+        problems in <strong>accessibility</strong>, <strong>computational urban science</strong>, and <strong>augmented reality</strong>. To learn more, see our 
         <a href="#recent-projects-heading">recent projects</a> below and read 
         <a href="https://docs.google.com/document/d/1YiiDsfpiolpXjUTj8xWrQwQQUzqrfqT9bocOpaYDrtI/edit">our lab handbook.</a>
       </p>
