@@ -135,25 +135,23 @@ const parentDiv = document.querySelector('.col-md-6.center-canvas');
 
 const resizeObserver = new ResizeObserver(entries => {
   const parentDivRect = entries[0].contentRect;
+
+  // Calculate new logical dimensions, respecting maximums
   const newLogicalWidth = parentDivRect.width;
   let newLogicalHeight = Math.min(parentDivRect.height, MAX_HEIGHT);
 
-  // Update tracked dimensions FIRST
+  // Update the logo to fit within new dimensions
+  makeLabLogoExploder.fitToCanvas(newLogicalWidth, newLogicalHeight);
+
+  // Update tracked logical dimensions
   logicalWidth = newLogicalWidth;
   logicalHeight = newLogicalHeight;
 
-  // Resize canvas
+  // Resize canvas with high-DPI support
   setCanvasSize(logicalWidth, logicalHeight);
 
-  // Fit and center the logos
-  makeLabLogoExploder.fitToCanvas(logicalWidth, logicalHeight);
-
-  // Reset random positions for new canvas size
-  makeLabLogoExploder.reset(logicalWidth, logicalHeight);
-
-  // Re-apply current scroll position
-  const lerpAmount = Math.min(window.scrollY / SCROLL_DISTANCE_FOR_FULL_EXPLOSION, 1);
-  makeLabLogoExploder.update(lerpAmount);
+  // Re-center logo within new dimensions
+  makeLabLogoExploder.centerLogo(logicalWidth, logicalHeight);
 
   draw(ctx);
 });

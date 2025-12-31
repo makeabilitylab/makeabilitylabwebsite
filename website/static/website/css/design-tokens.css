@@ -177,7 +177,7 @@
      Container widths and content constraints.
      ========================================================================== */
 
-  --container-max-width: 1280px;        /* Max width for centered containers */
+  --container-max-width: 1200px;        /* Max width for centered containers */
   --content-max-width: 65ch;             /* Optimal reading width */
 
 

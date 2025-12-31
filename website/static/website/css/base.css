@@ -49,6 +49,11 @@ h5 {
   padding-bottom: 50px;
 }
 
+.container {
+  width: 100%;
+  max-width: var(--container-max-width);
+}
+
 #content {
   position: relative;
 }

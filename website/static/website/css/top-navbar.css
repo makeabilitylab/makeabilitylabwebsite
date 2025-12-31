@@ -108,6 +108,13 @@
   -webkit-backdrop-filter: blur(8px); /* Safari support */
 }
 
+.navbar-custom .external-link-icon {
+  font-size: 0.65em;
+  opacity: 0.9;  /* More subtle */
+  position: relative;
+  top: -4px;  /* Adjust this value to taste */
+}
+
 .navbar-custom a {
   color: inherit;
   padding: 0;
