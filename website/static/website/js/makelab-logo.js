@@ -32,7 +32,7 @@ import {
 // =============================================================================
 
 /** Maximum height of the logo canvas in logical pixels */
-const MAX_HEIGHT = 300;
+const MAX_HEIGHT = 350;
 
 /** Initial width of the logo canvas in logical pixels */
 const INITIAL_WIDTH = 500;
