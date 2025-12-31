@@ -43,6 +43,8 @@ class Title(models.TextChoices):
     RESEARCH_SCIENTIST = "Research Scientist"
     SOFTWARE_DEVELOPER = "Software Developer"
     DESIGNER = "Designer"
+    MEDICAL_DOCTOR = "Medical Doctor"     
+    MEDICAL_STUDENT = "Medical Student"
     UNKNOWN = "Uncategorized"
 
 class Position(models.Model):
@@ -69,18 +71,20 @@ class Position(models.Model):
         Title.POST_DOC: 3,
         Title.DIRECTOR: 4,
         Title.RESEARCH_SCIENTIST: 5,
-        Title.PHD_STUDENT: 6,
-        Title.MS_STUDENT: 7,
-        Title.SOFTWARE_DEVELOPER: 8,
-        Title.DESIGNER: 8,
-        Title.UGRAD: 9,
-        Title.HIGH_SCHOOL: 10,
-        Title.UNKNOWN: 11
+        Title.MEDICAL_DOCTOR: 6,
+        Title.PHD_STUDENT: 7,
+        Title.MEDICAL_STUDENT: 8,
+        Title.MS_STUDENT: 9,
+        Title.SOFTWARE_DEVELOPER: 10,
+        Title.DESIGNER: 11,
+        Title.UGRAD: 12,
+        Title.HIGH_SCHOOL: 13,
+        Title.UNKNOWN: 14
     }
 
     # BETTER - Use class constant:
     PROFESSOR_TITLES = {Title.FULL_PROF, Title.ASSOCIATE_PROF, Title.ASSISTANT_PROF}
-    GRAD_STUDENT_TITLES = {Title.MS_STUDENT, Title.PHD_STUDENT}
+    GRAD_STUDENT_TITLES = {Title.MS_STUDENT, Title.PHD_STUDENT, Title.MEDICAL_STUDENT}
 
     def save(self, *args, **kwargs):
         # Save the Position instance first
@@ -292,10 +296,12 @@ class Position(models.Model):
         """Static method returns true if position is a graduated student"""
         if(type(position) is Position):
             return (position.title == Title.PHD_STUDENT or 
-                    position.title == Title.MS_STUDENT)
+                    position.title == Title.MS_STUDENT or
+                    position.title == Title.MEDICAL_STUDENT)
         elif(type(position) is str):
             return (position == Title.PHD_STUDENT or 
-                    position == Title.MS_STUDENT)
+                    position == Title.MS_STUDENT or
+                    position == Title.MEDICAL_STUDENT)
         else:
             raise TypeError("position must be of type Position or str")
 
@@ -320,12 +326,14 @@ class Position(models.Model):
             return (position.title == Title.RESEARCH_SCIENTIST or 
                     position.title == Title.SOFTWARE_DEVELOPER or
                     position.title == Title.DIRECTOR or 
-                    position.title == Title.DESIGNER)
+                    position.title == Title.DESIGNER or
+                    position.title == Title.MEDICAL_DOCTOR)
         elif(type(position) is str):
             return (position == Title.RESEARCH_SCIENTIST or 
                     position == Title.SOFTWARE_DEVELOPER or
                     position == Title.DIRECTOR or
-                    position == Title.DESIGNER)
+                    position == Title.DESIGNER or
+                    position == Title.MEDICAL_DOCTOR)
         else:
             raise TypeError("position must be of type Position or str")
     

@@ -72,8 +72,8 @@ else:
     ALLOWED_HOSTS = ['*']
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.2.1" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Fixed footer responsiveness"
+ML_WEBSITE_VERSION = "2.2.2" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Added medical doctor and student to positions" # short description of changes in this version
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
