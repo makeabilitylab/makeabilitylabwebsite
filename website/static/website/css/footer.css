@@ -53,19 +53,22 @@
   max-width: var(--container-max-width);
   margin-left: auto;
   margin-right: auto;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 var(--space-4);
 }
 
 .makelab-footer-col {
-  margin: var(--space-5) var(--space-5) var(--space-12) var(--space-5);
-  width: 21%;
+  flex: 1;
+  margin: var(--space-5) var(--space-3) var(--space-12) var(--space-3);
 }
 
 .makelab-footer-recent-news {
-  width: 26%;
+  flex: 1.4;  /* Slightly wider */
 }
 
 .makelab-footer-links {
-  width: 20%;
+  flex: 0.8;  /* Slightly narrower */
 }
 
 
@@ -320,9 +323,6 @@
    ============================================================================ */
 
 @media screen and (max-width: 550px) {
-  .makelab-footer-links {
-    display: initial;
-  }
 
   .makelab-footer-col {
     width: 75%;
