@@ -26,6 +26,7 @@ class TalkAdmin(ArtifactAdmin):
 
     # TODO JEF: This auto-complete field is not working
     # See: https://github.com/makeabilitylab/makeabilitylabwebsite/issues/1093#issuecomment-2423843958
+    # Update Dec 31, 2025: This seems to be working now, perhaps due to Django 5.2.9 upgrade?
     autocomplete_fields = ['video']
 
     # fieldsets control how the "add/change" admin views look
