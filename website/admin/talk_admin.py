@@ -24,7 +24,7 @@ class TalkAdmin(ArtifactAdmin):
     #   https://docs.djangoproject.com/en/3.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields
     search_fields = ['title', 'forum_name']
 
-    # TODO JEF: This auto-complete field is not working
+    # This auto-complete field is not working
     # See: https://github.com/makeabilitylab/makeabilitylabwebsite/issues/1093#issuecomment-2423843958
     # Update Dec 31, 2025: This seems to be working now, perhaps due to Django 5.2.9 upgrade?
     autocomplete_fields = ['video']
