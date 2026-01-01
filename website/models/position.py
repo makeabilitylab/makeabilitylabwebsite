@@ -129,7 +129,7 @@ class Position(models.Model):
         if self.title in self.TITLE_ORDER_MAPPING:
             return self.TITLE_ORDER_MAPPING[self.title]
         else:
-            return self.TITLE_ORDER_MAPPING[self.UNKNOWN]
+            return self.TITLE_ORDER_MAPPING[Title.UNKNOWN]
 
     def get_time_in_this_position(self):
         """Returns a timedelta object of total time in this position"""

@@ -1,8 +1,598 @@
+/**
+ * ============================================================================
+ * VIEW PROJECT PEOPLE STYLES
+ * ============================================================================
+ * 
+ * Styles for the project people viewer page with collapsible sidebar.
+ * This is an internal lab tool for viewing and screenshotting project teams.
+ *
+ * STRUCTURE:
+ *   .page-layout
+ *   ├── .sidebar (collapsible)
+ *   │   ├── .sidebar-header
+ *   │   └── .sidebar-section (×n)
+ *   ├── .expand-btn (visible when sidebar collapsed)
+ *   └── .main-content
+ *       ├── .content-header
+ *       └── .people-container
+ *           ├── .people-group (when grouping enabled)
+ *           │   └── .people-grid
+ *           └── .people-grid (when no grouping)
+ *
+ * @version 2.1.0 - Added publication indicator feature
+ * ============================================================================
+ */
+
+
+/* =============================================================================
+   CSS CUSTOM PROPERTIES (Component-specific)
+   ============================================================================= */
+
+:root {
+  /* Publication indicator colors */
+  --color-published-ring: #2e7d32;           /* Green - has publications */
+  --color-not-published-ring: #bdbdbd;       /* Gray - no publications */
+  --published-ring-width: 4px;
+}
+
+
+/* =============================================================================
+   PAGE LAYOUT
+   ============================================================================= */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  font-family: var(--font-family-primary);
+  background-color: var(--color-bg-page);
+}
+
+.page-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+
+/* =============================================================================
+   SIDEBAR
+   ============================================================================= */
+
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  background-color: var(--color-bg-surface);
+  border-right: 1px solid var(--color-border);
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+  transition: margin-left 0.25s ease, opacity 0.25s ease;
+  z-index: 100;
+}
+
+.sidebar.collapsed {
+  margin-left: -280px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sidebar-content {
+  padding: var(--space-4);
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.sidebar-header h2 {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.collapse-btn {
+  background: none;
+  border: none;
+  font-size: var(--font-size-xl);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: var(--space-1);
+  border-radius: var(--border-radius-sm);
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.collapse-btn:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-muted);
+}
+
+
+/* =============================================================================
+   EXPAND BUTTON (visible when sidebar collapsed)
+   ============================================================================= */
+
+.expand-btn {
+  position: fixed;
+  top: var(--space-4);
+  left: var(--space-4);
+  z-index: 101;
+  background-color: var(--color-primary);
+  color: var(--color-text-on-dark);
+  border: none;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast), background-color var(--transition-fast);
+}
+
+.expand-btn.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.expand-btn:hover {
+  background-color: var(--color-primary-hover);
+}
+
+
+/* =============================================================================
+   SIDEBAR SECTIONS
+   ============================================================================= */
+
+.sidebar-section {
+  margin-bottom: var(--space-5);
+}
+
+.sidebar-section h3 {
+  margin: 0 0 var(--space-3) 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+
+/* =============================================================================
+   PROJECT SEARCH & LIST
+   ============================================================================= */
+
+.project-search-container {
+  margin-bottom: var(--space-2);
+}
+
+.project-search {
+  width: 100%;
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.project-search:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.project-list-actions {
+  display: flex;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--color-link);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.btn-link:hover {
+  color: var(--color-link-hover);
+}
+
+.project-list {
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--color-white);
+}
+
+.project-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.project-item:last-child {
+  border-bottom: none;
+}
+
+.project-item:hover {
+  background-color: var(--color-bg-muted);
+}
+
+.project-item input[type="checkbox"] {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.project-name {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project-ended .project-name {
+  color: var(--color-text-muted);
+}
+
+.project-people-count {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.no-projects {
+  padding: var(--space-3);
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+
+/* =============================================================================
+   CHECKBOX & RADIO GROUPS
+   ============================================================================= */
+
+.checkbox-group,
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.checkbox-label,
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+.checkbox-label input,
+.radio-label input {
+  margin: 0;
+}
+
+.checkbox-label:hover,
+.radio-label:hover {
+  color: var(--color-link);
+}
+
+
+/* =============================================================================
+   INDICATOR LEGEND
+   ============================================================================= */
+
+.indicator-legend {
+  margin-top: var(--space-3);
+  padding: var(--space-2);
+  background-color: var(--color-bg-muted);
+  border-radius: var(--border-radius-sm);
+  display: none; /* Hidden by default */
+}
+
+.indicator-legend.visible {
+  display: block;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+}
+
+.legend-item:last-child {
+  margin-bottom: 0;
+}
+
+.legend-swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--border-radius-full);
+  flex-shrink: 0;
+}
+
+.legend-published {
+  background-color: var(--color-white);
+  border: 3px solid var(--color-published-ring);
+}
+
+.legend-not-published {
+  background-color: var(--color-white);
+  border: 3px solid var(--color-not-published-ring);
+}
+
+.legend-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+
+/* =============================================================================
+   MAIN CONTENT AREA
+   ============================================================================= */
+
+.main-content {
+  flex: 1;
+  padding: var(--space-6);
+  transition: margin-left var(--transition-fast);
+  min-width: 0; /* Prevent flex overflow */
+}
+
+.main-content.sidebar-collapsed {
+  margin-left: 0;
+}
+
+.content-header {
+  margin-bottom: var(--space-6);
+}
+
+.content-header h1 {
+  margin: 0 0 var(--space-2) 0;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.selected-projects-info {
+  margin: 0 0 var(--space-2) 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+}
+
+.people-count {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+
+/* =============================================================================
+   PEOPLE CONTAINER & GRID
+   ============================================================================= */
+
+.people-container {
+  /* Container for people grid or groups */
+}
+
+.no-people-message {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-base);
+  padding: var(--space-10) 0;
+}
+
 .people-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  grid-gap: 15px;
+  gap: var(--space-5);
+  row-gap: var(--space-6);
+}
+
+
+/* =============================================================================
+   PEOPLE GROUP (when grouping is enabled)
+   ============================================================================= */
+
+.people-group {
+  margin-bottom: var(--space-8);
+}
+
+.people-group:last-child {
+  margin-bottom: 0;
+}
+
+.people-group-title {
+  margin: 0 0 var(--space-4) 0;
+  padding-bottom: var(--space-2);
+  border-bottom: 2px solid var(--color-primary);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+
+/* =============================================================================
+   PERSON CARD
+   ============================================================================= */
+
+.person {
   text-align: center;
-  row-gap: 20px;
-  margin-top: 20px;
+}
+
+.person-image-link {
+  display: block;
+  text-decoration: none;
+}
+
+.person-image-link:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: var(--border-radius-full);
+}
+
+.person-image {
+  width: 90%;
+  max-width: 150px;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: var(--border-radius-full);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.person-image:hover {
+  transform: scale(1.03);
+  box-shadow: var(--shadow-md);
+}
+
+.person-name {
+  margin-top: var(--space-2);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-tight);
+}
+
+.person-name a {
+  color: var(--color-text-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.person-name a:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+.person-title {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-1);
+}
+
+.person-affiliation {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-top: var(--space-1);
+}
+
+.person-dates {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-top: var(--space-1);
+}
+
+
+/* =============================================================================
+   PUBLICATION INDICATOR STYLES
+   =============================================================================
+   When the "Highlight published on project" option is enabled, people who
+   have published on the selected project(s) get a green ring around their
+   photo, while those without publications get a gray ring.
+   
+   Uses box-shadow instead of border to avoid affecting layout.
+   ============================================================================= */
+
+/* Person has published on selected project(s) - green ring */
+.person.has-published .person-image {
+  box-shadow: 0 0 0 var(--published-ring-width) var(--color-published-ring);
+}
+
+.person.has-published .person-image:hover {
+  box-shadow: 0 0 0 var(--published-ring-width) var(--color-published-ring),
+              var(--shadow-md);
+  transform: scale(1.03);
+}
+
+/* Person has NOT published on selected project(s) - gray ring */
+.person.no-publications .person-image {
+  box-shadow: 0 0 0 var(--published-ring-width) var(--color-not-published-ring);
+}
+
+.person.no-publications .person-image:hover {
+  box-shadow: 0 0 0 var(--published-ring-width) var(--color-not-published-ring),
+              var(--shadow-md);
+  transform: scale(1.03);
+}
+
+
+/* =============================================================================
+   SCROLLBAR STYLING (for project list)
+   ============================================================================= */
+
+.project-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.project-list::-webkit-scrollbar-track {
+  background: var(--color-bg-muted);
+  border-radius: var(--border-radius-sm);
+}
+
+.project-list::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: var(--border-radius-sm);
+}
+
+.project-list::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--border-radius-sm);
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-strong);
+}
+
+
+/* =============================================================================
+   PRINT STYLES (for clean screenshots)
+   ============================================================================= */
+
+@media print {
+  .sidebar,
+  .expand-btn {
+    display: none !important;
+  }
+  
+  .main-content {
+    margin-left: 0 !important;
+    padding: 0;
+  }
+  
+  .content-header {
+    display: none;
+  }
 }
