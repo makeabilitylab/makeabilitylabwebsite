@@ -39,6 +39,7 @@
   height: 100%;
   min-height: 280px;
   margin-bottom: var(--space-5);
+  min-width: 0; /* Allows card to shrink in grid/flex contexts */
 }
 
 
