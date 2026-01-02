@@ -1,0 +1,44 @@
+{
+  "output": {
+    "filePath": "repomix-output.xml",
+    "style": "xml",
+    "headerText": "Makeability Lab Website Codebase (Django/Bootstrap)"
+  },
+  "include": [
+    "**/*.py",
+    "**/*.js",
+    "**/*.html",
+    "**/*.css",
+    "**/*.scss",
+    "Dockerfile",
+    "docker-compose*.yml",
+    "requirements.txt"
+  ],
+  "ignore": {
+    "useGitignore": true,
+    "customPatterns": [
+      "**/node_modules/**",
+      "**/venv/**",
+      "**/__pycache__/**",
+      "**/migrations/**",
+      "**/*.min.js",
+      "**/*.min.css",
+      "**/*.lock",
+      "**/*.sqlite3",
+      "db/**",
+      "media/**",
+      "design/**",
+      "docs/**",
+      "static/admin/**",
+      "**/vendor/**",
+      "**/bootstrap/**",
+      "**/jquery/**",
+      ".devcontainer/**",
+      ".idea/**",
+      ".vscode/**",
+      "sortedm2m_filter_horizontal_widget/**",
+      "auto-deploy/**",
+      "report.html"
+    ]
+  }
+}
