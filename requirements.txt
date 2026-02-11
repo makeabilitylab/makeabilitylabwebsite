@@ -71,7 +71,7 @@ wand==0.6.13
 # Pillow - Python Imaging Library fork, for image manipulation
 # Note: Pillow 10.0+ dropped Python 3.7 support; 11.0+ dropped Python 3.8
 # See: https://pypi.org/project/Pillow/
-Pillow==11.1.0
+Pillow==12.1.1
 
 # Django Image Cropping - for cropping images in admin
 # Note: Last release Feb 2022, but should work with Django 5.2
