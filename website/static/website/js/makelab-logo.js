@@ -73,7 +73,7 @@ setCanvasSize(logicalWidth, logicalHeight);
 // =============================================================================
 
 // Calculate initial x position to center the logo horizontally
-const initialXPos = logicalWidth / 2 - MakeabilityLabLogo.getWidth(TRIANGLE_SIZE) / 2;
+const initialXPos = logicalWidth / 2 - MakeabilityLabLogo.getGridWidth(TRIANGLE_SIZE) / 2;
 
 const makeLabLogoExploder = new MakeabilityLabLogoExploder(
   initialXPos, 
