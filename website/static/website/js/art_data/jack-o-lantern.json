@@ -1,0 +1,42 @@
+{
+  "name": "Jack-o-Lantern",
+  "message": "Happy Halloween!",
+  "numCols": 10,
+  "numRows": 9,
+  "directionPattern": "alternating",
+  "palette": {
+    "O": { "base": "#E8751A", "jitter": { "type": "brightness", "range": [78, 100] } },
+    "G": { "base": "#2D7F3A", "jitter": { "type": "brightness", "range": [70, 100] } },
+    "B": { "base": "#1a1a1a", "jitter": { "type": "brightness", "range": [5, 18] } },
+    "Y": { "base": "#F5C842", "jitter": { "type": "brightness", "range": [88, 100] } }
+  },
+  "grid": [
+    { "_comment": "Row 0: Stem (rectangular — two full green cells)",
+      "cells": [null, null, null, null, "G", "G", null, null, null, null]
+    },
+    { "_comment": "Row 1: Top shoulder",
+      "cells": [null, { "tHalf": "O", "dir": "BottomRight" }, "O", "O", "G", "G", "O", "O",  { "tHalf": "O", "dir": "BottomLeft" }, null]
+    },
+    { "_comment": "Row 2: Widen",
+      "cells": [{ "tHalf": "O", "dir": "BottomRight" }, "O", "O", "O", "O", "O", "O", "O", "O", { "tHalf": "O", "dir": "BottomLeft" }]
+    },
+    { "_comment": "Row 3: Full width with eyes",
+      "cells": ["O", "O", ["B", "O"], ["B", "O"], "O", "O", ["B", "O"], ["B", "O"], "O", "O"]
+    },
+    { "_comment": "Row 4: Full width with nose",
+      "cells": ["O", "O", "O", "O", ["O", "B"], ["O", "B"], "O", "O", "O", "O"]
+    },
+    { "_comment": "Row 5: Full width",
+      "cells": ["O", "O", "O", "O", "O", "O", "O", "O", "O", "O"]
+    },
+    { "_comment": "Row 6: Full width with mouth",
+      "cells": ["O", "O", ["O", "B"], "B", "B", ["O", "O"], "B", ["O", "B"], "O", "O"]
+    },
+    { "_comment": "Row 7: Narrow",
+      "cells": [{ "tHalf": "O", "dir": "TopRight" }, "O", ["B", "O"], ["O", "O"], "B", "B", "B", ["B", "O"], "O", { "tHalf": "O", "dir": "TopLeft" }]
+    },
+    { "_comment": "Row 8: Bottom",
+      "cells": [null, { "tHalf": "O", "dir": "TopRight" }, "O", "O", "O", "O", "O", "O", { "tHalf": "O", "dir": "TopLeft" }, null]
+    }
+  ]
+}

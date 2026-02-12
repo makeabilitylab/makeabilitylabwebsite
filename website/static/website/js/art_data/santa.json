@@ -1,0 +1,133 @@
+{
+  "name": "Santa",
+  "message": "Happy Holidays!",
+  "numCols": 10,
+  "numRows": 9,
+
+  "palette": {
+    "R": {
+      "base": "#cc4133",
+      "jitter": { "type": "brightness", "range": [75, 100] }
+    },
+    "K": {
+      "base": "#272425",
+      "jitter": { "type": "brightness", "range": [8, 22] }
+    },
+    "W": {
+      "base": "#ffffff",
+      "jitter": { "type": "brightness", "distribution": "gaussian", "mean": 99, "sd": 2 }
+    },
+    "F": {
+      "base": "#fdf2d0",
+      "jitter": { "type": "saturation+brightness",
+                  "saturation": [20, 30],
+                  "brightness": [95, 100],
+                  "brightnessDistribution": "gaussian", "brightnessMean": 99, "brightnessSd": 1 }
+    },
+    "N": { "base": "#f9da78", "jitter": { "type": "brightness", "range": [97, 100] } },
+    "M": { "base": "#f3af56", "jitter": { "type": "brightness", "range": [94, 100] } }
+  },
+
+  "directionPattern": "alternating",
+
+  "grid": [
+    { "_comment": "Row 0: Hat tip — uses tHalf for cleaner logic",
+      "cells": [
+        null, null, null, null,
+        { "tHalf": "R", "dir": "BottomRight" },
+        { "tHalf": "R", "dir": "BottomLeft"  },
+        null, null, null, null
+      ]
+    },
+
+    { "_comment": "Row 1: Hat wider",
+      "cells": [
+        null, null, null,
+        { "tHalf": "R", "dir": "BottomRight" },
+        { "t1": "R", "t2": "R", "dir": "BottomLeft"  },
+        { "t1": "R", "t2": "R", "dir": "BottomRight" },
+        { "tHalf": "R", "dir": "BottomLeft"  },
+        null, null, null
+      ]
+    },
+
+    { "_comment": "Row 2: White hat trim — (cols 2,7 tri1 hidden via array shorthand)",
+      "cells": [
+        { "t1": "W", "t1Visible": false, "t2": "W", "t2Visible": false },
+        { "t1": "W", "t1Visible": false, "t2": "W", "t2Visible": false },
+        [null, "W"],
+        "W", "W", "W", "W",
+        [null, "W"],
+        { "t1": "W", "t1Visible": false, "t2": "W", "t2Visible": false },
+        { "t1": "W", "t1Visible": false, "t2": "W", "t2Visible": false }
+      ]
+    },
+
+    { "_comment": "Row 3: Face + nose",
+      "cells": [
+        { "t1": "W", "t1Visible": false, "t2": "W", "t2Visible": false },
+        { "t1": "W", "t1Visible": false, "t2": "W" },
+        "F", "F",
+        ["N", "F"],
+        ["N", "F"],
+        "F", "F",
+        { "t1": "W", "t1Visible": false, "t2": "W" },
+        { "t1": "W", "t1Visible": false, "t2": "W", "t2Visible": false }
+      ]
+    },
+
+    { "_comment": "Row 4: Face→beard transition",
+      "cells": [
+        { "t1": "R", "t1Visible": false, "t2": "R" },
+        ["W", "R"],
+        "W", "W", "W", "W", "W", "W",
+        ["W", "R"],
+        { "t1": "R", "t1Visible": false, "t2": "R" }
+      ]
+    },
+
+    { "_comment": "Row 5: Beard + mouth + suit",
+      "cells": [
+        "R", "R",
+        ["W", "R"],
+        "W",
+        ["M", "W"],
+        ["M", "W"],
+        "W",
+        ["W", "R"],
+        "R", "R"
+      ]
+    },
+
+    { "_comment": "Row 6: Belt top",
+      "cells": [
+        "K", "K", "K",
+        ["W", "K"],
+        "W", "W",
+        ["W", "K"],
+        "K", "K", "K"
+      ]
+    },
+
+    { "_comment": "Row 7: Belt bottom — (cols 0,9 tri2 hidden via array shorthand)",
+      "cells": [
+        ["K", null],
+        "K", "K", "K",
+        ["W", "K"],
+        ["W", "K"],
+        "K", "K", "K",
+        ["K", null]
+      ]
+    },
+
+    { "_comment": "Row 8: Suit bottom",
+      "cells": [
+        null,
+        ["R", null],
+        "R", "R", "R", "R", "R", "R",
+        ["R", null],
+        null
+      ]
+    }
+  ]
+}
