@@ -1,0 +1,41 @@
+{
+  "name": "Shamrock",
+  "message": "Happy St. Patrick's Day!",
+  "numCols": 10,
+  "numRows": 9,
+  "directionPattern": "alternating",
+
+  "palette": {
+    "G": { "base": "#2e8b57", "jitter": { "type": "brightness", "range": [75, 100] } }
+  },
+
+  "grid": [
+    { "_comment": "Row 0: Top of center lobe",
+      "cells": [null, null, null, { "tHalf": "G", "dir": "BottomRight" }, "G", "G", { "tHalf": "G", "dir": "BottomLeft" }, null, null, null]
+    },
+    { "_comment": "Row 1: Center lobe widens",
+      "cells": [null, null, { "tHalf": "G", "dir": "BottomRight" }, "G", "G", "G", "G", { "tHalf": "G", "dir": "BottomLeft" }, null, null]
+    },
+    { "_comment": "Row 2: Side lobes appear, merging with center",
+      "cells": [{ "tHalf": "G", "dir": "BottomRight" }, "G", "G", "G", "G", "G", "G", "G", "G", { "tHalf": "G", "dir": "BottomLeft" }]
+    },
+    { "_comment": "Row 3: All three lobes — full width",
+      "cells": ["G", "G", "G", "G", "G", "G", "G", "G", "G", "G"]
+    },
+    { "_comment": "Row 4: All three lobes — full width",
+      "cells": ["G", "G", "G", "G", "G", "G", "G", "G", "G", "G"]
+    },
+    { "_comment": "Row 5: Side lobes bottom, notch between them",
+      "cells": [{ "tHalf": "G", "dir": "TopRight" }, "G", "G", "G", "G", "G", "G", "G", "G", { "tHalf": "G", "dir": "TopLeft" }]
+    },
+    { "_comment": "Row 6: Side lobes close, stem emerges",
+      "cells": [null, { "tHalf": "G", "dir": "TopRight" }, "G", { "tHalf": "G", "dir": "TopLeft" }, "G", "G", { "tHalf": "G", "dir": "TopRight" }, "G", { "tHalf": "G", "dir": "TopLeft" }, null]
+    },
+    { "_comment": "Row 7: Stem",
+      "cells": [null, null, null, null, "G", "G", null, null, null, null]
+    },
+    { "_comment": "Row 8: Stem",
+      "cells": [null, null, null, null, "G", "G", null, null, null, null]
+    }
+  ]
+}

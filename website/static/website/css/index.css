@@ -228,19 +228,22 @@
   display: block;
   margin: 0 auto;
   width: 100%;
-  height: 350px;
 }
 
 .center-canvas {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 350px;
+  height: 600px;
 }
 
 @media (max-width: 992px) {
   #makelab-logo-canvas {
     margin-bottom: var(--space-4);
+  }
+
+  .center-canvas {
+    height: 350px; /* Much tighter on mobile */
   }
 }
 

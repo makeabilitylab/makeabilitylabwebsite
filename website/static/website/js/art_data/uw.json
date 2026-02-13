@@ -1,0 +1,49 @@
+{
+  "name": "UW Purple W",
+  "message": "Go Dawgs!",
+  "numCols": 13,
+  "numRows": 10,
+  "directionPattern": "alternating",
+  "palette": {
+    "P": { 
+      "base": "#4b2e83", 
+      "jitter": { "type": "brightness", "range": [85, 100] } 
+    },
+    "G": { 
+      "base": "#b7a57a", 
+      "jitter": { "type": "brightness", "range": [90, 100] } 
+    }
+  },
+  "grid": [
+    { "_comment": "Row 0: Top serifs",
+      "cells": ["P", "P", "P", "P", "P", null, "P", "P", null, "P", "P", "P", "P"]
+    },
+    { "_comment": "Row 1: Upper stalks",
+      "cells": ["P", "P", "P", "P", "P", null, "P", "P", null, "P", "P", "P", "P"]
+    },
+    { "_comment": "Row 2: Inner peak start",
+      "cells": [null, "P", "P", "P", null, null, "P", "P", null, null, "P", "P", null]
+    },
+    { "_comment": "Row 3: Widening the peak",
+      "cells": [null, "P", "P", "P", null, "P", "P", "P", "P", null, "P", "P", null]
+    },
+    { "_comment": "Row 4: Full width transition",
+      "cells": [null, "P", "P", "P", null, "P", "P", "P", "P", null, "P", "P", null]
+    },
+    { "_comment": "Row 5: Full width transition",
+      "cells": [null, "P","P", "P", "P", "P", "P", "P", "P", "P", "P", "P", null]
+    },
+    { "_comment": "Row 6: Splitting into legs",
+      "cells": [null, null, "P", "P", "P", "P", null, "P", "P", "P", "P", "P", null]
+    },
+    { "_comment": "Row 7: Narrowing legs",
+      "cells": [null, null, "P", "P", "P", "P", null, "P", "P", "P", "P", null, null]
+    },
+    { "_comment": "Row 8: Narrowing legs",
+      "cells": [null, null, "P", "P", "P", null, null, "P", "P", "P", null, null, null]
+    },
+    { "_comment": "Row 9: Bottom points",
+      "cells": [null, null, null, "P", "P", null, null, null, "P", "P", null, null, null]
+    }
+  ]
+}

@@ -1,229 +1,186 @@
 /**
- * Makeability Lab Logo Animation Controller
+ * Makeability Lab Logo Animation Controller (Django Version)
  * 
+ * See also: https://makeabilitylab.github.io/js/src/apps/makelogo/TriangleArtMorphTest2-MorphLib/
+ * Code: https://github.com/makeabilitylab/js
+ *
  * Sets up an interactive, scroll-driven logo animation on a canvas element.
- * As the user scrolls down the page, the logo "explodes" into scattered triangles;
- * scrolling back up reassembles them.
- * 
+ * As the user scrolls down the page, the logo morphs from its start state into
+ * the assembled logo; scrolling back up returns to the start state.
+ *
+ * Default mode: triangles scatter from random positions and assemble on scroll.
+ *
+ * Easter egg: within the window of certain holidays, triangles morph from
+ * holiday artwork (e.g., Santa, shamrock) into the logo instead.
+ *
  * Features:
  *   - High-DPI (Retina) display support for crisp rendering
  *   - Responsive resizing via ResizeObserver
  *   - Smooth scroll-based animation using linear interpolation
- * 
+ *   - Holiday art morphing easter egg
+ *
  * Requirements:
  *   - A canvas element with ID 'makelab-logo-canvas'
  *   - A parent container with class 'col-md-6.center-canvas'
- *   - The MakeabilityLabLogoExploder library from the CDN
- * 
+ *   - The MakeabilityLabLogoMorpher library from the CDN
+ *   - Art JSON files in art_data/ alongside this script
+ *
  * CDN Cache: You can purge the CDN cache at https://www.jsdelivr.com/tools/purge
- * 
- * @file makelab-logo.js
- * @module makelab-logo
+ *
  * @author Jon Froehlich
  */
+/**
+ * 
+ * Updated to use enhanced MakeabilityLabLogoMorpher features.
+ */
 
-import { 
-  MakeabilityLabLogoExploder, 
-  MakeabilityLabLogo 
+import {
+  MakeabilityLabLogoMorpher,
+  TriangleArt,
 } from 'https://cdn.jsdelivr.net/gh/makeabilitylab/js@main/dist/makelab.logo.js';
 
 // =============================================================================
-// Configuration Constants
+// Configuration
 // =============================================================================
 
-/** Maximum height of the logo canvas in logical pixels */
-const MAX_HEIGHT = 350;
-
-/** Initial width of the logo canvas in logical pixels */
-const INITIAL_WIDTH = 500;
-
-/** Size of individual triangles in the logo */
+const MAX_HEIGHT = 600;
 const TRIANGLE_SIZE = 70;
-
-/** Scroll distance (in pixels) over which the full explosion animation occurs */
-const SCROLL_DISTANCE_FOR_FULL_EXPLOSION = 300;
-
-/** Device pixel ratio for high-DPI display support */
+const SCROLL_DISTANCE = 300;
 const DPR = window.devicePixelRatio || 1;
-
-/** Background fill color (semi-transparent white for trail effect) */
-const BG_FILL_COLOR = "rgba(255, 255, 255, 0.2)";
-
-/** Initial fill color for triangles before animation */
+const BG_FILL_COLOR = "rgba(255, 255, 255, 1)"; // Solid white for website clean look
 const START_FILL_COLOR = "rgba(255, 255, 255, 0.5)";
 
+const SCRIPT_BASE = new URL('.', import.meta.url).href;
+const HOLIDAYS = [
+  { month: 1,  day: 14, daysBefore: 7,  daysAfter: 1, file: 'heart.json' },
+  { month: 2,  day: 17, daysBefore: 5,  daysAfter: 0, file: 'shamrock.json' },
+  { month: 9,  day: 31, daysBefore: 10,  daysAfter: 0, file: 'jack-o-lantern.json' },
+  { month: 11, day: 25, daysBefore: 21, daysAfter: 2, file: 'santa.json' },
+];
+
 // =============================================================================
-// Canvas Setup
+// State & Canvas Setup
 // =============================================================================
 
 const canvas = document.getElementById('makelab-logo-canvas');
 const ctx = canvas.getContext('2d');
-
-// Track logical (CSS) dimensions separately from physical (buffer) dimensions.
-// This distinction is crucial for high-DPI support: the canvas buffer is scaled
-// up by DPR, but all drawing logic uses logical coordinates.
-let logicalWidth = INITIAL_WIDTH;
-let logicalHeight = MAX_HEIGHT;
-
-// Initialize canvas with high-DPI support
-setCanvasSize(logicalWidth, logicalHeight);
-
-// =============================================================================
-// Logo Exploder Initialization
-// =============================================================================
-
-// Calculate initial x position to center the logo horizontally
-const initialXPos = logicalWidth / 2 - MakeabilityLabLogo.getGridWidth(TRIANGLE_SIZE) / 2;
-
-const makeLabLogoExploder = new MakeabilityLabLogoExploder(
-  initialXPos, 
-  10,  // y offset from top
-  TRIANGLE_SIZE, 
-  START_FILL_COLOR
-);
-
-// Initialize explosion parameters and perform initial draw
-makeLabLogoExploder.reset(logicalWidth, logicalHeight);
-draw(ctx);
-
-// Flag to track whether we need to reset animation params on next full explosion
-let shouldResetOnFullExplosion = false;
-
-// =============================================================================
-// Event Handlers
-// =============================================================================
-
-window.addEventListener('scroll', handleScroll, { passive: true });
-
-/**
- * Handles the scroll event to update the logo explosion animation.
- * 
- * The animation is driven by scroll position:
- *   - At scroll position 0: logo is fully assembled
- *   - At scroll position >= SCROLL_DISTANCE_FOR_FULL_EXPLOSION: logo is fully exploded
- * 
- * When the user scrolls back to full explosion after being partially assembled,
- * the explosion parameters are reset to create variety in the animation.
- */
-function handleScroll() {
-  const scrollY = window.scrollY;
-  
-  // Calculate interpolation amount (0 = assembled, 1 = fully exploded)
-  const lerpAmount = Math.min(scrollY / SCROLL_DISTANCE_FOR_FULL_EXPLOSION, 1);
-
-  makeLabLogoExploder.update(lerpAmount);
-  draw(ctx);
-
-  // Reset explosion parameters when returning to full explosion state.
-  // This creates visual variety—each full explosion scatters differently.
-  if (lerpAmount >= 1) {
-    if (shouldResetOnFullExplosion) {
-      makeLabLogoExploder.reset(logicalWidth, logicalHeight);
-      shouldResetOnFullExplosion = false;
-    }
-  } else {
-    // User has scrolled back; flag that we should reset on next full explosion
-    shouldResetOnFullExplosion = true;
-  }
-}
-
-// =============================================================================
-// Responsive Resizing
-// =============================================================================
-
 const parentDiv = document.querySelector('.col-md-6.center-canvas');
 
-const resizeObserver = new ResizeObserver(entries => {
-  const parentDivRect = entries[0].contentRect;
-
-  // Calculate new logical dimensions, respecting maximums
-  const newLogicalWidth = parentDivRect.width;
-  let newLogicalHeight = Math.min(parentDivRect.height, MAX_HEIGHT);
-
-  // Update the logo to fit within new dimensions
-  makeLabLogoExploder.fitToCanvas(newLogicalWidth, newLogicalHeight);
-
-  // Update tracked logical dimensions
-  logicalWidth = newLogicalWidth;
-  logicalHeight = newLogicalHeight;
-
-  // Resize canvas with high-DPI support
-  setCanvasSize(logicalWidth, logicalHeight);
-
-  // Re-center logo within new dimensions
-  makeLabLogoExploder.centerLogo(logicalWidth, logicalHeight);
-
-  draw(ctx);
-});
-
-resizeObserver.observe(parentDiv);
+let logicalWidth, logicalHeight;
+let morpher = null;
+let isReady = false;
+let cachedArtData = null;
+let currentLerpAmt = 0;
 
 // =============================================================================
-// Drawing Functions
+// Core Functions
 // =============================================================================
 
-/**
- * Sets the canvas size with proper high-DPI scaling.
- * 
- * On high-DPI displays (e.g., Retina), we need to:
- *   1. Set CSS size to the logical dimensions (what the user sees)
- *   2. Set buffer size to logical × devicePixelRatio (actual pixels)
- *   3. Scale the context so drawing code can use logical coordinates
- * 
- * @param {number} width - Logical width in CSS pixels
- * @param {number} height - Logical height in CSS pixels
- */
-function setCanvasSize(width, height) {
-  // CSS size controls the displayed size on screen
-  canvas.style.width = width + 'px';
-  canvas.style.height = height + 'px';
-
-  // Buffer size is scaled up for sharp rendering on high-DPI displays
-  canvas.width = width * DPR;
-  canvas.height = height * DPR;
-
-  // Scale context so all drawing operations use logical coordinates.
-  // setTransform resets any existing transform before applying the new scale.
-  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+function getActiveHolidayArtURL() {
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  for (const h of HOLIDAYS) {
+    const holiday = new Date(today.getFullYear(), h.month, h.day);
+    const diffDays = (holiday - today) / (1000 * 60 * 60 * 24);
+    if (diffDays <= h.daysBefore && diffDays >= -h.daysAfter) {
+      return new URL(`art_data/${h.file}`, SCRIPT_BASE).href;
+    }
+  }
+  return null;
 }
 
 /**
- * Clears the canvas and draws the current state of the logo exploder.
- * 
- * Uses a semi-transparent fill to create a motion trail effect during animation.
- * 
- * @param {CanvasRenderingContext2D} ctx - The canvas 2D rendering context
+ * Syncs canvas dimensions and morpher layout.
  */
-function draw(ctx) {
-  // Clear canvas with semi-transparent fill (creates trail effect)
+/**
+ * Syncs canvas dimensions and morpher layout with responsive art scaling.
+ */
+async function initOrResize() {
+  const rect = parentDiv.getBoundingClientRect();
+  logicalWidth = rect.width;
+
+  // Use the dynamic height instead of a static constant
+  logicalHeight = getMaxHeight();
+
+  canvas.style.width = logicalWidth + 'px';
+  canvas.style.height = logicalHeight + 'px';
+  canvas.width = logicalWidth * DPR;
+  canvas.height = logicalHeight * DPR;
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+  // Initialize Morpher if it doesn't exist
+  if (!morpher) {
+    morpher = new MakeabilityLabLogoMorpher(0, 0, TRIANGLE_SIZE, START_FILL_COLOR);
+  }
+
+  // Ensure the destination logo is centered in the final state
+  morpher.centerLogo(logicalWidth, logicalHeight);
+
+  // NEW: Define a dedicated gutter at the top for the artwork message text
+  const messageGutter = logicalHeight < 400 ? 40 : 60;
+  const availableHeightForArt = logicalHeight - messageGutter;
+
+  const holidayUrl = getActiveHolidayArtURL();
+  if (holidayUrl) {
+    try {
+      if (!cachedArtData) cachedArtData = await TriangleArt.loadData(holidayUrl);
+      
+      const padding = 0.9; 
+      const horizontalScale = (logicalWidth * padding) / (cachedArtData.numCols * TRIANGLE_SIZE);
+      const verticalScale = (availableHeightForArt * padding) / (cachedArtData.numRows * TRIANGLE_SIZE);
+      
+      const artScale = Math.min(1, horizontalScale, verticalScale);
+      const artTriangleSize = TRIANGLE_SIZE * artScale;
+
+      const artX = (logicalWidth - cachedArtData.numCols * artTriangleSize) / 2;
+      
+      // NEW: Offset the Y position by the messageGutter so the text has room above the heart
+      const artY = messageGutter + (availableHeightForArt - cachedArtData.numRows * artTriangleSize) / 2;
+      
+      const art = new TriangleArt(artX, artY, artTriangleSize, cachedArtData);
+      morpher.resetFromArt(art, logicalWidth, logicalHeight);
+    } catch (e) {
+      morpher.reset(logicalWidth, logicalHeight);
+    }
+  } else {
+    morpher.reset(logicalWidth, logicalHeight);
+  }
+
+  isReady = true;
+  morpher.update(currentLerpAmt);
+  render();
+}
+
+/** 
+ * Gets the maximum height allowed for the logo based on the CSS-defined container height.
+ * This ensures mobile gets ~350px and desktop gets ~600px.
+ */
+function getMaxHeight() {
+  const rect = parentDiv.getBoundingClientRect();
+  return rect.height || 600; 
+}
+
+function render() {
+  if (!isReady) return;
   ctx.fillStyle = BG_FILL_COLOR;
   ctx.fillRect(0, 0, logicalWidth, logicalHeight);
-  
-  makeLabLogoExploder.draw(ctx);
-
-  // Uncomment for debugging:
-  // drawDebugOverlay(ctx);
+  morpher.draw(ctx);
 }
 
-/**
- * Draws debug information overlay showing canvas and logo dimensions.
- * Useful for troubleshooting layout and scaling issues.
- * 
- * @param {CanvasRenderingContext2D} ctx - The canvas 2D rendering context
- */
-function drawDebugOverlay(ctx) {
-  const parentDivRect = parentDiv.getBoundingClientRect();
+// =============================================================================
+// Handlers
+// =============================================================================
 
-  ctx.fillStyle = 'black';
-  ctx.font = '16px Arial';
-  ctx.textAlign = 'center';
+window.addEventListener('scroll', () => {
+  currentLerpAmt = Math.min(window.scrollY / SCROLL_DISTANCE, 1);
+  if (morpher) {
+    morpher.update(currentLerpAmt);
+    render();
+  }
+}, { passive: true });
 
-  // Logo dimensions (centered at bottom)
-  const logoText = `Logo: ${makeLabLogoExploder.finalWidth.toFixed(1)} × ${makeLabLogoExploder.finalHeight.toFixed(1)}`;
-  ctx.fillText(logoText, logicalWidth / 2, logicalHeight - 20);
+const resizeObserver = new ResizeObserver(() => initOrResize());
+resizeObserver.observe(parentDiv);
 
-  // Canvas and parent dimensions (centered at top)
-  ctx.textBaseline = 'top';
-  const canvasText = `Canvas: ${logicalWidth} × ${logicalHeight} (DPR: ${DPR}) | Parent: ${parentDivRect.width.toFixed(0)} × ${parentDivRect.height.toFixed(0)}`;
-  ctx.fillText(canvasText, logicalWidth / 2, 4);
-}
+// Initial kick-off
+initOrResize();

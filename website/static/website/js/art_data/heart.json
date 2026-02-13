@@ -1,0 +1,51 @@
+{
+  "name": "Valentine Heart",
+  "message": "Happy Valentine's Day!",
+  "numCols": 10,
+  "numRows": 10,
+  "directionPattern": "alternating",
+  "palette": {
+    "R": { "base": "#e31b23", "jitter": { "type": "brightness", "range": [80, 100] } },
+    "P": { "base": "#ff8da1", "jitter": { "type": "brightness", "range": [90, 100] } }
+  },
+  "grid": [
+    { "_comment": "Row 0: Top lobes (The 'm' shape)",
+      "cells": [
+        null, 
+        { "tHalf": "R", "dir": "BottomRight" }, "R", { "tHalf": "R", "dir": "BottomLeft" }, 
+        null, null, 
+        { "tHalf": "R", "dir": "BottomRight" }, "R", { "tHalf": "R", "dir": "BottomLeft" }, 
+        null
+      ]
+    },
+    { "_comment": "Row 1: Fill top lobes",
+      "cells": [
+        { "tHalf": "R", "dir": "BottomRight" }, "R", "R", "R", [null, "R"], [null, "R"], "R", "R", "R", { "tHalf": "R", "dir": "BottomLeft" }
+      ]
+    },
+    { "_comment": "Row 2: Full width",
+      "cells": ["R", "R", "R", "R", "R", "R", "R", "R", "R", "R"]
+    },
+    { "_comment": "Row 3: Full width",
+      "cells": ["R", "R", "R", "R", "R", "R", "R", "R", "R", "R"]
+    },
+    { "_comment": "Row 4: Full width",
+      "cells": ["R", "R", "R", "R", "R", "R", "R", "R", "R", "R"]
+    },
+    { "_comment": "Row 5: Begin narrowing",
+      "cells": [["R", null], "R", "R", "R", "R", "R", "R", "R", "R", ["R", null], null]
+    },
+    { "_comment": "Row 6: Narrow more",
+      "cells": [null, ["R", null], "R", "R", "R", "R", "R", "R", ["R", null], null, null]
+    },
+    { "_comment": "Row 7: Towards the point",
+      "cells": [null, null, ["R", null], "R", "R", "R", "R", ["R", null], null, null, null]
+    },
+    { "_comment": "Row 8: Towards the point",
+      "cells": [null, null, null, ["R", null], "R", "R", ["R", null], null, null, null]
+    },
+    { "_comment": "Row 9: The bottom point (The 'V' shape)",
+      "cells": [null, null, null, null, ["R", null], ["R", null], null, null, null, null]
+    }
+  ]
+}
