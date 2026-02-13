@@ -22,7 +22,7 @@
  * Requirements:
  *   - A canvas element with ID 'makelab-logo-canvas'
  *   - A parent container with class 'col-md-6.center-canvas'
- *   - The MakeabilityLabLogoExploder library from the CDN
+ *   - The MakeabilityLabLogoMorpher library from the CDN
  *   - Art JSON files in art_data/ alongside this script
  *
  * CDN Cache: You can purge the CDN cache at https://www.jsdelivr.com/tools/purge
@@ -36,7 +36,6 @@
 
 import {
   MakeabilityLabLogoMorpher,
-  MakeabilityLabLogo,
   TriangleArt,
 } from 'https://cdn.jsdelivr.net/gh/makeabilitylab/js@main/dist/makelab.logo.js';
 
