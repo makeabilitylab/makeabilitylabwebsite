@@ -15,7 +15,7 @@
 # If you need to install new packages in the Docker container, you can try:
 # 1. docker ps // this gets a list of current processes/containers running
 # 2. docker exec -it -u root <container_id> /bin/bash
-# 3. Then here, you can install a new package like: > pip3 install django==5.2.9
+# 3. Then here, you can install a new package like: > pip3 install django==5.2.11
 #    or you could even run: > pip3 install -r requirements.txt
 #
 # You can also try to see which version of libraries are installed by running:
@@ -40,7 +40,7 @@
 # -----------------------------------------------------------------------------
 # Django 5.2 is an LTS release with support until April 2028
 # See: https://www.djangoproject.com/download/
-django==5.2.9
+django==5.2.11
 
 # -----------------------------------------------------------------------------
 # Database
