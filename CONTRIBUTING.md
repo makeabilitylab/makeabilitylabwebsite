@@ -15,6 +15,9 @@ This document outlines how to set up your local development environment and our 
   - [Creating a Superuser](#creating-a-superuser)
   - [Adding Content](#adding-content)
   - [Development Workflow](#development-workflow)
+  - [Accessibility Testing](#accessibility-testing)
+    - [Running Accessibility Checks](#running-accessibility-checks)
+    - [Configuring Tests](#configuring-tests)
   - [Pull Request Guidelines](#pull-request-guidelines)
   - [Troubleshooting](#troubleshooting)
 
@@ -173,6 +176,33 @@ A superuser account is required to access the Django admin interface and add con
 
    Push your branch and open a PR against `master`. PRs undergo code review and local testing before merging.
 
+## Accessibility Testing
+
+We use [Pa11y CI](https://github.com/pa11y/pa11y-ci) with the [Axe](https://www.deque.com/axe/) engine to run automated accessibility checks against the local site. Tests are configured in `.pa11yci.json` and target WCAG 2.0 AA compliance.
+
+### Running Accessibility Checks
+
+Make sure the website is running first, then run the a11y service:
+```bash
+# Start the website (if not already running)
+docker-compose -f docker-compose-local-dev.yml up -d
+
+# Run accessibility checks
+docker-compose -f docker-compose-local-dev.yml --profile testing run --rm a11y
+```
+
+To generate a JSON report:
+```bash
+docker-compose -f docker-compose-local-dev.yml --profile testing run --rm a11y sh -c "
+  npm install -g pa11y-ci &&
+  pa11y-ci --config /workspace/.pa11yci.json --json | tee /workspace/a11y-report.json
+"
+```
+
+### Configuring Tests
+
+Edit `.pa11yci.json` to add or remove URLs to test. The `urls` array lists every page that will be checked.
+
 ## Pull Request Guidelines
 
 - **UI changes require mockups**: Include before/after screenshots or design mockups so we can collectively agree on the visual direction. See [issue #287](https://github.com/makeabilitylab/makeabilitylabwebsite/issues/287) for a good example.
@@ -180,6 +210,8 @@ A superuser account is required to access the Django admin interface and add con
 - **One issue per branch**: Keep PRs focused on a single issue for easier review.
 
 - **Test locally**: Verify your changes work before submitting.
+  
+- **Run accessibility checks**: Run the a11y service before submitting UI changes to catch WCAG violations early.
 
 - **Clear descriptions**: Explain what changed and why in your PR description.
 

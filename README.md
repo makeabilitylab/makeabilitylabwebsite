@@ -37,6 +37,7 @@ makeabilitylabwebsite/
 |----------|-------------|
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Local development setup, workflow, and pull request guidelines |
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Production servers, logging, and data management |
+| [.pa11yci.json](.pa11yci.json) | Accessibility test configuration (Pa11y + Axe) |
 | [Troubleshooting Wiki](https://github.com/makeabilitylab/makeabilitylabwebsite/wiki/Troubleshooting) | Common issues and solutions |
 
 ## 🤝 Contributing
