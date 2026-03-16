@@ -113,7 +113,7 @@ django-ckeditor==6.7.3
 # Security & Networking
 # -----------------------------------------------------------------------------
 # pyOpenSSL - Python wrapper around OpenSSL
-pyOpenSSL==24.3.0
+pyOpenSSL==26.0.0
 
 # Requests - HTTP library for Python
 requests==2.32.4
