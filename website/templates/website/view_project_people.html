@@ -42,8 +42,23 @@ State is persisted via URL parameters for easy sharing and bookmarking.
           </button>
         </div>
 
-        <!-- Projects Section -->
+        <!-- People Mode Section -->
         <section class="sidebar-section">
+          <h3>People</h3>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="people-mode" value="all" checked>
+              <span>Show all people</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="people-mode" value="project">
+              <span>Show by project</span>
+            </label>
+          </div>
+        </section>
+
+        <!-- Projects Section (visible only in project mode) -->
+        <section id="projects-section" class="sidebar-section">
           <h3>Projects</h3>
           <div class="project-search-container">
             <input 
@@ -223,6 +238,7 @@ State is persisted via URL parameters for easy sharing and bookmarking.
       const selectedProjectsInfo = document.getElementById('selected-projects-info');
       const peopleCountEl = document.getElementById('people-count');
       const indicatorLegend = document.getElementById('indicator-legend');
+      const projectsSection = document.getElementById('projects-section');
 
       // Display option checkboxes
       const showTitleCheckbox = document.getElementById('show-title');
@@ -237,6 +253,7 @@ State is persisted via URL parameters for easy sharing and bookmarking.
       // State Management
       // -----------------------------------------------------------------------
       let state = {
+        peopleMode: 'all',  // 'all' or 'project'
         selectedProjects: new Set(),
         sort: 'time_on_project',
         group: 'none',
@@ -259,6 +276,12 @@ State is persisted via URL parameters for easy sharing and bookmarking.
        */
       function loadStateFromURL() {
         const params = new URLSearchParams(window.location.search);
+        
+        // Load people mode
+        const modeParam = params.get('mode');
+        if (modeParam && ['all', 'project'].includes(modeParam)) {
+          state.peopleMode = modeParam;
+        }
         
         // Load selected projects
         const projectsParam = params.get('projects');
@@ -311,6 +334,11 @@ State is persisted via URL parameters for easy sharing and bookmarking.
        */
       function saveStateToURL() {
         const params = new URLSearchParams();
+        
+        // Save people mode (only if not default)
+        if (state.peopleMode !== 'project') {
+          params.set('mode', state.peopleMode);
+        }
         
         // Save selected projects
         if (state.selectedProjects.size > 0) {
@@ -381,6 +409,13 @@ State is persisted via URL parameters for easy sharing and bookmarking.
        */
       function updateLegendVisibility() {
         indicatorLegend.classList.toggle('visible', state.showPublishedIndicator);
+      }
+
+      /**
+       * Shows/hides the projects section based on people mode.
+       */
+      function updateProjectsSectionVisibility() {
+        projectsSection.style.display = state.peopleMode === 'project' ? '' : 'none';
       }
 
       // -----------------------------------------------------------------------
@@ -461,28 +496,36 @@ State is persisted via URL parameters for easy sharing and bookmarking.
        * @returns {Array} Filtered array of people objects
        */
       function getFilteredPeople() {
-        if (state.selectedProjects.size === 0) {
-          return [];
-        }
-        
-        let filtered = PEOPLE_DATA.filter(person => {
-          // Check if person has worked on any selected project (via project roles)
-          for (const projShortName of state.selectedProjects) {
-            if (person.project_roles[projShortName]) {
-              return true;
-            }
+        let filtered;
+
+        if (state.peopleMode === 'all') {
+          // Show all people
+          filtered = [...PEOPLE_DATA];
+        } else {
+          // Show only people associated with selected projects
+          if (state.selectedProjects.size === 0) {
+            return [];
           }
-          // Also include people who have published on any selected project
-          // (covers external collaborators without project roles)
-          if (person.projects_published_on) {
+          
+          filtered = PEOPLE_DATA.filter(person => {
+            // Check if person has worked on any selected project (via project roles)
             for (const projShortName of state.selectedProjects) {
-              if (person.projects_published_on.includes(projShortName)) {
+              if (person.project_roles[projShortName]) {
                 return true;
               }
             }
-          }
-          return false;
-        });
+            // Also include people who have published on any selected project
+            // (covers external collaborators without project roles)
+            if (person.projects_published_on) {
+              for (const projShortName of state.selectedProjects) {
+                if (person.projects_published_on.includes(projShortName)) {
+                  return true;
+                }
+              }
+            }
+            return false;
+          });
+        }
 
         // Apply "hide non-publishers" filter
         if (state.hideNonPublishers) {
@@ -711,9 +754,13 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         let people = getFilteredPeople();
         
         if (people.length === 0) {
-          peopleContainer.innerHTML = state.selectedProjects.size === 0
-            ? '<p class="no-people-message">Select one or more projects from the sidebar to view associated people.</p>'
-            : '<p class="no-people-message">No people found for the selected projects.</p>';
+          if (state.peopleMode === 'all') {
+            peopleContainer.innerHTML = '<p class="no-people-message">No people found matching the current filters.</p>';
+          } else {
+            peopleContainer.innerHTML = state.selectedProjects.size === 0
+              ? '<p class="no-people-message">Select one or more projects from the sidebar to view associated people.</p>'
+              : '<p class="no-people-message">No people found for the selected projects.</p>';
+          }
           peopleCountEl.textContent = '';
           return;
         }
@@ -773,6 +820,11 @@ State is persisted via URL parameters for easy sharing and bookmarking.
        * Updates the selected projects info text.
        */
       function updateSelectedProjectsInfo() {
+        if (state.peopleMode === 'all') {
+          selectedProjectsInfo.textContent = 'Showing all people.';
+          return;
+        }
+        
         if (state.selectedProjects.size === 0) {
           selectedProjectsInfo.textContent = 'Select projects from the sidebar to view associated people.';
           return;
@@ -821,6 +873,16 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         // Sidebar collapse/expand
         collapseBtn.addEventListener('click', () => setSidebarCollapsed(true));
         expandBtn.addEventListener('click', () => setSidebarCollapsed(false));
+        
+        // People mode radios
+        document.querySelectorAll('input[name="people-mode"]').forEach(radio => {
+          radio.addEventListener('change', (e) => {
+            state.peopleMode = e.target.value;
+            updateProjectsSectionVisibility();
+            saveStateToURL();
+            renderPeople();
+          });
+        });
         
         // Project search
         projectSearch.addEventListener('input', (e) => {
@@ -916,6 +978,11 @@ State is persisted via URL parameters for easy sharing and bookmarking.
        * Syncs UI controls with current state.
        */
       function syncUIWithState() {
+        // Sync people mode
+        const modeRadio = document.querySelector(`input[name="people-mode"][value="${state.peopleMode}"]`);
+        if (modeRadio) modeRadio.checked = true;
+        updateProjectsSectionVisibility();
+        
         // Sync display options
         showTitleCheckbox.checked = state.showTitle;
         showDatesCheckbox.checked = state.showDates;

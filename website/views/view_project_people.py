@@ -55,18 +55,12 @@ def view_project_people(request):
             'people_count': project.get_people_count(),
         })
     
-    # Get all people who have ever worked on any project OR authored any
-    # publication associated with a project. This ensures external collaborators
-    # who co-authored papers but never held a project role are included.
+    # Get ALL people in the system. This includes people with project roles,
+    # people who authored publications on projects, and anyone else in the
+    # Person table (needed for the "Show all people" mode).
     from website.models import Publication
     
-    people_with_project_roles = Person.objects.filter(
-        projectrole__isnull=False
-    )
-    people_with_project_publications = Person.objects.filter(
-        publication__projects__isnull=False
-    )
-    all_people_on_projects = (people_with_project_roles | people_with_project_publications).distinct().select_related().prefetch_related(
+    all_people_on_projects = Person.objects.all().distinct().select_related().prefetch_related(
         'position_set',
         'projectrole_set',
         'projectrole_set__project',
