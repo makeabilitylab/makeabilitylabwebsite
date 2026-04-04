@@ -30,9 +30,11 @@
 
 :root {
   /* Publication indicator colors */
-  --color-published-ring: #2e7d32;           /* Green - has publications */
+  /*--color-published-ring: #2e7d32;  */         /* Green - has publications */
+  --color-published-ring: #ff3d00;           /* Hot orange - has publications */
+  --color-published-ring-pink: #ff1493;           /* Hot pink - has publications */
   --color-not-published-ring: #bdbdbd;       /* Gray - no publications */
-  --published-ring-width: 4px;
+  --published-ring-width: 5px;
 }
 
 

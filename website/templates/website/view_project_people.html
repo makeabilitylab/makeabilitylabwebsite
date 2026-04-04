@@ -93,6 +93,10 @@ State is persisted via URL parameters for easy sharing and bookmarking.
               <input type="checkbox" id="show-published-indicator">
               <span>Highlight published on project</span>
             </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="hide-non-publishers">
+              <span>Hide people without publications</span>
+            </label>
           </div>
           <div class="indicator-legend" id="indicator-legend">
             <div class="legend-item">
@@ -215,6 +219,7 @@ State is persisted via URL parameters for easy sharing and bookmarking.
       const showSchoolCheckbox = document.getElementById('show-school');
       const fullSchoolCheckbox = document.getElementById('full-school');
       const showPublishedIndicatorCheckbox = document.getElementById('show-published-indicator');
+      const hideNonPublishersCheckbox = document.getElementById('hide-non-publishers');
 
       // -----------------------------------------------------------------------
       // State Management
@@ -228,6 +233,7 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         showSchool: true,
         fullSchool: false,
         showPublishedIndicator: false,
+        hideNonPublishers: false,
         sidebarCollapsed: false
       };
 
@@ -276,6 +282,9 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         if (params.has('show_pub')) {
           state.showPublishedIndicator = params.get('show_pub') === '1';
         }
+        if (params.has('hide_non_pub')) {
+          state.hideNonPublishers = params.get('hide_non_pub') === '1';
+        }
         if (params.has('sidebar')) {
           state.sidebarCollapsed = params.get('sidebar') === '0';
         }
@@ -317,6 +326,9 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         }
         if (state.showPublishedIndicator) {
           params.set('show_pub', '1');
+        }
+        if (state.hideNonPublishers) {
+          params.set('hide_non_pub', '1');
         }
         if (state.sidebarCollapsed) {
           params.set('sidebar', '0');
@@ -426,6 +438,7 @@ State is persisted via URL parameters for easy sharing and bookmarking.
       
       /**
        * Filters people based on selected projects.
+       * Includes people with project roles OR who have published on selected projects.
        * @returns {Array} Filtered array of people objects
        */
       function getFilteredPeople() {
@@ -433,15 +446,31 @@ State is persisted via URL parameters for easy sharing and bookmarking.
           return [];
         }
         
-        return PEOPLE_DATA.filter(person => {
-          // Check if person has worked on any selected project
+        let filtered = PEOPLE_DATA.filter(person => {
+          // Check if person has worked on any selected project (via project roles)
           for (const projShortName of state.selectedProjects) {
             if (person.project_roles[projShortName]) {
               return true;
             }
           }
+          // Also include people who have published on any selected project
+          // (covers external collaborators without project roles)
+          if (person.projects_published_on) {
+            for (const projShortName of state.selectedProjects) {
+              if (person.projects_published_on.includes(projShortName)) {
+                return true;
+              }
+            }
+          }
           return false;
         });
+
+        // Apply "hide non-publishers" filter
+        if (state.hideNonPublishers) {
+          filtered = filtered.filter(person => person.has_any_publication);
+        }
+
+        return filtered;
       }
 
       /**
@@ -516,6 +545,34 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         }
         
         return sorted;
+      }
+
+      /**
+       * Returns the plural form of a position/title group name.
+       * @param {string} name - Singular group name
+       * @returns {string} Pluralized name
+       */
+      function pluralizeGroupName(name) {
+        const plurals = {
+          'Graduate Student': 'Graduate Students',
+          'Professor': 'Professors',
+          'Professional': 'Professionals',
+          'Post doc': 'Post docs',
+          'Undergrad': 'Undergrads',
+          'High School Student': 'High School Students',
+          'PhD Student': 'PhD Students',
+          'MS Student': 'MS Students',
+          'Medical Student': 'Medical Students',
+          'Research Scientist': 'Research Scientists',
+          'Software Developer': 'Software Developers',
+          'Designer': 'Designers',
+          'Medical Doctor': 'Medical Doctors',
+          'Director': 'Directors',
+          'Assistant Professor': 'Assistant Professors',
+          'Associate Professor': 'Associate Professors',
+          'Uncategorized': 'Uncategorized',
+        };
+        return plurals[name] || name + 's';
       }
 
       /**
@@ -672,10 +729,11 @@ State is persisted via URL parameters for easy sharing and bookmarking.
             
             // Sort within group
             const sortedGroupPeople = sortPeople(groupPeople);
+            const pluralName = pluralizeGroupName(groupName);
             
             html += `
               <div class="people-group">
-                <h2 class="people-group-title">${escapeHtml(groupName)}</h2>
+                <h2 class="people-group-title">${escapeHtml(pluralName)} (${sortedGroupPeople.length})</h2>
                 <div class="people-grid">
                   ${sortedGroupPeople.map(p => renderPersonCard(p)).join('')}
                 </div>
@@ -797,6 +855,13 @@ State is persisted via URL parameters for easy sharing and bookmarking.
           renderPeople();
         });
         
+        // Hide non-publishers checkbox
+        hideNonPublishersCheckbox.addEventListener('change', (e) => {
+          state.hideNonPublishers = e.target.checked;
+          saveStateToURL();
+          renderPeople();
+        });
+        
         // Sort options
         document.querySelectorAll('input[name="sort"]').forEach(radio => {
           radio.addEventListener('change', (e) => {
@@ -826,6 +891,7 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         showSchoolCheckbox.checked = state.showSchool;
         fullSchoolCheckbox.checked = state.fullSchool;
         showPublishedIndicatorCheckbox.checked = state.showPublishedIndicator;
+        hideNonPublishersCheckbox.checked = state.hideNonPublishers;
         
         // Sync sort option
         const sortRadio = document.querySelector(`input[name="sort"][value="${state.sort}"]`);
