@@ -124,6 +124,10 @@ State is persisted via URL parameters for easy sharing and bookmarking.
           <h3>Publication Indicator</h3>
           <div class="checkbox-group">
             <label class="checkbox-label">
+              <input type="checkbox" id="show-published-with-lab">
+              <span>Highlight published with lab</span>
+            </label>
+            <label class="checkbox-label">
               <input type="checkbox" id="show-published-indicator">
               <span>Highlight published on project</span>
             </label>
@@ -131,11 +135,11 @@ State is persisted via URL parameters for easy sharing and bookmarking.
           <div class="indicator-legend" id="indicator-legend">
             <div class="legend-item">
               <span class="legend-swatch legend-published"></span>
-              <span class="legend-label">Published on selected project(s)</span>
+              <span class="legend-label">Has publication(s)</span>
             </div>
             <div class="legend-item">
               <span class="legend-swatch legend-not-published"></span>
-              <span class="legend-label">No publications on selected project(s)</span>
+              <span class="legend-label">No publications</span>
             </div>
           </div>
         </section>
@@ -174,6 +178,10 @@ State is persisted via URL parameters for easy sharing and bookmarking.
             <label class="radio-label">
               <input type="radio" name="group" value="position">
               <span>Position (abstracted)</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="group" value="student_status">
+              <span>Students / Non-Students</span>
             </label>
           </div>
         </section>
@@ -250,6 +258,7 @@ State is persisted via URL parameters for easy sharing and bookmarking.
       const showSchoolCheckbox = document.getElementById('show-school');
       const fullSchoolCheckbox = document.getElementById('full-school');
       const showPublishedIndicatorCheckbox = document.getElementById('show-published-indicator');
+      const showPublishedWithLabCheckbox = document.getElementById('show-published-with-lab');
       const hideNonPublishersCheckbox = document.getElementById('hide-non-publishers');
       const hideCollaboratorsCheckbox = document.getElementById('hide-collaborators');
       const onlyMyAdviseesCheckbox = document.getElementById('only-my-advisees');
@@ -267,6 +276,7 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         showSchool: true,
         fullSchool: false,
         showPublishedIndicator: false,
+        showPublishedWithLab: false,
         hideNonPublishers: false,
         hideCollaborators: false,
         onlyMyAdvisees: false,
@@ -304,7 +314,7 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         
         // Load group option
         const groupParam = params.get('group');
-        if (groupParam && ['none', 'position'].includes(groupParam)) {
+        if (groupParam && ['none', 'position', 'student_status'].includes(groupParam)) {
           state.group = groupParam;
         }
         
@@ -323,6 +333,9 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         }
         if (params.has('show_pub')) {
           state.showPublishedIndicator = params.get('show_pub') === '1';
+        }
+        if (params.has('show_pub_lab')) {
+          state.showPublishedWithLab = params.get('show_pub_lab') === '1';
         }
         if (params.has('hide_non_pub')) {
           state.hideNonPublishers = params.get('hide_non_pub') === '1';
@@ -380,6 +393,9 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         if (state.showPublishedIndicator) {
           params.set('show_pub', '1');
         }
+        if (state.showPublishedWithLab) {
+          params.set('show_pub_lab', '1');
+        }
         if (state.hideNonPublishers) {
           params.set('hide_non_pub', '1');
         }
@@ -420,7 +436,8 @@ State is persisted via URL parameters for easy sharing and bookmarking.
        * Updates the legend visibility based on checkbox state.
        */
       function updateLegendVisibility() {
-        indicatorLegend.classList.toggle('visible', state.showPublishedIndicator);
+        indicatorLegend.classList.toggle('visible', 
+          state.showPublishedIndicator || state.showPublishedWithLab);
       }
 
       /**
@@ -694,6 +711,48 @@ State is persisted via URL parameters for easy sharing and bookmarking.
       }
 
       /**
+       * Checks if a person's title is a student title.
+       * @param {Object} person - Person object
+       * @returns {boolean} True if person is a student
+       */
+      function isStudent(person) {
+        const studentTitles = [
+          'High School Student', 'Undergrad', 'MS Student', 
+          'PhD Student', 'Medical Student'
+        ];
+        return studentTitles.includes(person.title);
+      }
+
+      /**
+       * Groups people into Students and Non-Students.
+       * @param {Array} people - Array of people
+       * @returns {Object} Object with 'Students' and 'Non-Students' keys
+       */
+      function groupPeopleByStudentStatus(people) {
+        const groups = {
+          'Students': [],
+          'Non-Students': []
+        };
+        
+        for (const person of people) {
+          if (isStudent(person)) {
+            groups['Students'].push(person);
+          } else {
+            groups['Non-Students'].push(person);
+          }
+        }
+        
+        // Remove empty groups
+        for (const key of Object.keys(groups)) {
+          if (groups[key].length === 0) {
+            delete groups[key];
+          }
+        }
+        
+        return groups;
+      }
+
+      /**
        * Renders a single person card.
        * @param {Object} person - Person object
        * @returns {string} HTML string for person card
@@ -731,10 +790,13 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         const imageUrl = person.image_url || '/static/website/images/placeholder-person.png';
         
         // Determine publication indicator class
+        // "Published on project" takes priority if both are enabled
         let publishedClass = '';
-        if (state.showPublishedIndicator) {
+        if (state.showPublishedIndicator && state.selectedProjects.size > 0) {
           const hasPublished = hasPublishedOnSelectedProjects(person);
           publishedClass = hasPublished ? 'has-published' : 'no-publications';
+        } else if (state.showPublishedWithLab) {
+          publishedClass = person.has_any_publication ? 'has-published' : 'no-publications';
         }
 
         // Build the card HTML
@@ -787,16 +849,21 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         // Sort people
         people = sortPeople(people);
         
-        // Count published vs not published if indicator is on
+        // Count published vs not published if either indicator is on
         let publishedCount = 0;
-        if (state.showPublishedIndicator) {
+        let publishedLabel = '';
+        if (state.showPublishedIndicator && state.selectedProjects.size > 0) {
           publishedCount = people.filter(p => hasPublishedOnSelectedProjects(p)).length;
+          publishedLabel = 'with publications on selected projects';
+        } else if (state.showPublishedWithLab) {
+          publishedCount = people.filter(p => p.has_any_publication).length;
+          publishedLabel = 'with publications';
         }
         
         // Update people count
         let countText = `${people.length} ${people.length === 1 ? 'person' : 'people'}`;
-        if (state.showPublishedIndicator) {
-          countText += ` (${publishedCount} with publications on selected projects)`;
+        if (publishedLabel) {
+          countText += ` (${publishedCount} ${publishedLabel})`;
         }
         peopleCountEl.textContent = countText;
         
@@ -824,6 +891,24 @@ State is persisted via URL parameters for easy sharing and bookmarking.
             html += `
               <div class="people-group">
                 <h2 class="people-group-title">${escapeHtml(pluralName)} (${sortedGroupPeople.length})</h2>
+                <div class="people-grid">
+                  ${sortedGroupPeople.map(p => renderPersonCard(p)).join('')}
+                </div>
+              </div>
+            `;
+          }
+        } else if (state.group === 'student_status') {
+          // Group by student vs non-student
+          const groups = groupPeopleByStudentStatus(people);
+          
+          for (const [groupName, groupPeople] of Object.entries(groups)) {
+            if (groupPeople.length === 0) continue;
+            
+            const sortedGroupPeople = sortPeople(groupPeople);
+            
+            html += `
+              <div class="people-group">
+                <h2 class="people-group-title">${escapeHtml(groupName)} (${sortedGroupPeople.length})</h2>
                 <div class="people-grid">
                   ${sortedGroupPeople.map(p => renderPersonCard(p)).join('')}
                 </div>
@@ -953,9 +1038,16 @@ State is persisted via URL parameters for easy sharing and bookmarking.
           renderPeople();
         });
         
-        // Publication indicator checkbox
+        // Publication indicator checkbox (per project)
         showPublishedIndicatorCheckbox.addEventListener('change', (e) => {
           state.showPublishedIndicator = e.target.checked;
+          saveStateToURL();
+          renderPeople();
+        });
+        
+        // Publication indicator checkbox (with lab)
+        showPublishedWithLabCheckbox.addEventListener('change', (e) => {
+          state.showPublishedWithLab = e.target.checked;
           saveStateToURL();
           renderPeople();
         });
@@ -1015,6 +1107,7 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         showSchoolCheckbox.checked = state.showSchool;
         fullSchoolCheckbox.checked = state.fullSchool;
         showPublishedIndicatorCheckbox.checked = state.showPublishedIndicator;
+        showPublishedWithLabCheckbox.checked = state.showPublishedWithLab;
         hideNonPublishersCheckbox.checked = state.hideNonPublishers;
         hideCollaboratorsCheckbox.checked = state.hideCollaborators;
         onlyMyAdviseesCheckbox.checked = state.onlyMyAdvisees;
