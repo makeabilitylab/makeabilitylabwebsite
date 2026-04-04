@@ -105,6 +105,10 @@ State is persisted via URL parameters for easy sharing and bookmarking.
           <h3>Filters</h3>
           <div class="checkbox-group">
             <label class="checkbox-label">
+              <input type="checkbox" id="only-my-advisees">
+              <span>Only my PhD advisees</span>
+            </label>
+            <label class="checkbox-label">
               <input type="checkbox" id="hide-non-publishers">
               <span>Hide people without publications</span>
             </label>
@@ -248,6 +252,7 @@ State is persisted via URL parameters for easy sharing and bookmarking.
       const showPublishedIndicatorCheckbox = document.getElementById('show-published-indicator');
       const hideNonPublishersCheckbox = document.getElementById('hide-non-publishers');
       const hideCollaboratorsCheckbox = document.getElementById('hide-collaborators');
+      const onlyMyAdviseesCheckbox = document.getElementById('only-my-advisees');
 
       // -----------------------------------------------------------------------
       // State Management
@@ -264,6 +269,7 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         showPublishedIndicator: false,
         hideNonPublishers: false,
         hideCollaborators: false,
+        onlyMyAdvisees: false,
         sidebarCollapsed: false
       };
 
@@ -324,6 +330,9 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         if (params.has('hide_collab')) {
           state.hideCollaborators = params.get('hide_collab') === '1';
         }
+        if (params.has('my_advisees')) {
+          state.onlyMyAdvisees = params.get('my_advisees') === '1';
+        }
         if (params.has('sidebar')) {
           state.sidebarCollapsed = params.get('sidebar') === '0';
         }
@@ -336,7 +345,7 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         const params = new URLSearchParams();
         
         // Save people mode (only if not default)
-        if (state.peopleMode !== 'project') {
+        if (state.peopleMode !== 'all') {
           params.set('mode', state.peopleMode);
         }
         
@@ -376,6 +385,9 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         }
         if (state.hideCollaborators) {
           params.set('hide_collab', '1');
+        }
+        if (state.onlyMyAdvisees) {
+          params.set('my_advisees', '1');
         }
         if (state.sidebarCollapsed) {
           params.set('sidebar', '0');
@@ -535,6 +547,13 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         // Apply "hide collaborators" filter
         if (state.hideCollaborators) {
           filtered = filtered.filter(person => person.role !== 'Collaborator');
+        }
+
+        // Apply "only my PhD advisees" filter
+        if (state.onlyMyAdvisees) {
+          filtered = filtered.filter(person => 
+            person.is_phd_advisee || person.last_name === 'Saugstad'
+          );
         }
 
         return filtered;
@@ -955,6 +974,13 @@ State is persisted via URL parameters for easy sharing and bookmarking.
           renderPeople();
         });
         
+        // Only my PhD advisees checkbox
+        onlyMyAdviseesCheckbox.addEventListener('change', (e) => {
+          state.onlyMyAdvisees = e.target.checked;
+          saveStateToURL();
+          renderPeople();
+        });
+        
         // Sort options
         document.querySelectorAll('input[name="sort"]').forEach(radio => {
           radio.addEventListener('change', (e) => {
@@ -991,6 +1017,7 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         showPublishedIndicatorCheckbox.checked = state.showPublishedIndicator;
         hideNonPublishersCheckbox.checked = state.hideNonPublishers;
         hideCollaboratorsCheckbox.checked = state.hideCollaborators;
+        onlyMyAdviseesCheckbox.checked = state.onlyMyAdvisees;
         
         // Sync sort option
         const sortRadio = document.querySelector(`input[name="sort"][value="${state.sort}"]`);

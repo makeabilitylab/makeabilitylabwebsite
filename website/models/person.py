@@ -281,6 +281,29 @@ class Person(models.Model):
 
     get_time_in_current_position.short_description = "Time in Current Position"
 
+    def is_phd_advisee_of(self, advisor_person):
+        """
+        Returns True if this person is a current or graduated PhD advisee.
+        Excludes students who left the lab without completing their PhD.
+        """
+        phd_positions = self.position_set.filter(
+            title=Title.PHD_STUDENT
+        ).filter(
+            models.Q(advisor=advisor_person) | models.Q(co_advisor=advisor_person)
+        )
+        
+        if not phd_positions.exists():
+            return False
+        
+        # Check if any PhD position is still active (current student)
+        for pos in phd_positions:
+            if pos.end_date is None or pos.end_date >= date.today():
+                return True
+        
+        # Past student — only include if they have a dissertation
+        # (get_dissertation is a cached_property on Person)
+        return self.get_dissertation is not None
+
     @cached_property
     def is_professor(self):
         """Returns true if a professor in current position. A cached property."""

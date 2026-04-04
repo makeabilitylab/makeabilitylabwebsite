@@ -18,7 +18,7 @@ URL Parameters (for state persistence):
 
 from django.shortcuts import render
 from django.http import JsonResponse
-from website.models import Project, Person
+from website.models import Project, Person, Publication
 from website.models.position import Position, Title
 from datetime import date
 import json
@@ -58,8 +58,6 @@ def view_project_people(request):
     # Get ALL people in the system. This includes people with project roles,
     # people who authored publications on projects, and anyone else in the
     # Person table (needed for the "Show all people" mode).
-    from website.models import Publication
-    
     all_people_on_projects = Person.objects.all().distinct().select_related().prefetch_related(
         'position_set',
         'projectrole_set',
@@ -67,6 +65,9 @@ def view_project_people(request):
         'publication_set',
         'publication_set__projects'
     )
+
+    # Near the top of view_project_people, after fetching all_people_on_projects:
+    director = Person.objects.filter(last_name='Froehlich').first()
     
     # Build comprehensive people data for client-side operations
     people_data = []
@@ -150,6 +151,9 @@ def view_project_people(request):
             'last_name': person.last_name,
             'full_name': person.get_full_name(),
             'url_name': person.url_name,
+
+            # Is Froehlich's PhD advisee
+            'is_phd_advisee': person.is_phd_advisee_of(director) if director else False,
             
             # Image URL (pre-computed thumbnail)
             'image_url': image_url,
