@@ -18,7 +18,7 @@ URL Parameters (for state persistence):
 
 from django.shortcuts import render
 from django.http import JsonResponse
-from website.models import Project, Person, Publication
+from website.models import Project, Person
 from website.models.position import Position, Title
 from datetime import date
 import json
@@ -57,7 +57,9 @@ def view_project_people(request):
     
     # Get all people who have ever worked on any project OR authored any
     # publication associated with a project. This ensures external collaborators
-    # who co-authored papers but never held a project role are included.    
+    # who co-authored papers but never held a project role are included.
+    from website.models import Publication
+    
     people_with_project_roles = Person.objects.filter(
         projectrole__isnull=False
     )
@@ -188,6 +190,9 @@ def view_project_people(request):
             
             # Special case for lab director
             'is_director': person.last_name == 'Froehlich',
+            
+            # Role info (for filtering collaborators vs members)
+            'role': latest_position.role if latest_position else 'Unknown',
         }
         
         people_data.append(person_obj)

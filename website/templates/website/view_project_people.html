@@ -85,6 +85,21 @@ State is persisted via URL parameters for easy sharing and bookmarking.
           </div>
         </section>
 
+        <!-- Filter Section -->
+        <section class="sidebar-section">
+          <h3>Filters</h3>
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="hide-non-publishers">
+              <span>Hide people without publications</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="hide-collaborators">
+              <span>Hide collaborators</span>
+            </label>
+          </div>
+        </section>
+
         <!-- Publication Indicator Section -->
         <section class="sidebar-section">
           <h3>Publication Indicator</h3>
@@ -92,10 +107,6 @@ State is persisted via URL parameters for easy sharing and bookmarking.
             <label class="checkbox-label">
               <input type="checkbox" id="show-published-indicator">
               <span>Highlight published on project</span>
-            </label>
-            <label class="checkbox-label">
-              <input type="checkbox" id="hide-non-publishers">
-              <span>Hide people without publications</span>
             </label>
           </div>
           <div class="indicator-legend" id="indicator-legend">
@@ -220,6 +231,7 @@ State is persisted via URL parameters for easy sharing and bookmarking.
       const fullSchoolCheckbox = document.getElementById('full-school');
       const showPublishedIndicatorCheckbox = document.getElementById('show-published-indicator');
       const hideNonPublishersCheckbox = document.getElementById('hide-non-publishers');
+      const hideCollaboratorsCheckbox = document.getElementById('hide-collaborators');
 
       // -----------------------------------------------------------------------
       // State Management
@@ -234,6 +246,7 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         fullSchool: false,
         showPublishedIndicator: false,
         hideNonPublishers: false,
+        hideCollaborators: false,
         sidebarCollapsed: false
       };
 
@@ -285,6 +298,9 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         if (params.has('hide_non_pub')) {
           state.hideNonPublishers = params.get('hide_non_pub') === '1';
         }
+        if (params.has('hide_collab')) {
+          state.hideCollaborators = params.get('hide_collab') === '1';
+        }
         if (params.has('sidebar')) {
           state.sidebarCollapsed = params.get('sidebar') === '0';
         }
@@ -329,6 +345,9 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         }
         if (state.hideNonPublishers) {
           params.set('hide_non_pub', '1');
+        }
+        if (state.hideCollaborators) {
+          params.set('hide_collab', '1');
         }
         if (state.sidebarCollapsed) {
           params.set('sidebar', '0');
@@ -468,6 +487,11 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         // Apply "hide non-publishers" filter
         if (state.hideNonPublishers) {
           filtered = filtered.filter(person => person.has_any_publication);
+        }
+
+        // Apply "hide collaborators" filter
+        if (state.hideCollaborators) {
+          filtered = filtered.filter(person => person.role !== 'Collaborator');
         }
 
         return filtered;
@@ -862,6 +886,13 @@ State is persisted via URL parameters for easy sharing and bookmarking.
           renderPeople();
         });
         
+        // Hide collaborators checkbox
+        hideCollaboratorsCheckbox.addEventListener('change', (e) => {
+          state.hideCollaborators = e.target.checked;
+          saveStateToURL();
+          renderPeople();
+        });
+        
         // Sort options
         document.querySelectorAll('input[name="sort"]').forEach(radio => {
           radio.addEventListener('change', (e) => {
@@ -892,6 +923,7 @@ State is persisted via URL parameters for easy sharing and bookmarking.
         fullSchoolCheckbox.checked = state.fullSchool;
         showPublishedIndicatorCheckbox.checked = state.showPublishedIndicator;
         hideNonPublishersCheckbox.checked = state.hideNonPublishers;
+        hideCollaboratorsCheckbox.checked = state.hideCollaborators;
         
         // Sync sort option
         const sortRadio = document.querySelector(`input[name="sort"][value="${state.sort}"]`);
