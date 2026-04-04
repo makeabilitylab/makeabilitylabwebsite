@@ -55,11 +55,18 @@ def view_project_people(request):
             'people_count': project.get_people_count(),
         })
     
-    # Get all people who have ever worked on any project
-    # We'll filter client-side based on selected projects
-    all_people_on_projects = Person.objects.filter(
+    # Get all people who have ever worked on any project OR authored any
+    # publication associated with a project. This ensures external collaborators
+    # who co-authored papers but never held a project role are included.
+    from website.models import Publication
+    
+    people_with_project_roles = Person.objects.filter(
         projectrole__isnull=False
-    ).distinct().select_related().prefetch_related(
+    )
+    people_with_project_publications = Person.objects.filter(
+        publication__projects__isnull=False
+    )
+    all_people_on_projects = (people_with_project_roles | people_with_project_publications).distinct().select_related().prefetch_related(
         'position_set',
         'projectrole_set',
         'projectrole_set__project',
@@ -178,8 +185,14 @@ def view_project_people(request):
             # Projects this person has published on (for highlight indicator)
             'projects_published_on': list(projects_published_on),
             
+            # Whether this person has any publication at all in our system
+            'has_any_publication': person.publication_set.exists(),
+            
             # Special case for lab director
             'is_director': person.last_name == 'Froehlich',
+            
+            # Role info (for filtering collaborators vs members)
+            'role': latest_position.role if latest_position else 'Unknown',
         }
         
         people_data.append(person_obj)
