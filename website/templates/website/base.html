@@ -211,6 +211,13 @@ TEMPLATE BLOCKS:
                     <span>Publications</span>
                   </a>
                 </li>
+
+                <li class="{% if url_name == 'awards' %}active{% endif %}">
+                  <a href="{% url 'website:awards' %}">
+                    <i class="fa-solid fa-trophy nav-icon" aria-hidden="true"></i>
+                    <span>Awards</span>
+                  </a>
+                </li>
                 
                 <li>
                   <a href="https://docs.google.com/document/d/1YiiDsfpiolpXjUTj8xWrQwQQUzqrfqT9bocOpaYDrtI" 

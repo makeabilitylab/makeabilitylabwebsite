@@ -1,0 +1,123 @@
+{% extends "website/base.html" %}
+
+{% block pagetitle %}Awards{% endblock %}
+
+{% load static %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/jquery-ui.min.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/jquery-ui.theme.min.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.18.2/tocbot.css">
+{% endblock %}
+
+{% block external_scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.18.2/tocbot.js"></script>
+<script src="{% static 'website/js/jquery-ui.min.js' %}"></script>
+<script src="{% static 'website/js/citationPopoverSimple.js' %}"></script>
+{% endblock %}
+
+{% block scripts %}
+document.addEventListener('DOMContentLoaded', function() {
+  CitationPopover.init('.publication-citation-link');
+});
+{% endblock %}
+
+{% block maincarousel %}
+<!-- No carousel on awards page -->
+{% endblock %}
+
+{% block content %}
+<div id="awards-container" class="container" style="margin-top: 80px;">
+  <div class="row row-flex">
+    <div class="col-md-2 hidden-sm hidden-xs">
+      <nav id="js-toc" class="js-toc toc" aria-label="Awards sections"></nav>
+    </div>
+
+    <div class="col-md-10">
+      <div id="makelab-awards" class="makelab-content-container">
+        <h1 style="margin-top: 0;">Awards</h1>
+
+        <!-- ===== People: Awards & Distinctions ===== -->
+        <section aria-labelledby="awards-distinctions-heading">
+          <h2 id="awards-distinctions-heading" class="heading-with-anchor">
+            Awards &amp; Distinctions
+            <a href="#awards-distinctions-heading" class="header-anchor"
+               aria-label="Link to Awards and Distinctions section">
+              <i class="fa-solid fa-link" aria-hidden="true"></i>
+            </a>
+          </h2>
+
+          {% for award in person_awards %}
+          <div class="row" style="margin-left: 5px;">
+            <div class="col-xs-12">
+              {% include "snippets/display_person_award_snippet.html" %}
+            </div>
+          </div>
+          {% empty %}
+          <p>No awards or distinctions to display yet.</p>
+          {% endfor %}
+        </section>
+
+        <!-- ===== Best Paper Awards ===== -->
+        <section aria-labelledby="best-paper-awards-heading">
+          <h2 id="best-paper-awards-heading" class="heading-with-anchor">
+            Best Paper Awards
+            <a href="#best-paper-awards-heading" class="header-anchor"
+               aria-label="Link to Best Paper Awards section">
+              <i class="fa-solid fa-link" aria-hidden="true"></i>
+            </a>
+          </h2>
+
+          {% for pub in best_paper_pubs %}
+          <div class="row" style="margin-left: 5px;">
+            <div class="col-xs-12">
+              {% include "snippets/display_pub_snippet.html" with orientation="vertical" %}
+            </div>
+          </div>
+          {% empty %}
+          <p>No best paper awards to display yet.</p>
+          {% endfor %}
+        </section>
+
+        <!-- ===== Other Paper Awards ===== -->
+        <section aria-labelledby="other-paper-awards-heading">
+          <h2 id="other-paper-awards-heading" class="heading-with-anchor">
+            Other Paper Awards
+            <a href="#other-paper-awards-heading" class="header-anchor"
+               aria-label="Link to Other Paper Awards section">
+              <i class="fa-solid fa-link" aria-hidden="true"></i>
+            </a>
+          </h2>
+
+          {% for pub in other_award_pubs %}
+          <div class="row" style="margin-left: 5px;">
+            <div class="col-xs-12">
+              {% include "snippets/display_pub_snippet.html" with orientation="vertical" %}
+            </div>
+          </div>
+          {% empty %}
+          <p>No other paper awards to display yet.</p>
+          {% endfor %}
+        </section>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Section navigation. headingSelector is 'h2', so only the three section
+  // titles appear in the sidebar (no years).
+  tocbot.init({
+    tocSelector: '.js-toc',
+    contentSelector: '.makelab-content-container',
+    headingSelector: 'h2',
+    hasInnerContainers: true,
+    positionFixedSelector: null,
+    fixedSidebarOffset: null,
+    scrollSmoothOffset: -100,
+    headingsOffset: 100
+  });
+</script>
+{% endblock %}

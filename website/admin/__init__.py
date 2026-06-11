@@ -57,6 +57,7 @@ from . import (
     keyword_admin,
     news_admin,
     person_admin,
+    person_award_admin,
     photo_admin,
     position_admin,
     poster_admin,
