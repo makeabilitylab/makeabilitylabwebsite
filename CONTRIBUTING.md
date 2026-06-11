@@ -11,6 +11,10 @@ This document outlines how to set up your local development environment and our 
     - [MacOS](#macos)
     - [Windows (WSL2)](#windows-wsl2)
   - [Running the Website](#running-the-website)
+  - [Opening the Project in VSCode (WSL2)](#opening-the-project-in-vscode-wsl2)
+    - [Prerequisites](#prerequisites-1)
+    - [Option 1: Open in the Dev Container (Recommended)](#option-1-open-in-the-dev-container-recommended)
+    - [Option 2: Edit on the WSL2 Filesystem (Lightweight Alternative)](#option-2-edit-on-the-wsl2-filesystem-lightweight-alternative)
   - [Shutting Down](#shutting-down)
   - [Creating a Superuser](#creating-a-superuser)
   - [Adding Content](#adding-content)
@@ -100,6 +104,70 @@ Or use the convenience script:
 The site will be available at [http://localhost:8571](http://localhost:8571).
 
 > **Note:** You don't need to rebuild the image unless you modify `Dockerfile` or `docker-compose.yml`. Code changes are reflected automatically.
+
+## Opening the Project in VSCode (WSL2)
+
+> **Why launch from WSL matters:** On Windows, your code lives inside the WSL2 Linux filesystem, but VSCode runs on Windows. If you open the project from Windows Explorer or via `\\wsl$`, VSCode reads files across the Windows↔Linux boundary, which is slow and can silently break file watching (so live reload may not fire). The fix is to launch VSCode *from inside WSL2* so its backend runs on the Linux side, right next to your code.
+
+This repo ships a **Dev Container** config (`.devcontainer/devcontainer.json`), so VSCode can open the project *inside* the running website container with Python IntelliSense, Django syntax highlighting, and template formatting all preconfigured. **This is the recommended workflow** (Option 1 below). Option 2 is a lighter-weight alternative for quick edits when you don't need container-aware IntelliSense.
+
+### Prerequisites
+
+Install these two VSCode extensions (VSCode usually prompts you for the WSL one automatically the first time you run `code .` from WSL):
+
+* **WSL** (`ms-vscode-remote.remote-wsl`) — runs VSCode's backend inside your WSL2 distro.
+* **Dev Containers** (`ms-vscode-remote.remote-containers`) — lets VSCode open/reopen the project inside the Docker container.
+
+You do **not** need to install Python, Pylance, the Django extension, or djlint yourself—the Dev Container installs them automatically *inside the container* (see below).
+
+### Option 1: Open in the Dev Container (Recommended)
+
+This runs VSCode's backend inside the `website` container, so the integrated terminal, Python interpreter, debugger, and IntelliSense all use the container's exact environment and installed packages.
+
+1. **Open a WSL2 terminal** and navigate to the repo where you cloned it *inside* WSL (somewhere under your Linux home like `~/`, **not** under `/mnt/c/...`):
+
+   ```bash
+   cd makeabilitylabwebsite
+   ```
+
+2. **Launch VSCode from WSL:**
+
+   ```bash
+   code .
+   ```
+
+   Confirm the green badge in the **bottom-left corner** reads **`WSL: Ubuntu`** (or your distro's name). If it doesn't, you've opened the Windows-side copy—close the window and re-run `code .` from the WSL shell.
+
+3. **Reopen in the container.** VSCode detects `.devcontainer/devcontainer.json` and pops a notification: **"Reopen in Container."** Click it. (Missed the popup? Open the Command Palette with `Ctrl+Shift+P` and run **Dev Containers: Reopen in Container**.)
+
+4. VSCode now starts the `website` service (and the `db` it depends on) from `docker-compose-local-dev.yml`, opens `/code` as the workspace, and **on first creation** automatically:
+   * installs Pylance, the Django extension (`batisteo.vscode-django`), and djlint *inside the container*;
+   * sets djlint as the formatter for Django/HTML templates;
+   * runs `git config --global --add safe.directory /code` to prevent the Git "dubious ownership" error.
+
+5. The site comes up at [http://localhost:8571](http://localhost:8571) as usual. Edits reflect live (the project is mounted at `/code`), and IntelliSense now resolves against the container's Python.
+
+> **Tip:** To switch back to plain host-side editing, run **Dev Containers: Reopen Folder Locally** from the Command Palette. To re-enter the container later, it's **Dev Containers: Reopen in Container** again.
+
+### Option 2: Edit on the WSL2 Filesystem (Lightweight Alternative)
+
+Skip the container and edit directly on the WSL2 side. Faster to open, but VSCode uses your **WSL2 host's** Python, so IntelliSense won't see packages installed only inside the container.
+
+1. From a WSL2 terminal in the repo, run `code .` (confirm the `WSL: Ubuntu` badge as above) and **dismiss** the "Reopen in Container" prompt.
+
+2. Start the site from VSCode's integrated terminal:
+
+   ```bash
+   docker-compose -f docker-compose-local-dev.yml up
+   ```
+
+3. Visit [http://localhost:8571](http://localhost:8571). Because the project is mounted into the container (`.:/code`), your edits are reflected immediately—no rebuild required.
+
+> **Tip:** To get a plain shell inside the running container (e.g., to run `manage.py` commands) without using the Dev Container, use:
+> ```bash
+> docker exec -it makeabilitylabwebsite-website-1 bash
+> ```
+> Depending on your Docker Compose version the name may use underscores: `makeabilitylabwebsite_website_1`. This is the same container referenced in [Creating a Superuser](#creating-a-superuser).
 
 ## Shutting Down
 
