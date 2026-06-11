@@ -1,5 +1,5 @@
 from django.conf import settings
-from website.models import Publication, PersonAward
+from website.models import Publication, Award
 from django.shortcuts import render
 
 import time
@@ -15,7 +15,7 @@ def awards(request):
     # People awards & distinctions (fellowships, faculty honors, society
     # recognitions). Flat, newest-first -- no year grouping, so gap years
     # aren't visually obvious.
-    person_awards = PersonAward.objects.order_by('-date')
+    distinctions = Award.objects.order_by('-date')
 
     # Paper awards. We pull every awarded pub, then split in Python so that
     # "Other" is the *negation* of is_best_paper() -- new award types (e.g.,
@@ -29,7 +29,7 @@ def awards(request):
     other_award_pubs = [p for p in awarded_pubs if not p.is_best_paper()]
 
     context = {
-        'person_awards': person_awards,
+        'distinctions': distinctions,
         'best_paper_pubs': best_paper_pubs,
         'other_award_pubs': other_award_pubs,
         'debug': settings.DEBUG,

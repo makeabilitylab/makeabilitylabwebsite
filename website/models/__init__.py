@@ -17,4 +17,4 @@ from .talk import Talk
 from .talk import TalkType
 from .video import Video
 from .grant import Grant
-from .person_award import PersonAward, PersonAwardType
+from .award import Award, AwardType

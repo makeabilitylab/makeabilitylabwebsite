@@ -48,10 +48,10 @@ document.addEventListener('DOMContentLoaded', function() {
             </a>
           </h2>
 
-          {% for award in person_awards %}
+          {% for award in distinctions %}
           <div class="row" style="margin-left: 5px;">
             <div class="col-xs-12">
-              {% include "snippets/display_person_award_snippet.html" %}
+              {% include "snippets/display_award_snippet.html" %}
             </div>
           </div>
           {% empty %}

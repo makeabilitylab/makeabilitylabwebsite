@@ -1,0 +1,39 @@
+{% comment %}
+Renders a single Award (person and/or project recognition).
+Expects `award` (an Award instance) in context.
+{% endcomment %}
+
+<div class="award individual-project-listing">
+  <p class="artifact-title" style="margin-top: 0;">
+    {% if award.url %}
+      <a href="{{ award.url }}" target="_blank" rel="noopener noreferrer">{{ award.title }}</a>
+    {% else %}
+      {{ award.title }}
+    {% endif %}
+    {% if award.organization %}<span class="artifact-venue"> — {{ award.organization }}</span>{% endif %}
+  </p>
+
+  <p class="artifact-authors" style="margin: 0;">
+    {% for person in award.recipients.all %}
+      <a href="{% url 'website:member_by_name' person.get_url_name %}">{{ person.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+
+    {% if award.recipients.exists and award.projects.exists %}, {% endif %}
+
+    {# Projects rendered as plain text: the project URL regex only allows letters,
+       hyphens, and spaces, so reversing a name with digits/other chars would raise
+       NoReverseMatch and break the page. To link them once you've confirmed your
+       project names are safe, swap the loop below for:
+       {% for project in award.projects.all %}
+         <a href="{% url 'website:project' project.name %}">{{ project.name }}</a>{% if not forloop.last %}, {% endif %}
+       {% endfor %}
+    #}
+    {% for project in award.projects.all %}
+      {{ project.name }}{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+  </p>
+
+  {% if award.description %}
+  <p class="artifact-links" style="margin-top: 4px;">{{ award.description|safe }}</p>
+  {% endif %}
+</div>
