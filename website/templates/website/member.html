@@ -59,7 +59,11 @@ CONTEXT VARIABLES:
 {% elif auto_generated_bio %}
 <meta property="og:description" content="{{ auto_generated_bio|striptags|truncatewords:50 }}">
 {% else %}
+  {% if position %}
 <meta property="og:description" content="{{ person.get_full_name }} is a {{ position.title }} at the Makeability Lab, an advanced research lab in Human-Computer Interaction at University of Washington.">
+  {% else %}
+<meta property="og:description" content="{{ person.get_full_name }} — Makeability Lab, an advanced research lab in Human-Computer Interaction at University of Washington.">
+  {% endif %}
 {% endif %}
 <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% thumbnail person.image '1200x630' box=person.cropping crop=True upscale=True %}">
 <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
@@ -123,8 +127,10 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="person-bio-container">
           <h1 class="person-name-header">{{ person.get_full_name }}</h1>
           
+          {% if position %}
           <div class="person-title">{{ position.title }}, {{ position.department }}</div>
           <div class="person-affiliation">{{ position.school }}</div>
+          {% endif %}
 
           <!-- Social & Website Links -->
           {% if person.has_website_links %}
