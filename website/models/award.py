@@ -9,9 +9,9 @@ class AwardType(models.TextChoices):
     value is the short string on the left; the label on the right is shown both
     in the admin dropdown and as the section heading (hence the plural form).
     """
+    STUDENT_AWARD = "Student Award", "Student Awards"
     PHD_FELLOWSHIP = "PhD Fellowship", "PhD Fellowships"
     FACULTY_HONOR = "Faculty Honor", "Faculty Honors"
-    STUDENT_AWARD = "Student Award", "Student Awards"
     PROJECT_AWARD = "Project Award", "Project Awards"
 
 

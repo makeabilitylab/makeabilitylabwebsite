@@ -19,10 +19,21 @@ def awards(request):
     # omitted -- assign a valid type in the admin to make them appear.
     all_distinctions = list(Award.objects.order_by('-date'))
     distinction_sections = []
+    student_awards_section = None
     for value, label in AwardType.choices:
         section_awards = [a for a in all_distinctions if a.award_type == value]
-        if section_awards:
+        if not section_awards:
+            continue
+        if value in (AwardType.STUDENT_AWARD, AwardType.PHD_FELLOWSHIP):
+            if student_awards_section is None:
+                student_awards_section = {'label': 'Student Awards', 'awards': []}
+            student_awards_section['awards'].extend(section_awards)
+        else:
             distinction_sections.append({'label': label, 'awards': section_awards})
+
+    if student_awards_section:
+        student_awards_section['awards'].sort(key=lambda a: a.date, reverse=True)
+        distinction_sections.insert(0, student_awards_section)
 
     # Paper awards (from Publication.award). "Other" is defined as the negation
     # of is_best_paper(), so new award types fall through automatically.
