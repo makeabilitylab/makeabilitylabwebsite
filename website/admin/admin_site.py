@@ -52,7 +52,7 @@ class MakeabilityLabAdminSite(admin.AdminSite):
         ),
         (
             "People & News",
-            ["Person", "News"],
+            ["Person", "News", "Award"],
             "Please keep your ugrads up-to-date! Make sure you add them to your projects, set their mentorship info, and keep dates accurate."
         ),
         (

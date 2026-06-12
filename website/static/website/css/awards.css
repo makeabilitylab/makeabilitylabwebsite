@@ -1,0 +1,51 @@
+/* ============================================================================
+   Awards page
+   Loaded by: website/templates/website/awards.html
+   Owns all spacing/layout specific to the Awards page so that awards.html and
+   display_award_snippet.html stay free of inline styles. (publications.css is
+   also loaded by awards.html because the Best/Other paper sections reuse the
+   shared publication snippet, which that file styles.)
+   ============================================================================ */
+
+/* Page container clears the fixed navbar. */
+#awards-container {
+  margin-top: 80px;
+}
+
+/* Flush the page heading to the top of the content column. */
+#makelab-awards h1 {
+  margin-top: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   Award items: one wrapper per row (person/project award OR publication),
+   given a slight, consistent left indent. Here `padding-left` IS the indent,
+   with no Bootstrap gutter math to reason about.
+   --------------------------------------------------------------------------- */
+.award-item {
+  padding-left: 6px;
+}
+
+/* The publication snippet renders as <article class="row">, which carries
+   Bootstrap's negative side margins. Zero them so publication rows line up
+   with the person/project award rows above; otherwise the negative margin
+   cancels the indent and pulls the item left. */
+.award-item > .row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   Award snippet (people & project distinctions). The shared .artifact-*
+   classes come from base.css; these rules only adjust spacing for this page.
+   --------------------------------------------------------------------------- */
+
+/* Title sits flush at the top of each item. */
+.award .artifact-title {
+  margin-top: 0;
+}
+
+/* Small gap above the optional description line. */
+.award .award-description {
+  margin-top: var(--space-1);
+}

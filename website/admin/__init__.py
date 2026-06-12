@@ -52,6 +52,7 @@ from .artifact_admin import ArtifactAdmin
 # Import all admin modules to trigger their @admin.register decorators
 # The decorators will register models with our custom admin.site
 from . import (
+    award_admin,
     banner_admin,
     grant_admin,
     keyword_admin,

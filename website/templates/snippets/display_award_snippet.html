@@ -1,0 +1,38 @@
+{% comment %}
+Renders a single Award (person and/or project recognition).
+Expects `award` (an Award instance) in context.
+
+Layout/spacing is handled in awards.css under the `.award` scope, so this
+markup stays free of inline styles.
+{% endcomment %}
+
+<div class="award individual-project-listing">
+  <p class="artifact-title">
+    {% if award.url %}
+      <a href="{{ award.url }}" target="_blank" rel="noopener noreferrer">{{ award.title }}</a>
+    {% else %}
+      {{ award.title }}
+    {% endif %}
+    {% if award.organization %}<span class="artifact-venue"> — {{ award.organization }}</span>{% endif %}
+  </p>
+
+  <p class="artifact-authors">
+    {% for person in award.recipients.all %}
+      <a href="{% url 'website:member_by_name' person.get_url_name %}">{{ person.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+
+    {% if award.recipients.exists and award.projects.exists %}, {% endif %}
+
+    {% for project in award.projects.all %}
+      {% if project.can_show_online %}
+      <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>{% if not forloop.last %}, {% endif %}
+      {% else %}
+      {{ project.name }}{% if not forloop.last %}, {% endif %}
+      {% endif %}
+    {% endfor %}
+  </p>
+
+  {% if award.description %}
+  <p class="artifact-links award-description">{{ award.description|safe }}</p>
+  {% endif %}
+</div>

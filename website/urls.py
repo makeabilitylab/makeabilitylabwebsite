@@ -35,6 +35,8 @@ urlpatterns = [
     # Matches the URL "publications/" and routes it to the `publications` view.
     re_path(r'^publications/$', views.publications, name='publications'),
 
+    re_path(r'^awards/$', views.awards, name='awards'),
+
     # Matches the URL "projects/" and routes it to the `project_listing` view.
     re_path(r'^projects/$', views.project_listing, name='projects'),
 
