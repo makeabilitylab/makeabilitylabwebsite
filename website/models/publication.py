@@ -209,8 +209,8 @@ class Publication(Artifact):
         """Returns bibtex citation as a string"""
         bibtex = ""
 
-        if self.pub_venue_type is PubType.JOURNAL or\
-            self.pub_venue_type is PubType.ARTICLE:
+        if self.pub_venue_type == PubType.JOURNAL or\
+            self.pub_venue_type == PubType.ARTICLE:
             bibtex += "@article{"
         else:
             bibtex += "@inproceedings{"

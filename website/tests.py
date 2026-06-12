@@ -530,3 +530,101 @@ class HumanizeDurationTests(SimpleTestCase):
             result.endswith(" years"),
             msg=f"Expected a years string, got {result!r}",
         )
+
+
+# --- BibTeX citation regression -------------------------------------------
+
+
+class BibtexCitationTests(SimpleTestCase):
+    """
+    Regression tests for Publication.get_citation_as_bibtex.
+
+    The method previously compared self.pub_venue_type with ``is`` against
+    PubType.JOURNAL / PubType.ARTICLE. Because TextChoices values are strings
+    loaded from the DB, the identity check was always False and every journal
+    or article paper was emitted as @inproceedings{ instead of @article{.
+    These tests pin the corrected behavior.
+    """
+
+    def _make_publication(self, pub_venue_type):
+        """Mock Publication exposing only what get_citation_as_bibtex reads."""
+        pub = MagicMock()
+        pub.pub_venue_type = pub_venue_type
+        pub.get_bibtex_id.return_value = "Doe2020FooCHI20,"
+        pub.authors.all.return_value = []
+        pub.title = "A Test Title"
+        pub.book_title = "Proceedings of Test"
+        pub.get_formatted_forum_name.return_value = "CHI"
+        pub.date.year = 2020
+        # Falsy values below match the "if self.X" guards in the method:
+        # when falsy the optional bibtex fields are skipped without
+        # exercising any further attribute access.
+        pub.series = ""
+        pub.isbn = ""
+        pub.location = ""
+        pub.page_num_start = None
+        pub.page_num_end = None
+        pub.num_pages = None
+        pub.doi = ""
+        pub.official_url = ""
+        pub.acmid = ""
+        pub.publisher = ""
+        return pub
+
+    def test_journal_uses_article_entry(self):
+        from website.models.publication import Publication, PubType
+        pub = self._make_publication(PubType.JOURNAL)
+        bibtex = Publication.get_citation_as_bibtex(pub)
+        self.assertTrue(
+            bibtex.startswith("@article{"),
+            msg=f"Expected JOURNAL to emit @article{{, got {bibtex[:60]!r}",
+        )
+
+    def test_article_uses_article_entry(self):
+        from website.models.publication import Publication, PubType
+        pub = self._make_publication(PubType.ARTICLE)
+        bibtex = Publication.get_citation_as_bibtex(pub)
+        self.assertTrue(
+            bibtex.startswith("@article{"),
+            msg=f"Expected ARTICLE to emit @article{{, got {bibtex[:60]!r}",
+        )
+
+    def test_conference_uses_inproceedings_entry(self):
+        from website.models.publication import Publication, PubType
+        pub = self._make_publication(PubType.CONFERENCE)
+        bibtex = Publication.get_citation_as_bibtex(pub)
+        self.assertTrue(
+            bibtex.startswith("@inproceedings{"),
+            msg=f"Expected CONFERENCE to emit @inproceedings{{, got {bibtex[:60]!r}",
+        )
+
+
+# --- Project member count regression --------------------------------------
+
+
+class ProjectCurrentMemberCountTests(SimpleTestCase):
+    """
+    Regression for Project.get_current_member_count: the method built a
+    queryset but never returned it, so the admin column always displayed
+    None. These tests pin both the return value and the filter semantics
+    so a future caller can't quietly re-introduce the bug.
+    """
+
+    def _make_project_with_count(self, count):
+        project = MagicMock()
+        project.projectrole_set.filter.return_value\
+            .values.return_value\
+            .distinct.return_value\
+            .count.return_value = count
+        return project
+
+    def test_returns_count_not_none(self):
+        from website.models.project import Project
+        project = self._make_project_with_count(7)
+        self.assertEqual(Project.get_current_member_count(project), 7)
+
+    def test_filters_on_open_ended_project_role(self):
+        from website.models.project import Project
+        project = self._make_project_with_count(0)
+        Project.get_current_member_count(project)
+        project.projectrole_set.filter.assert_called_with(end_date__isnull=True)

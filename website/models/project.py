@@ -511,13 +511,7 @@ class Project(models.Model):
         """
         Returns the number of current members
         """
-        # project_roles = self.projectrole_set.order_by('-start_date')
-        # current_member_cnt = 0
-        # for project_role in project_roles:
-        #     if project_role.is_active():
-        #         current_member_cnt = current_member_cnt + 1
-        # return current_member_cnt
-        self.projectrole_set.filter(end_date__isnull=True).values('person').distinct().count()
+        return self.projectrole_set.filter(end_date__isnull=True).values('person').distinct().count()
 
     get_current_member_count.short_description = "Num Current Members"
 
