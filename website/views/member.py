@@ -1,6 +1,7 @@
 from django.conf import settings # for access to settings variables, see https://docs.djangoproject.com/en/4.0/topics/settings/#using-settings-in-python-code
-from website.models import Person, News, Video, Position
-import website.utils.ml_utils as ml_utils 
+from website.models import Person, News, Video
+import website.utils.ml_utils as ml_utils
+from website.utils.bio_utils import auto_generate_bio
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from django.core.exceptions import MultipleObjectsReturned
@@ -130,135 +131,6 @@ def get_videos_by_author(person):
         Q(publication__authors=person) | Q(talk__authors=person)
     ).distinct().order_by('-date')
 
-def auto_generate_bio(person):
-    """Auto-generates a bio using stored info about person."""
-    
-    # 1. Generate the Role Sentence
-    role_parts = []
-    
-    # Calculate duration safely
-    total_time = person.get_total_time_in_lab()
-    duration_str = humanize_duration(total_time) if total_time else ""
-
-    if not person.has_started:
-        date_str = f" on {person.get_latest_position.start_date}" if person.get_latest_position and person.get_latest_position.start_date else ""
-        role_parts.append(f"{person.get_full_name()} will be joining the Makeability Lab{date_str}.")
-    elif person.is_current_member:
-        article = Position.get_indefinite_article_for_title(person.get_current_title)
-        role_parts.append(f"{person.get_full_name()} is currently {article} {person.get_current_title} in the Makeability Lab.")
-        if duration_str:
-            role_parts.append(f"{person.first_name} has been in the lab for {duration_str}.")
-    elif person.is_alumni_member:
-        article = Position.get_indefinite_article_for_title(person.get_current_title)
-        role_parts.append(f"{person.get_full_name()} was {article} {person.get_current_title} in the Makeability Lab")
-        if duration_str:
-            role_parts.append(f"for {duration_str}")
-        
-        start = person.get_start_date.strftime("%b %Y")
-        end = person.get_end_date.strftime("%b %Y") if person.get_end_date else "present"
-        role_parts.append(f"({start} to {end}).")
-    elif person.is_current_collaborator:
-        role_parts.append(f"{person.get_full_name()} is a collaborator with the Makeability Lab.")
-    elif person.is_past_collaborator:
-        role_parts.append(f"{person.get_full_name()} was a collaborator with the Makeability Lab.")
-    else:
-        # Fallback for edge cases
-        role_parts.append(f"{person.get_full_name()} has published with the Makeability Lab.")
-
-    # Combine the introductory sentences
-    bio_sentences = [" ".join(role_parts).replace(" .", ".")]
-
-    # 2. Generate the Contributions Sentence
-    # FIX: Ensure projects is a list and sorted
-    projects = list(person.get_projects)
-    projects.sort(key=lambda x: x.name) 
-    
-    proj_count = len(projects)
-    pub_count = person.publication_set.count()
-
-    if proj_count > 0 or pub_count > 0:
-        contrib_str = f"They contributed to"
-        
-        # --- Build Project String ---
-        if proj_count > 0:
-            if proj_count == 1:
-                proj = projects[0]
-                contrib_str += f" a project called <a href='/project/{proj.short_name}'>{proj.name}</a>"
-            else:
-                shown_projects = projects[:3]
-                proj_links = [f"<a href='/project/{p.short_name}'>{p.name}</a>" for p in shown_projects]
-                
-                # FIX: Standard English list formatting
-                if len(proj_links) == 2:
-                    # Case: "Project A and Project B"
-                    list_str = " and ".join(proj_links)
-                else:
-                    # Case: "Project A, Project B, and Project C"
-                    proj_links[-1] = "and " + proj_links[-1]
-                    list_str = ", ".join(proj_links)
-
-                if proj_count <= 3:
-                     contrib_str += f" {proj_count} projects: {list_str}"
-                else:
-                     contrib_str += f" {proj_count} projects, including {list_str}"
-
-        # --- Build Publication String ---
-        if pub_count > 0:
-            # We add a comma before "as well as" if there was a project list preceding it
-            connector = ", as well as" if proj_count > 0 else ""
-            plural = "s" if pub_count > 1 else ""
-            contrib_str += f"{connector} {pub_count} publication{plural}"
-        
-        bio_sentences.append(contrib_str + ".")
-
-    # 3. Generate Mentor Sentence
-    grad_mentors = list(person.get_grad_mentors()) # Convert to list for easy indexing
-    if grad_mentors:
-        verb = "is" if person.is_active else "was"
-        mentor_links = [f"<a href='/member/{m.get_url_name()}'>{m.get_full_name()}</a>" for m in grad_mentors]
-        
-        if len(mentor_links) > 1:
-            mentor_links[-1] = "and " + mentor_links[-1]
-        
-        mentor_str = ", ".join(mentor_links) if len(mentor_links) > 2 else " ".join(mentor_links)
-        bio_sentences.append(f"{person.first_name} {verb} mentored by {mentor_str}.")
-
-    # 4. Generate Mentee Sentence (Logic simplified)
-    mentees = person.get_mentees(randomize=True)
-    mentee_count = mentees.count()
-    if mentee_count > 0:
-        display_limit = 3
-        shown_mentees = [m for m in mentees[:display_limit]] # Force evaluation
-        mentee_links = [f"<a href='/member/{m.get_url_name()}'>{m.get_full_name()}</a>" for m in shown_mentees]
-        
-        intro = f"During their time in the lab, {person.first_name} mentored"
-        
-        if mentee_count == 1:
-             bio_sentences.append(f"{intro} 1 Makeability Lab student, {mentee_links[0]}.")
-        else:
-            sep = ":" if mentee_count <= display_limit else ", including"
-            
-            if len(mentee_links) > 1:
-                mentee_links[-1] = "and " + mentee_links[-1]
-            
-            list_str = ", ".join(mentee_links) if len(mentee_links) > 2 else " ".join(mentee_links)
-            bio_sentences.append(f"{intro} {mentee_count} Makeability Lab students{sep} {list_str}.")
-
-    return " ".join(bio_sentences)
-
-def humanize_duration(duration):
-    """Given a timedelta object, returns a humanized string of the duration (e.g., 1.5 years)"""
-    total_months = duration.total_seconds() / (30 * 24 * 60 * 60)
-
-    # Calculate years and months
-    years = total_months // 12
-    months = total_months % 12
-
-    if years >= 1:
-        return f"{years + months/12:.1f} years"
-    else:
-        return f"{months:.1f} months"
-    
 def get_closest_urlname_in_database(query_urlname, cutoff=0.8):
     """
     Retrieves the closest matching url_name from the database based on the provided query url_name.
