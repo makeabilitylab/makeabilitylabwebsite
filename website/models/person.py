@@ -668,27 +668,38 @@ class Person(models.Model):
         else:
             self.bio_datetime_modified = timezone.now().date()
 
-        # Check if their headshot image is not set. If not, set to random star war image
-        if not self.image:
-            _logger.debug(f"{self.get_full_name()} has NO image set. Setting to random star wars image")
-            rand_star_wars_filename = ml_fileutils.get_path_to_random_starwars_image()
-            rand_star_wars_image = File(open(rand_star_wars_filename, 'rb'))
-            self.image = rand_star_wars_image
-            _logger.debug(f"{self.get_full_name()}'s image has been set to {rand_star_wars_filename} with image: {self.image}")
-        else:
-            _logger.debug(f"{self.get_full_name()} has the image: {self.image} with cropping: {self.cropping}")
+        # Star Wars fallback images: open here, close after super().save()
+        # has had a chance to read+copy them into media storage. A plain
+        # `with` block won't work because Django reads the file during save,
+        # not at assignment.
+        files_to_close = []
+        try:
+            # Check if their headshot image is not set. If not, set to random star war image
+            if not self.image:
+                _logger.debug(f"{self.get_full_name()} has NO image set. Setting to random star wars image")
+                rand_star_wars_filename = ml_fileutils.get_path_to_random_starwars_image()
+                fh = open(rand_star_wars_filename, 'rb')
+                files_to_close.append(fh)
+                self.image = File(fh)
+                _logger.debug(f"{self.get_full_name()}'s image has been set to {rand_star_wars_filename} with image: {self.image}")
+            else:
+                _logger.debug(f"{self.get_full_name()} has the image: {self.image} with cropping: {self.cropping}")
 
-        # Check if their easter egg image is not set. If not, set to random star war image
-        if not self.easter_egg: 
-            _logger.debug(f"{self.get_full_name()} has no hover (easter egg) image set. Setting to random star wars image")
-            rand_star_wars_filename = ml_fileutils.get_path_to_random_starwars_image()
-            rand_star_wars_image = File(open(rand_star_wars_filename, 'rb'))
-            self.easter_egg = rand_star_wars_image
-            _logger.debug(f"{self.get_full_name()}'s hover image has been set to {rand_star_wars_filename} with image: {self.easter_egg}")
-        else:
-            _logger.debug(f"{self.get_full_name()} has the hover (easter egg) image: {self.easter_egg} with cropping: {self.easter_egg_crop}")
+            # Check if their easter egg image is not set. If not, set to random star war image
+            if not self.easter_egg:
+                _logger.debug(f"{self.get_full_name()} has no hover (easter egg) image set. Setting to random star wars image")
+                rand_star_wars_filename = ml_fileutils.get_path_to_random_starwars_image()
+                fh = open(rand_star_wars_filename, 'rb')
+                files_to_close.append(fh)
+                self.easter_egg = File(fh)
+                _logger.debug(f"{self.get_full_name()}'s hover image has been set to {rand_star_wars_filename} with image: {self.easter_egg}")
+            else:
+                _logger.debug(f"{self.get_full_name()} has the hover (easter egg) image: {self.easter_egg} with cropping: {self.easter_egg_crop}")
 
-        super(Person, self).save(*args, **kwargs)
+            super(Person, self).save(*args, **kwargs)
+        finally:
+            for fh in files_to_close:
+                fh.close()
 
 
     class Meta:

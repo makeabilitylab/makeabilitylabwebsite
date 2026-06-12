@@ -92,7 +92,10 @@ class News(models.Model):
         if not self.slug:
             self.slug = slugify(self.title)
             num = 2
-            while News.objects.filter(slug=self.slug).exists():
+            # Exclude self.pk so an admin clearing the slug field on an
+            # existing News item doesn't collide with its own row and
+            # spuriously bump the counter on every re-save.
+            while News.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
                 self.slug = f"{slugify(self.title)}-{num}"
                 num += 1
         return super().save(*args, **kwargs)

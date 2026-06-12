@@ -628,3 +628,65 @@ class ProjectCurrentMemberCountTests(SimpleTestCase):
         project = self._make_project_with_count(0)
         Project.get_current_member_count(project)
         project.projectrole_set.filter.assert_called_with(end_date__isnull=True)
+
+
+# --- Artifact filename check regression -----------------------------------
+
+
+class ArtifactFilenameUpdateCheckTests(SimpleTestCase):
+    """
+    Regression tests for Artifact.do_filenames_need_updating.
+
+    The raw_file and thumbnail branches each compared against
+    ``artifact.pdf_file.name`` (copy-pasted from the pdf_file branch)
+    instead of ``artifact.raw_file.name`` / ``artifact.thumbnail.name``.
+    The bug masked filename drift in those fields: when pdf_file matched
+    but raw_file or thumbnail had a stale name, the function returned
+    False instead of True. These tests pin the per-branch lookup.
+    """
+
+    def _patch_generate(self, value):
+        return patch(
+            "website.models.artifact.Artifact.generate_filename",
+            return_value=value,
+        )
+
+    def test_all_matching_returns_false(self):
+        from website.models.artifact import Artifact
+        with self._patch_generate("Doe2020Title"):
+            artifact = MagicMock()
+            artifact.pdf_file = MagicMock()
+            artifact.pdf_file.name = "publications/Doe2020Title.pdf"
+            artifact.raw_file = MagicMock()
+            artifact.raw_file.name = "publications/Doe2020Title.zip"
+            artifact.thumbnail = MagicMock()
+            artifact.thumbnail.name = "thumbnails/Doe2020Title.jpg"
+            self.assertFalse(Artifact.do_filenames_need_updating(artifact))
+
+    def test_raw_file_mismatch_when_pdf_file_matches(self):
+        """
+        Under the bug the raw_file branch looked at pdf_file.name (which
+        matches) and returned False; the fix makes it look at
+        raw_file.name and correctly report the mismatch.
+        """
+        from website.models.artifact import Artifact
+        with self._patch_generate("Doe2020Title"):
+            artifact = MagicMock()
+            artifact.pdf_file = MagicMock()
+            artifact.pdf_file.name = "publications/Doe2020Title.pdf"
+            artifact.raw_file = MagicMock()
+            artifact.raw_file.name = "publications/StaleName.zip"
+            artifact.thumbnail = None
+            self.assertTrue(Artifact.do_filenames_need_updating(artifact))
+
+    def test_thumbnail_mismatch_when_pdf_file_matches(self):
+        """Same shape as the raw_file regression, for the thumbnail branch."""
+        from website.models.artifact import Artifact
+        with self._patch_generate("Doe2020Title"):
+            artifact = MagicMock()
+            artifact.pdf_file = MagicMock()
+            artifact.pdf_file.name = "publications/Doe2020Title.pdf"
+            artifact.raw_file = None
+            artifact.thumbnail = MagicMock()
+            artifact.thumbnail.name = "thumbnails/StaleName.jpg"
+            self.assertTrue(Artifact.do_filenames_need_updating(artifact))

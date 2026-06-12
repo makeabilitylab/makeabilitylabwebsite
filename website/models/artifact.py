@@ -334,14 +334,14 @@ class Artifact(models.Model):
                 return True
         
         if artifact.raw_file:
-            old_raw_filename = os.path.basename(artifact.pdf_file.name)
+            old_raw_filename = os.path.basename(artifact.raw_file.name)
             old_raw_filename_no_ext, ext = os.path.splitext(old_raw_filename)
             if new_filename_no_ext != old_raw_filename_no_ext:
                 _logger.debug(f"The new_filename_no_ext={new_filename_no_ext} and old_raw_filename_no_ext={old_raw_filename_no_ext} don't match")
                 return True
-        
+
         if artifact.thumbnail:
-            old_thumbnail_filename = os.path.basename(artifact.pdf_file.name)
+            old_thumbnail_filename = os.path.basename(artifact.thumbnail.name)
             old_thumbnail_filename_no_ext, ext = os.path.splitext(old_thumbnail_filename)
             if new_filename_no_ext != old_thumbnail_filename_no_ext:
                 _logger.debug(f"The new_filename_no_ext={new_filename_no_ext} and old_thumbnail_filename_no_ext={old_thumbnail_filename_no_ext} don't match")
