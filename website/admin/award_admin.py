@@ -1,7 +1,10 @@
 from django import forms
 from django.contrib import admin
+from django.urls import reverse
+from django.utils.html import format_html
 from website.models import Award
 from website.admin.admin_site import ml_admin_site
+from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
 
 
 class AwardAdminForm(forms.ModelForm):
@@ -41,7 +44,43 @@ class AwardAdmin(admin.ModelAdmin):
 
     ordering = ('-date',)
 
-    # NOTE: `recipients` and `projects` are SortedManyToManyFields, so they render
-    # with sortedm2m's default ordered widget out of the box. To match the
-    # filter-horizontal widget used for authors elsewhere (the repo's
-    # sortedm2m_filter_horizontal_widget), mirror the setup in person_admin.py.
+    def get_fieldsets(self, request, obj=None):
+        # Built at request time so reverse() can resolve the Publications admin URL.
+        publications_url = reverse('admin:website_publication_changelist')
+        intro = format_html(
+            'Congrats on the award! 🎉 '
+            '<br><br>'
+            'Use this page for <strong>people and project awards</strong>: fellowships, '
+            'faculty/student honors, society recognitions, project awards, and the like.'
+            '<br><br>'
+            'Do not enter <strong>Best Paper, Honorable Mention, or other paper awards here.</strong> '
+            'Those live on the publication itself (its <em>Award</em> field) &mdash; '
+            '<a href="{}">go to Publications</a>.'
+            '<br><br>',
+            publications_url
+        )
+        return [
+            (None, {
+                'fields': ['title', 'date', 'organization', 'award_type'],
+                'description': intro,
+            }),
+            ('Honorees', {
+                'fields': ['recipients', 'projects'],
+                'description': 'Attach at least one person and/or project. A single '
+                               'award can honor both (e.g., a PI and their project).',
+            }),
+            ('Links & Details', {
+                'fields': ['url', 'description'],
+            }),
+        ]
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        """
+        Use the two-panel sorted filter widget for the recipients and projects fields.
+
+        This replaces the default sortedm2m checkbox list with a filter_horizontal
+        style interface that's much easier to use with 100s of recipients and projects.
+        """
+        if db_field.name == 'recipients' or db_field.name == 'projects':
+            kwargs['widget'] = SortedFilteredSelectMultiple()
+        return super().formfield_for_manytomany(db_field, request, **kwargs)

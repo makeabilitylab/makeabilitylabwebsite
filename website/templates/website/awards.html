@@ -6,6 +6,7 @@
 
 {% block stylesheets %}
 <link rel="stylesheet" href="{% static 'website/css/publications.css' %}">
+<link rel="stylesheet" href="{% static 'website/css/awards.css' %}">
 <link rel="stylesheet" href="{% static 'website/css/jquery-ui.min.css' %}">
 <link rel="stylesheet" href="{% static 'website/css/jquery-ui.theme.min.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.18.2/tocbot.css">
@@ -20,6 +21,19 @@
 {% block scripts %}
 document.addEventListener('DOMContentLoaded', function() {
   CitationPopover.init('.publication-citation-link');
+
+  // Section navigation. headingSelector is 'h2', so only the three
+  // section titles appear in the sidebar (no per-year subheadings).
+  tocbot.init({
+    tocSelector: '.js-toc',
+    contentSelector: '.makelab-content-container',
+    headingSelector: 'h2',
+    hasInnerContainers: true,
+    positionFixedSelector: null,
+    fixedSidebarOffset: null,
+    scrollSmoothOffset: -100,
+    headingsOffset: 100
+  });
 });
 {% endblock %}
 
@@ -28,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
 {% endblock %}
 
 {% block content %}
-<div id="awards-container" class="container" style="margin-top: 80px;">
+<div id="awards-container" class="container">
   <div class="row row-flex">
     <div class="col-md-2 hidden-sm hidden-xs">
       <nav id="js-toc" class="js-toc toc" aria-label="Awards sections"></nav>
@@ -36,9 +50,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     <div class="col-md-10">
       <div id="makelab-awards" class="makelab-content-container">
-        <h1 style="margin-top: 0;">Awards</h1>
+        <h1>Awards</h1>
 
-        <!-- ===== People: Awards & Distinctions ===== -->
+        <!-- ===== People & projects: Awards & Distinctions ===== -->
         <section aria-labelledby="awards-distinctions-heading">
           <h2 id="awards-distinctions-heading" class="heading-with-anchor">
             Awards &amp; Distinctions
@@ -49,10 +63,8 @@ document.addEventListener('DOMContentLoaded', function() {
           </h2>
 
           {% for award in distinctions %}
-          <div class="row" style="margin-left: 5px;">
-            <div class="col-xs-12">
-              {% include "snippets/display_award_snippet.html" %}
-            </div>
+          <div class="award-item">
+            {% include "snippets/display_award_snippet.html" %}
           </div>
           {% empty %}
           <p>No awards or distinctions to display yet.</p>
@@ -70,10 +82,8 @@ document.addEventListener('DOMContentLoaded', function() {
           </h2>
 
           {% for pub in best_paper_pubs %}
-          <div class="row" style="margin-left: 5px;">
-            <div class="col-xs-12">
-              {% include "snippets/display_pub_snippet.html" with orientation="vertical" %}
-            </div>
+          <div class="award-item">
+            {% include "snippets/display_pub_snippet.html" with orientation="vertical" %}
           </div>
           {% empty %}
           <p>No best paper awards to display yet.</p>
@@ -91,10 +101,8 @@ document.addEventListener('DOMContentLoaded', function() {
           </h2>
 
           {% for pub in other_award_pubs %}
-          <div class="row" style="margin-left: 5px;">
-            <div class="col-xs-12">
-              {% include "snippets/display_pub_snippet.html" with orientation="vertical" %}
-            </div>
+          <div class="award-item">
+            {% include "snippets/display_pub_snippet.html" with orientation="vertical" %}
           </div>
           {% empty %}
           <p>No other paper awards to display yet.</p>
@@ -105,19 +113,4 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   </div>
 </div>
-
-<script>
-  // Section navigation. headingSelector is 'h2', so only the three section
-  // titles appear in the sidebar (no years).
-  tocbot.init({
-    tocSelector: '.js-toc',
-    contentSelector: '.makelab-content-container',
-    headingSelector: 'h2',
-    hasInnerContainers: true,
-    positionFixedSelector: null,
-    fixedSidebarOffset: null,
-    scrollSmoothOffset: -100,
-    headingsOffset: 100
-  });
-</script>
 {% endblock %}

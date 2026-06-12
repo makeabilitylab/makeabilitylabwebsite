@@ -3,13 +3,11 @@ from sortedm2m.fields import SortedManyToManyField
 
 
 class AwardType(models.TextChoices):
-    FELLOWSHIP = "Fellowship"
-    FACULTY_HONOR = "Faculty Honor"
-    SERVICE_AWARD = "Service Award"
-    DISSERTATION_AWARD = "Dissertation Award"
-    PROJECT_AWARD = "Project Award"
-    OTHER = "Other"
-
+    FELLOWSHIP = "Fellowship", "Fellowship / Scholarship"
+    HONOR = "Honor", "Honor / Distinction"
+    BEST = "Best", "Best / Outstanding Award"
+    SERVICE = "Service", "Service / Leadership"
+    OTHER = "Other", "Other"
 
 class Award(models.Model):
     """An external recognition or distinction earned by lab member(s) and/or a project.
