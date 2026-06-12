@@ -3,24 +3,30 @@ from sortedm2m.fields import SortedManyToManyField
 
 
 class AwardType(models.TextChoices):
-    FELLOWSHIP = "Fellowship", "Fellowship / Scholarship"
-    HONOR = "Honor", "Honor / Distinction"
-    BEST = "Best", "Best / Outstanding Award"
-    SERVICE = "Service", "Service / Leadership"
-    OTHER = "Other", "Other"
+    """The section an award appears under on the public Awards page.
+
+    Declaration order below IS the display order of the sections. The stored
+    value is the short string on the left; the label on the right is shown both
+    in the admin dropdown and as the section heading (hence the plural form).
+    """
+    PHD_FELLOWSHIP = "PhD Fellowship", "PhD Fellowships"
+    FACULTY_HONOR = "Faculty Honor", "Faculty Honors"
+    STUDENT_AWARD = "Student Award", "Student Awards"
+    PROJECT_AWARD = "Project Award", "Project Awards"
+
 
 class Award(models.Model):
     """An external recognition or distinction earned by lab member(s) and/or a project.
 
     Examples:
-      - A person fellowship (NSF GRFP, Google PhD Fellowship)
-      - A faculty honor (UW Allen School Outstanding Faculty Award)
-      - A society recognition (SIGCHI Social Impact Award)
-      - A project award (Project Sidewalk recognized by a civic-tech org)
+      - A PhD fellowship (NSF GRFP, Google PhD Fellowship, Microsoft Research)
+      - A faculty honor (SIGCHI Societal Impact, COE Outstanding Faculty)
+      - A student award (dissertation award, student innovator award)
+      - A project award (Project Sidewalk / HydroSense competition wins)
 
-    An award should honor at least one recipient (Person) and/or one project; that
-    rule is enforced by AwardAdminForm in award_admin.py (M2M data isn't available
-    during Model.clean() on first save, so the check has to live on the form).
+    An award must honor at least one recipient (Person) and/or one project, and
+    must have an award_type (which determines its section). Both rules are
+    enforced by AwardAdminForm / the field options in award_admin.py.
 
     Paper-level awards are NOT stored here; those live on ``Publication.award``.
     """
@@ -39,8 +45,12 @@ class Award(models.Model):
     date = models.DateField()
     date.help_text = "When the award was received. Only the year is displayed, but a full date is required for sorting."
 
-    award_type = models.CharField(max_length=50, choices=AwardType.choices, blank=True, null=True)
-    award_type.help_text = "Optional category, used for grouping and iconography."
+    # Required for data entry (blank=False) but kept nullable at the DB level
+    # (null=True) on purpose: changing it then never triggers a NOT NULL
+    # migration on the already-populated table, which matters because this
+    # project generates and applies migrations per-environment at deploy time.
+    award_type = models.CharField(max_length=50, choices=AwardType.choices, null=True)
+    award_type.help_text = "Which section this award appears under on the Awards page (required)."
 
     url = models.URLField(blank=True, null=True)
     url.help_text = "Optional link to the award announcement or details."

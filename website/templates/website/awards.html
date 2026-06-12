@@ -22,8 +22,8 @@
 document.addEventListener('DOMContentLoaded', function() {
   CitationPopover.init('.publication-citation-link');
 
-  // Section navigation. headingSelector is 'h2', so only the three
-  // section titles appear in the sidebar (no per-year subheadings).
+  // Section navigation. headingSelector is 'h2', so the sidebar lists exactly
+  // the sections that render (empty ones are omitted by the view).
   tocbot.init({
     tocSelector: '.js-toc',
     contentSelector: '.makelab-content-container',
@@ -52,24 +52,26 @@ document.addEventListener('DOMContentLoaded', function() {
       <div id="makelab-awards" class="makelab-content-container">
         <h1>Awards</h1>
 
-        <!-- ===== People & projects: Awards & Distinctions ===== -->
-        <section aria-labelledby="awards-distinctions-heading">
-          <h2 id="awards-distinctions-heading" class="heading-with-anchor">
-            Awards &amp; Distinctions
-            <a href="#awards-distinctions-heading" class="header-anchor"
-               aria-label="Link to Awards and Distinctions section">
+        <!-- ===== People & project distinctions, sectioned by award_type ===== -->
+        {% for section in distinction_sections %}
+        <section aria-labelledby="section-{{ section.label|slugify }}-heading">
+          <h2 id="section-{{ section.label|slugify }}-heading" class="heading-with-anchor">
+            {{ section.label }}
+            <a href="#section-{{ section.label|slugify }}-heading" class="header-anchor"
+               aria-label="Link to {{ section.label }} section">
               <i class="fa-solid fa-link" aria-hidden="true"></i>
             </a>
           </h2>
 
-          {% for award in distinctions %}
+          {% for award in section.awards %}
           <div class="award-item">
             {% include "snippets/display_award_snippet.html" %}
           </div>
-          {% empty %}
-          <p>No awards or distinctions to display yet.</p>
           {% endfor %}
         </section>
+        {% empty %}
+        <p>No awards or distinctions to display yet.</p>
+        {% endfor %}
 
         <!-- ===== Best Paper Awards ===== -->
         <section aria-labelledby="best-paper-awards-heading">
