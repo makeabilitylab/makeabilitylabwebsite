@@ -98,9 +98,11 @@ CONTEXT VARIABLES:
           
           <!-- News Byline -->
           <div class="news-card-byline">
+            {% if news_item.author %}
             <span class="news-card-author">
               By <a href="{% url 'website:member_by_name' member_name=news_item.author.url_name %}">{{ news_item.author }}</a>
             </span>
+            {% endif %}
             <span class="news-card-date">• {{ news_item.short_date }}</span>
           </div>
           

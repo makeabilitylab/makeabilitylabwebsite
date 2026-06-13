@@ -18,7 +18,10 @@ def news_listing(request):
     func_start_time = time.perf_counter()
     _logger.debug(f"Starting views/news_listing at {func_start_time:0.4f}")
     
-    news_list = News.objects.all()
+    # select_related('author') folds the author lookup into the list
+    # query, avoiding the per-row N+1 from news_listing.html's
+    # {% url 'website:member_by_name' news_item.author.url_name %} access.
+    news_list = News.objects.select_related('author').all()
 
     # start the paginator on the first page
     page = request.GET.get('page', 1)

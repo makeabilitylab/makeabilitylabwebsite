@@ -59,10 +59,18 @@ def news_item(request, slug=None, id=None):
                                           .order_by('-date').distinct()[:MAX_RECENT_NEWS_ITEMS_ABOUT_PEOPLE_MENTIONED])
 
     excluded_ids.extend(list(recent_news_about_people_mentioned.values_list('id', flat=True)))
-    recent_news_posts_by_author = (cur_news_item.author.authored_news
-                                   .exclude(id=cur_news_item.id) # exclude the current news item
-                                   .exclude(id__in=excluded_ids)
-                                   .order_by('-date')[:MAX_RECENT_NEWS_ITEMS_BY_AUTHOR])
+
+    # News.author is nullable (FK with null=True, on_delete=SET_NULL),
+    # so cur_news_item.author can be None — happens when the author
+    # Person is deleted. Previously this crashed with AttributeError on
+    # the .authored_news access; guard so authorless news items render.
+    if cur_news_item.author is not None:
+        recent_news_posts_by_author = (cur_news_item.author.authored_news
+                                       .exclude(id=cur_news_item.id)
+                                       .exclude(id__in=excluded_ids)
+                                       .order_by('-date')[:MAX_RECENT_NEWS_ITEMS_BY_AUTHOR])
+    else:
+        recent_news_posts_by_author = News.objects.none()
     
     
     context = {'news_item': cur_news_item,
