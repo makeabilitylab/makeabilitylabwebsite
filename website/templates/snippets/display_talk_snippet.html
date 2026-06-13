@@ -41,8 +41,9 @@ DEPENDENCIES:
     <a href="{{ MEDIA_URL }}{{ talk.pdf_file }}" 
        class="talk-thumbnail-link"
        aria-label="View slides for: {{ talk.title }}">
-      <img class="talk-thumbnail-image" 
-           src="{% thumbnail talk.thumbnail 420x0 detail %}" 
+      <img loading="lazy"
+           class="talk-thumbnail-image"
+           src="{% thumbnail talk.thumbnail 420x0 detail %}"
            alt="Slide preview for: {{ talk.title }}">
     </a>
   </div>

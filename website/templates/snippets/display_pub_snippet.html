@@ -38,14 +38,16 @@ CONTEXT VARIABLES:
   <!-- Thumbnail with optional award banner -->
   <div class="pub-thumbnail pub-thumbnail-horiz-layout">
     <a href="{{ pub.pdf_file.url }}" class="pub-thumbnail-link">
-      <img src="{% thumbnail pub.thumbnail 300x0 detail %}" 
+      <img loading="lazy"
+           src="{% thumbnail pub.thumbnail 300x0 detail %}"
            alt="Thumbnail for: {{ pub.title }}"
-           class="pub-thumbnail-image2 img-responsive" 
+           class="pub-thumbnail-image2 img-responsive"
            style="max-width: 100px;">
     </a>
     {% if pub.award %}
-    <img src="{% static 'website/img/awardoverlay.png' %}" 
-         alt="" 
+    <img loading="lazy"
+         src="{% static 'website/img/awardoverlay.png' %}"
+         alt=""
          aria-hidden="true"
          class="pub-award-banner">
     {% endif %}
@@ -68,14 +70,16 @@ CONTEXT VARIABLES:
       | 
       {% if pub.is_best_paper %}
       <span class="pub-award-icon">
-        <img src="{% static 'website/img/bestpaper.png' %}" 
-             alt="Best Paper Award" 
+        <img loading="lazy"
+             src="{% static 'website/img/bestpaper.png' %}"
+             alt="Best Paper Award"
              class="award-icon">
       </span>
       {% elif pub.is_honorable_mention %}
       <span class="pub-award-icon">
-        <img src="{% static 'website/img/honorablemention.png' %}" 
-             alt="Honorable Mention Award" 
+        <img loading="lazy"
+             src="{% static 'website/img/honorablemention.png' %}"
+             alt="Honorable Mention Award"
              class="award-icon">
       </span>
       {% endif %}
@@ -142,13 +146,15 @@ CONTEXT VARIABLES:
   <!-- Thumbnail with optional award banner -->
   <div class="pub-thumbnail">
     <a href="{{ pub.pdf_file.url }}" class="pub-thumbnail-link">
-      <img src="{% thumbnail pub.thumbnail 300x0 detail %}" 
+      <img loading="lazy"
+           src="{% thumbnail pub.thumbnail 300x0 detail %}"
            alt="Thumbnail for: {{ pub.title }}"
            class="pub-thumbnail-image img-responsive">
     </a>
     {% if pub.award %}
-    <img src="{% static 'website/img/awardoverlay.png' %}" 
-         alt="" 
+    <img loading="lazy"
+         src="{% static 'website/img/awardoverlay.png' %}"
+         alt=""
          aria-hidden="true"
          class="pub-award-banner">
     {% endif %}
@@ -189,14 +195,16 @@ CONTEXT VARIABLES:
         | 
         {% if pub.is_best_paper %}
         <span class="pub-award-icon">
-          <img src="{% static 'website/img/bestpaper.png' %}" 
-               alt="Best Paper Award" 
+          <img loading="lazy"
+               src="{% static 'website/img/bestpaper.png' %}"
+               alt="Best Paper Award"
                class="award-icon">
         </span>
         {% elif pub.is_honorable_mention %}
         <span class="pub-award-icon">
-          <img src="{% static 'website/img/honorablemention.png' %}" 
-               alt="Honorable Mention Award" 
+          <img loading="lazy"
+               src="{% static 'website/img/honorablemention.png' %}"
+               alt="Honorable Mention Award"
                class="award-icon">
         </span>
         {% endif %}
