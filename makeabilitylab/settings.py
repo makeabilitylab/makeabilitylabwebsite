@@ -112,7 +112,14 @@ LOGGING = {
     },
     'handlers': {
         'file': {
-            'level': 'DEBUG',
+            # The file handler writes /code/media/debug.log, which lands in the
+            # bind-mounted web root and is intentionally exposed via the /logs/
+            # URL per docs/DEPLOYMENT.md (Jason Howe's design — convenient
+            # remote debugging in exchange for some info disclosure). To shrink
+            # that exposure in production, we log at INFO when DEBUG is off,
+            # but keep DEBUG-level file logging in local dev where DEBUG is on
+            # and the file isn't publicly reachable.
+            'level': 'DEBUG' if DEBUG else 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': '/code/media/debug.log',
             'maxBytes': 1024*1024*5,  # 5 MB
