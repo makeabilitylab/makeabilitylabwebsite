@@ -888,3 +888,208 @@ class ArtifactFilenameUpdateCheckTests(SimpleTestCase):
             artifact.thumbnail = MagicMock()
             artifact.thumbnail.name = "thumbnails/StaleName.jpg"
             self.assertTrue(Artifact.do_filenames_need_updating(artifact))
+
+
+# ===========================================================================
+# Database-backed test infrastructure (#1267)
+# ===========================================================================
+#
+# Everything above this line uses SimpleTestCase + MagicMock — no DB, fast.
+# Tests below this line use Django's TestCase, which wraps each test in a
+# transaction that's rolled back at the end. They exercise real model code,
+# real querysets, and the URL/view layer.
+#
+# Why this exists: several 2.3.4 fixes (publications prefetch_related,
+# news null-author guards, delete_unused_files .path guards) shipped
+# without regression tests because the bugs were only reachable through a
+# real queryset or view. The classes below establish the foundation for
+# backfilling that coverage incrementally. See #1267 for the broader plan.
+
+from django.db import connection
+from django.test import TestCase
+from django.test.utils import CaptureQueriesContext
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.urls import reverse
+
+
+# Minimal 1x1 GIF used to satisfy Person.image / Person.easter_egg without
+# touching the filesystem. Person.save() picks a random Star Wars image when
+# either field is empty, opening a real file from media/. Pre-setting both
+# with this SimpleUploadedFile skips the fallback branch entirely.
+_GIF_1PX = (
+    b"GIF89a\x01\x00\x01\x00\x80\x00\x00\xff\xff\xff\x00\x00\x00"
+    b"!\xf9\x04\x01\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01"
+    b"\x00\x00\x02\x02D\x01\x00;"
+)
+
+
+def _make_image_upload(name):
+    """Return a SimpleUploadedFile that satisfies an ImageField."""
+    return SimpleUploadedFile(name, _GIF_1PX, content_type="image/gif")
+
+
+class DatabaseTestCase(TestCase):
+    """
+    Shared base for tests that touch the database. Provides small fixture
+    helpers (make_person / make_publication / make_news_item) built on
+    plain Model.objects.create() — no third-party fixture library. Each
+    test runs inside a transaction and is rolled back, so tests stay
+    isolated without manual cleanup.
+
+    Why a base class instead of module-level helpers: subclasses can
+    override the defaults in setUp() and the helpers can grow without
+    cluttering the module namespace.
+    """
+
+    def make_person(self, first_name="Jane", last_name="Doe", **kwargs):
+        """
+        Create and return a Person. Image fields are pre-populated to
+        skip Person.save()'s Star Wars fallback (which reads a real file
+        from media/). Override by passing image=... explicitly.
+        """
+        from website.models import Person
+        kwargs.setdefault(
+            "image", _make_image_upload(f"{first_name}_{last_name}.gif")
+        )
+        kwargs.setdefault(
+            "easter_egg",
+            _make_image_upload(f"{first_name}_{last_name}_egg.gif"),
+        )
+        return Person.objects.create(
+            first_name=first_name, last_name=last_name, **kwargs
+        )
+
+    def make_publication(self, title="A Test Paper", year=2024, **kwargs):
+        """
+        Create and return a Publication with sensible defaults: post-lab-
+        formation date, conference venue, a forum name, and a dummy PDF
+        (display_pub_snippet.html unconditionally renders pub.pdf_file.url,
+        so tests that go through the publications view need one to render).
+        Override via kwargs.
+        """
+        from datetime import date as _date
+        from website.models import Publication
+        from website.models.publication import PubType
+        kwargs.setdefault("date", _date(year, 1, 1))
+        kwargs.setdefault("forum_name", "CHI")
+        kwargs.setdefault("pub_venue_type", PubType.CONFERENCE)
+        kwargs.setdefault(
+            "pdf_file",
+            SimpleUploadedFile(
+                f"{title.replace(' ', '_')}.pdf",
+                b"%PDF-1.4 test",
+                content_type="application/pdf",
+            ),
+        )
+        return Publication.objects.create(title=title, **kwargs)
+
+    def make_news_item(self, title="Test News", author=None, **kwargs):
+        """
+        Create and return a News item. `author` is intentionally optional
+        (the FK is nullable with on_delete=SET_NULL) so tests can exercise
+        the authorless code path that caused the original /news/158/ bug.
+        """
+        from datetime import date as _date
+        from website.models import News
+        kwargs.setdefault("date", _date(2024, 1, 1))
+        kwargs.setdefault("content", "Test news body.")
+        return News.objects.create(title=title, author=author, **kwargs)
+
+
+# --- View-level: null author on /news/<id>/ (regression for #1013) --------
+
+
+class NewsItemNullAuthorViewTests(DatabaseTestCase):
+    """
+    Regression for #1013 — a News item with author=None used to crash the
+    news_item view with AttributeError on cur_news_item.author.authored_news.
+    Fixed in 1c0d6c0 by guarding the access. This test pins the behavior
+    so it can't regress silently.
+    """
+
+    def test_news_item_with_null_author_renders_200(self):
+        item = self.make_news_item(title="Authorless News", author=None)
+        response = self.client.get(
+            reverse("website:news_item_by_id", kwargs={"id": item.id})
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Authorless News")
+
+    def test_news_item_with_author_still_renders_200(self):
+        """Sanity check: the non-null path also works."""
+        author = self.make_person(first_name="Ada", last_name="Lovelace")
+        item = self.make_news_item(
+            title="Authored News", author=author
+        )
+        response = self.client.get(
+            reverse("website:news_item_by_id", kwargs={"id": item.id})
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Authored News")
+
+
+# --- Query-count: /publications/ prefetch_related (regression for d4f6d65) -
+
+
+class PublicationsViewQueryCountTests(DatabaseTestCase):
+    """
+    Pins the prefetch_related batch on /publications/ (d4f6d65).
+
+    Before the fix, the snippet template iterated pub.authors.all and
+    pub.projects.all per publication, producing 617 queries on prod with
+    ~250 pubs. The fix added .prefetch_related('authors', 'projects',
+    'keywords') to the view's queryset, dropping that to 60.
+
+    The key correctness property is that the query count is bounded by a
+    constant — it must NOT grow with the number of publications. This
+    test creates publications with M2M relations and asserts the count
+    stays under a generous ceiling for two different data sizes. If a
+    future contributor removes the prefetches, the count climbs linearly
+    and the larger-N test fails.
+    """
+
+    # Generous ceiling well above the steady-state count we measured
+    # locally (~15 queries for the publications view). The ceiling exists
+    # to catch order-of-magnitude regressions, not to pin an exact count.
+    QUERY_CEILING = 30
+
+    def _seed_publications(self, count):
+        author = self.make_person(first_name="Ada", last_name="Lovelace")
+        for i in range(count):
+            pub = self.make_publication(
+                title=f"Paper {i}", year=2024
+            )
+            pub.authors.add(author)
+
+    def _capture_publications_query_count(self):
+        with CaptureQueriesContext(connection) as ctx:
+            response = self.client.get(reverse("website:publications"))
+        return response, len(ctx.captured_queries)
+
+    def test_query_count_is_bounded_with_few_pubs(self):
+        self._seed_publications(2)
+        response, count = self._capture_publications_query_count()
+        self.assertEqual(response.status_code, 200)
+        self.assertLessEqual(
+            count,
+            self.QUERY_CEILING,
+            msg=f"Query count {count} exceeded ceiling {self.QUERY_CEILING}",
+        )
+
+    def test_query_count_does_not_grow_with_pub_count(self):
+        """
+        The real regression guard: query count must be roughly the same
+        whether we render 2 pubs or 20. If prefetches are removed, the
+        count grows by a multiple of N and this test will fail.
+        """
+        self._seed_publications(20)
+        response, count = self._capture_publications_query_count()
+        self.assertEqual(response.status_code, 200)
+        self.assertLessEqual(
+            count,
+            self.QUERY_CEILING,
+            msg=(
+                f"Query count {count} exceeded ceiling {self.QUERY_CEILING} "
+                "with 20 publications — prefetch_related likely regressed"
+            ),
+        )

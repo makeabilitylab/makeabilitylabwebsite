@@ -19,6 +19,9 @@ This document outlines how to set up your local development environment and our 
   - [Creating a Superuser](#creating-a-superuser)
   - [Adding Content](#adding-content)
   - [Development Workflow](#development-workflow)
+  - [Running the Test Suite](#running-the-test-suite)
+    - [When to add a test](#when-to-add-a-test)
+    - [Troubleshooting](#troubleshooting-tests)
   - [Accessibility Testing](#accessibility-testing)
     - [Running Accessibility Checks](#running-accessibility-checks)
     - [Configuring Tests](#configuring-tests)
@@ -244,6 +247,43 @@ A superuser account is required to access the Django admin interface and add con
 
    Push your branch and open a PR against `master`. PRs undergo code review and local testing before merging.
 
+## Running the Test Suite
+
+The Python test suite lives in `website/tests.py` and runs inside the website container:
+
+```bash
+docker exec makeabilitylabwebsite-website-1 python manage.py test website
+```
+
+The suite has two complementary styles:
+
+| Style | Base class | What it's for |
+|---|---|---|
+| **Unit** | `SimpleTestCase` + `MagicMock` | Pure logic — formatters, BibTeX generation, single-method behavior. No DB; runs in milliseconds. |
+| **Integration** | `DatabaseTestCase` (subclass of Django's `TestCase`) | View, queryset, template, and URL-routing regressions. Each test runs inside a transaction that is rolled back, so tests stay isolated. |
+
+The `DatabaseTestCase` base provides `make_person`, `make_publication`, and `make_news_item` helpers built on plain `Model.objects.create()` — use those rather than hand-rolling fixtures.
+
+### When to add a test
+
+When you fix a bug that's reachable through a real queryset, URL, view, or template, add a regression test **before** applying the fix. The point is to pin behavior so the bug can't quietly re-emerge later. The existing tests show the pattern:
+
+- `NewsItemNullAuthorViewTests` — view-level regression for a null-FK that crashed `/news/<id>/`
+- `PublicationsViewQueryCountTests` — query-count regression that pins the `prefetch_related` batch on `/publications/`
+- `BibtexCitationTests` / `FormattedForumNameTests` — pure-logic regressions for publication-formatting bugs
+
+If a fix is genuinely not unit-testable (FD leaks, `super().save()`-dependent paths), say so explicitly in the commit body rather than writing a brittle test or skipping silently.
+
+### Troubleshooting tests
+
+`website/migrations/` is **gitignored** — each environment (your laptop, test, production) maintains its own migration history on disk. This sometimes drifts. If `manage.py test` fails at test-DB creation, the symptoms and fixes are:
+
+- **`database "test_makeability" already exists`** — a prior failed run left it half-built. Drop and retry:
+  ```bash
+  docker exec makeabilitylabwebsite-db-1 psql -U admin -d postgres -c "DROP DATABASE IF EXISTS test_makeability;"
+  ```
+- **`column "..." of relation "..." already exists`** — a local migration file duplicates a field that a later `0001_initial` regeneration already includes. Same fix (drop the test DB) usually clears it; if it persists, the offending migration is a local stale artifact that needs to be edited or removed. See [#1267](https://github.com/makeabilitylab/makeabilitylabwebsite/issues/1267) for the durable fix (test-only settings shim using `MIGRATION_MODULES`).
+
 ## Accessibility Testing
 
 We use [Pa11y CI](https://github.com/pa11y/pa11y-ci) with the [Axe](https://www.deque.com/axe/) engine to run automated accessibility checks against the local site. Tests are configured in `.pa11yci.json` and target WCAG 2.0 AA compliance.
@@ -277,8 +317,10 @@ Edit `.pa11yci.json` to add or remove URLs to test. The `urls` array lists every
 
 - **One issue per branch**: Keep PRs focused on a single issue for easier review.
 
-- **Test locally**: Verify your changes work before submitting.
-  
+- **Run the test suite**: `docker exec makeabilitylabwebsite-website-1 python manage.py test website` should pass before opening a PR. If your fix is reachable through a real queryset, view, or template, add a regression test (see [Running the Test Suite](#running-the-test-suite)).
+
+- **Test locally**: Verify your changes work in the browser before submitting.
+
 - **Run accessibility checks**: Run the a11y service before submitting UI changes to catch WCAG violations early.
 
 - **Clear descriptions**: Explain what changed and why in your PR description.

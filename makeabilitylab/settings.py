@@ -72,8 +72,8 @@ else:
     ALLOWED_HOSTS = ['*']
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.3.5" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Differentiate short-form publication types in forum names: posters, demos, workshop papers, work-in-progress, and doctoral consortium papers now get their own 'Proceedings of …' labels instead of a generic 'Extended Abstract Proceedings of …' bucket."
+ML_WEBSITE_VERSION = "2.3.6" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "First slice of DB-backed test infrastructure (#1267): DatabaseTestCase + fixture helpers, plus an assertNumQueries guard on /publications/ and a view-level regression test for authorless news items. Found and fixed a latent NoReverseMatch in news_item.html's author byline (the original #1013 fix had missed it)."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 

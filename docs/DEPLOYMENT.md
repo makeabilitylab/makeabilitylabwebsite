@@ -94,15 +94,23 @@ View current and past versions on the [Releases page](https://github.com/makeabi
 ### Creating a Release
 
 1. Ensure all changes are merged to `master` and tested on the test server
-2. Determine the appropriate version number based on the changes
-3. Create and push the tag:
+2. Confirm the Python test suite passes locally:
+
+   ```bash
+   docker exec makeabilitylabwebsite-website-1 python manage.py test website
+   ```
+
+   (See [Running the Test Suite](../CONTRIBUTING.md#running-the-test-suite) in `CONTRIBUTING.md` for what the suite covers and how to add to it.)
+
+3. Determine the appropriate version number based on the changes
+4. Create and push the tag:
 
    ```bash
    git tag 2.1.0
    git push --tags
    ```
 
-4. Verify deployment via the [production build log](https://makeabilitylab.cs.washington.edu/logs/buildlog.txt)
+5. Verify deployment via the [production build log](https://makeabilitylab.cs.washington.edu/logs/buildlog.txt)
 
 ## Server Configuration
 

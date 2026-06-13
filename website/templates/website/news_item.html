@@ -85,10 +85,11 @@ CONTEXT VARIABLES:
           
           <!-- Author Byline -->
           <div class="news-byline">
+            {% if news_item.author %}
             {% with author=news_item.author %}
             <a href="{% url 'website:member_by_name' member_name=author.url_name %}"
                aria-label="View profile of {{ author.get_full_name }}">
-              <img src="{% thumbnail author.image author.get_thumbnail_size_as_str box=author.cropping crop=True upscale=True detail=True %}" 
+              <img src="{% thumbnail author.image author.get_thumbnail_size_as_str box=author.cropping crop=True upscale=True detail=True %}"
                    alt="{{ author.get_full_name }}">
             </a>
             <div class="news-byline-info">
@@ -100,6 +101,13 @@ CONTEXT VARIABLES:
               </p>
             </div>
             {% endwith %}
+            {% else %}
+            <div class="news-byline-info">
+              <p class="news-byline-date">
+                <time datetime="{{ news_item.date|date:'c' }}">{{ news_item.short_date }}</time>
+              </p>
+            </div>
+            {% endif %}
           </div>
         </header>
         

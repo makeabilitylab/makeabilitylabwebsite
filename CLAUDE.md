@@ -37,7 +37,11 @@ A superuser is required to use `/admin` and add content; create one with `python
 
 ## Tests and accessibility checks
 
-- Tests: `python manage.py test` (inside container). Note: `website/tests.py` is currently empty — there is no meaningful test suite to run.
+- Tests: `python manage.py test website` (inside container). The suite has two styles, both in `website/tests.py`:
+  - **Unit** — `SimpleTestCase` + `MagicMock` for pure logic (formatters, BibTeX generation, etc.); no DB, runs in ms.
+  - **Integration** — `DatabaseTestCase` (subclass of Django's `TestCase`) for view / queryset / template regressions; each test runs in a transaction and rolls back. Has fixture helpers `make_person` / `make_publication` / `make_news_item`.
+  - When fixing a bug reachable through a real queryset, URL, or view, add a regression test in the matching style before applying the fix (matches the tests-first workflow).
+  - **Gotcha:** `website/migrations/` is gitignored, so each env has its own history. If `manage.py test` fails at DB creation with `column "..." already exists`, drop the stale test DB with `docker exec makeabilitylabwebsite-db-1 psql -U admin -d postgres -c "DROP DATABASE IF EXISTS test_makeability;"` and re-run. See #1267 for the durable fix.
 - Accessibility (Pa11y CI + Axe, WCAG 2.0 AA): start the site, then `docker-compose -f docker-compose-local-dev.yml --profile testing run --rm a11y`. URLs to scan are configured in `.pa11yci.json`. Run this before submitting UI changes.
 
 ## Deployment
