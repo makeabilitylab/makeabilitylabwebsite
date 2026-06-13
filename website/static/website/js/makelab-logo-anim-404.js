@@ -1,33 +1,32 @@
 import { MakeabilityLabLogoExploder, MakeabilityLabLogo} from 'https://cdn.jsdelivr.net/gh/makeabilitylab/js@main/dist/makelab.logo.js';
 
 // Set up the logo animation
+const parentDiv = document.getElementById('makelab-404');
 let canvas = document.getElementById('makelab-logo-canvas');
 const MAX_HEIGHT = 300;
 canvas.width = 500;
 canvas.height = MAX_HEIGHT;
 let triangleSize = 70;
 let ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = true; // Enable anti-aliasing
 
 let bgFillColor = "rgba(255, 255, 255, 0.2)";
 //let bgFillColor = "rgba(255, 0, 0, 1)";
 let startFillColor = "rgba(255, 255, 255, 0.5)";
 let xPos = canvas.width/2 - MakeabilityLabLogo.getWidth(triangleSize) / 2;
 let makeLabLogoExploder = new MakeabilityLabLogoExploder(xPos, 10, triangleSize, startFillColor);
+makeLabLogoExploder.makeLabLogo.setLogoSize(300);
+makeLabLogoExploder.makeLabLogo.centerLogo(canvas.width, canvas.height);
 makeLabLogoExploder.reset(canvas.width, canvas.height);
-makeLabLogoExploder.update(1);
-makeLabLogoExploder.draw(ctx);
+makeLabLogoExploder.update(0);
 let resetAnimationParams = false;
-
-// Enable anti-aliasing
-ctx.imageSmoothingEnabled = true;
 
 draw(ctx);
 
 document.addEventListener('mousemove', function(event) {
+  //console.log("mousemove event: ", event);
   const x = event.clientX;
   const y = event.clientY;
-  // const windowWidth = window.innerWidth * 0.8;
-  // const lerpAmt = Math.min(x / windowWidth, 1);
 
   // We're going to animate the logo explosion based on the mouse position
   // If it's in the middle of the window, the logo will be fully together (lerpAmt = 1)
@@ -48,42 +47,45 @@ document.addEventListener('mousemove', function(event) {
     if(resetAnimationParams){
       makeLabLogoExploder.reset(canvas.width, canvas.height);
       resetAnimationParams = false;
-      // console.log("Resetting explosion positions");
+      console.log("Resetting explosion positions");
     }     
   }else{
     resetAnimationParams = true;
   }
   
-  document.getElementById('position').textContent = 'X: ' + x + ', Y: ' + y + ', Lerp: ' + lerpAmt;;
+  // document.getElementById('position').textContent = 'X: ' + x + ', Y: ' + y + ', Lerp: ' + lerpAmt;;
+  
   makeLabLogoExploder.update(lerpAmt);
   draw(ctx);
   
 });
 
-
-const parentDiv = document.getElementById('makelab-404');
-
 const resizeObserver = new ResizeObserver(entries => {
   
   const parentDivRect = entries[0].contentRect;
-  // console.log("Parent div dimensions changed! ", parentDivRect);
+  console.log("Parent div dimensions changed! ", parentDivRect);
 
   const boundingClientRect = entries[0].target.getBoundingClientRect();
-  // console.log("Bounding client rect: ", boundingClientRect);
+  console.log("Bounding client rect: ", boundingClientRect);
 
   const maxLogoWidth = Math.min(parentDivRect.width, canvas.width);
   let maxLogoHeight = Math.min(parentDivRect.height, canvas.height);
   maxLogoHeight = Math.min(maxLogoHeight, MAX_HEIGHT);
 
-  makeLabLogoExploder.fitToCanvas(maxLogoWidth, maxLogoHeight);
-  
+  //makeLabLogoExploder.fitToCanvas(maxLogoWidth, maxLogoHeight);
+  makeLabLogoExploder.makeLabLogoAnimated.fitToCanvas(maxLogoWidth, maxLogoHeight);
+  makeLabLogoExploder.makeLabLogo.centerLogo(maxLogoWidth, maxLogoHeight);
+
   canvas.width = parentDivRect.width;
   canvas.height = maxLogoHeight; 
 
   makeLabLogoExploder.centerLogo(parentDivRect.width, canvas.height);
   
   draw(ctx);
-  
+
+  ctx.fillStyle = "rgba(255, 0, 0, 0.2)";;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
 });
 resizeObserver.observe(parentDiv);
 
@@ -101,7 +103,7 @@ function draw(ctx){
   makeLabLogoExploder.draw(ctx);
 
   // Uncomment the following to debug
-  // drawDebugText(ctx);
+  drawDebugText(ctx);
 } 
 
 /**
@@ -117,7 +119,7 @@ function drawDebugText(ctx){
   ctx.font = '16px Arial';
 
   // show width and height of logo
-  const logoDimensionsText = `Logo: ${makeLabLogoExploder.finalWidth.toFixed(1)} x ${makeLabLogoExploder.finalHeight.toFixed(1)}`;
+  const logoDimensionsText = `Final Logo Dimensions: ${makeLabLogoExploder.finalWidth.toFixed(1)} x ${makeLabLogoExploder.finalHeight.toFixed(1)}`;
   // console.log(logoDimensionsText);
   ctx.textAlign = 'center';
   const logoDimensionsTextMetrics = ctx.measureText(logoDimensionsText);
