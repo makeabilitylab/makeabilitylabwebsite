@@ -72,8 +72,8 @@ else:
     ALLOWED_HOSTS = ['*']
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.3.6" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "First slice of DB-backed test infrastructure (#1267): DatabaseTestCase + fixture helpers, plus an assertNumQueries guard on /publications/ and a view-level regression test for authorless news items. Found and fixed a latent NoReverseMatch in news_item.html's author byline (the original #1013 fix had missed it)."
+ML_WEBSITE_VERSION = "2.3.7" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Project page polish (#1245): drop the redundant 'Former' prefix on PI/Co-PI/Student Lead headers when the project itself has ended, and switch the right sidebar from sticky+internal-scroll to normal document flow so it scrolls with the page (visible on long-sidebar projects like /project/sidewalk/)."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 

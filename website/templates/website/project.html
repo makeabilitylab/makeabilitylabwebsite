@@ -357,24 +357,25 @@ document.addEventListener('DOMContentLoaded', function() {
         </section>
         {% endif %}
         
-        <!-- Former Student Leads -->
+        {# Inactive Lead sections: omit "Former" prefix when the project has ended — redundant since the page header already says the project is completed. See #1245. #}
+        <!-- Inactive Student Leads -->
         {% if inactive_student_leads %}
         <section class="project-sidebar-section project-desktop-only">
-          <h3 class="project-sidebar-header">Former Student Lead{% if inactive_student_leads|length > 1 %}s{% endif %}</h3>
+          <h3 class="project-sidebar-header">{% if not project.has_ended %}Former {% endif %}Student Lead{% if inactive_student_leads|length > 1 %}s{% endif %}</h3>
           {% include "snippets/display_project_lead_snippet.html" with active_leads=inactive_student_leads %}
         </section>
         {% endif %}
-        
-        <!-- Former PIs / Co-PIs -->
+
+        <!-- Inactive PIs / Co-PIs -->
         {% if inactive_PIs or inactive_CoPIs %}
         <section class="project-sidebar-section project-desktop-only">
           <h3 class="project-sidebar-header">
             {% if inactive_PIs and inactive_CoPIs %}
-            Former PI{% if inactive_PIs|length > 1 %}s{% endif %} / Co-PI{% if inactive_CoPIs|length > 1 %}s{% endif %}
+            {% if not project.has_ended %}Former {% endif %}PI{% if inactive_PIs|length > 1 %}s{% endif %} / Co-PI{% if inactive_CoPIs|length > 1 %}s{% endif %}
             {% elif inactive_PIs %}
-            Former PI{% if inactive_PIs|length > 1 %}s{% endif %}
+            {% if not project.has_ended %}Former {% endif %}PI{% if inactive_PIs|length > 1 %}s{% endif %}
             {% elif inactive_CoPIs %}
-            Former Co-PI{% if inactive_CoPIs|length > 1 %}s{% endif %}
+            {% if not project.has_ended %}Former {% endif %}Co-PI{% if inactive_CoPIs|length > 1 %}s{% endif %}
             {% endif %}
           </h3>
           {% if inactive_PIs %}

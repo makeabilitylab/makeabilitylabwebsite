@@ -222,12 +222,12 @@
 
 @media (min-width: 992px) {
   .project-sidebar {
+    /* Per #1245: Wikipedia-style infobox pattern — sidebar lives in normal
+       document flow and scrolls with the page, no sticky + internal scroll.
+       Avoids the "page-scroll doesn't move the sidebar; you have to mouse
+       over it to scroll independently" UX on tall sidebars like /project/sidewalk/. */
     order: 0;
-    position: sticky;
-    top: 100px;
-    max-height: calc(100vh - 120px);
-    overflow-y: auto;
-    align-self: start;
+    align-self: start; /* don't stretch the flex item to main column height */
   }
 }
 
