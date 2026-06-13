@@ -85,7 +85,7 @@ class ProjectRole(models.Model):
 
     def has_completed_role(self):
         """Returns true if this role is completed (as of today). That is, if end_date < date.today()"""
-        if self.end_date == None:
+        if self.end_date is None:
             return False
         else:
             return self.end_date < date.today()

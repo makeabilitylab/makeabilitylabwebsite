@@ -12,7 +12,6 @@ from django.conf import settings
 
 from django.db.models import Count, Max, Value, F, Q, Sum, ExpressionWrapper, fields
 from django.utils import timezone
-from django.db.models.functions import Coalesce
 
 # For caching properties, see: https://docs.djangoproject.com/en/4.2/ref/utils/#django.utils.functional.cached_property
 from django.utils.functional import cached_property 
