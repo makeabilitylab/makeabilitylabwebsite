@@ -599,6 +599,117 @@ class BibtexCitationTests(SimpleTestCase):
         )
 
 
+# --- Formatted forum name regression (#988) -------------------------------
+
+
+class FormattedForumNameTests(SimpleTestCase):
+    """
+    Regression tests for Publication.get_formatted_forum_name (#988).
+
+    The previous implementation bundled posters, demos, work-in-progress,
+    and doctoral consortium papers all under one generic
+    "Extended Abstract Proceedings of …" label, and didn't prefix workshop
+    papers at all. Per the issue, each short-form category should get a
+    specific label ("Poster Proceedings of …", "Demo Proceedings of …",
+    "Workshop Proceedings of …", "Work-in-Progress Proceedings of …",
+    "Doctoral Consortium Proceedings of …"). The bare `extended_abstract`
+    boolean field remains the catch-all fallback when the venue type
+    doesn't match a known short-form category.
+    """
+
+    def _make_publication(self, pub_venue_type, *, forum_name="CHI", year=2024,
+                          extended_abstract=False):
+        pub = MagicMock()
+        pub.forum_name = forum_name
+        pub.pub_venue_type = pub_venue_type
+        pub.extended_abstract = extended_abstract
+        pub.date.year = year
+        return pub
+
+    def test_conference_uses_proceedings_of(self):
+        from website.models.publication import Publication, PubType
+        pub = self._make_publication(PubType.CONFERENCE)
+        self.assertEqual(
+            Publication.get_formatted_forum_name(pub),
+            "Proceedings of CHI 2024",
+        )
+
+    def test_poster_uses_poster_proceedings_of(self):
+        from website.models.publication import Publication, PubType
+        pub = self._make_publication(PubType.POSTER)
+        self.assertEqual(
+            Publication.get_formatted_forum_name(pub),
+            "Poster Proceedings of CHI 2024",
+        )
+
+    def test_demo_uses_demo_proceedings_of(self):
+        from website.models.publication import Publication, PubType
+        pub = self._make_publication(PubType.DEMO)
+        self.assertEqual(
+            Publication.get_formatted_forum_name(pub),
+            "Demo Proceedings of CHI 2024",
+        )
+
+    def test_workshop_uses_workshop_proceedings_of(self):
+        from website.models.publication import Publication, PubType
+        pub = self._make_publication(PubType.WORKSHOP)
+        self.assertEqual(
+            Publication.get_formatted_forum_name(pub),
+            "Workshop Proceedings of CHI 2024",
+        )
+
+    def test_wip_uses_work_in_progress_proceedings_of(self):
+        from website.models.publication import Publication, PubType
+        pub = self._make_publication(PubType.WIP)
+        self.assertEqual(
+            Publication.get_formatted_forum_name(pub),
+            "Work-in-Progress Proceedings of CHI 2024",
+        )
+
+    def test_doctoral_consortium_uses_doctoral_consortium_proceedings_of(self):
+        from website.models.publication import Publication, PubType
+        pub = self._make_publication(PubType.DOCTORAL_CONSORTIUM)
+        self.assertEqual(
+            Publication.get_formatted_forum_name(pub),
+            "Doctoral Consortium Proceedings of CHI 2024",
+        )
+
+    def test_journal_has_no_prefix(self):
+        """Journals are not 'Proceedings of …'; the forum name stands alone."""
+        from website.models.publication import Publication, PubType
+        pub = self._make_publication(PubType.JOURNAL, forum_name="TOCHI")
+        self.assertEqual(
+            Publication.get_formatted_forum_name(pub),
+            "TOCHI 2024",
+        )
+
+    def test_article_has_no_prefix(self):
+        from website.models.publication import Publication, PubType
+        pub = self._make_publication(PubType.ARTICLE, forum_name="ArXiv")
+        self.assertEqual(
+            Publication.get_formatted_forum_name(pub),
+            "ArXiv 2024",
+        )
+
+    def test_extended_abstract_flag_is_fallback(self):
+        """
+        The `extended_abstract` BooleanField stays as the catch-all when a
+        pub doesn't fit a specific short-form category (e.g. a panel paper
+        marked as a short submission).
+        """
+        from website.models.publication import Publication, PubType
+        pub = self._make_publication(PubType.PANEL, extended_abstract=True)
+        self.assertEqual(
+            Publication.get_formatted_forum_name(pub),
+            "Extended Abstract Proceedings of CHI 2024",
+        )
+
+    def test_empty_forum_name_returns_empty_string(self):
+        from website.models.publication import Publication, PubType
+        pub = self._make_publication(PubType.CONFERENCE, forum_name="")
+        self.assertEqual(Publication.get_formatted_forum_name(pub), "")
+
+
 # --- Project member count regression --------------------------------------
 
 

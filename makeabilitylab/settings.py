@@ -72,8 +72,8 @@ else:
     ALLOWED_HOSTS = ['*']
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.3.4" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Perf: prefetch_related across artifact pages, lazy-load thumbnails. Bug fixes: serve_pdf safety, news/file null-guards, member.py field reference. Hygiene: production logs at INFO, stray prints removed."
+ML_WEBSITE_VERSION = "2.3.5" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Differentiate short-form publication types in forum names: posters, demos, workshop papers, work-in-progress, and doctoral consortium papers now get their own 'Proceedings of …' labels instead of a generic 'Extended Abstract Proceedings of …' bucket."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 

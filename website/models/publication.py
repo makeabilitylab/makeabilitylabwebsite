@@ -108,22 +108,39 @@ class Publication(Artifact):
         return self.authors.all()[0]
     
     def get_formatted_forum_name(self):
-        """Returns the formatted forum name with 'Proceedings of' prepended and year appended"""
-        
-        # If there's no forum name, return an empty string
+        """
+        Returns the formatted forum name with a type-specific 'Proceedings of …'
+        prefix and the year appended.
+
+        Per #988, short-form papers used to all be bundled under one generic
+        "Extended Abstract Proceedings of …" label. We now dispatch by
+        pub_venue_type so each category gets the academically-conventional
+        phrasing (e.g. "Poster Proceedings of CHI 2024" rather than
+        "Extended Abstract Proceedings of CHI 2024" for a poster paper).
+        The `extended_abstract` BooleanField remains the catch-all fallback
+        for pubs that don't match a specific short-form venue type.
+        """
         if not self.forum_name:
             return ""
-        
-        formatted_forum_name = ""
 
         if self.pub_venue_type == PubType.CONFERENCE:
-            formatted_forum_name = "Proceedings of "
-        elif self.is_extended_abstract():
-            formatted_forum_name = "Extended Abstract Proceedings of "
+            prefix = "Proceedings of "
+        elif self.pub_venue_type == PubType.POSTER:
+            prefix = "Poster Proceedings of "
+        elif self.pub_venue_type == PubType.DEMO:
+            prefix = "Demo Proceedings of "
+        elif self.pub_venue_type == PubType.WORKSHOP:
+            prefix = "Workshop Proceedings of "
+        elif self.pub_venue_type == PubType.WIP:
+            prefix = "Work-in-Progress Proceedings of "
+        elif self.pub_venue_type == PubType.DOCTORAL_CONSORTIUM:
+            prefix = "Doctoral Consortium Proceedings of "
+        elif self.extended_abstract:
+            prefix = "Extended Abstract Proceedings of "
+        else:
+            prefix = ""
 
-        formatted_forum_name += self.forum_name
-        formatted_forum_name += f" {self.date.year}"
-        return formatted_forum_name
+        return f"{prefix}{self.forum_name} {self.date.year}"
 
     def is_extended_abstract(self):
         """Returns True if this publication is an extended abstract"""
