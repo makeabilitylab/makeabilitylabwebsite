@@ -36,7 +36,9 @@ def project(request, project_name):
     all_banners = project.banner_set.all()
     displayed_banners = ml_utils.choose_banners(all_banners)
 
-    publications = project.publication_set.order_by('-date')
+    publications = (project.publication_set
+                    .prefetch_related('authors', 'projects', 'keywords')
+                    .order_by('-date'))
     videos = project.videos.order_by('-date')
     talks = project.talk_set.order_by('-date')
     news = project.news_set.order_by('-date')

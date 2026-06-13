@@ -36,7 +36,9 @@ def index(request):
     # Recall that Django  querysets are lazy. That means a query will hit the database only when you specifically 
     # ask for the result. In this case, when we iterate through in index.html
     news_items = News.objects.order_by('-date')[:MAX_NUM_NEWS_ITEMS]
-    publications = Publication.objects.order_by('-date')[:MAX_NUM_PUBS]
+    publications = (Publication.objects
+                    .prefetch_related('authors', 'projects', 'keywords')
+                    .order_by('-date')[:MAX_NUM_PUBS])
     talks = Talk.objects.order_by('-date')[:MAX_NUM_TALKS]
     videos = Video.objects.order_by('-date')[:MAX_NUM_VIDEOS]
 

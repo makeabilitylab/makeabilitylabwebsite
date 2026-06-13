@@ -61,7 +61,9 @@ def member(request, member_name=None, member_id=None):
     # the first 4 objects.
     news = News.objects.filter(people=person).order_by('-date')[:4]
     latest_position = person.get_latest_position
-    publications = person.publication_set.order_by('-date')
+    publications = (person.publication_set
+                    .prefetch_related('authors', 'projects', 'keywords')
+                    .order_by('-date'))
     talks = person.talk_set.order_by('-date')
     videos = get_videos_by_author(person)
     project_roles = person.projectrole_set.order_by('-start_date')

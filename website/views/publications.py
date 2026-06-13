@@ -19,7 +19,12 @@ def publications(request):
     # See https://stackoverflow.com/a/4668703
     # sampledate__gte=datetime.date(2011, 1, 1),
     # Old: Publication.objects.filter(date__range=["2012-01-01", date.today()]),
-    publications = Publication.objects.filter(date__gte=settings.DATE_MAKEABILITYLAB_FORMED).order_by('-date')
+    # prefetch_related avoids N+1 over authors/projects/keywords, which are
+    # iterated per-publication by snippets/display_pub_snippet.html.
+    publications = (Publication.objects
+                    .filter(date__gte=settings.DATE_MAKEABILITYLAB_FORMED)
+                    .prefetch_related('authors', 'projects', 'keywords')
+                    .order_by('-date'))
 
     # Loop through pubs and store in a dict with year : list of pubs ordered by date
     map_year_to_pub_list = dict()
