@@ -34,9 +34,11 @@ def member(request, member_name=None, member_id=None):
             person = get_object_or_404(Person, url_name__iexact=member_name)
         except MultipleObjectsReturned:
             # This should not happen if url_name uniqueness is working correctly
-            # Log error and return the most recently modified person as fallback
+            # Log error and return the most recently bio-modified person as fallback
+            # (Person tracks bio_datetime_modified, not modified_date — the latter
+            # is not a field on the model and would raise FieldError.)
             _logger.error(f"Multiple people found with url_name={member_name}! This indicates url_name uniqueness is broken. Returning most recent.")
-            person = Person.objects.filter(url_name__iexact=member_name).order_by('-modified_date').first()
+            person = Person.objects.filter(url_name__iexact=member_name).order_by('-bio_datetime_modified').first()
             if person is None:
                 raise Http404("No person matches the given query.")
         except Http404:

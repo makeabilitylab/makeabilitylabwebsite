@@ -132,9 +132,10 @@ class Command(BaseCommand):
         for talk in Talk.objects.all():
 
             # If this pdf exists in the filesystem, keep it there (don't delete it)
-            talk_pdf_filename = os.path.basename(talk.pdf_file.path)
-            if talk_pdf_filename in map_talk_pdf_filename_to_full_path_on_filesystem:
-                del map_talk_pdf_filename_to_full_path_on_filesystem[talk_pdf_filename]
+            if talk.pdf_file:
+                talk_pdf_filename = os.path.basename(talk.pdf_file.path)
+                if talk_pdf_filename in map_talk_pdf_filename_to_full_path_on_filesystem:
+                    del map_talk_pdf_filename_to_full_path_on_filesystem[talk_pdf_filename]
 
             # If this pptx exists in the filesystem, keep it there (don't delete it)
             if talk.raw_file:
@@ -203,16 +204,17 @@ class Command(BaseCommand):
         # our filesystem dictionaries (we will delete whatever is left over in these dicts)
         for pub in Publication.objects.all():
 
-            pub_pdf_filename = os.path.basename(pub.pdf_file.path)
-
             # If this pdf exists in the filesystem, keep it there (don't delete it)
-            if pub_pdf_filename in map_pdf_filename_to_full_path_on_filesystem:
-                del map_pdf_filename_to_full_path_on_filesystem[pub_pdf_filename]
-  
+            if pub.pdf_file:
+                pub_pdf_filename = os.path.basename(pub.pdf_file.path)
+                if pub_pdf_filename in map_pdf_filename_to_full_path_on_filesystem:
+                    del map_pdf_filename_to_full_path_on_filesystem[pub_pdf_filename]
+
             # If this thumbnail exists in the filesystem, keep it there (don't delete it)
-            pub_thumbnail_filename = os.path.basename(pub.thumbnail.path)
-            if pub_thumbnail_filename in map_pub_thumbnail_to_full_path_on_filesystem:
-                del map_pub_thumbnail_to_full_path_on_filesystem[pub_thumbnail_filename]
+            if pub.thumbnail:
+                pub_thumbnail_filename = os.path.basename(pub.thumbnail.path)
+                if pub_thumbnail_filename in map_pub_thumbnail_to_full_path_on_filesystem:
+                    del map_pub_thumbnail_to_full_path_on_filesystem[pub_thumbnail_filename]
 
         if len(map_pdf_filename_to_full_path_on_filesystem) > 0:
             _logger.debug("Set to delete {} unused pub PDFs".format(len(map_pdf_filename_to_full_path_on_filesystem)))  
