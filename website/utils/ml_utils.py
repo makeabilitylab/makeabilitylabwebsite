@@ -209,7 +209,6 @@ def choose_banners_helper(banners, count):
         total_weight += weight
     for i in range(0, len(banner_weights)):
         banner_weights[i] = (banner_weights[i][0], banner_weights[i][1] / total_weight)
-        print(banner_weights[i][1])
 
     selected_banners = []
     for i in range(0, count):

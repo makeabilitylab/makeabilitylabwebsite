@@ -431,7 +431,6 @@ class Person(models.Model):
                 # we are going backwards in time. as soon as there is a gap greater than
                 # max_time_gap, we stop
                 max_time_gap = timedelta(weeks=1)
-                print(self.get_full_name(), cur_position)
                 if next_position is None:
                     next_position = cur_position
                 elif (next_position.start_date - cur_position.end_date) <= max_time_gap:

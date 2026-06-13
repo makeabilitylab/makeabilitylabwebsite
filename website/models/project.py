@@ -276,9 +276,6 @@ class Project(models.Model):
         active_research_scientist_leads = [role for role in active_roles if role.lead_project_role == LeadProjectRoleTypes.RESEARCH_SCIENTIST_LEAD]
         inactive_research_scientist_leads = [role for role in inactive_roles if role.lead_project_role == LeadProjectRoleTypes.RESEARCH_SCIENTIST_LEAD]
 
-        print(f"active_student_leads: {active_student_leads}")
-        print(f"inactive_student_leads: {inactive_student_leads}")
-
         return {
             'all_PIs': all_PIs,
             'active_PIs': active_PIs,
