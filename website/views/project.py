@@ -39,8 +39,14 @@ def project(request, project_name):
     publications = (project.publication_set
                     .prefetch_related('authors', 'projects', 'keywords')
                     .order_by('-date'))
-    videos = project.videos.order_by('-date')
-    talks = project.talk_set.order_by('-date')
+    videos = (project.videos
+              .select_related('publication')
+              .prefetch_related('projects')
+              .order_by('-date'))
+    talks = (project.talk_set
+             .select_related('video')
+             .prefetch_related('authors', 'publication_set', 'projects')
+             .order_by('-date'))
     news = project.news_set.order_by('-date')
     photos = project.photo_set.all()
     num_contributors = project.get_contributor_count()

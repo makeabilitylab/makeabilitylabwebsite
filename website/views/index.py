@@ -39,8 +39,14 @@ def index(request):
     publications = (Publication.objects
                     .prefetch_related('authors', 'projects', 'keywords')
                     .order_by('-date')[:MAX_NUM_PUBS])
-    talks = Talk.objects.order_by('-date')[:MAX_NUM_TALKS]
-    videos = Video.objects.order_by('-date')[:MAX_NUM_VIDEOS]
+    talks = (Talk.objects
+             .select_related('video')
+             .prefetch_related('authors', 'publication_set', 'projects')
+             .order_by('-date')[:MAX_NUM_TALKS])
+    videos = (Video.objects
+              .select_related('publication')
+              .prefetch_related('projects')
+              .order_by('-date')[:MAX_NUM_VIDEOS])
 
     # Get the most recent publication date for each project
     latest_publication_dates = Publication.objects.filter(projects=OuterRef('pk')).order_by('-date')

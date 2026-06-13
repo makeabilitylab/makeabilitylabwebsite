@@ -64,7 +64,10 @@ def member(request, member_name=None, member_id=None):
     publications = (person.publication_set
                     .prefetch_related('authors', 'projects', 'keywords')
                     .order_by('-date'))
-    talks = person.talk_set.order_by('-date')
+    talks = (person.talk_set
+             .select_related('video')
+             .prefetch_related('authors', 'publication_set', 'projects')
+             .order_by('-date'))
     videos = get_videos_by_author(person)
     project_roles = person.projectrole_set.order_by('-start_date')
     projects = person.get_projects
@@ -129,9 +132,12 @@ def member(request, member_name=None, member_id=None):
 
 def get_videos_by_author(person):
     """Returns a queryset of videos that the given person is an author on"""
-    return Video.objects.filter(
-        Q(publication__authors=person) | Q(talk__authors=person)
-    ).distinct().order_by('-date')
+    return (Video.objects
+            .select_related('publication')
+            .prefetch_related('projects')
+            .filter(Q(publication__authors=person) | Q(talk__authors=person))
+            .distinct()
+            .order_by('-date'))
 
 def get_closest_urlname_in_database(query_urlname, cutoff=0.8):
     """
