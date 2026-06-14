@@ -26,6 +26,14 @@ class Talk(Artifact):
     slideshare_url = models.URLField(blank=True, null=True)
     slideshare_url.help_text = "Slideshare is no longer a popular way of sharing talks"
 
+    external_slides_url = models.URLField(blank=True, null=True)
+    external_slides_url.help_text = (
+        "Optional link to the source slide deck (e.g., Figma, Google Slides, "
+        "Canva). <b>Strongly recommended</b>: also upload an archival raw file "
+        "above (a .fig from Figma, a .pptx exported from Google Slides, etc.) "
+        "&mdash; cloud links break when students graduate or revoke access."
+    )
+
     # add in video field to address https://github.com/jonfroehlich/makeabilitylabwebsite/issues/539
     video = models.ForeignKey('Video', blank=True, null=True, on_delete=models.DO_NOTHING)
     video.help_text = "If there is a video recording of the talk, add it here."

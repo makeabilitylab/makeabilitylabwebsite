@@ -91,6 +91,15 @@ DEPENDENCIES:
         <span>{{ talk.raw_file_label }}</span>
       </a>
       {% endif %}
+
+      {% if talk.external_slides_url %}
+      <a href="{{ talk.external_slides_url }}"
+         target="_blank" rel="noopener"
+         aria-label="View {{ talk.title }} slides in their original tool (opens in new tab)">
+        <i class="fa-solid fa-up-right-from-square" aria-hidden="true"></i>
+        <span>Source</span>
+      </a>
+      {% endif %}
       
       {% if talk.video %}
       <a href="{{ talk.video.video_url }}" 

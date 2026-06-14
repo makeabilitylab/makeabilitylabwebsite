@@ -1031,6 +1031,29 @@ class DatabaseTestCase(TestCase):
         )
         return Publication.objects.create(title=title, **kwargs)
 
+    def make_talk(self, title="A Test Talk", year=2024, **kwargs):
+        """
+        Create and return a Talk. Artifact.save() generates a thumbnail
+        from pdf_file (via ImageMagick) on every save, so we provide a
+        small valid PDF and let it run; tests that don't care about the
+        thumbnail just ignore it.
+        """
+        from datetime import date as _date
+        from website.models import Talk
+        from website.models.talk import TalkType
+        kwargs.setdefault("date", _date(year, 1, 1))
+        kwargs.setdefault("forum_name", "CHI")
+        kwargs.setdefault("talk_type", TalkType.CONFERENCE_TALK)
+        kwargs.setdefault(
+            "pdf_file",
+            SimpleUploadedFile(
+                f"{title.replace(' ', '_')}.pdf",
+                b"%PDF-1.4 test",
+                content_type="application/pdf",
+            ),
+        )
+        return Talk.objects.create(title=title, **kwargs)
+
     def make_news_item(self, title="Test News", author=None, **kwargs):
         """
         Create and return a News item. `author` is intentionally optional
@@ -1074,6 +1097,60 @@ class NewsItemNullAuthorViewTests(DatabaseTestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Authored News")
+
+
+# --- Talk snippet: external_slides_url rendering (#1273) -----------------
+
+
+class TalkExternalSlidesUrlTests(DatabaseTestCase):
+    """
+    Pins the rendering of Talk.external_slides_url in
+    snippets/display_talk_snippet.html — the "Source" link should appear
+    only when the URL is set. Also pins that Poster persists the field
+    (no display surface for posters yet, but the column must exist).
+    """
+
+    def _render_talk_snippet(self, talk):
+        from django.template.loader import render_to_string
+        return render_to_string(
+            "snippets/display_talk_snippet.html",
+            {"talk": talk, "MEDIA_URL": "/media/"},
+        )
+
+    def test_source_link_renders_when_external_slides_url_set(self):
+        talk = self.make_talk(
+            title="Figma Talk",
+            external_slides_url="https://www.figma.com/file/abc123/slides",
+        )
+        html = self._render_talk_snippet(talk)
+        self.assertIn("https://www.figma.com/file/abc123/slides", html)
+        self.assertIn("fa-up-right-from-square", html)
+        # opens-in-new-tab affordance must be present for accessibility
+        self.assertIn('target="_blank"', html)
+        self.assertIn('rel="noopener"', html)
+
+    def test_source_link_absent_when_external_slides_url_blank(self):
+        talk = self.make_talk(title="No-Source Talk")
+        html = self._render_talk_snippet(talk)
+        self.assertNotIn("fa-up-right-from-square", html)
+
+    def test_poster_external_slides_url_round_trips(self):
+        """Schema pin: Poster.external_slides_url must persist to the DB."""
+        from website.models import Poster
+        poster = Poster.objects.create(
+            title="A Test Poster",
+            external_slides_url="https://www.figma.com/file/xyz/poster",
+            pdf_file=SimpleUploadedFile(
+                "test_poster.pdf",
+                b"%PDF-1.4 test",
+                content_type="application/pdf",
+            ),
+        )
+        reloaded = Poster.objects.get(pk=poster.pk)
+        self.assertEqual(
+            reloaded.external_slides_url,
+            "https://www.figma.com/file/xyz/poster",
+        )
 
 
 # --- Query-count: /publications/ prefetch_related (regression for d4f6d65) -
