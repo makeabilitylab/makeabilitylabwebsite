@@ -83,17 +83,26 @@ class Command(BaseCommand):
     help = "Seed three demo projects (see file docstring) for visual testing of project page layouts."
 
     def handle(self, *args, **opts):
-        from website.models import Person, Project, Publication
+        from website.models import Grant, Person, Project, Publication, Sponsor
         from website.models.project_role import LeadProjectRoleTypes, ProjectRole
 
-        self._wipe_prior(Person, Project, Publication)
-        self.stdout.write(self.style.NOTICE("Creating demo people, projects, and publications…"))
+        self._wipe_prior(Person, Project, Publication, Grant, Sponsor)
+        self.stdout.write(self.style.NOTICE("Creating demo people, sponsors, projects, and publications…"))
 
         people = self._make_demo_people(Person)
-        self._make_demo_active_small(Project, ProjectRole, LeadProjectRoleTypes, people)
+        sponsors = self._make_demo_sponsors(Sponsor)
+
+        small = self._make_demo_active_small(Project, ProjectRole, LeadProjectRoleTypes, people)
         active_tall = self._make_demo_active_tall(Project, ProjectRole, LeadProjectRoleTypes, people)
         ended_tall = self._make_demo_ended_tall(Project, ProjectRole, LeadProjectRoleTypes, people)
         tall_main = self._make_demo_tall_main_short_sidebar(Project, ProjectRole, LeadProjectRoleTypes, people)
+
+        # Sponsor coverage: small gets 1 sponsor; the others get the full 4 to
+        # exercise multi-logo wrapping and verify the funding row layout.
+        self._attach_grant(Grant, small, sponsors[:1], year=2024)
+        self._attach_grant(Grant, active_tall, sponsors, year=2019)
+        self._attach_grant(Grant, ended_tall, sponsors[:3], year=2018)
+        self._attach_grant(Grant, tall_main, sponsors[:2], year=2024)
 
         self._make_demo_publications(Publication, active_tall, people, count=15, start_year=2019, end_year=2025)
         self._make_demo_publications(Publication, ended_tall, people, count=15, start_year=2018, end_year=2022)
@@ -111,17 +120,22 @@ class Command(BaseCommand):
     # ------------------------------------------------------------------
     # Cleanup
 
-    def _wipe_prior(self, Person, Project, Publication):
+    def _wipe_prior(self, Person, Project, Publication, Grant, Sponsor):
         """Delete any prior demo data so the command is safe to re-run."""
         n_projects = Project.objects.filter(short_name__startswith="demo-").count()
         n_people = Person.objects.filter(first_name="Demo").count()
         n_pubs = Publication.objects.filter(title__startswith="Demo Paper:").count()
-        if n_projects or n_people or n_pubs:
+        n_grants = Grant.objects.filter(title__startswith="Demo Grant:").count()
+        n_sponsors = Sponsor.objects.filter(name__startswith="Demo ").count()
+        if n_projects or n_people or n_pubs or n_grants or n_sponsors:
             self.stdout.write(self.style.WARNING(
-                f"Removing prior demo data: {n_projects} projects, {n_people} people, {n_pubs} publications."
+                f"Removing prior demo data: {n_projects} projects, {n_people} people, "
+                f"{n_pubs} publications, {n_grants} grants, {n_sponsors} sponsors."
             ))
             Publication.objects.filter(title__startswith="Demo Paper:").delete()
+            Grant.objects.filter(title__startswith="Demo Grant:").delete()
             Project.objects.filter(short_name__startswith="demo-").delete()
+            Sponsor.objects.filter(name__startswith="Demo ").delete()
             Person.objects.filter(first_name="Demo").delete()
 
     # ------------------------------------------------------------------
@@ -163,6 +177,41 @@ class Command(BaseCommand):
             )
             people[last_name] = p
         return people
+
+    # --- Sponsors / Grants -------------------------------------------------
+
+    _SPONSORS = [
+        ("Demo Science Foundation", "DSF", "https://example.org/dsf"),
+        ("Demo Research Council", "DRC", "https://example.org/drc"),
+        ("Demo Tech Institute", "DTI", "https://example.org/dti"),
+        ("Demo Industry Partner", "DIP", "https://example.org/dip"),
+    ]
+
+    def _make_demo_sponsors(self, Sponsor):
+        sponsors = []
+        for name, short_name, url in self._SPONSORS:
+            s = Sponsor.objects.create(
+                name=name,
+                short_name=short_name,
+                url=url,
+                alt_text=f"{name} logo",
+                icon=_img(f"{short_name.lower()}_icon.gif"),
+            )
+            sponsors.append(s)
+        return sponsors
+
+    def _attach_grant(self, Grant, project, sponsors, *, year):
+        """Create one Grant per sponsor and link it to the project."""
+        from datetime import date as _date
+        for idx, sponsor in enumerate(sponsors):
+            grant = Grant.objects.create(
+                title=f"Demo Grant: {project.short_name} / {sponsor.short_name} #{idx + 1}",
+                sponsor=sponsor,
+                date=_date(year, 1, 1),
+                funding_amount=100000 * (idx + 1),
+                grant_id=f"DEMO-{idx + 1}",
+            )
+            grant.projects.add(project)
 
     # --- Project 1: short sidebar, active ----------------------------------
 

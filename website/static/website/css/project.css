@@ -60,32 +60,54 @@
    Sidebar appears on the right on desktop, stacks on top on mobile.
    ============================================================================= */
 
+/* Per #1245: grid-template-areas restructure.
+   On mobile, .project-sidebar-block uses display: contents so its 4 child
+   sections (hero, team, funding, secondary) become grid items at this level,
+   giving us the order: hero -> description -> team -> funding -> content.
+   On desktop, .project-sidebar-block reverts to a normal block container
+   that occupies the right column; its children stack inside it. */
 .project-layout {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-6);
+  grid-template-areas:
+    "hero"
+    "description"
+    "team"
+    "funding"
+    "content";
 }
+
+.project-description-block { grid-area: description; min-width: 0; }
+.project-content-block     { grid-area: content;     min-width: 0; }
+.project-hero-info         { grid-area: hero; }
+.project-team-info         { grid-area: team; }
+.project-funding-info      { grid-area: funding; }
+.project-secondary-info    { display: none; } /* mobile: hidden, desktop: shown via media query */
 
 @media (min-width: 992px) {
   .project-layout {
     grid-template-columns: 1fr 320px;
     gap: var(--space-12);
+    grid-template-areas:
+      "description sidebar"
+      "content     sidebar";
   }
+  .project-description-block { grid-area: description; }
+  .project-content-block     { grid-area: content; }
+  /* On desktop the wrapper takes the sidebar column; its children stack inside. */
+  .project-sidebar-block     { grid-area: sidebar; }
+  .project-hero-info,
+  .project-team-info,
+  .project-funding-info,
+  .project-secondary-info    { grid-area: auto; }
+  .project-secondary-info    { display: block; }
 }
 
 @media (min-width: 1200px) {
   .project-layout {
     grid-template-columns: 1fr 350px;
   }
-}
-
-
-/* =============================================================================
-   MAIN CONTENT AREA
-   ============================================================================= */
-
-.project-main-content {
-  min-width: 0; /* Prevent grid blowout from long content */
 }
 
 
@@ -215,9 +237,11 @@
    Sticky sidebar on desktop, summary bar on mobile.
    ============================================================================= */
 
-.project-sidebar {
-  /* On mobile, appears above main content due to order property */
-  order: -1;
+/* On mobile, .project-sidebar-block uses display: contents so its children
+   become grid items at the layout level (see .project-layout above). On
+   desktop it reverts to a normal block that takes the "sidebar" grid area. */
+.project-sidebar-block {
+  display: contents;
 }
 
 /* Single source of truth for the sidebar sticky layout constants.
@@ -226,13 +250,14 @@
    never duplicates the px values. The breakpoint (992px) is shared with
    the @media block below; the JS uses window.matchMedia against the same
    query rather than hard-coding 992. */
-.project-sidebar {
+.project-sidebar-block {
   --project-sidebar-top-offset: 100px;
   --project-sidebar-bottom-gap: 20px;
 }
 
 @media (min-width: 992px) {
-  .project-sidebar {
+  .project-sidebar-block {
+    display: block;
     /* Per #1245: hybrid sticky offset, set by project-sidebar-sticky.js based
        on sidebar.offsetHeight vs window.innerHeight.
        - SHORT sidebar (fits in viewport): JS sets --sidebar-sticky-top to
@@ -252,28 +277,262 @@
 
 
 /* =============================================================================
-   SIDEBAR - Mobile Layout
+   SIDEBAR — Mobile Layouts (#1245)
    =============================================================================
-   Horizontal summary bar on small screens.
+   On mobile, the four sidebar sections (hero, team, funding, secondary)
+   become individual grid items at the .project-layout level (see
+   .project-sidebar-block { display: contents } above). Each gets its own
+   mobile-specific styling below. On desktop these all revert to plain
+   stacked sections within the sticky right sidebar.
    ============================================================================= */
 
-.project-sidebar-mobile-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: var(--space-4);
+/* HERO INFO — supporting metadata for the project, NOT a landmark.
+   Mobile: tight inline-text row (one line if it fits) + small pill links below.
+   Desktop: reverts to one-fact-per-row stacked layout in the sticky sidebar. */
+.project-hero-info {
+  margin-bottom: var(--space-5);
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary, #555);
+}
+
+/* On mobile the facts render as a single paragraph: "Active · 2012-Present · 163 contributors".
+   The dot separators are pure CSS — no markup overhead. */
+.project-hero-info .project-hero-facts {
+  margin: 0 0 var(--space-3) 0;
+  padding: 0;
+  line-height: 1.4;
+}
+
+.project-hero-info .project-hero-fact {
+  display: inline;
+  color: var(--color-text-secondary, #555);
+}
+
+.project-hero-info .project-hero-fact + .project-hero-fact::before {
+  content: " · ";
+  color: var(--color-text-tertiary, #999);
+  margin: 0 var(--space-1);
+}
+
+.project-hero-info .project-hero-fact-status {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Pill-style link buttons — tight, icon + short label, no label-row above. */
+.project-hero-info .project-hero-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.project-hero-info .project-hero-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border, #d5d5d5);
+  border-radius: 999px; /* pill */
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.project-hero-info .project-hero-link:hover,
+.project-hero-info .project-hero-link:focus-visible {
+  background: var(--color-surface-hover, #f5f5f5);
+  border-color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+.project-hero-info .project-hero-link i {
+  font-size: 0.95em;
+  color: var(--color-text-secondary, #555);
+}
+
+/* Mobile: show the short label ("Site"/"Code"/"Data") next to the icon; hide long URL. */
+.project-hero-info .project-hero-link-detail {
+  display: none;
+}
+.project-hero-info .project-hero-link-label {
+  display: inline;
 }
 
 @media (min-width: 992px) {
-  .project-sidebar-mobile-grid {
-    display: block; /* Stack vertically on desktop */
+  /* Desktop sidebar: revert to vertical layout with full link details, like before. */
+  .project-hero-info {
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-7);
+  }
+  .project-hero-info .project-hero-facts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+  .project-hero-info .project-hero-fact {
+    display: flex;
+    flex-direction: column;
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+  }
+  /* Render the data-label as a tiny uppercase eyebrow above each value on desktop. */
+  .project-hero-info .project-hero-fact[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--color-text-secondary, #555);
+    margin-bottom: var(--space-1);
+  }
+  /* Suppress the inter-fact dots on desktop (vertical layout doesn't need them). */
+  .project-hero-info .project-hero-fact + .project-hero-fact::before {
+    content: none;
+  }
+  /* Hide the "Active" badge on desktop — Date row already conveys it. */
+  .project-hero-info .project-hero-fact-status {
+    display: none;
+  }
+  /* Desktop link list stacks vertically with full URL detail. */
+  .project-hero-info .project-hero-links {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .project-hero-info .project-hero-link {
+    border: none;
+    padding: 0;
+    border-radius: 0;
+    color: var(--color-link, #0066cc);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
+  }
+  .project-hero-info .project-hero-link:hover,
+  .project-hero-info .project-hero-link:focus-visible {
+    background: transparent;
+    text-decoration: underline;
+  }
+  .project-hero-info .project-hero-link-label { display: none; }
+  .project-hero-info .project-hero-link-detail { display: inline; }
+}
+
+/* TEAM INFO — light, supporting-context header. NOT a landmark.
+   Mobile: one line per person ("Name · Role"). Desktop: original avatar-card layout. */
+.project-team-info,
+.project-funding-info,
+.project-secondary-info {
+  margin-bottom: var(--space-6);
+}
+
+.project-info-section-title {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary, #555);
+  margin: 0 0 var(--space-3) 0;
+  text-transform: none;
+  letter-spacing: 0;
+  border-bottom: none;
+}
+
+@media (min-width: 992px) {
+  /* On desktop the section title is implicit (the sidebar already has its own
+     visual grouping), so we hide it. The h4 group headers do the work. */
+  .project-info-section-title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
 }
 
+.project-team-group {
+  margin-bottom: var(--space-3);
+}
+.project-team-group:last-child {
+  margin-bottom: 0;
+}
 
-/* =============================================================================
-   SIDEBAR SECTIONS
-   ============================================================================= */
+/* Mobile: shrink the group sub-headers (PI, Student Lead, etc.) and the
+   person list — turn the avatar-card stack into a compact name-only list. */
+.project-team-info .project-sidebar-header {
+  /* These are h4 inside .project-team-group. */
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--color-text-secondary, #555);
+  margin: 0 0 var(--space-1) 0;
+}
 
+.project-team-info .project-sidebar-list {
+  list-style: none;
+  margin: 0 0 var(--space-2) 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--space-3);
+  row-gap: var(--space-1);
+}
+
+.project-team-info .project-sidebar-person {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.project-team-info .project-sidebar-person-image {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  flex: 0 0 24px;
+}
+
+.project-team-info .project-sidebar-person-name {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-primary);
+}
+
+@media (min-width: 992px) {
+  /* Desktop: restore the larger card-style layout (matching the original
+     desktop sidebar look). The .project-sidebar-person etc. styles further
+     down in this file already handle this — here we just undo our mobile
+     overrides. */
+  .project-team-info .project-sidebar-header {
+    /* Restore by clearing our overrides; the global .project-sidebar-header
+       rule (later in this file) takes over with uppercase styling. */
+    font-size: inherit;
+    font-weight: inherit;
+    text-transform: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    margin: inherit;
+  }
+  .project-team-info .project-sidebar-list {
+    display: block;
+  }
+  .project-team-info .project-sidebar-person {
+    display: flex;
+  }
+  .project-team-info .project-sidebar-person-image {
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    flex: initial;
+  }
+}
+
+/* SIDEBAR SECTIONS — generic spacing for all sub-sections (legacy class). */
 .project-sidebar-section {
   margin-bottom: var(--space-5);
 }
@@ -282,6 +541,43 @@
   .project-sidebar-section {
     margin-bottom: var(--space-7);
   }
+}
+
+/* FUNDING — minimal, "Funded by" label + small logo row. */
+.project-funding-info .project-info-section-title {
+  display: inline-block;
+  margin-right: var(--space-3);
+  margin-bottom: 0;
+  vertical-align: middle;
+}
+
+.project-funding-info .sponsor-sidebar-grid {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  vertical-align: middle;
+}
+
+.project-funding-info .sponsor-img {
+  max-height: 28px; /* keep logo row compact on mobile */
+  width: auto;
+}
+
+@media (min-width: 992px) {
+  /* Desktop: title goes back to being a hidden landmark (per the rule above),
+     and the logo grid returns to its block-level layout. */
+  .project-funding-info .sponsor-sidebar-grid {
+    display: grid;
+  }
+  .project-funding-info .sponsor-img {
+    max-height: none;
+  }
+}
+
+/* Secondary info — desktop-only stack of related news + related projects. */
+.project-secondary-group + .project-secondary-group {
+  margin-top: var(--space-5);
 }
 
 

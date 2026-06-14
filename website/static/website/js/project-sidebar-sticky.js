@@ -52,7 +52,7 @@
   }
 
   function updateStickyTop() {
-    var sidebar = document.querySelector('.project-sidebar');
+    var sidebar = document.querySelector('.project-sidebar-block');
     if (!sidebar) return;
 
     // On mobile (<992px) the sidebar isn't sticky; clear any prior override.
@@ -102,7 +102,7 @@
   if (typeof ResizeObserver !== 'undefined') {
     var observer = new ResizeObserver(updateStickyTop);
     function attachObserver() {
-      var sidebar = document.querySelector('.project-sidebar');
+      var sidebar = document.querySelector('.project-sidebar-block');
       if (sidebar) observer.observe(sidebar);
     }
     if (document.readyState === 'loading') {
