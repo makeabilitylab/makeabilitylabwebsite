@@ -85,10 +85,19 @@ DEPENDENCIES:
       </a>
       
       {% if talk.raw_file %}
-      <a href="{{ MEDIA_URL }}{{ talk.raw_file }}" 
-         aria-label="Download PowerPoint for {{ talk.title }}">
-        <i class="fa-solid fa-file-powerpoint" aria-hidden="true"></i>
-        <span>PPTX</span>
+      <a href="{{ MEDIA_URL }}{{ talk.raw_file }}"
+         aria-label="Download {{ talk.raw_file_label }} slides for {{ talk.title }}">
+        <i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i>
+        <span>{{ talk.raw_file_label }}</span>
+      </a>
+      {% endif %}
+
+      {% if talk.external_slides_url %}
+      <a href="{{ talk.external_slides_url }}"
+         target="_blank" rel="noopener"
+         aria-label="View {{ talk.title }} slides in their original tool (opens in new tab)">
+        <i class="fa-solid fa-up-right-from-square" aria-hidden="true"></i>
+        <span>Source</span>
       </a>
       {% endif %}
       
@@ -97,14 +106,6 @@ DEPENDENCIES:
          aria-label="Watch video of {{ talk.title }}">
         <i class="fa-solid fa-video" aria-hidden="true"></i>
         <span>Video</span>
-      </a>
-      {% endif %}
-      
-      {% if talk.slideshare_url %}
-      <a href="{{ talk.slideshare_url }}" 
-         aria-label="View {{ talk.title }} on SlideShare">
-        <i class="fa-brands fa-slideshare" aria-hidden="true"></i>
-        <span>SlideShare</span>
       </a>
       {% endif %}
       

@@ -18,13 +18,18 @@ class TalkType(models.TextChoices):
 class Talk(Artifact):
     """
     The Talk class inherits from the Artifact class and represents a talk or presentation.
-    It includes fields for the talk type, slideshare URL, video, and upload directories.
+    It includes fields for the talk type, video, and upload directories.
     """
     UPLOAD_DIR = 'talks/'
     THUMBNAIL_DIR = os.path.join(UPLOAD_DIR, 'images/')
 
-    slideshare_url = models.URLField(blank=True, null=True)
-    slideshare_url.help_text = "Slideshare is no longer a popular way of sharing talks"
+    external_slides_url = models.URLField(blank=True, null=True)
+    external_slides_url.help_text = (
+        "Optional link to the source slide deck (e.g., Figma, Google Slides, "
+        "Canva). <b>Strongly recommended</b>: also upload an archival raw file "
+        "above (a .fig from Figma, a .pptx exported from Google Slides, etc.) "
+        "&mdash; cloud links break when students graduate or revoke access."
+    )
 
     # add in video field to address https://github.com/jonfroehlich/makeabilitylabwebsite/issues/539
     video = models.ForeignKey('Video', blank=True, null=True, on_delete=models.DO_NOTHING)

@@ -73,6 +73,32 @@ class Artifact(models.Model):
     
     get_first_author_last_name.short_description = 'First Author (Last Name)' # used in the admin display for column header
 
+    # Friendly labels for known raw_file extensions. Keys are lowercase,
+    # leading-dot extensions; values are the human-readable label shown
+    # next to the download link (e.g., on the public talks list).
+    RAW_FILE_LABELS = {
+        '.pptx': 'PPTX',
+        '.ppt': 'PPT',
+        '.key': 'Keynote',
+        '.ai': 'AI',
+        '.fig': 'Figma',
+    }
+
+    @property
+    def raw_file_label(self):
+        """
+        Human-readable label for the raw_file's format (e.g., "PPTX",
+        "Keynote", "AI"). Returns None when there is no raw_file. For
+        unknown extensions, returns the uppercased extension without the
+        leading dot so the link still has a sensible label.
+        """
+        if not self.raw_file:
+            return None
+        ext = os.path.splitext(self.raw_file.name)[1].lower()
+        if not ext:
+            return None
+        return self.RAW_FILE_LABELS.get(ext, ext.lstrip('.').upper())
+
     def __str__(self):
         if self.id and self.authors.exists():          
             return "{}, '{}', {} {}".format(self.get_first_author_last_name(), self.title, self.forum_name, self.date)
