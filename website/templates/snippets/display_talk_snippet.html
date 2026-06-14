@@ -109,14 +109,6 @@ DEPENDENCIES:
       </a>
       {% endif %}
       
-      {% if talk.slideshare_url %}
-      <a href="{{ talk.slideshare_url }}" 
-         aria-label="View {{ talk.title }} on SlideShare">
-        <i class="fa-brands fa-slideshare" aria-hidden="true"></i>
-        <span>SlideShare</span>
-      </a>
-      {% endif %}
-      
       {% if talk.publication_set %}
       {% for pub in talk.publication_set.all %}
       <a href="{{ MEDIA_URL }}{{ pub.pdf_file }}" 

@@ -35,7 +35,7 @@ class TalkAdmin(ArtifactAdmin):
         (None,                      {'fields': ['title', 'authors', 'date']}),
         ('Files',                   {'fields': ['pdf_file', 'raw_file']}),
         ('Talk Venue Info',         {'fields': ['talk_type', 'forum_name', 'forum_url', 'location']}),
-        ('Links',                   {'fields': ['video', 'external_slides_url', 'slideshare_url']}),
+        ('Links',                   {'fields': ['video', 'external_slides_url']}),
         ('Project Info',            {'fields': ['projects', 'project_umbrellas']}),
         ('Keyword Info',            {'fields': ['keywords']}),
     ]
