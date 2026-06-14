@@ -890,6 +890,54 @@ class ArtifactFilenameUpdateCheckTests(SimpleTestCase):
             self.assertTrue(Artifact.do_filenames_need_updating(artifact))
 
 
+class ArtifactRawFileLabelTests(SimpleTestCase):
+    """
+    Regression tests for Artifact.raw_file_label (issue #1152).
+
+    The talk snippet previously hardcoded "PPTX" next to the raw_file
+    download link, mislabeling .key (Keynote) and any other format. The
+    label is derived from the file extension.
+    """
+
+    def _artifact_with_raw_file(self, name):
+        from website.models.artifact import Artifact
+        artifact = MagicMock(spec=Artifact)
+        artifact.raw_file = MagicMock() if name else None
+        if name:
+            artifact.raw_file.name = name
+        artifact.RAW_FILE_LABELS = Artifact.RAW_FILE_LABELS
+        return artifact
+
+    def _label(self, name):
+        from website.models.artifact import Artifact
+        return Artifact.raw_file_label.fget(self._artifact_with_raw_file(name))
+
+    def test_pptx_label(self):
+        self.assertEqual(self._label("talks/Doe2020Title.pptx"), "PPTX")
+
+    def test_keynote_label(self):
+        self.assertEqual(self._label("talks/Doe2020Title.key"), "Keynote")
+
+    def test_ai_label(self):
+        self.assertEqual(self._label("posters/Doe2020Title.ai"), "AI")
+
+    def test_figma_label(self):
+        self.assertEqual(self._label("talks/Doe2020Title.fig"), "Figma")
+
+    def test_extension_case_insensitive(self):
+        self.assertEqual(self._label("talks/Doe2020Title.PPTX"), "PPTX")
+        self.assertEqual(self._label("talks/Doe2020Title.Key"), "Keynote")
+
+    def test_unknown_extension_falls_back_to_uppercased_ext(self):
+        self.assertEqual(self._label("talks/Doe2020Title.odp"), "ODP")
+
+    def test_no_raw_file_returns_none(self):
+        self.assertIsNone(self._label(None))
+
+    def test_no_extension_returns_none(self):
+        self.assertIsNone(self._label("talks/Doe2020Title"))
+
+
 # ===========================================================================
 # Database-backed test infrastructure (#1267)
 # ===========================================================================

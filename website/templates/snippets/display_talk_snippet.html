@@ -85,10 +85,10 @@ DEPENDENCIES:
       </a>
       
       {% if talk.raw_file %}
-      <a href="{{ MEDIA_URL }}{{ talk.raw_file }}" 
-         aria-label="Download PowerPoint for {{ talk.title }}">
-        <i class="fa-solid fa-file-powerpoint" aria-hidden="true"></i>
-        <span>PPTX</span>
+      <a href="{{ MEDIA_URL }}{{ talk.raw_file }}"
+         aria-label="Download {{ talk.raw_file_label }} slides for {{ talk.title }}">
+        <i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i>
+        <span>{{ talk.raw_file_label }}</span>
       </a>
       {% endif %}
       
