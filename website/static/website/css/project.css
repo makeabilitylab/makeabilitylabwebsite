@@ -220,13 +220,32 @@
   order: -1;
 }
 
+/* Single source of truth for the sidebar sticky layout constants.
+   project-sidebar-sticky.js reads --project-sidebar-top-offset and
+   --project-sidebar-bottom-gap from here via getComputedStyle so the JS
+   never duplicates the px values. The breakpoint (992px) is shared with
+   the @media block below; the JS uses window.matchMedia against the same
+   query rather than hard-coding 992. */
+.project-sidebar {
+  --project-sidebar-top-offset: 100px;
+  --project-sidebar-bottom-gap: 20px;
+}
+
 @media (min-width: 992px) {
   .project-sidebar {
-    /* Per #1245: Wikipedia-style infobox pattern — sidebar lives in normal
-       document flow and scrolls with the page, no sticky + internal scroll.
-       Avoids the "page-scroll doesn't move the sidebar; you have to mouse
-       over it to scroll independently" UX on tall sidebars like /project/sidewalk/. */
+    /* Per #1245: hybrid sticky offset, set by project-sidebar-sticky.js based
+       on sidebar.offsetHeight vs window.innerHeight.
+       - SHORT sidebar (fits in viewport): JS sets --sidebar-sticky-top to
+         --project-sidebar-top-offset, sidebar sticks at the top while reading.
+       - TALL sidebar: JS sets a NEGATIVE top so the sidebar scrolls naturally
+         with the page until its bottom reaches viewport_bottom minus
+         --project-sidebar-bottom-gap, then pins there.
+       Fallback: if the JS doesn't run, var() falls back to the top-offset value,
+       which is fine for short sidebars and degrades gracefully on tall ones
+       (sidebar's top sticks; bottom is hidden — same as pre-JS state). */
     order: 0;
+    position: sticky;
+    top: var(--sidebar-sticky-top, var(--project-sidebar-top-offset));
     align-self: start; /* don't stretch the flex item to main column height */
   }
 }
