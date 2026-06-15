@@ -115,3 +115,18 @@
   width: 4em !important;
   min-width: 0;
 }
+
+/* Star Wars easter-egg picker (#1304). The hidden choice field carries the
+   chosen figure's basename to the server; its admin row is never meant to be
+   seen. */
+.field-easter_egg_starwars_choice {
+  display: none !important;
+}
+
+/* "Shuffle Star Wars figure" button. Starts hidden in markup and is revealed by
+   ml_cropper.js only when the picker is wired up (JS available, field empty), so
+   non-JS users never see a dead control. */
+.ml-cropper__shuffle {
+  margin: 8px 0 0 0;
+  cursor: pointer;
+}

@@ -56,25 +56,65 @@ def is_image(filename):
     filename = filename.lower()
     return filename[filename.rfind(".") + 1:] in ext2conttype
 
-def get_path_to_random_starwars_image(starwars_side = 'Rebels'):
-    """Gets a random star wars image path to assign"""
-    
-    if not starwars_side or starwars_side not in ['Rebels', 'Neither', 'DarkSide', 'Unfiled']:
-        starwars_side = 'Rebels'
+# The Star Wars LEGO figures that seed a Person's default headshot / easter-egg
+# image live under media/images/StarWarsFiguresFullSquare/<side>/. 'Rebels' is
+# the canonical set used for easter eggs (see Person.easter_egg).
+STARWARS_SIDES = ['Rebels', 'Neither', 'DarkSide', 'Unfiled']
+STARWARS_SUBDIR = ('images', 'StarWarsFiguresFullSquare')
 
-    #print("settings.MEDIA_ROOT: ", settings.MEDIA_ROOT);
 
+def _normalize_starwars_side(starwars_side):
+    """Coerce an arbitrary side to a known one, defaulting to 'Rebels'."""
+    if not starwars_side or starwars_side not in STARWARS_SIDES:
+        return 'Rebels'
+    return starwars_side
+
+
+def get_starwars_image_dir(starwars_side='Rebels'):
+    """Returns the on-disk directory (relative to cwd) for a Star Wars side.
+
+    Django dislikes absolute paths for FileField assignment, so we return a
+    path relative to MEDIA_ROOT's relative form (matches existing usage).
+    """
+    starwars_side = _normalize_starwars_side(starwars_side)
     # requires the volume mount from docker
-    # Django doesn't like when we use absolute paths, so we need to get the relative path to the media folder
     local_media_folder = os.path.relpath(settings.MEDIA_ROOT)
-    star_wars_path = os.path.join(local_media_folder, 'images', 'StarWarsFiguresFullSquare', starwars_side)
-    # print("star_wars_path: ", star_wars_path);
+    return os.path.join(local_media_folder, *STARWARS_SUBDIR, starwars_side)
 
-    all_images_in_dir = [f for f in os.listdir(star_wars_path) if is_image(f)]
-    # print("all_images_in_dir: ", all_images_in_dir);
 
-    # Return a randoms single path
-    return os.path.join(star_wars_path, random.choice(all_images_in_dir))
+def list_starwars_images(starwars_side='Rebels'):
+    """Returns a sorted list of Star Wars image *basenames* for the given side.
+
+    This is the single source of truth for the available figures: both the
+    random default picker (:func:`get_path_to_random_starwars_image`) and the
+    admin easter-egg picker (which lets editors preview/shuffle a figure before
+    the first save, see #1304) build on it.
+
+    Example:
+        >>> list_starwars_images('Rebels')[:2]
+        ['300px-Ani-helmet.jpg', '540px-Logray.jpg']
+    """
+    star_wars_path = get_starwars_image_dir(starwars_side)
+    return sorted(f for f in os.listdir(star_wars_path) if is_image(f))
+
+
+def get_starwars_image_url(filename, starwars_side='Rebels'):
+    """Returns the public MEDIA_URL for a Star Wars image basename.
+
+    The basename is sanitized (path components stripped) so this cannot be
+    coaxed into building a URL outside the Star Wars directory.
+    """
+    starwars_side = _normalize_starwars_side(starwars_side)
+    filename = os.path.basename(filename)
+    return settings.MEDIA_URL + '/'.join(
+        (*STARWARS_SUBDIR, starwars_side, filename)
+    )
+
+
+def get_path_to_random_starwars_image(starwars_side='Rebels'):
+    """Gets a random star wars image path to assign"""
+    star_wars_path = get_starwars_image_dir(starwars_side)
+    return os.path.join(star_wars_path, random.choice(list_starwars_images(starwars_side)))
 
 def get_files_in_directory(dir_path):
     """Returns a list of files in the given directory"""
