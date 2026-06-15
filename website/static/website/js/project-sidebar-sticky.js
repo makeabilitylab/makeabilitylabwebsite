@@ -36,7 +36,7 @@
  *
  * Only active on >=992px breakpoint; the mobile layout doesn't use sticky.
  *
- * Vanilla JS — no jQuery dependency despite the rest of the codebase using it.
+ * Vanilla JS — no jQuery dependency.
  */
 (function () {
   'use strict';

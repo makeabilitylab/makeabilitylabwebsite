@@ -97,11 +97,8 @@ TEMPLATE BLOCKS:
 
   {% block stylesheets %}{% endblock %}
 
-  <!-- JavaScript libraries (jQuery 1.9.1 required by Bootstrap 3.3.6) -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" 
-          integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" 
-          crossorigin="anonymous"></script>
+  <!-- Site JavaScript (vanilla; no jQuery / Bootstrap JS — see #1288).
+       Bootstrap's CSS is still used; only its JavaScript was removed. -->
   <script src="{% static 'website/js/top-navbar.js' %}"></script>
   <script src="{% static 'website/js/carousel.js' %}"></script>
 
