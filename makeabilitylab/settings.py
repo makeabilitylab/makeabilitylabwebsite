@@ -72,8 +72,8 @@ else:
     ALLOWED_HOSTS = ['*']
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.8.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Admin: preview, crop, and shuffle the Star Wars easter-egg figure in the Person cropper (#1304). Previously the easter-egg cropper was blank on a new Person and Person.save() assigned a random figure invisibly. Now an editor sees a default figure in the cropper on load, can shuffle to another or upload their own, and whatever is shown — plus its crop box — is what persists. An existing easter egg can be swapped to a figure the same way (or replaced with an upload). Builds on the Cropper.js widget (#1299); the random fallback still applies to non-admin/bulk creation."
+ML_WEBSITE_VERSION = "2.8.1" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "SEO: add a dynamic sitemap.xml and advertise it in robots.txt (#1252). /sitemap.xml is generated on each request from our querysets via django.contrib.sitemaps — static listing pages (home, people, publications, projects, awards, news), visible projects, people with a position, and news items — so it stays current with no maintenance. It emits the correct per-environment domain via RequestSite, so no django.contrib.sites and no DB migration are needed. The top-level static robots.txt (served directly by Apache, not Django) now points crawlers at the sitemap. Remaining one-time step: submit the sitemap in Google Search Console once it is live on production."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
