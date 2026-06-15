@@ -16,6 +16,7 @@ This document covers the Makeability Lab website's production infrastructure, de
   - [Server Configuration](#server-configuration)
     - [Configuration File](#configuration-file)
     - [Environment Variables](#environment-variables)
+    - [Static Files vs. Dynamic Requests (Apache routing)](#static-files-vs-dynamic-requests-apache-routing)
   - [Debugging \& Logging](#debugging--logging)
     - [Log Files](#log-files)
     - [Accessing Logs via Web](#accessing-logs-via-web)
@@ -126,6 +127,15 @@ Django reads database credentials and secret keys from `config.ini`. This file:
 ### Environment Variables
 
 Production-specific settings are configured in `settings.py` using values from `config.ini`. Local development uses different defaults specified in `docker-compose-local-dev.yml`.
+
+### Static Files vs. Dynamic Requests (Apache routing)
+
+On both servers, Apache sits in front of the Django container. It serves any URL that maps to a **real file** directly, and only **proxies to Django** (over plain HTTP) for paths that have no matching file. This has a few non-obvious consequences:
+
+- **`/robots.txt` is a static file** — it is the top-level [`robots.txt`](../robots.txt) committed in the repo root, served by Apache from the project checkout. To change crawler rules or the advertised sitemap, edit that file and deploy. A Django view/route for `/robots.txt` would be dead code on the servers (it only runs under local `runserver`, which diverges from production).
+- **`/sitemap.xml` is dynamic** — no such file exists, so Apache proxies it to Django's `django.contrib.sitemaps` (see `website/sitemaps.py`), which builds the XML from the database on each request.
+- **Django sees requests as HTTP, not HTTPS.** Apache terminates TLS and proxies to Django over plain HTTP, so `request.scheme` is `http`. Any code that builds absolute URLs from the request (e.g. the sitemap) must force `https` explicitly — the sitemaps do this via `protocol = "https"`.
+- **The test server is never indexed.** Apache stamps `X-Robots-Tag: noindex, nofollow` on every response from the test host, so staging stays out of search engines regardless of its `robots.txt`.
 
 ## Debugging & Logging
 
