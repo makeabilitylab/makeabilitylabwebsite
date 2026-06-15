@@ -72,8 +72,8 @@ else:
     ALLOWED_HOSTS = ['*']
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.4.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Testing & maintainability milestone: adds CI on push/PR (#1279), a DB-backed test package + test-settings shim (#1267), and a read-only Data Health admin dashboard with 7 checks (#1276). Also: view_project_people refactor fixing director hardcoding + N+1 queries (#1284), mobile navbar/logo fixes (#1281/#1282/#1286), and Talk/Poster external slides URL support (#1273)."
+ML_WEBSITE_VERSION = "2.5.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Frontend modernization (Track A, #1288): removed jQuery 1.9.1 and Bootstrap 3.3.6 JavaScript entirely. The navbar collapse (#1290), citation popover (#1292), and hero/project carousels (#1293) were rewritten in vanilla JS; dead Bootstrap scrollspy (#1291), jQuery UI, jQuery Easing, and a dead back-to-top widget were removed (#1289/#1290). Drops ~70KB of CDN JS from every page and eliminates the security-vulnerable jQuery 1.9.1. Bootstrap's CSS is unchanged. Also adds prefers-reduced-motion handling to the carousel."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
