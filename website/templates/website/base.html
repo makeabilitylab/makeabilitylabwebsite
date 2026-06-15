@@ -89,7 +89,6 @@ TEMPLATE BLOCKS:
   <link rel="stylesheet" href="{% static 'website/css/base.css' %}">
   <link rel="stylesheet" href="{% static 'website/css/autocomplete.css' %}">
   <link rel="stylesheet" href="{% static 'website/css/top-navbar.css' %}">
-  <link rel="stylesheet" href="{% static 'website/css/backtop.css' %}">
   <link rel="stylesheet" 
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" 
       integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" 
@@ -104,7 +103,6 @@ TEMPLATE BLOCKS:
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" 
           integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" 
           crossorigin="anonymous"></script>
-  <script src="{% static 'website/js/jquery.easing.min.js' %}"></script>
   <script src="{% static 'website/js/top-navbar.js' %}"></script>
 
   {% block external_scripts %}{% endblock %}
@@ -151,10 +149,8 @@ TEMPLATE BLOCKS:
           <div class="col-xs-12">
 
             <div class="navbar-header">
-              <button type="button" 
-                      class="navbar-toggle" 
-                      data-toggle="collapse"
-                      data-target=".navbar-main-collapse"
+              <button type="button"
+                      class="navbar-toggle"
                       aria-expanded="false"
                       aria-controls="navbar-main-collapse"
                       aria-label="Toggle navigation menu">
@@ -162,7 +158,7 @@ TEMPLATE BLOCKS:
                 <span class="sr-only">Menu</span>
               </button>
 
-              <a class="navbar-brand page-scroll" href="{% url 'website:index' %}"
+              <a class="navbar-brand" href="{% url 'website:index' %}"
                  aria-label="Makeability Lab home">
                 <img src="{% static 'website/img/logos/makelab_logo_white_no_text_100x67.png' %}"
                      alt=""
