@@ -40,11 +40,14 @@ def news_item(request, slug=None, id=None):
 
 
     excluded_ids = list(recent_ml_news.values_list('id', flat=True))
-    related_projects = cur_news_item.project.all()
+    # All projects tied to this news item drive the "related news" lookup below;
+    # only the publicly-visible ones are shown to the reader (#1300).
+    all_related_projects = cur_news_item.project.all()
+    related_projects = all_related_projects.filter(is_visible=True)
     recent_news_about_projects_mentioned = (News.objects
                                    .exclude(id=cur_news_item.id) # exclude the current news item
                                    .exclude(id__in=excluded_ids) # don't want to repeat
-                                   .filter(project__in=related_projects)
+                                   .filter(project__in=all_related_projects)
                                    .order_by('-date').distinct()[:MAX_RECENT_NEWS_ITEMS_BY_AUTHOR])
     
     

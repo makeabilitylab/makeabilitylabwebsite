@@ -70,6 +70,16 @@ class Award(models.Model):
 
     get_project_names.short_description = "Projects"
 
+    def get_visible_projects(self):
+        """
+        Returns the honored projects that are publicly visible (#1300).
+
+        Used by the public award snippet so a private project is not mentioned
+        on the Awards page. The admin-facing get_project_names() intentionally
+        still lists all projects.
+        """
+        return self.projects.filter(is_visible=True)
+
     def get_honorees(self):
         """Returns a combined, human-readable list of recipients and projects."""
         parts = [self.get_recipient_names(), self.get_project_names()]

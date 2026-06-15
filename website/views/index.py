@@ -95,12 +95,17 @@ def index(request):
 def get_landing_page_banners(max_num_banners=5):
     # Get favorite banners that should appear on the landing page. Order by recency.
     # The "?" allows us to randomize the order of banners added on the same day
-    fav_banners = list(Banner.objects.filter(favorite=True, landing_page=True).order_by('-date_added'))
+    # Exclude banners tied to a private project (#1300) so a hidden project
+    # isn't named (with a now-404 link) in the landing carousel. Banners with
+    # no project, or a visible project, are unaffected.
+    fav_banners = list(Banner.objects.filter(favorite=True, landing_page=True)
+                       .exclude(project__is_visible=False).order_by('-date_added'))
     random.shuffle(fav_banners)
     banners = fav_banners[:max_num_banners]
     
     if len(banners) < max_num_banners:
         other_banners = list(Banner.objects.filter(landing_page=True)
+                        .exclude(project__is_visible=False)
                         .exclude(id__in=[b.id for b in banners]) # exclude banners in original list
                         .order_by('-date_added', '?')[:max_num_banners-len(banners)])
         random.shuffle(other_banners)

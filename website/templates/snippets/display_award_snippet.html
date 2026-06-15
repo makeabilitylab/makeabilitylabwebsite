@@ -21,14 +21,11 @@ markup stays free of inline styles.
       <a href="{% url 'website:member_by_name' person.get_url_name %}">{{ person.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
     {% endfor %}
 
-    {% if award.recipients.exists and award.projects.exists %}, {% endif %}
+    {% if award.recipients.exists and award.get_visible_projects.exists %}, {% endif %}
 
-    {% for project in award.projects.all %}
-      {% if project.can_show_online %}
+    {# Only list publicly-visible projects so private projects aren't named here (#1300) #}
+    {% for project in award.get_visible_projects %}
       <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>{% if not forloop.last %}, {% endif %}
-      {% else %}
-      {{ project.name }}{% if not forloop.last %}, {% endif %}
-      {% endif %}
     {% endfor %}
   </p>
 
