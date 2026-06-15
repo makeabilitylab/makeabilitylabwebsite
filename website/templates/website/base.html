@@ -162,8 +162,9 @@ TEMPLATE BLOCKS:
                 <span class="sr-only">Menu</span>
               </button>
 
-              <a class="navbar-brand page-scroll" href="{% url 'website:index' %}">
-                <img src="{% static 'website/img/logos/makelab_logo_white_no_text_100x67.png' %}" 
+              <a class="navbar-brand page-scroll" href="{% url 'website:index' %}"
+                 aria-label="Makeability Lab home">
+                <img src="{% static 'website/img/logos/makelab_logo_white_no_text_100x67.png' %}"
                      alt=""
                      height="20"
                      aria-hidden="true">

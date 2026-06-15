@@ -219,11 +219,14 @@
 }
 
 /* ==========================================================================
-   Responsive Styles - Mobile (Collapsed Menu)
-   
-   Bootstrap 3 navbar collapses at 768px by default, but experimentally
-   this occurs at 789px for this navbar configuration.
-   
+   Responsive Styles - Mobile / Tablet (Collapsed Menu)
+
+   The collapsed (hamburger) menu is used up to 991px. The brand + 8 menu items
+   don't fit on one horizontal line until ~970px, so collapsing at Bootstrap's
+   default 768px left the menu wrapping onto a second line between ~768–991px
+   (issue #1286). The breakpoint override further below re-asserts the collapsed
+   layout across 768–991px; these rules style that collapsed menu.
+
    Key mobile improvements:
    - Minimum 44px touch targets (Apple HIG guideline)
    - Larger font size for readability
@@ -231,10 +234,65 @@
    - Clear visual separation between items
    ========================================================================== */
 
-@media only screen and (max-width: 789px) {
+@media only screen and (max-width: 991px) {
+  /*
+   * Taller navbar on mobile. The default 40px height left the hamburger button
+   * small and hard to tap, and felt disproportionately short next to the
+   * enlarged collapsed menu items. See issue #1282.
+   */
+  .navbar-custom {
+    height: 56px;
+    padding-top: 0;
+  }
+
+  /* Vertically center the brand (logo + text) within the taller navbar. The
+     float (set by Bootstrap) still positions it on the left. */
+  .navbar-custom .navbar-brand {
+    display: flex;
+    align-items: center;
+    height: 56px;
+  }
+
+  /* Scale the logo mark up to suit the taller navbar (the 20px default looked
+     undersized and top-light in a 56px bar). Width stays auto to keep ratio. */
+  .navbar-custom .navbar-brand > img {
+    height: 32px;
+  }
+
+  /* Logo-only brand on mobile. The wordmark looked tiny and cramped next to the
+     enlarged logo, so we hide it here. The brand link keeps an accessible name
+     via the aria-label on the <a> in base.html. See issue #1282 discussion. */
+  .navbar-custom .makeabilitylab-text {
+    display: none;
+  }
+
+  /* Larger hamburger button: ≥44px touch target (Apple HIG) with a bigger icon,
+     vertically centered within the navbar. Float keeps it on the right. */
+  .navbar-custom .navbar-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 56px;
+    min-width: 48px;
+    padding: 0 14px;
+    margin: 0;
+  }
+
+  .navbar-custom .navbar-toggle .fa-bars {
+    font-size: 26px;
+  }
+
   /* Collapsed menu background */
   .navbar-collapse ul {
     background-color: var(--navbar-bg-color);
+  }
+
+  /* Make the dropdown sit flush against the navbar. Bootstrap's default 7.5px
+     top margin on .navbar-nav left a gap where the page showed through between
+     the navbar and the menu panel. See issue #1282 discussion. */
+  .navbar-custom .navbar-nav {
+    margin-top: 0;
+    margin-bottom: 0;
   }
 
   /* 
@@ -255,6 +313,13 @@
   .navbar-custom .nav-icon {
     display: inline-block;
     font-size: 18px;
+  }
+
+  /* Stack menu items vertically. Bootstrap floats them left ≥768px; the
+     breakpoint override below keeps the menu collapsed up to 991px, so the
+     items must not float there. (No-op below 768px.) */
+  .navbar-custom .navbar-nav > li {
+    float: none;
   }
 
   /* Add subtle separator between menu items */
@@ -287,10 +352,38 @@
 }
 
 /* ==========================================================================
+   Raise the navbar collapse breakpoint to 992px
+
+   Bootstrap 3.3.6 switches the navbar to its horizontal layout at 768px, but
+   the brand + 8 menu items don't fit on one line until ~970px — so between
+   768–991px the menu wrapped onto a second line (issue #1286). These rules
+   re-assert Bootstrap's collapsed (hamburger) layout across 768–991px, so the
+   horizontal menu only appears once it actually fits (≥992px). The collapsed
+   styling itself comes from the max-width: 991px block above.
+   ========================================================================== */
+
+@media (min-width: 768px) and (max-width: 991px) {
+  /* Don't float the header into a horizontal row */
+  .navbar-custom .navbar-header {
+    float: none;
+  }
+
+  /* Keep the dropdown hidden until toggled (Bootstrap forces it open ≥768px) */
+  .navbar-custom .navbar-collapse.collapse {
+    display: none !important;
+  }
+
+  .navbar-custom .navbar-collapse.collapse.in {
+    display: block !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* ==========================================================================
    Light Theme Mobile Adjustments
    ========================================================================== */
 
-@media only screen and (max-width: 789px) {
+@media only screen and (max-width: 991px) {
   .light-navbar-theme .navbar-nav > li {
     border-bottom-color: rgba(0, 0, 0, 0.1);
   }
