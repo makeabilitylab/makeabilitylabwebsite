@@ -1,0 +1,60 @@
+name: Tests
+
+# Runs the Django test suite on every push to master (our test-server deploy
+# trigger) and on every pull request. A failing run is a red ✗ + email — it
+# reports status only and does not block the push or the deploy.
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    # Postgres service mirrors the local-dev / server `db` container
+    # (postgres:16, makeability / admin / password).
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: makeability
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U admin -d makeability"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      # settings_test.py reads these to reach the Postgres service above.
+      DATABASE_HOST: localhost
+      DATABASE_PORT: 5432
+      DJANGO_ENV: DEBUG
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Mirror the Dockerfile's system deps: ImageMagick + Ghostscript power the
+      # PDF→thumbnail path that Artifact.save() runs (exercised by the Talk
+      # fixtures); libpq-dev is needed to build psycopg2 from source.
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends imagemagick ghostscript libpq-dev
+          sudo cp imagemagick-policy.xml /etc/ImageMagick-6/policy.xml
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run tests
+        run: python manage.py test website --settings=makeabilitylab.settings_test --verbosity=2

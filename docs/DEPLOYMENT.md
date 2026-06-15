@@ -97,7 +97,7 @@ View current and past versions on the [Releases page](https://github.com/makeabi
 2. Confirm the Python test suite passes locally:
 
    ```bash
-   docker exec makeabilitylabwebsite-website-1 python manage.py test website
+   docker exec makeabilitylabwebsite-website-1 python manage.py test website --settings=makeabilitylab.settings_test
    ```
 
    (See [Running the Test Suite](../CONTRIBUTING.md#running-the-test-suite) in `CONTRIBUTING.md` for what the suite covers and how to add to it.)

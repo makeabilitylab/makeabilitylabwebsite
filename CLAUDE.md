@@ -37,11 +37,12 @@ A superuser is required to use `/admin` and add content; create one with `python
 
 ## Tests and accessibility checks
 
-- Tests: `python manage.py test website` (inside container). The suite has two styles, both in `website/tests.py`:
+- Tests: `python manage.py test website --settings=makeabilitylab.settings_test` (inside container). The tests live in the `website/tests/` package (one `test_*.py` per concern; Django auto-discovers them) with shared DB fixtures in `website/tests/base.py`. The suite has two styles:
   - **Unit** — `SimpleTestCase` + `MagicMock` for pure logic (formatters, BibTeX generation, etc.); no DB, runs in ms.
-  - **Integration** — `DatabaseTestCase` (subclass of Django's `TestCase`) for view / queryset / template regressions; each test runs in a transaction and rolls back. Has fixture helpers `make_person` / `make_publication` / `make_news_item`.
+  - **Integration** — `DatabaseTestCase` (subclass of Django's `TestCase`, in `tests/base.py`) for view / queryset / template regressions; each test runs in a transaction and rolls back. Has fixture helpers `make_person` / `make_publication` / `make_talk` / `make_news_item`.
   - When fixing a bug reachable through a real queryset, URL, or view, add a regression test in the matching style before applying the fix (matches the tests-first workflow).
-  - **Gotcha:** `website/migrations/` is gitignored, so each env has its own history. If `manage.py test` fails at DB creation with `column "..." already exists`, drop the stale test DB with `docker exec makeabilitylabwebsite-db-1 psql -U admin -d postgres -c "DROP DATABASE IF EXISTS test_makeability;"` and re-run. See #1267 for the durable fix.
+  - **Always use the `--settings=makeabilitylab.settings_test` shim.** It sets `MIGRATION_MODULES = {'website': None}` so the test DB is built directly from the current models, sidestepping the gitignored, per-environment `website/migrations/` history. This is the durable fix for #1267 — without it, a fresh test DB can fail at creation with `column "..." already exists` (old workaround: `docker exec makeabilitylabwebsite-db-1 psql -U admin -d postgres -c "DROP DATABASE IF EXISTS test_makeability;"`).
+  - **CI:** `.github/workflows/test.yml` runs this same command on every push to `master` and every PR (free/unlimited for this public repo). It reports a green ✓ / red ✗ — it does not block pushes or the deploy. See the testing roadmap in #1278.
 - Accessibility (Pa11y CI + Axe, WCAG 2.0 AA): start the site, then `docker-compose -f docker-compose-local-dev.yml --profile testing run --rm a11y`. URLs to scan are configured in `.pa11yci.json`. Run this before submitting UI changes.
 
 ## Deployment
