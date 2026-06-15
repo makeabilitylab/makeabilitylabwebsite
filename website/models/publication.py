@@ -5,6 +5,7 @@ import logging # for logging
 from datetime import date # for date comparisons
 import re # for regular expressions
 import website.utils.timeutils as timeutils
+import website.utils.fileutils as ml_fileutils # for auto-counting PDF pages
 
 class PubAwardType(models.TextChoices):
     BEST_ARTIFACT_AWARD = "Best Artifact Award"
@@ -77,8 +78,9 @@ class Publication(Artifact):
     acmid = models.CharField(max_length=255, blank=True, null=True)
 
      # Page numbers
-    num_pages = models.IntegerField(null=True)
-    num_pages.help_text = "The total number of pages in this publication (including references)"
+    num_pages = models.IntegerField(blank=True, null=True)
+    num_pages.help_text = "The total number of pages in this publication (including references). " \
+                          "Leave blank to auto-calculate from the uploaded PDF."
 
     # TODO, see if there is an IntegerRangeField or something like that for page_num_start and end
     # There is an IntegerRangeField but it's only for Postgres... hmm
@@ -96,6 +98,27 @@ class Publication(Artifact):
     total_papers_submitted.help_text = "The total number of papers submitted to the venue (if known)"
 
     award = models.CharField(max_length=50, choices=PubAwardType.choices, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        """
+        Extends Artifact.save() to auto-populate num_pages from the uploaded PDF
+        when it hasn't been set manually (issue #1298). This removes a required
+        field from the publication form so students can add papers with less
+        friction; the page count is still recorded, just derived automatically.
+
+        We only fill an empty value, so a manually entered num_pages is never
+        overwritten. The count is computed after super().save() because that's
+        when the PDF is guaranteed to be on disk (Artifact.save() also defers
+        thumbnail generation for the same reason). If we fill it, we persist with
+        a second, narrowly-scoped save(update_fields=['num_pages']).
+        """
+        super().save(*args, **kwargs)
+
+        if self.pdf_file and not self.num_pages:
+            page_count = ml_fileutils.get_pdf_page_count(self.pdf_file)
+            if page_count:
+                self.num_pages = page_count
+                super().save(update_fields=['num_pages'])
 
     def get_upload_dir(self, filename):
         return os.path.join(self.UPLOAD_DIR, filename)

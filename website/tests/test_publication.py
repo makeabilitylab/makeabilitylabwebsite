@@ -1,10 +1,29 @@
 """Tests for Publication model methods (BibTeX, forum name, author lookup)."""
 
+import io
+import os
+import tempfile
 from unittest.mock import MagicMock
 
-from django.test import SimpleTestCase
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import SimpleTestCase, override_settings
 
 from website.tests.base import DatabaseTestCase
+
+
+def _make_pdf_bytes(num_pages):
+    """
+    Build a minimal, valid in-memory PDF with `num_pages` blank pages, using
+    pypdf's own writer. Guarantees a real PDF (so pypdf can re-read its page
+    tree) with a known page count for assertions.
+    """
+    from pypdf import PdfWriter
+    writer = PdfWriter()
+    for _ in range(num_pages):
+        writer.add_blank_page(width=612, height=792)  # US Letter
+    buf = io.BytesIO()
+    writer.write(buf)
+    return buf.getvalue()
 
 
 # --- BibTeX citation regression -------------------------------------------
@@ -209,3 +228,148 @@ class PublicationGetPersonTests(DatabaseTestCase):
         second = self.make_person(first_name="Second", last_name="Author")
         pub.authors.add(first, second)  # SortedManyToManyField preserves order
         self.assertEqual(pub.get_person(), first)
+
+
+# --- get_pdf_page_count helper (#1298) ------------------------------------
+
+
+class GetPdfPageCountTests(SimpleTestCase):
+    """
+    Unit tests for fileutils.get_pdf_page_count, which backs the auto-population
+    of Publication.num_pages (#1298). The helper must return the page count for a
+    valid PDF and None (never raise) for anything it can't read, so a bad upload
+    never blocks saving a publication.
+    """
+
+    def _mock_field(self, name, path, exists=True):
+        """Build a minimal FileField stand-in with the attrs the helper reads."""
+        field = MagicMock()
+        field.name = name
+        field.path = path
+        field.storage.exists.return_value = exists
+        return field
+
+    def test_returns_page_count_for_valid_pdf(self):
+        from website.utils import fileutils
+        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+            tmp.write(_make_pdf_bytes(7))
+            tmp_path = tmp.name
+        try:
+            field = self._mock_field("paper.pdf", tmp_path)
+            self.assertEqual(fileutils.get_pdf_page_count(field), 7)
+        finally:
+            os.unlink(tmp_path)
+
+    def test_returns_none_for_non_pdf_extension(self):
+        from website.utils import fileutils
+        field = self._mock_field("notes.txt", "/tmp/notes.txt")
+        self.assertIsNone(fileutils.get_pdf_page_count(field))
+
+    def test_returns_none_when_file_missing_from_storage(self):
+        from website.utils import fileutils
+        field = self._mock_field("paper.pdf", "/tmp/does-not-exist.pdf", exists=False)
+        self.assertIsNone(fileutils.get_pdf_page_count(field))
+
+    def test_returns_none_for_corrupt_pdf(self):
+        from website.utils import fileutils
+        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+            tmp.write(b"%PDF-1.4 not actually a real pdf")
+            tmp_path = tmp.name
+        try:
+            field = self._mock_field("paper.pdf", tmp_path)
+            self.assertIsNone(fileutils.get_pdf_page_count(field))
+        finally:
+            os.unlink(tmp_path)
+
+    def test_returns_none_for_empty_field(self):
+        from website.utils import fileutils
+        empty = MagicMock()
+        empty.name = ""
+        self.assertIsNone(fileutils.get_pdf_page_count(empty))
+
+
+# --- num_pages auto-population on save (#1298) ----------------------------
+
+
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+class NumPagesAutoFillTests(DatabaseTestCase):
+    """
+    Integration tests for Publication.save() auto-filling num_pages from the
+    uploaded PDF (#1298). Uses a temp MEDIA_ROOT so the real PDFs/thumbnails the
+    save path writes don't pollute the project's media/ directory.
+    """
+
+    def _pdf_upload(self, name, num_pages):
+        return SimpleUploadedFile(
+            name, _make_pdf_bytes(num_pages), content_type="application/pdf"
+        )
+
+    def test_num_pages_autofilled_from_pdf(self):
+        pub = self.make_publication(
+            title="Auto Pages", pdf_file=self._pdf_upload("auto.pdf", 5)
+        )
+        pub.refresh_from_db()
+        self.assertEqual(pub.num_pages, 5)
+
+    def test_manual_num_pages_is_preserved(self):
+        """A page count the editor typed in must never be overwritten."""
+        pub = self.make_publication(
+            title="Manual Pages",
+            num_pages=99,
+            pdf_file=self._pdf_upload("manual.pdf", 5),
+        )
+        pub.refresh_from_db()
+        self.assertEqual(pub.num_pages, 99)
+
+
+# --- backfill_num_pages management command (#1298) ------------------------
+
+
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+class BackfillNumPagesCommandTests(DatabaseTestCase):
+    """
+    Tests for the backfill_num_pages management command, which populates
+    num_pages for legacy publications that have a PDF but no page count (#1298).
+    """
+
+    def _pdf_upload(self, name, num_pages):
+        return SimpleUploadedFile(
+            name, _make_pdf_bytes(num_pages), content_type="application/pdf"
+        )
+
+    def _make_legacy_pub(self, title, num_pages_in_pdf):
+        """
+        Create a publication and then null out num_pages directly in the DB to
+        simulate a legacy row (save() auto-fills it, so we can't create one with
+        an empty count through the normal path).
+        """
+        from website.models import Publication
+        pub = self.make_publication(
+            title=title, pdf_file=self._pdf_upload(f"{title}.pdf", num_pages_in_pdf)
+        )
+        Publication.objects.filter(pk=pub.pk).update(num_pages=None)
+        return pub
+
+    def test_backfills_missing_page_count(self):
+        from django.core.management import call_command
+        pub = self._make_legacy_pub("Legacy", 8)
+        call_command("backfill_num_pages")
+        pub.refresh_from_db()
+        self.assertEqual(pub.num_pages, 8)
+
+    def test_dry_run_makes_no_changes(self):
+        from django.core.management import call_command
+        pub = self._make_legacy_pub("DryRun", 8)
+        call_command("backfill_num_pages", "--dry-run")
+        pub.refresh_from_db()
+        self.assertIsNone(pub.num_pages)
+
+    def test_existing_count_is_not_overwritten(self):
+        """Publications that already have a count are left untouched."""
+        from django.core.management import call_command
+        pub = self.make_publication(
+            title="HasCount", num_pages=42, pdf_file=self._pdf_upload("hc.pdf", 8)
+        )
+        call_command("backfill_num_pages")
+        pub.refresh_from_db()
+        self.assertEqual(pub.num_pages, 42)

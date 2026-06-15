@@ -68,6 +68,11 @@ djangorestframework==3.15.2
 # See: https://pypi.org/project/Wand/
 wand==0.6.13
 
+# pypdf - pure-Python PDF library, used to auto-count a publication's pages
+# (issue #1298) by reading the PDF's page tree directly (no rendering).
+# See: https://pypi.org/project/pypdf/
+pypdf==6.13.2
+
 # Pillow - Python Imaging Library fork, for image manipulation
 # Note: Pillow 10.0+ dropped Python 3.7 support; 11.0+ dropped Python 3.8
 # See: https://pypi.org/project/Pillow/
