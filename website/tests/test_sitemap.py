@@ -8,6 +8,7 @@ Note: robots.txt is a static file (./robots.txt) served by Apache on the
 servers, not a Django view, so it isn't covered here.
 """
 
+import re
 from datetime import date
 
 from website.tests.base import DatabaseTestCase
@@ -58,3 +59,17 @@ class SitemapTests(DatabaseTestCase):
         news = self.make_news_item(title="Big Lab News")
         body = self.client.get("/sitemap.xml").content.decode()
         self.assertIn(f"/news/{news.slug}/", body)
+
+    def test_sitemap_uses_https_scheme(self):
+        # Apache proxies to Django over plain HTTP, so without a pinned
+        # protocol the <loc> URLs would be http:// and only 302-redirect to
+        # https. Every <loc> must be canonical https. See _HttpsSitemap.
+        self.make_project(name="Scheme Proj", short_name="schemeproj",
+                          is_visible=True)
+        body = self.client.get("/sitemap.xml").content.decode()
+        locs = re.findall(r"<loc>(.*?)</loc>", body)
+        self.assertTrue(locs)  # guard against an empty sitemap passing vacuously
+        self.assertFalse(
+            [loc for loc in locs if not loc.startswith("https://")],
+            "all sitemap <loc> URLs should use the https scheme",
+        )
