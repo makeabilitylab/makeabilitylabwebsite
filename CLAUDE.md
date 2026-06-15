@@ -51,6 +51,16 @@ A superuser is required to use `/admin` and add content; create one with `python
 - Bump `ML_WEBSITE_VERSION` and `ML_WEBSITE_VERSION_DESCRIPTION` in `makeabilitylab/settings.py` when cutting a release.
 - Build logs: `<host>/logs/buildlog.txt`. Application logs: `<host>/logs/debug.log`. See `docs/DEPLOYMENT.md` for SSH paths on `recycle.cs.washington.edu`.
 
+### Server access model (important — shapes how anything ships to prod/test)
+
+The maintainer does **not** have shell or admin access to the test or production servers. UW CSE IT (Jason Howe) owns and configured both; Apache/web-server and file-permission changes go through them, and much of the deployed tree is `apache:makelab`-owned. The only available controls and visibility are:
+
+- **Deploys are push-only.** Push to `master` → test; push a SemVer tag → prod. There is **no way to run `docker` or `manage.py` directly** on either server.
+- **SSH is read-mostly and limited to one jump host.** The maintainer can SSH to `recycle.cs.washington.edu` and read files on the shared CSE filesystem under `/cse/web/research/makelab/` (logs, the `media/` dir, `secret/config.ini`). There is **no SSH access to the host that runs the Docker stack** and no passwordless sudo.
+- **The database is not reachable directly.** Prod Postgres runs as the `db` Docker container, bound to the Docker host's **loopback only**, so there is no tunnel/network path to it from a laptop or from `recycle`. (Credentials are moot anyway — see below.)
+- **Therefore, any operation against prod/test data must run *inside* the container.** Ship it as a management command wired into `docker-entrypoint.sh` (the established one-shot pattern) and verify via the logs. For one-off offline analysis, request a DB snapshot from CSE IT rather than trying to connect remotely.
+- **Never write personal or sensitive data to web-served paths** (`media/`, `static/`, `logs/`) — everything under them is publicly downloadable. (A stale public `dumped_data.json` was exactly this mistake.)
+
 ## Architecture
 
 ### Project layout
@@ -88,9 +98,11 @@ Custom admin organization lives in `website/admin/admin_site.py` (`MakeabilityLa
 
 ### Settings, config, and environment
 
-- `makeabilitylab/settings.py` reads `config.ini` at project root for production secrets and DB credentials. `config.ini` is **not** committed — production mounts it as a Docker volume.
+- **Compose files per environment:** the servers run `docker-compose.yml` (test *and* prod — `makeabilitylabwebsite/rebuildanddeploy.sh` runs `docker compose up` with no `-f`, so it always picks the default `docker-compose.yml`; it only varies per-host env vars). Local dev runs `docker-compose-local-dev.yml` (passed explicitly with `-f`). `docker-compose-local-dev.yml` is **never** used on the servers.
+- **Per-host wiring** (set by `rebuildanddeploy.sh`): test host `docker-test2` → `DJANGO_ENV=TEST`, mounts `secret/config-test.ini` + `www-test/` media; prod host `grabthar` → `DJANGO_ENV=PROD`, mounts `secret/config.ini` + `www/` media.
+- `makeabilitylab/settings.py` reads `config.ini` (mounted at the project root, **not** committed) for `SECRET_KEY`, `DEBUG`, and `ALLOWED_HOSTS`.
+- **Prod/test `config.ini` has only a `[Django]` section — no `[Postgres]` section.** Per `settings.py`, a missing `[Postgres]` section means Django uses the fallback `DATABASES` default (`HOST='db'`) — i.e. the dockerized `db` service of the active compose file. A `[Postgres]` section, if added, would override it. So the DB is the in-stack `db` container in **every** environment (no external Postgres); on the servers that's the `db` service in `docker-compose.yml`.
 - `DEBUG` resolution order: `DJANGO_ENV=PROD` forces False → `config.ini [Django] DEBUG` → `DJANGO_ENV=DEBUG` forces True → default False.
-- Without a `[Postgres]` section in `config.ini`, Django falls back to the dockerized dev DB (`db:5432`, user `admin`, pw `password`, db `makeability`) defined in `docker-compose-local-dev.yml`.
 - `TIME_ZONE = 'America/Los_Angeles'`. `ML_WEBSITE_VERSION` in settings is shown in the admin header and used in release tagging.
 
 ### Container startup side effects (`docker-entrypoint.sh`)
