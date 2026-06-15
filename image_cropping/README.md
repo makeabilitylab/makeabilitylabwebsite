@@ -18,7 +18,10 @@ of Django 6.1 LTS).
 
 - **New admin widget on [Cropper.js](https://github.com/fengyuanchen/cropperjs)
   v1.6.2** (MIT, vendored as static files, no build step). It previews and
-  crops the image **client-side, before the first save**. See
+  crops the image **client-side, before the first save**, with a **live
+  WYSIWYG preview** of the cropped result. Precise, keyboard-accessible
+  numeric X/Y/W/H inputs live in a collapsed "Adjust crop precisely"
+  disclosure so they stay out of the common drag-to-crop flow. See
   `widgets.py` + `static/image_cropping/ml_cropper.js`.
 - **Removed** the pluggable backend / `django-appconf` config layer; easy_thumbnails
   is wired directly.

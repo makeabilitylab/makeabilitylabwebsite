@@ -108,19 +108,41 @@
     stage.appendChild(img);
     container.appendChild(stage);
 
+    // Live WYSIWYG preview: shows exactly what the cropped thumbnail will look
+    // like. Cropper.js fills the preview box's width with the selected crop, so
+    // we size the box to the field's aspect ratio for a true-to-output preview.
+    var previewWrap = document.createElement("div");
+    previewWrap.className = "ml-cropper__preview-wrap";
+    var previewLabel = document.createElement("span");
+    previewLabel.className = "ml-cropper__preview-label";
+    previewLabel.textContent = "Preview";
+    var preview = document.createElement("div");
+    preview.className = "ml-cropper__preview";
+    var previewW = 160;
+    preview.style.width = previewW + "px";
+    preview.style.height =
+      Math.round(previewW / (aspectRatio > 0 ? aspectRatio : 1)) + "px";
+    previewWrap.appendChild(previewLabel);
+    previewWrap.appendChild(preview);
+    container.appendChild(previewWrap);
+
     var warning = document.createElement("p");
     warning.className = "ml-cropper__warning";
     warning.setAttribute("role", "alert");
     warning.hidden = true;
     container.appendChild(warning);
 
-    // Keyboard-accessible numeric controls.
-    var controls = document.createElement("fieldset");
+    // Precise, keyboard-accessible numeric controls, tucked into a collapsed
+    // disclosure: they stay out of the way of the common drag-to-crop flow but
+    // remain reachable for keyboard / screen-reader users who need exact values.
+    var advanced = document.createElement("details");
+    advanced.className = "ml-cropper__advanced";
+    var summary = document.createElement("summary");
+    summary.className = "ml-cropper__summary";
+    summary.textContent = "Adjust crop precisely (pixels)";
+    advanced.appendChild(summary);
+    var controls = document.createElement("div");
     controls.className = "ml-cropper__controls";
-    var legend = document.createElement("legend");
-    legend.textContent = "Crop region (pixels)";
-    legend.className = "ml-cropper__legend";
-    controls.appendChild(legend);
     var nums = {
       x: makeNumberInput("X", idBase, "x"),
       y: makeNumberInput("Y", idBase, "y"),
@@ -128,7 +150,8 @@
       height: makeNumberInput("Height", idBase, "height"),
     };
     Object.keys(nums).forEach(function (k) { controls.appendChild(nums[k].wrap); });
-    container.appendChild(controls);
+    advanced.appendChild(controls);
+    container.appendChild(advanced);
 
     var fileRow = fileInput.closest(".form-row, .field-" + imageFieldName) || fileInput.parentNode;
     fileRow.parentNode.insertBefore(container, fileRow.nextSibling);
@@ -136,6 +159,7 @@
     var cropper = null;
     var syncing = false; // guard against crop<->numeric feedback loops
     var pendingBox = parseBox(ratioInput.value); // existing crop to restore
+    var currentObjectUrl = null; // blob: URL of the currently previewed file
 
     function updateWarning(data) {
       if (!sizeWarning) return;
@@ -195,6 +219,7 @@
         viewMode: 1,
         autoCropArea: 1,
         responsive: true,
+        preview: preview, // live thumbnail of the cropped result
         // Keep the on-screen pixels identical to what the server crops:
         // easy_thumbnails / Pillow crop_corners operates on the raw stored
         // image without applying EXIF orientation, so the cropper must show
@@ -217,15 +242,16 @@
     });
 
     // INSTANT preview: crop straight from the just-picked file, pre-upload.
+    // Keep the object URL alive for the whole crop session — Cropper.js builds
+    // its live preview clone from this same URL *after* the main image loads,
+    // so revoking on load would leave the preview blank. Revoke the previous
+    // URL only when a new file replaces it (the last one is freed on unload).
     fileInput.addEventListener("change", function () {
       var file = fileInput.files && fileInput.files[0];
       if (!file) return;
-      var url = URL.createObjectURL(file);
-      initCropper(url, null);
-      img.addEventListener("load", function revoke() {
-        URL.revokeObjectURL(url);
-        img.removeEventListener("load", revoke);
-      });
+      if (currentObjectUrl) URL.revokeObjectURL(currentObjectUrl);
+      currentObjectUrl = URL.createObjectURL(file);
+      initCropper(currentObjectUrl, null);
     });
 
     // Existing image (edit page): load the full-res original for re-cropping.

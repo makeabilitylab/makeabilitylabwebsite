@@ -41,8 +41,48 @@
   font-size: 0.85em;
 }
 
-.ml-cropper__controls {
+/* Live result preview. Cropper.js injects an <img> and fills this box's width
+   with the current crop, so overflow must be hidden. */
+.ml-cropper__preview-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin-top: 10px;
+}
+
+.ml-cropper__preview-label {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: #555;
+}
+
+.ml-cropper__preview {
+  overflow: hidden; /* required by Cropper.js preview */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #f3f3f3;
+  flex: none;
+}
+
+/* Collapsed "adjust precisely" disclosure wrapping the numeric controls. */
+.ml-cropper__advanced {
+  margin-top: 10px;
+}
+
+.ml-cropper__summary {
+  cursor: pointer;
+  font-size: 0.85em;
+  color: #417690; /* Django admin link blue */
+  user-select: none;
+  width: max-content;
+}
+
+.ml-cropper__summary:hover {
+  color: #205067;
+}
+
+.ml-cropper__controls {
+  margin-top: 8px;
   padding: 8px 10px;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
@@ -50,12 +90,6 @@
   flex-wrap: wrap;
   gap: 10px 16px;
   align-items: center;
-}
-
-.ml-cropper__legend {
-  font-weight: 600;
-  font-size: 0.85em;
-  padding: 0 4px;
 }
 
 .ml-cropper__num {
