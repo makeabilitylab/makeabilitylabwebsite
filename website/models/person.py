@@ -136,7 +136,7 @@ class Person(models.Model):
     # We use the get_unique_path function because otherwise if two people use the same
     # filename (something generic like picture.jpg), one will overwrite the other.
     image = models.ImageField(blank=True, upload_to=get_upload_to_for_person, max_length=255)
-    image.help_text = 'You must select "Save and continue editing" at the bottom of the page after uploading a new image for cropping.'
+    image.help_text = 'After choosing an image, crop it right here using the cropper below — no need to save first.'
 
     # We use the django-image-cropping ImageRatioField https://github.com/jonasundderwolf/django-image-cropping
     # that simply stores the boundaries of a cropped image. You must pass it the corresponding ImageField

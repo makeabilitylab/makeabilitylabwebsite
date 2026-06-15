@@ -40,7 +40,7 @@ TEMPLATE BLOCKS:
 <head>
   {% load ml_tags %}
   {% load static %}
-  {% load cropping %}
+  {% load thumbnail %}
 
   <!-- Build info (helps with debugging) -->
   <!-- Makeability Lab website version {% get_settings_value "ML_WEBSITE_VERSION" %} -->
@@ -271,7 +271,7 @@ TEMPLATE BLOCKS:
         </video>
         {% elif banner.image %}
         <div class="fill" 
-             style="background-image: url('{% cropped_thumbnail banner "cropping" scale=1.0 %}')"
+             style="background-image: url('{% thumbnail banner.image '1600x500' box=banner.cropping crop detail %}')"
              role="img"
              aria-label="{% if banner.alt_text %}{{ banner.alt_text }}{% elif banner.caption %}{{ banner.caption }}{% else %}{{ banner.title }} banner image{% endif %}">
         </div>

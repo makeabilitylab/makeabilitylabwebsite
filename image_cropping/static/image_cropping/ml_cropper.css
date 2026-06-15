@@ -1,0 +1,117 @@
+/*
+ * ml_cropper.css — styling for the admin Cropper.js widget (#1299).
+ * Cropper.js needs its target <img> to be block-level inside a sized box.
+ */
+
+.ml-cropper {
+  margin: 8px 0 16px 0;
+  max-width: 640px;
+}
+
+/* The raw "x1,y1,x2,y2" text field is kept in the DOM as the value holder but
+   hidden from view; the cropper UI replaces it. */
+.ml-cropper__hidden-row {
+  display: none !important;
+}
+
+.ml-cropper__stage {
+  max-width: 100%;
+  max-height: 420px;
+  background: #f3f3f3;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.ml-cropper__stage:not(.ml-cropper__stage--active) {
+  display: none;
+}
+
+/* Cropper.js resizes/wraps this image; constrain it so a tall original does
+   not blow out the admin layout. */
+.ml-cropper__image {
+  display: block;
+  max-width: 100%;
+  max-height: 420px;
+}
+
+.ml-cropper__warning {
+  margin: 6px 0 0 0;
+  color: #8a6d3b;
+  font-size: 0.85em;
+}
+
+/* Live result preview. Cropper.js injects an <img> and fills this box's width
+   with the current crop, so overflow must be hidden. */
+.ml-cropper__preview-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.ml-cropper__preview-label {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: #555;
+}
+
+.ml-cropper__preview {
+  overflow: hidden; /* required by Cropper.js preview */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #f3f3f3;
+  flex: none;
+}
+
+/* Collapsed "adjust precisely" disclosure wrapping the numeric controls. */
+.ml-cropper__advanced {
+  margin-top: 10px;
+}
+
+.ml-cropper__summary {
+  cursor: pointer;
+  font-size: 0.85em;
+  color: #417690; /* Django admin link blue */
+  user-select: none;
+  width: max-content;
+}
+
+.ml-cropper__summary:hover {
+  color: #205067;
+}
+
+.ml-cropper__controls {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  display: flex;
+  flex-wrap: nowrap; /* keep X / Y / Width / Height on a single row */
+  gap: 8px 14px;
+  align-items: center;
+}
+
+.ml-cropper__num {
+  font-size: 0.85em;
+  /* These are <label>s; override Django admin's aligned-form label column
+     styling (width:160px, min-width:160px, float:left, padding) so they size to
+     content. min-width:0 is the key — min-width floors width, so without it the
+     label can't shrink below 160px and Height wraps to a second row. */
+  display: flex !important;
+  width: auto !important;
+  min-width: 0 !important;
+  float: none !important;
+  padding: 0 !important;
+  margin: 0;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.ml-cropper__num-input {
+  /* !important overrides Django admin's default input width (~170px), which
+     otherwise wins on specificity and pushes Height onto a second row. */
+  width: 4em !important;
+  min-width: 0;
+}

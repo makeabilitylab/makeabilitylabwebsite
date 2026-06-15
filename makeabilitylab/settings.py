@@ -72,8 +72,8 @@ else:
     ALLOWED_HOSTS = ['*']
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.6.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Projects are now private by default (#1300). A single editor-controlled Project.is_visible flag governs whether a project appears publicly (gallery, landing page, member pages, and as links from publications/talks/videos), replacing the old 'has a thumbnail AND a publication' heuristic that was duplicated across views and templates. New projects start private so the team can set them up and add people before going live; logged-in staff can preview a private project's page while the public gets a 404. A one-shot backfill_project_visibility management command preserves the visibility of existing projects on first deploy and is idempotent (it only resolves projects whose visibility was never set, so manual admin choices are never overwritten)."
+ML_WEBSITE_VERSION = "2.7.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Modernized the admin image cropper (#1299). Replaced the end-of-life django-image-cropping (Jcrop/jQuery, Django <=4.0) with an in-repo Cropper.js widget that previews and crops images client-side, before the first save — no more 'upload, save, scroll up, then crop'. It shows a live preview of the cropped result and tucks precise pixel controls into a collapsed disclosure. The crop data layer is intentionally unchanged (ImageRatioField stores the box, easy_thumbnails renders it), so every existing crop and thumbnail renders identically and the swap is migration-neutral. Dropping this fragile, unmaintained dependency also helps unblock the future Django 6.1 LTS upgrade (#1269)."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
@@ -181,12 +181,15 @@ INSTALLED_APPS = [
 
     'django.contrib.humanize', # for humanizing numbers in templates: https://docs.djangoproject.com/en/4.2/ref/contrib/humanize/
 
-    # In Django, both easy-thumbnails and django-image-cropping serve different purposes 
-    # and can be used together for different functionalities. So, while easy-thumbnails can handle 
-    # resizing and scaling of images, if you need specific cropping functionality where users can 
-    # select a part of the image to crop, you would use django-image-cropping in conjunction with 
-    # easy-thumbnails. This combination provides a more comprehensive image handling solution
-    'image_cropping', # for cropping uploaded images: https://github.com/jonasundderwolf/django-image-cropping
+    # Image handling = two cooperating pieces: easy-thumbnails resizes/scales,
+    # while image_cropping lets editors pick the crop box. easy-thumbnails then
+    # renders that box at any size on demand (see crop_corners in
+    # THUMBNAIL_PROCESSORS below).
+    # NOTE: 'image_cropping' is an IN-REPO fork (top-level image_cropping/), not
+    # the PyPI django-image-cropping package. It ships a modern Cropper.js admin
+    # widget (instant client-side preview/crop). See image_cropping/README.md
+    # and issues #1299 / #1269. Treated as project source, like sortedm2m below.
+    'image_cropping',
     'easy_thumbnails', # for dynamically creating thumbnails: https://github.com/SmileyChris/easy-thumbnails
     'sortedm2m', # Used for SortedManyToManyFields in admin interface: https://pypi.org/project/django-sortedm2m-filter-horizontal-widget/
     'ckeditor', # Used for news page editing in admin interface: https://pypi.org/project/django-ckeditor/
