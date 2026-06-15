@@ -1,0 +1,65 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+  <div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+    &rsaquo; {% translate 'Data Health' %}
+  </div>
+{% endblock %}
+
+{% block content %}
+  <p class="dh-intro">
+    Read-only data-quality checks. Open a check to see the full table and
+    download a CSV. These pages expose member data (e.g. emails); they are
+    restricted to superusers and the CSV is sent only to your browser.
+  </p>
+
+  <table id="result_list">
+    <thead>
+      <tr>
+        <th scope="col">{% translate 'Check' %}</th>
+        <th scope="col">{% translate 'Group' %}</th>
+        <th scope="col" class="dh-count-col">{% translate 'Flagged' %}</th>
+        <th scope="col">{% translate 'CSV' %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for check in checks %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+          <th scope="row">
+            <a href="{% url 'admin:data_health_detail' check.slug %}">{{ check.title }}</a>
+            <div class="dh-desc">{{ check.description }}</div>
+          </th>
+          <td>{{ check.group }}</td>
+          <td class="dh-count-col">
+            <span class="dh-count {% if check.count %}dh-count-warn{% else %}dh-count-ok{% endif %}">
+              {{ check.count }}
+            </span>
+          </td>
+          <td><a href="{% url 'admin:data_health_export' check.slug %}">{% translate 'Download' %}</a></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="4">{% translate 'No checks registered.' %}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  .dh-intro { max-width: 60em; color: #555; margin: 0 0 16px; }
+  .dh-desc { font-size: 12px; color: #777; font-weight: normal; margin-top: 2px; }
+  .dh-count-col { text-align: right; white-space: nowrap; }
+  .dh-count { font-variant-numeric: tabular-nums; font-weight: 600; }
+  .dh-count-ok { color: #2e7d32; }
+  .dh-count-warn { color: #b54708; }
+  @media (prefers-color-scheme: dark) {
+    .dh-intro { color: #bbb; }
+    .dh-desc { color: #999; }
+    .dh-count-ok { color: #7bc47f; }
+    .dh-count-warn { color: #e8a14b; }
+  }
+</style>
+{% endblock %}

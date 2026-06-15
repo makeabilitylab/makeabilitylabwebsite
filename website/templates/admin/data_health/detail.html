@@ -1,0 +1,55 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+  <div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+    &rsaquo; <a href="{% url 'admin:data_health_dashboard' %}">{% translate 'Data Health' %}</a>
+    &rsaquo; {{ check.title }}
+  </div>
+{% endblock %}
+
+{% block content %}
+  <p class="dh-desc">{{ check.description }}</p>
+
+  <p class="dh-actions">
+    <a class="button" href="{% url 'admin:data_health_export' check.slug %}">{% translate 'Download CSV' %}</a>
+    <span class="dh-rowcount">{{ rows|length }} {% translate 'row(s)' %}</span>
+  </p>
+
+  {% if rows %}
+    <div class="dh-table-wrap">
+      <table id="result_list">
+        <thead>
+          <tr>
+            {% for col in columns %}<th scope="col">{{ col }}</th>{% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+            <tr class="{% cycle 'row1' 'row2' %}">
+              {% for cell in row %}<td>{{ cell }}</td>{% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="dh-empty">✅ {% translate 'Nothing flagged — this check is clean.' %}</p>
+  {% endif %}
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  .dh-desc { max-width: 60em; color: #666; margin: 0 0 12px; }
+  .dh-actions { margin: 0 0 16px; }
+  .dh-rowcount { margin-left: 12px; color: #777; }
+  .dh-table-wrap { overflow-x: auto; }
+  .dh-empty { font-size: 14px; color: #2e7d32; }
+  @media (prefers-color-scheme: dark) {
+    .dh-desc, .dh-rowcount { color: #aaa; }
+    .dh-empty { color: #7bc47f; }
+  }
+</style>
+{% endblock %}

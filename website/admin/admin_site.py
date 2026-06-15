@@ -23,8 +23,9 @@ Usage:
 from django.contrib import admin
 from django.contrib.admin.apps import AdminConfig
 from django.conf import settings
-from django.contrib.auth.models import Group, User     
-from django.contrib.auth.admin import GroupAdmin, UserAdmin 
+from django.contrib.auth.models import Group, User
+from django.contrib.auth.admin import GroupAdmin, UserAdmin
+from django.urls import path
 
 
 class MakeabilityLabAdminSite(admin.AdminSite):
@@ -77,6 +78,30 @@ class MakeabilityLabAdminSite(admin.AdminSite):
         ),
     ]
     
+    def get_urls(self):
+        """
+        Prepend the read-only Data Health pages to the admin URLconf.
+
+        Each view is wrapped in ``self.admin_view`` (enforces staff + login,
+        adds the admin context) and additionally checks ``is_superuser``
+        inside the view because the checks expose personal data. The
+        data_health views are imported lazily to avoid import-time cycles.
+        """
+        from website.admin.data_health import views as data_health_views
+
+        custom_urls = [
+            path('data-health/',
+                 self.admin_view(data_health_views.dashboard),
+                 name='data_health_dashboard'),
+            path('data-health/<slug:check_slug>/export.csv',
+                 self.admin_view(data_health_views.export_csv),
+                 name='data_health_export'),
+            path('data-health/<slug:check_slug>/',
+                 self.admin_view(data_health_views.detail),
+                 name='data_health_detail'),
+        ]
+        return custom_urls + super().get_urls()
+
     def get_app_list(self, request, app_label=None):
         """
         Return a reorganized list of apps/models for the admin index.

@@ -9,6 +9,14 @@
   {% endif %}
 </div>
 
+{% if user.is_superuser %}
+  <div class="ml-data-health">
+    <span class="ml-data-health-icon" aria-hidden="true">🩺</span>
+    <a href="{% url 'admin:data_health_dashboard' %}">Data Health dashboard</a>
+    <span class="ml-data-health-desc">— read-only data-quality checks (duplicate people, missing files, etc.) with CSV export.</span>
+  </div>
+{% endif %}
+
 <div id="content-main">
   {% if app_list %}
     {% for app in app_list %}
@@ -93,6 +101,35 @@
 
   .ml-version-description {
     color: #666;
+  }
+
+  /* Data Health entry point */
+  .ml-data-health {
+    background-color: #f1f8f4;
+    border: 1px solid #cfe8d8;
+    border-left: 4px solid #2e7d32;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .ml-data-health-icon {
+    margin-right: 6px;
+  }
+
+  .ml-data-health-desc {
+    color: #666;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .ml-data-health {
+      background-color: #25302a;
+      border-color: #3c5344;
+    }
+    .ml-data-health-desc {
+      color: #aaa;
+    }
   }
 
   /* Help text styling within category tables */
