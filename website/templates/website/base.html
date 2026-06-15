@@ -106,6 +106,7 @@ TEMPLATE BLOCKS:
           crossorigin="anonymous"></script>
   <script src="{% static 'website/js/jquery.easing.min.js' %}"></script>
   <script src="{% static 'website/js/top-navbar.js' %}"></script>
+  <script src="{% static 'website/js/carousel.js' %}"></script>
 
   {% block external_scripts %}{% endblock %}
 
@@ -113,10 +114,6 @@ TEMPLATE BLOCKS:
 
   <script>
     {% block scripts %}{% endblock %}
-
-    $(document).ready(function() {
-      $('.carousel').carousel();
-    });
   </script>
 
   {% if debug %}
@@ -261,9 +258,8 @@ TEMPLATE BLOCKS:
   - Nested links are allowed within region (no nested-interactive violation)
   {% endcomment %}
   {% block maincarousel %}
-  <div id="main-carousel" 
-       class="carousel slide carousel-fade" 
-       data-ride="carousel" 
+  <div id="main-carousel"
+       class="carousel slide carousel-fade"
        data-interval="10000"
        data-pause="true"
        role="region"
@@ -321,9 +317,7 @@ TEMPLATE BLOCKS:
         {% if banners|length < 2 %}style="display: none"{% endif %}
         aria-label="Carousel navigation">
       {% for banner in banners %}
-      <li data-target="#main-carousel" 
-          data-slide-to="{{ forloop.counter0 }}" 
-          {% if forloop.first %}class="active"{% endif %}
+      <li {% if forloop.first %}class="active"{% endif %}
           aria-label="Slide {{ forloop.counter }}">
       </li>
       {% endfor %}

@@ -1,53 +1,41 @@
 /*
-Hack to make the carousel transition using fade instead of slide
-inspired from http://codepen.io/Rowno/pen/Afykb 
-*/
+ * Crossfade carousel transition.
+ *
+ * Slides are stacked and crossfaded purely with opacity, driven by the
+ * `.active` class that carousel.js toggles. The carousel has a fixed height
+ * (see `.carousel` / `.shortCarousel` in base.css), so absolutely positioning
+ * the slides does not collapse the container.
+ *
+ * Previously this file relied on Bootstrap 3's slide-transition classes
+ * (.next/.prev/.left/.right); that machinery went away with the Bootstrap
+ * carousel JS (Track A — issues #1288 / #1253), so the fade is now self-
+ * contained CSS rather than a hack layered on Bootstrap's animation.
+ */
 
-.carousel-fade .carousel-inner .item {
-  opacity: 0;
-  transition-property: opacity;
-  /* transition-duration: 2s; */
-}
-
-.carousel-fade .carousel-inner .active {
-  opacity: 1;
-}
-
-.carousel-fade .carousel-inner .active.left,.carousel-fade .carousel-inner .active.right {
+.carousel-fade .carousel-inner > .item {
+  position: absolute;
+  top: 0;
   left: 0;
+  width: 100%;
+  /* Override Bootstrap's display:none on inactive items so opacity can animate. */
+  display: block;
   opacity: 0;
-  z-index: 1;
+  z-index: 0;
+  /* Only the visible slide should capture clicks. */
+  pointer-events: none;
+  transition: opacity 0.6s ease-in-out;
 }
 
-.carousel-fade .carousel-inner .next.left,.carousel-fade .carousel-inner .prev.right {
+.carousel-fade .carousel-inner > .item.active {
   opacity: 1;
+  z-index: 1;
+  pointer-events: auto;
 }
 
-.carousel-fade .carousel-control {
-  z-index: 2;
-}
-
-/*
-WHAT IS NEW IN 3.3: "Added transforms to improve carousel performance in modern browsers."
-now override the 3.3 new styles for modern browsers & apply opacity
-*/
-
-@media all and (transform-3d), (-webkit-transform-3d) {
-  .carousel-fade .carousel-inner > .item.next,  .carousel-fade .carousel-inner > .item.active.right {
-    opacity: 0;
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
-
-  .carousel-fade .carousel-inner > .item.prev,  .carousel-fade .carousel-inner > .item.active.left {
-    opacity: 0;
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
-
-  .carousel-fade .carousel-inner > .item.next.left,  .carousel-fade .carousel-inner > .item.prev.right,  .carousel-fade .carousel-inner > .item.active {
-    opacity: 1;
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
+/* Respect users who prefer reduced motion: switch instantly, no crossfade.
+   (carousel.js also disables autoplay under this preference.) */
+@media (prefers-reduced-motion: reduce) {
+  .carousel-fade .carousel-inner > .item {
+    transition: none;
   }
 }
