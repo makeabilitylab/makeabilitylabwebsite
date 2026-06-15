@@ -26,18 +26,21 @@ from django.conf.urls.static import static
 from django.views.static import serve
 from django.conf import settings
 
-from website import views
 from website.sitemaps import sitemaps
 
 urlpatterns = [
 
     re_path(r'^admin/', admin.site.urls),
 
-    # SEO endpoints (issue #1252). Declared before the website.urls include so
-    # the app's patterns can't shadow them. The sitemap is generated from our
-    # querysets (see website/sitemaps.py); robots.txt is environment-aware.
+    # Dynamic sitemap (issue #1252), generated from our querysets (see
+    # website/sitemaps.py). Declared before the website.urls include so the
+    # app's patterns can't shadow it.
+    #
+    # NOTE: robots.txt is intentionally NOT routed here. On the servers Apache
+    # serves the static ./robots.txt from the project checkout and never
+    # forwards /robots.txt to Django, so a view here would be dead code. Edit
+    # the top-level ./robots.txt to change crawler rules or the Sitemap line.
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
-    path('robots.txt', views.robots_txt, name='robots_txt'),
 
     #Info on how to route root to website was found here http://stackoverflow.com/questions/7580220/django-urls-howto-map-root-to-app
     re_path(r'', include('website.urls')),
