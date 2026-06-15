@@ -181,6 +181,14 @@ INSTALLED_APPS = [
 
     'django.contrib.humanize', # for humanizing numbers in templates: https://docs.djangoproject.com/en/4.2/ref/contrib/humanize/
 
+    # Generates a dynamic /sitemap.xml from our querysets for SEO (issue #1252).
+    # NOTE: we deliberately do NOT install django.contrib.sites — without it,
+    # the sitemap framework falls back to RequestSite, deriving the domain from
+    # the incoming request host. That makes the sitemap emit the correct domain
+    # across all three environments (local / test / prod) with no per-env config
+    # and no extra DB migration. See website/sitemaps.py.
+    'django.contrib.sitemaps',
+
     # Image handling = two cooperating pieces: easy-thumbnails resizes/scales,
     # while image_cropping lets editors pick the crop box. easy-thumbnails then
     # renders that box at any size on demand (see crop_corners in
