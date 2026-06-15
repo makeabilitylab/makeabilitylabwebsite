@@ -9,4 +9,5 @@ from .publications import *
 from .view_project_people import *
 from .serve_pdf import *
 from .awards import awards
+from .robots import robots_txt
 
