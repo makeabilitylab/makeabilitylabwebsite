@@ -249,20 +249,22 @@ A superuser account is required to access the Django admin interface and add con
 
 ## Running the Test Suite
 
-The Python test suite lives in `website/tests.py` and runs inside the website container:
+The Python test suite lives in the `website/tests/` package (one `test_*.py` module per concern — Django auto-discovers them) and runs inside the website container:
 
 ```bash
-docker exec makeabilitylabwebsite-website-1 python manage.py test website
+docker exec makeabilitylabwebsite-website-1 python manage.py test website --settings=makeabilitylab.settings_test
 ```
+
+**Always pass `--settings=makeabilitylab.settings_test`** (see [Troubleshooting tests](#troubleshooting-tests) for why). The same command runs automatically in CI on every push to `master` and every PR — see [Continuous integration](#continuous-integration).
 
 The suite has two complementary styles:
 
 | Style | Base class | What it's for |
 |---|---|---|
 | **Unit** | `SimpleTestCase` + `MagicMock` | Pure logic — formatters, BibTeX generation, single-method behavior. No DB; runs in milliseconds. |
-| **Integration** | `DatabaseTestCase` (subclass of Django's `TestCase`) | View, queryset, template, and URL-routing regressions. Each test runs inside a transaction that is rolled back, so tests stay isolated. |
+| **Integration** | `DatabaseTestCase` (subclass of Django's `TestCase`, in `website/tests/base.py`) | View, queryset, template, and URL-routing regressions. Each test runs inside a transaction that is rolled back, so tests stay isolated. |
 
-The `DatabaseTestCase` base provides `make_person`, `make_publication`, and `make_news_item` helpers built on plain `Model.objects.create()` — use those rather than hand-rolling fixtures.
+The `DatabaseTestCase` base provides `make_person`, `make_publication`, `make_talk`, and `make_news_item` helpers built on plain `Model.objects.create()` — use those rather than hand-rolling fixtures.
 
 ### When to add a test
 
@@ -276,13 +278,19 @@ If a fix is genuinely not unit-testable (FD leaks, `super().save()`-dependent pa
 
 ### Troubleshooting tests
 
-`website/migrations/` is **gitignored** — each environment (your laptop, test, production) maintains its own migration history on disk. This sometimes drifts. If `manage.py test` fails at test-DB creation, the symptoms and fixes are:
+`website/migrations/` is **gitignored** — each environment (your laptop, test, production) maintains its own migration history on disk, which can drift. The `--settings=makeabilitylab.settings_test` shim is the durable fix (#1267): it sets `MIGRATION_MODULES = {'website': None}`, so the test runner builds the `website` schema directly from the current models instead of replaying that local history. **Use the shim and these symptoms shouldn't appear at all.**
 
-- **`database "test_makeability" already exists`** — a prior failed run left it half-built. Drop and retry:
+If you forget the shim and the legacy `manage.py test website` fails at test-DB creation:
+
+- **`database "test_makeability" already exists`** — a prior failed run left it half-built. Drop and retry (or just switch to the shim):
   ```bash
   docker exec makeabilitylabwebsite-db-1 psql -U admin -d postgres -c "DROP DATABASE IF EXISTS test_makeability;"
   ```
-- **`column "..." of relation "..." already exists`** — a local migration file duplicates a field that a later `0001_initial` regeneration already includes. Same fix (drop the test DB) usually clears it; if it persists, the offending migration is a local stale artifact that needs to be edited or removed. See [#1267](https://github.com/makeabilitylab/makeabilitylabwebsite/issues/1267) for the durable fix (test-only settings shim using `MIGRATION_MODULES`).
+- **`column "..." of relation "..." already exists`** — a local migration file duplicates a field that a later `0001_initial` regeneration already includes. The shim sidesteps this entirely.
+
+### Continuous integration
+
+`.github/workflows/test.yml` runs the suite (with the test-settings shim, against a Postgres 16 service container) on every push to `master` and every pull request. GitHub Actions is free and unlimited for this public repo. A failing run shows a red ✗ on the commit/PR and emails the author — it **reports** status, it does not block the push or the test-server deploy. The broader testing roadmap (coverage, Pa11y-in-CI, test backfill) is tracked in [#1278](https://github.com/makeabilitylab/makeabilitylabwebsite/issues/1278).
 
 ## Accessibility Testing
 
@@ -317,7 +325,7 @@ Edit `.pa11yci.json` to add or remove URLs to test. The `urls` array lists every
 
 - **One issue per branch**: Keep PRs focused on a single issue for easier review.
 
-- **Run the test suite**: `docker exec makeabilitylabwebsite-website-1 python manage.py test website` should pass before opening a PR. If your fix is reachable through a real queryset, view, or template, add a regression test (see [Running the Test Suite](#running-the-test-suite)).
+- **Run the test suite**: `docker exec makeabilitylabwebsite-website-1 python manage.py test website --settings=makeabilitylab.settings_test` should pass before opening a PR (CI runs the same command). If your fix is reachable through a real queryset, view, or template, add a regression test (see [Running the Test Suite](#running-the-test-suite)).
 
 - **Test locally**: Verify your changes work in the browser before submitting.
 
