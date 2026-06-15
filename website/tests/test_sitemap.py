@@ -1,14 +1,14 @@
 """
-Regression tests for the dynamic sitemap and robots.txt (issue #1252).
+Regression tests for the dynamic sitemap (issue #1252).
 
-Both endpoints are exercised through the real URL/view stack so a routing or
-queryset regression is caught. See website/sitemaps.py and
-website/views/robots.py.
+The sitemap is exercised through the real URL/view stack so a routing or
+queryset regression is caught. See website/sitemaps.py.
+
+Note: robots.txt is a static file (./robots.txt) served by Apache on the
+servers, not a Django view, so it isn't covered here.
 """
 
-import os
 from datetime import date
-from unittest import mock
 
 from website.tests.base import DatabaseTestCase
 
@@ -58,23 +58,3 @@ class SitemapTests(DatabaseTestCase):
         news = self.make_news_item(title="Big Lab News")
         body = self.client.get("/sitemap.xml").content.decode()
         self.assertIn(f"/news/{news.slug}/", body)
-
-
-class RobotsTxtTests(DatabaseTestCase):
-    def test_robots_is_plain_text(self):
-        resp = self.client.get("/robots.txt")
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp["Content-Type"], "text/plain")
-
-    @mock.patch.dict(os.environ, {"DJANGO_ENV": "PROD"})
-    def test_robots_prod_allows_and_advertises_sitemap(self):
-        body = self.client.get("/robots.txt").content.decode()
-        self.assertIn("Allow: /", body)
-        self.assertIn("Sitemap:", body)
-        self.assertIn("/sitemap.xml", body)
-
-    @mock.patch.dict(os.environ, {"DJANGO_ENV": "TEST"})
-    def test_robots_non_prod_disallows_all(self):
-        body = self.client.get("/robots.txt").content.decode()
-        self.assertIn("Disallow: /", body)
-        self.assertNotIn("Allow: /", body)
