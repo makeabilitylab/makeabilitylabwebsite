@@ -87,18 +87,31 @@
   border: 1px solid #e0e0e0;
   border-radius: 4px;
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px 16px;
+  flex-wrap: nowrap; /* keep X / Y / Width / Height on a single row */
+  gap: 8px 14px;
   align-items: center;
 }
 
 .ml-cropper__num {
   font-size: 0.85em;
-  display: inline-flex;
+  /* These are <label>s; override Django admin's aligned-form label column
+     styling (width:160px, min-width:160px, float:left, padding) so they size to
+     content. min-width:0 is the key — min-width floors width, so without it the
+     label can't shrink below 160px and Height wraps to a second row. */
+  display: flex !important;
+  width: auto !important;
+  min-width: 0 !important;
+  float: none !important;
+  padding: 0 !important;
+  margin: 0;
   align-items: center;
   gap: 4px;
+  white-space: nowrap;
 }
 
 .ml-cropper__num-input {
-  width: 6em;
+  /* !important overrides Django admin's default input width (~170px), which
+     otherwise wins on specificity and pushes Height onto a second row. */
+  width: 4em !important;
+  min-width: 0;
 }
