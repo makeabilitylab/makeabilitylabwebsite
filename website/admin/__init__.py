@@ -68,3 +68,8 @@ from . import (
     talk_admin,
     video_admin,
 )
+
+# Import the data_health package so its @register_check decorators run and
+# populate the Data Health dashboard registry (wired into the admin URLconf
+# by MakeabilityLabAdminSite.get_urls()).
+from website.admin import data_health  # noqa: F401

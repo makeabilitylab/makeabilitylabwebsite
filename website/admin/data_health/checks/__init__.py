@@ -1,0 +1,14 @@
+"""Import every check module so its ``@register_check`` decorator runs.
+
+The import order here is the order checks appear on the dashboard.
+"""
+
+from website.admin.data_health.checks import (  # noqa: F401
+    duplicate_people,
+    url_name_collisions,
+    media_integrity,
+    publication_quality,
+    project_health,
+    position_integrity,
+    news_health,
+)
