@@ -141,23 +141,29 @@ On both servers, Apache sits in front of the Django container. It serves any URL
 
 ### Log Files
 
-Logs are available via SSH or the web:
+Not all logs live in the same place. Only the Django application log is on
+the shared CSE filesystem (and therefore readable from `recycle`); the build
+and web-server logs live on the Docker host (`grabthar` / `docker-test2`),
+which we can't SSH into — reach those via the web `/logs/` URL or the deploy
+email.
 
-| Log | Description |
-|-----|-------------|
-| `debug.log` | Django application logs |
-| `buildlog.txt` | Deployment build output |
-| `httpd-access.log` | HTTP request logs |
-| `httpd-error.log` | HTTP error logs |
+| Log | Description | Where to find it |
+|-----|-------------|------------------|
+| `debug.log` | Django application logs | **On the shared filesystem** — read via SSH on `recycle` (see below) or the web `/logs/` URL. A rotated `debug.log.1` sits alongside it. |
+| `buildlog.txt` | Deployment build output | **Not on the shared filesystem** (so *not* under `www/` on `recycle`). It lives on the Docker host and is emailed to maintainers on every push — that email is the most reliable copy. Also exposed at the web `/logs/` URL. |
+| `httpd-access.log` | HTTP request logs | On the Docker host — web `/logs/` URL. |
+| `httpd-error.log` | HTTP error logs | On the Docker host — web `/logs/` URL. |
 
 ### Accessing Logs via Web
 
 - **Test:** https://makeabilitylab-test.cs.washington.edu/logs/
 - **Production:** https://makeabilitylab.cs.washington.edu/logs/
 
-### Accessing Logs via SSH
+Only `debug.log` (the Django application log) is reachable this way — it is
+the one log mounted out to the shared CSE filesystem. `buildlog.txt` and the
+`httpd-*.log` files are **not** here (see the table above).
 
-1. SSH into the server:
+1. SSH into the jump host:
 
    ```bash
    ssh recycle.cs.washington.edu
@@ -173,7 +179,7 @@ Logs are available via SSH or the web:
    cd /cse/web/research/makelab/www
    ```
 
-3. View recent log entries:
+3. View recent log entries (a rotated `debug.log.1` may also be present):
 
    ```bash
    # Last 100 lines
@@ -184,6 +190,12 @@ Logs are available via SSH or the web:
 
    # Follow log in real-time
    tail -f debug.log
+   ```
+
+   To pull the log down to your machine for analysis:
+
+   ```bash
+   scp jonf@recycle.cs.washington.edu:/cse/web/research/makelab/www/debug.log ~/Downloads/prod-debug.log
    ```
 
 ### Windows Network Drive Access
