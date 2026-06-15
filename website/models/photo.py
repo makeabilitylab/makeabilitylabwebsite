@@ -28,7 +28,7 @@ class Photo(models.Model):
     # Comment generated with help from chat.bing.com
     # See also: https://docs.djangoproject.com/en/4.2/ref/models/fields/#django.db.models.ForeignKey.on_delete
     project = models.ForeignKey(Project, blank=True, null=True, on_delete=models.SET_NULL)
-    picture.help_text = 'To crop this image, you must select "Save and continue editing" at the bottom of the page after uploading'
+    picture.help_text = 'After choosing an image, crop it right here using the cropper below — no need to save first.'
     
     # We use the django-image-cropping ImageRatioField https://github.com/jonasundderwolf/django-image-cropping
     # that simply stores the boundaries of a cropped image. You must pass it the corresponding ImageField

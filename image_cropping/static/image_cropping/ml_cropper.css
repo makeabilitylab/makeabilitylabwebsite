@@ -1,0 +1,70 @@
+/*
+ * ml_cropper.css — styling for the admin Cropper.js widget (#1299).
+ * Cropper.js needs its target <img> to be block-level inside a sized box.
+ */
+
+.ml-cropper {
+  margin: 8px 0 16px 0;
+  max-width: 640px;
+}
+
+/* The raw "x1,y1,x2,y2" text field is kept in the DOM as the value holder but
+   hidden from view; the cropper UI replaces it. */
+.ml-cropper__hidden-row {
+  display: none !important;
+}
+
+.ml-cropper__stage {
+  max-width: 100%;
+  max-height: 420px;
+  background: #f3f3f3;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.ml-cropper__stage:not(.ml-cropper__stage--active) {
+  display: none;
+}
+
+/* Cropper.js resizes/wraps this image; constrain it so a tall original does
+   not blow out the admin layout. */
+.ml-cropper__image {
+  display: block;
+  max-width: 100%;
+  max-height: 420px;
+}
+
+.ml-cropper__warning {
+  margin: 6px 0 0 0;
+  color: #8a6d3b;
+  font-size: 0.85em;
+}
+
+.ml-cropper__controls {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: center;
+}
+
+.ml-cropper__legend {
+  font-weight: 600;
+  font-size: 0.85em;
+  padding: 0 4px;
+}
+
+.ml-cropper__num {
+  font-size: 0.85em;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ml-cropper__num-input {
+  width: 6em;
+}

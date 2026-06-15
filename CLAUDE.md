@@ -112,7 +112,9 @@ Every container start runs, in order: `collectstatic` → `makemigrations` → `
 
 ### Image handling
 
-`image_cropping` + `easy_thumbnails` work together: cropping defines the crop box, easy_thumbnails generates sized variants. `THUMBNAIL_PROCESSORS` is configured so crop_corners runs before the default chain. Image processing requires ImageMagick (installed in the Dockerfile) and a custom `imagemagick-policy.xml` is mounted into `/etc/ImageMagick-6/policy.xml` to enable PDF processing (see issue #974).
+`image_cropping` + `easy_thumbnails` work together: cropping defines the crop box (stored as an `"x1,y1,x2,y2"` string by `ImageRatioField`), easy_thumbnails generates sized variants. `THUMBNAIL_PROCESSORS` is configured so `crop_corners` runs before the default chain, applying the stored box to any `{% thumbnail … box=obj.cropping %}` render. Image processing requires ImageMagick (installed in the Dockerfile) and a custom `imagemagick-policy.xml` is mounted into `/etc/ImageMagick-6/policy.xml` to enable PDF processing (see issue #974).
+
+**`image_cropping` is an in-repo fork**, not the PyPI `django-image-cropping` (which was EOL Jcrop+jQuery, Django ≤4.0). Like `sortedm2m_filter_horizontal_widget`, the top-level `image_cropping/` package is project source code and shadows/replaces the dropped dependency. Its admin widget is **Cropper.js** (vendored static, no build step): editors preview and crop client-side *before* the first save (#1299/#1269). The data layer is intentionally unchanged — `ImageRatioField` is still a `CharField` whose `deconstruct()` returns `image_cropping.fields.ImageRatioField`, so the gitignored per-environment migrations that `import image_cropping.fields` keep working and the DB column is untouched (a regression test pins this path). See `image_cropping/README.md`. To bump Cropper.js, replace the vendored `static/image_cropping/cropper.min.{js,css}` (stay on the v1.x API; v2 is a different API).
 
 ### Rich text
 

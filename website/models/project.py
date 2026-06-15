@@ -84,8 +84,8 @@ class Project(models.Model):
     # TODO: consider switching gallery_image var name to thumbnail
     gallery_image = models.ImageField(upload_to=IMAGE_DIR, blank=True, null=True, max_length=255)
     gallery_image.help_text = "This is the image which will show up on the project gallery page.\
-                               It is not displayed anywhere else. You must select 'Save and continue editing' at the\
-                               bottom of the page after uploading a new image for cropping."
+                               It is not displayed anywhere else. After choosing an image, crop it right here\
+                               using the cropper below — no need to save first."
     thumbnail_alt_text = models.CharField(max_length=1024, blank=True, null=True)
 
     # We use the django-image-cropping ImageRatioField https://github.com/jonasundderwolf/django-image-cropping

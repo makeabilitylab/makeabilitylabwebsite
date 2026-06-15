@@ -19,7 +19,7 @@ class Banner(models.Model):
 
     image = models.ImageField(blank=True, upload_to=UniquePathAndRename(UPLOAD_DIR, True), max_length=255)
     cropping = ImageRatioField('image', '1600x500', free_crop=False)
-    image.help_text = 'You must select "Save and continue editing" at the bottom of the page after uploading a new image for cropping.\
+    image.help_text = 'After choosing an image, crop it right here using the cropper below — no need to save first.\
                       Please note that since we are using a responsive design with fixed height banners, your selected image may appear\
                       differently on various screens.'
     

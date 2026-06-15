@@ -45,8 +45,7 @@ class News(models.Model):
 
     # Following the scheme of above thumbnails in other models
     image = models.ImageField(blank=True, upload_to=UniquePathAndRename("news", True), max_length=255)
-    image.help_text = 'You must select "Save and continue editing" at the bottom of the page after\
-          uploading a new image for cropping. '
+    image.help_text = 'After choosing an image, crop it right here using the cropper below — no need to save first.'
 
     # We use the django-image-cropping ImageRatioField https://github.com/jonasundderwolf/django-image-cropping
     # that simply stores the boundaries of a cropped image. You must pass it the corresponding ImageField

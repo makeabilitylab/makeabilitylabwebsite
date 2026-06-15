@@ -181,12 +181,15 @@ INSTALLED_APPS = [
 
     'django.contrib.humanize', # for humanizing numbers in templates: https://docs.djangoproject.com/en/4.2/ref/contrib/humanize/
 
-    # In Django, both easy-thumbnails and django-image-cropping serve different purposes 
-    # and can be used together for different functionalities. So, while easy-thumbnails can handle 
-    # resizing and scaling of images, if you need specific cropping functionality where users can 
-    # select a part of the image to crop, you would use django-image-cropping in conjunction with 
-    # easy-thumbnails. This combination provides a more comprehensive image handling solution
-    'image_cropping', # for cropping uploaded images: https://github.com/jonasundderwolf/django-image-cropping
+    # Image handling = two cooperating pieces: easy-thumbnails resizes/scales,
+    # while image_cropping lets editors pick the crop box. easy-thumbnails then
+    # renders that box at any size on demand (see crop_corners in
+    # THUMBNAIL_PROCESSORS below).
+    # NOTE: 'image_cropping' is an IN-REPO fork (top-level image_cropping/), not
+    # the PyPI django-image-cropping package. It ships a modern Cropper.js admin
+    # widget (instant client-side preview/crop). See image_cropping/README.md
+    # and issues #1299 / #1269. Treated as project source, like sortedm2m below.
+    'image_cropping',
     'easy_thumbnails', # for dynamically creating thumbnails: https://github.com/SmileyChris/easy-thumbnails
     'sortedm2m', # Used for SortedManyToManyFields in admin interface: https://pypi.org/project/django-sortedm2m-filter-horizontal-widget/
     'ckeditor', # Used for news page editing in admin interface: https://pypi.org/project/django-ckeditor/

@@ -78,12 +78,14 @@ pypdf==6.13.2
 # See: https://pypi.org/project/Pillow/
 Pillow==12.2.0
 
-# Django Image Cropping - for cropping images in admin
-# Note: Last release Feb 2022, but should work with Django 5.2
-# See: https://pypi.org/project/django-image-cropping/
-django-image-cropping==1.7
+# Image cropping in the admin is provided by the in-repo `image_cropping/`
+# package (a fork of django-image-cropping), NOT a PyPI dependency. We dropped
+# django-image-cropping==1.7 (Feb 2022, EOL Jcrop+jQuery, Django <=4.0) in favor
+# of a modern Cropper.js widget that previews/crops before saving. See #1299 /
+# #1269 and image_cropping/README.md. (django-appconf was a transitive dep of
+# that package and is no longer needed.)
 
-# Easy Thumbnails - thumbnail generation, works with django-image-cropping
+# Easy Thumbnails - thumbnail generation, works with the in-repo image_cropping
 # See: https://pypi.org/project/easy-thumbnails/
 easy_thumbnails==2.10.1
 
