@@ -1,4 +1,6 @@
+from django import forms
 from django.contrib import admin
+from django.core.files import File
 from website.models import Position, Person, ProjectRole
 from website.models.position import Title
 from website.models.person import PERSON_THUMBNAIL_SIZE
@@ -6,6 +8,8 @@ from easy_thumbnails.exceptions import InvalidImageFormatError # for handling in
 from website.admin_list_filters import PositionRoleListFilter, PositionTitleListFilter
 from website.admin.utils import get_active_professors_queryset, get_active_mentors_queryset
 from image_cropping import ImageCroppingMixin
+from image_cropping.widgets import EasterEggCropImageWidget
+import website.utils.fileutils as ml_fileutils
 
 from django.utils.html import format_html # for formatting thumbnails
 from easy_thumbnails.files import get_thumbnailer # for generating thumbnails
@@ -15,6 +19,75 @@ from website.admin.admin_site import ml_admin_site
 
 import logging
 _logger = logging.getLogger(__name__)
+
+
+class PersonAdminForm(forms.ModelForm):
+    """Person admin form that lets editors pick a default easter-egg figure.
+
+    The Star Wars easter-egg picker (#1304) writes the chosen figure's basename
+    into the hidden ``easter_egg_starwars_choice`` field. On save, when the
+    editor shuffled to a figure and didn't also upload their own image, we copy
+    that chosen figure into ``Person.easter_egg`` so the previewed image (and its
+    crop box) is exactly what persists. This applies whether the field was empty
+    (new Person) or already had an image (an editor swapping their easter egg) —
+    the field is only populated by an explicit shuffle, so an untouched edit
+    keeps the existing image, and an empty-and-untouched field still falls
+    through to ``Person.save()``'s random pick (the non-admin/bulk path).
+
+    The choice is validated against :func:`fileutils.list_starwars_images`, so a
+    crafted value can't read an arbitrary file off disk.
+    """
+
+    # Not a model field: a browser-set hint for which Star Wars figure to use.
+    easter_egg_starwars_choice = forms.CharField(
+        required=False, widget=forms.HiddenInput
+    )
+
+    class Meta:
+        model = Person
+        fields = "__all__"
+
+    def clean_easter_egg_starwars_choice(self):
+        """Reject anything that isn't a known Star Wars figure basename."""
+        choice = (self.cleaned_data.get("easter_egg_starwars_choice") or "").strip()
+        if not choice:
+            return ""
+        # os.path.basename guards against path components; the membership check
+        # is the real gate (only figures we actually ship are accepted).
+        if os.path.basename(choice) != choice or choice not in ml_fileutils.list_starwars_images():
+            raise forms.ValidationError("Unknown Star Wars figure.")
+        return choice
+
+    def save(self, commit=True):
+        person = super().save(commit=False)
+
+        # Copy the chosen figure into easter_egg when the editor shuffled to one
+        # and didn't also upload their own image (upload always wins). The choice
+        # field is only set by an explicit shuffle, so this both seeds a new
+        # Person's default and lets an existing one swap figures; an untouched
+        # field leaves easter_egg alone. self.files holds uploads.
+        choice = self.cleaned_data.get("easter_egg_starwars_choice")
+        uploaded = self.files.get(self.add_prefix("easter_egg"))
+        if choice and not uploaded:
+            src_path = os.path.join(ml_fileutils.get_starwars_image_dir(), choice)
+            # Person.save() reads the file during super().save(), so keep the
+            # handle open until after the model is saved (mirrors the random
+            # fallback pattern in Person.save()).
+            fh = open(src_path, "rb")
+            self._easter_egg_fh = fh
+            person.easter_egg = File(fh, name=choice)
+
+        if commit:
+            person.save()
+            self.save_m2m()
+            self._close_easter_egg_fh()
+        return person
+
+    def _close_easter_egg_fh(self):
+        fh = getattr(self, "_easter_egg_fh", None)
+        if fh is not None:
+            fh.close()
+            self._easter_egg_fh = None
 
 class PositionInline(admin.StackedInline):
 
@@ -64,12 +137,36 @@ class ProjectRoleInline(admin.StackedInline):
 
 @admin.register(Person, site=ml_admin_site)
 class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
+    form = PersonAdminForm
+
     fieldsets = [
-        (None,                      {'fields': ['first_name', 'middle_name', 'last_name', 'image', 'cropping', 'easter_egg', 'easter_egg_crop']}),
+        (None,                      {'fields': ['first_name', 'middle_name', 'last_name', 'image', 'cropping', 'easter_egg', 'easter_egg_crop', 'easter_egg_starwars_choice']}),
         ('Bio',                     {'fields': ['bio', 'personal_website', 'github']}),
         ('Socials',                 {'fields': ['twitter', 'threads', 'mastodon', 'linkedin']}),
         ('For Alumni (Next Position)', {'fields': ['next_position', 'next_position_url']}),
     ]
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        """Give easter_egg the Star Wars picker widget (preview/shuffle, #1304).
+
+        The headshot ``image`` field keeps the plain crop widget — only the
+        easter egg gets a default-on-load figure the editor can shuffle.
+        """
+        formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
+        if db_field.name == 'easter_egg' and formfield is not None:
+            widget = EasterEggCropImageWidget()
+            widget.starwars_images = [
+                {'name': name, 'url': ml_fileutils.get_starwars_image_url(name)}
+                for name in ml_fileutils.list_starwars_images()
+            ]
+            formfield.widget = widget
+        return formfield
+
+    def save_model(self, request, obj, form, change):
+        """Persist, then release the easter-egg figure file handle (if any)."""
+        super().save_model(request, obj, form, change)
+        if hasattr(form, '_close_easter_egg_fh'):
+            form._close_easter_egg_fh()
 
     exclude = ('bio_datetime_modified',) # don't show this field as it's auto-calculated
 

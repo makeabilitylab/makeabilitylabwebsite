@@ -19,6 +19,12 @@
  * sync with the visual crop box. With JS off, the raw ratio field still
  * submits and the server seeds a sensible centered crop.
  *
+ * Star Wars easter-egg picker (#1304): when an empty easter-egg field carries a
+ * figure list (from EasterEggCropImageWidget), this seeds a random default
+ * figure into the cropper on load, records its basename in the hidden
+ * easter_egg_starwars_choice field, and wires a "Shuffle" button to re-roll —
+ * so a new Person's easter egg can be previewed/cropped before the first save.
+ *
  * Vanilla JS only (no jQuery/build step), per project conventions.
  */
 (function () {
@@ -259,6 +265,81 @@
     if (originalUrl) {
       initCropper(originalUrl, parseBox(ratioInput.value));
     }
+    // Easter-egg picker (#1304): seed a default figure when the field is empty
+    // (new Person), and in either case offer a "Shuffle" button so an existing
+    // easter egg can be swapped to a Star Wars figure too.
+    setupStarWarsPicker(fileInput, initCropper, !originalUrl);
+  }
+
+  /**
+   * Wire the Star Wars easter-egg picker onto a file input.
+   *
+   * Reads the figure list and the hidden choice field's name off the file input
+   * (set by EasterEggCropImageWidget). When ``seedDefault`` is true (empty field
+   * / new Person) it loads a random figure into the cropper up front; otherwise
+   * it leaves the existing image in place. Either way it reveals the "Shuffle"
+   * button, which loads a random figure and records its basename in the choice
+   * field so the server copies that figure into the model on save. Uploading a
+   * real file clears the choice so the upload wins.
+   */
+  function setupStarWarsPicker(fileInput, initCropper, seedDefault) {
+    var raw = fileInput.getAttribute("data-starwars-images");
+    if (!raw) return;
+    var images;
+    try {
+      images = JSON.parse(raw);
+    } catch (e) {
+      images = [];
+    }
+    if (!images.length) return;
+
+    var form = fileInput.closest("form") || document;
+    var choiceName = fileInput.getAttribute("data-starwars-choice-field");
+    var choiceInput = choiceName
+      ? form.querySelector('[name="' + choiceName + '"]')
+      : null;
+
+    var current = null;
+
+    function pickRandom() {
+      var next = images[Math.floor(Math.random() * images.length)];
+      // Avoid landing on the same figure twice in a row when we can.
+      if (images.length > 1 && current && next.name === current.name) {
+        return pickRandom();
+      }
+      return next;
+    }
+
+    function show(figure) {
+      current = figure;
+      if (choiceInput) choiceInput.value = figure.name;
+      initCropper(figure.url, null);
+    }
+
+    // Only auto-seed when the field is empty; an existing easter egg stays put
+    // until the editor actively shuffles or uploads.
+    if (seedDefault) show(pickRandom());
+
+    // Reveal + wire the Shuffle button (rendered hidden so non-JS users, who
+    // can't preview anyway, never see a dead control).
+    var fileRow =
+      fileInput.closest(".form-row, .field-easter_egg") || fileInput.parentNode;
+    var shuffleBtn = fileRow.querySelector("[data-starwars-shuffle]");
+    if (shuffleBtn) {
+      shuffleBtn.hidden = false;
+      shuffleBtn.addEventListener("click", function () {
+        show(pickRandom());
+      });
+    }
+
+    // If the editor uploads their own file, drop the Star Wars choice so the
+    // server keeps the upload instead of overwriting it with a figure.
+    fileInput.addEventListener("change", function () {
+      if (fileInput.files && fileInput.files[0] && choiceInput) {
+        choiceInput.value = "";
+        current = null;
+      }
+    });
   }
 
   function scan(root) {

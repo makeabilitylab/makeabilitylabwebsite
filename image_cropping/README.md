@@ -50,9 +50,25 @@ image_cropping/
   fields.py                ImageRatioField (+ max_cropping helper)
   thumbnail_processors.py  crop_corners (easy_thumbnails processor)
   admin.py                 ImageCroppingMixin
-  widgets.py               CropImageWidget (Cropper.js)
+  widgets.py               CropImageWidget (Cropper.js) + EasterEggCropImageWidget
   static/image_cropping/   cropper.min.{js,css} (vendored) + ml_cropper.{js,css}
 ```
+
+## Star Wars easter-egg picker (#1304)
+
+`EasterEggCropImageWidget` (a `CropImageWidget` subclass) is used only for
+`Person.easter_egg` via `PersonAdmin`. On a brand-new Person — whose easter egg
+is empty — it seeds a random Star Wars LEGO figure into the cropper on load so
+the editor can preview/crop/**shuffle** it before the first save, instead of
+`Person.save()` assigning one invisibly. The widget embeds the figure list
+(`fileutils.list_starwars_images`) as JSON and the chosen figure's basename
+rides along in a hidden `easter_egg_starwars_choice` field that `PersonAdminForm`
+validates and copies into the model on save. The Shuffle button is offered on
+existing People too, so an editor can swap a current easter egg to a figure;
+the choice field is only set by an explicit shuffle, so an untouched edit keeps
+the existing image. Uploading an image always overrides the figure; with
+neither, `Person.save()`'s random fallback still applies (the non-admin/bulk
+path). See `website/tests/test_easter_egg_picker.py`.
 
 ## Upgrading Cropper.js
 

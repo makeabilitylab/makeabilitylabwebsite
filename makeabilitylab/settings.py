@@ -72,8 +72,8 @@ else:
     ALLOWED_HOSTS = ['*']
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.7.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Modernized the admin image cropper (#1299). Replaced the end-of-life django-image-cropping (Jcrop/jQuery, Django <=4.0) with an in-repo Cropper.js widget that previews and crops images client-side, before the first save — no more 'upload, save, scroll up, then crop'. It shows a live preview of the cropped result and tucks precise pixel controls into a collapsed disclosure. The crop data layer is intentionally unchanged (ImageRatioField stores the box, easy_thumbnails renders it), so every existing crop and thumbnail renders identically and the swap is migration-neutral. Dropping this fragile, unmaintained dependency also helps unblock the future Django 6.1 LTS upgrade (#1269)."
+ML_WEBSITE_VERSION = "2.8.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Admin: preview, crop, and shuffle the Star Wars easter-egg figure in the Person cropper (#1304). Previously the easter-egg cropper was blank on a new Person and Person.save() assigned a random figure invisibly. Now an editor sees a default figure in the cropper on load, can shuffle to another or upload their own, and whatever is shown — plus its crop box — is what persists. An existing easter egg can be swapped to a figure the same way (or replaced with an upload). Builds on the Cropper.js widget (#1299); the random fallback still applies to non-admin/bulk creation."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
