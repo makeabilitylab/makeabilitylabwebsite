@@ -1,38 +1,76 @@
 /*!
- * Based on Grayscale:
- * 
- * Start Bootstrap - Grayscale Bootstrap Theme (http://startbootstrap.com)
- * Code licensed under the Apache License v2.0.
- * For details, see http://www.apache.org/licenses/LICENSE-2.0.
+ * Top navbar behavior — vanilla JS, no jQuery.
+ *
+ * Drives the responsive (mobile) navbar collapse, replacing Bootstrap 3's
+ * collapse data-api as part of the jQuery / Bootstrap-JS removal
+ * (Track A, see issues #1288 / #1253). The desktop layout is handled purely
+ * by Bootstrap's `.navbar-collapse` CSS (shown at >= 768px regardless of the
+ * `in` class); this script only toggles the `in` class at mobile widths.
+ *
+ * Behavior:
+ *   - Toggle button opens/closes the menu and keeps `aria-expanded` in sync.
+ *   - Clicking a nav link closes the open menu.
+ *   - Clicking outside the navbar closes the open menu.
+ *   - Escape closes the open menu and returns focus to the toggle (a11y).
+ *
+ * Note: the previous version also added a `top-nav-scrolled` class on scroll
+ * (no CSS rule existed for it — a no-op) and a jQuery-Easing "page-scroll"
+ * smooth scroll that only targeted the logo's page URL (it errored and fell
+ * through to normal navigation). Both were dead and have been dropped.
  */
+(function () {
+  'use strict';
 
-// $(document).ready(function() {
-//     // Your code here
-//     console.log("LOADING TOP NAVBAR JS!!!");
-//     console.log("navbar-white", "{{navbar_white}}");
-// });
-  
-// jQuery to collapse the navbar on scroll
-$(window).scroll(function() {
-    if ($(".navbar").offset().top > 50) {
-        $(".navbar-fixed-top").addClass("top-nav-scrolled");
-    } else {
-        $(".navbar-fixed-top").removeClass("top-nav-scrolled");
+  document.addEventListener('DOMContentLoaded', function () {
+    var toggle = document.querySelector('.navbar-toggle');
+    var collapse = document.getElementById('navbar-main-collapse');
+    if (!toggle || !collapse) {
+      return;
     }
-});
 
-// jQuery for page scrolling feature - requires jQuery Easing plugin
-$(function() {
-    $('a.page-scroll').bind('click', function(event) {
-        var $anchor = $(this);
-        $('html, body').stop().animate({
-            scrollTop: $($anchor.attr('href')).offset().top
-        }, 1500, 'easeInOutExpo');
-        event.preventDefault();
+    function isOpen() {
+      return collapse.classList.contains('in');
+    }
+
+    function openMenu() {
+      collapse.classList.add('in');
+      toggle.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeMenu() {
+      collapse.classList.remove('in');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+
+    toggle.addEventListener('click', function (event) {
+      event.preventDefault();
+      if (isOpen()) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
     });
-});
 
-// Closes the Responsive Menu on Menu Item Click
-$('.navbar-collapse ul li a').click(function() {
-    $('.navbar-toggle:visible').click();
-});
+    // Close the open mobile menu when a nav link inside it is clicked.
+    collapse.addEventListener('click', function (event) {
+      if (isOpen() && event.target.closest('a')) {
+        closeMenu();
+      }
+    });
+
+    // Close the open menu when clicking anywhere outside the navbar.
+    document.addEventListener('click', function (event) {
+      if (isOpen() && !event.target.closest('.navbar')) {
+        closeMenu();
+      }
+    });
+
+    // Close on Escape and restore focus to the toggle for keyboard users.
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && isOpen()) {
+        closeMenu();
+        toggle.focus();
+      }
+    });
+  });
+})();
