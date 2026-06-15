@@ -35,6 +35,7 @@
  */
 
 import {
+  MakeabilityLabLogo,
   MakeabilityLabLogoMorpher,
   TriangleArt,
 } from 'https://cdn.jsdelivr.net/gh/makeabilitylab/js@main/dist/makelab.logo.js';
@@ -45,6 +46,9 @@ import {
 
 const MAX_HEIGHT = 600;
 const TRIANGLE_SIZE = 70;
+// Keep the assembled logo within this fraction of the canvas width so it never
+// runs off-screen on narrow (mobile) viewports. See issue #1281.
+const LOGO_WIDTH_FRACTION = 0.9;
 const SCROLL_DISTANCE = 300;
 const DPR = window.devicePixelRatio || 1;
 const BG_FILL_COLOR = "rgba(255, 255, 255, 1)"; // Solid white for website clean look
@@ -112,6 +116,15 @@ async function initOrResize() {
   if (!morpher) {
     morpher = new MakeabilityLabLogoMorpher(0, 0, TRIANGLE_SIZE, START_FILL_COLOR);
   }
+
+  // Size the assembled logo so it always fits within the canvas width. On wide
+  // (desktop) canvases this caps at the natural size (TRIANGLE_SIZE per cell);
+  // on narrow (mobile) canvases it shrinks the logo so the final, unexploded
+  // state stays fully on-screen. Must run before reset()/resetFromArt() below,
+  // which read the logo's cell size to compute the morph end state. See #1281.
+  const naturalLogoWidth = MakeabilityLabLogo.numCols * TRIANGLE_SIZE;
+  const maxLogoWidth = logicalWidth * LOGO_WIDTH_FRACTION;
+  morpher.setLogoSize(Math.min(naturalLogoWidth, maxLogoWidth));
 
   // Ensure the destination logo is centered in the final state
   morpher.centerLogo(logicalWidth, logicalHeight);
