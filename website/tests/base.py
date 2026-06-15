@@ -121,3 +121,27 @@ class DatabaseTestCase(TestCase):
         kwargs.setdefault("date", _date(2024, 1, 1))
         kwargs.setdefault("content", "Test news body.")
         return News.objects.create(title=title, author=author, **kwargs)
+
+    def make_project(self, name="A Test Project", short_name=None,
+                     with_thumbnail=False, **kwargs):
+        """
+        Create and return a Project. By default the project is created exactly
+        as Project.save() leaves it (is_visible=False, i.e. private), so tests
+        that care about visibility should pass is_visible=True explicitly or
+        flip it afterwards.
+
+        Args:
+            with_thumbnail: when True, attaches a small valid gallery_image so
+                tests can exercise the legacy thumbnail criterion used by the
+                visibility backfill. Defaults to False to avoid touching the
+                filesystem unnecessarily.
+        """
+        from website.models import Project
+        if short_name is None:
+            short_name = name.lower().replace(" ", "")
+        if with_thumbnail:
+            kwargs.setdefault(
+                "gallery_image",
+                _make_image_upload(f"{short_name}_thumb.gif"),
+            )
+        return Project.objects.create(name=name, short_name=short_name, **kwargs)

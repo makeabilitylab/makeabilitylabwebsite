@@ -1,10 +1,11 @@
 """
-Data-health check: projects that are incomplete or invisible on the site.
+Data-health check: projects that are incomplete.
 
-The public member/gallery views only show a project when it has a thumbnail
-(``gallery_image``) and a publication (see ``Project.can_show_online`` and the
-member-view filter), so a project missing either is effectively invisible.
-Also flags projects with no active members or no umbrella. Read-only.
+Public visibility is now governed solely by the ``is_visible`` flag (#1300), so
+this check focuses on *completeness*: it flags projects missing a thumbnail
+(``gallery_image``), a publication, currently-active members, or an umbrella.
+The ``is_visible`` column is surfaced for context — a project that is visible
+*and* incomplete is the most actionable case. Read-only.
 """
 
 from datetime import date
@@ -23,8 +24,8 @@ class ProjectHealthCheck(HealthCheck):
     )
     group = 'Projects'
     columns = [
-        'id', 'name', 'short_name', 'has_thumbnail', 'has_publication',
-        'active_member_count', 'has_umbrella', 'issues',
+        'id', 'name', 'short_name', 'is_visible', 'has_thumbnail',
+        'has_publication', 'active_member_count', 'has_umbrella', 'issues',
     ]
 
     def get_rows(self):
@@ -58,6 +59,7 @@ class ProjectHealthCheck(HealthCheck):
                 'id': project.pk,
                 'name': project.name,
                 'short_name': project.short_name,
+                'is_visible': bool(project.is_visible),
                 'has_thumbnail': has_thumbnail,
                 'has_publication': has_publication,
                 'active_member_count': active_member_count,

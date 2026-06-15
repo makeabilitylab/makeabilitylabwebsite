@@ -6,7 +6,7 @@ import website.utils.ml_utils as ml_utils
 from django.shortcuts import render, get_object_or_404, redirect
 from operator import attrgetter
 from django.template.loader import render_to_string
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 
 from django.db.models import Q, F
 
@@ -33,6 +33,13 @@ def project(request, project_name):
     _logger.debug(f"Starting views/project {project_name} at {func_start_time:0.4f}")
 
     project = get_object_or_404(Project, short_name__iexact=project_name)
+
+    # Private projects (is_visible False/None) are hidden from the public but
+    # remain previewable by logged-in staff so they can build a project before
+    # going live (#1300).
+    if not project.is_visible and not request.user.is_staff:
+        raise Http404("Project is not available")
+
     all_banners = project.banner_set.all()
     displayed_banners = ml_utils.choose_banners(all_banners)
 
