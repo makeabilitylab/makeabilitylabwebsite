@@ -78,9 +78,3 @@ class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
         if db_field.name == "people":
             kwargs["widget"] = widgets.FilteredSelectMultiple("people", is_stacked=False)
         return super(NewsAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
-    
-    def queryset(self, request, queryset):
-        # This method is used when the user selects a choice.
-        # It should return a filtered queryset based on the chosen value.
-        if self.value():
-            return queryset.filter(date__year=self.value())

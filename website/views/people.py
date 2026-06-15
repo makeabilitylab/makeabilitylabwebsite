@@ -56,6 +56,10 @@ def people(request):
     list_of_graduated_phd_students = []
     for dissertation in dissertations:
         grad_student = dissertation.get_person()
+        if grad_student is None:
+            # Dissertation entered before its author was linked — skip it
+            # rather than crash on grad_student.id (see get_person()).
+            continue
         list_of_graduated_phd_students.append(grad_student)
         exclude_member_ids.append(grad_student.id)
 

@@ -32,7 +32,16 @@ class Video(models.Model):
         return ml_utils.get_video_embed(self.video_url)
 
     def get_age_in_ms(self):
-        """Gets the age of this video in milliseconds (as an integer)"""
+        """Gets the age of this video in milliseconds (as an integer).
+
+        Returns None if the video has no date set (the `date` field is
+        nullable). Callers/templates should treat None as "unknown age" and
+        fall back to a static display rather than crash. The video-age.js
+        consumer already does this: a non-numeric data-video-age-ms parses
+        to NaN and it keeps the server-rendered date.
+        """
+        if self.date is None:
+            return None
         age_td = datetime.now().date() - self.date # calculate age as a timedelta object
         age_in_ms = age_td.total_seconds() * 1000 # conver to milliseconds
         return int(age_in_ms)

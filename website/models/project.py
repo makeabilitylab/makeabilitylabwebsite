@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Max, Min
-from django.db.models import F, ExpressionWrapper, fields, Sum, Q
+from django.db.models import F, ExpressionWrapper, fields, Sum, Q, Value
+from django.db.models.functions import Coalesce
 
 from image_cropping import ImageRatioField
 
@@ -449,10 +450,16 @@ class Project(models.Model):
         :return: QuerySet of Person instances
         """
         if sorted_by == "time_on_project":
-            # Calculate time_worked as the difference between end_date and start_date
-            # If end_date is None, use the current date as the end date
+            # Calculate time_worked as the difference between end_date and start_date.
+            # If end_date is None (an ongoing role), coalesce to today. Note: an
+            # `F(...) if F(...) is not None else ...` expression is always truthy
+            # (an F object is never None), so the coalescing must happen in the DB
+            # via Coalesce, not a Python conditional.
             time_worked = ExpressionWrapper(
-                (F('projectrole__end_date') if F('projectrole__end_date') is not None else timezone.now()) - F('projectrole__start_date'),
+                Coalesce(
+                    F('projectrole__end_date'),
+                    Value(timezone.now().date(), output_field=fields.DateField()),
+                ) - F('projectrole__start_date'),
                 output_field=fields.DurationField()
             )
             return Person.objects.filter(projectrole__project=self).annotate(

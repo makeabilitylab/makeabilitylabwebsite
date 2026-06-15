@@ -938,6 +938,34 @@ class ArtifactRawFileLabelTests(SimpleTestCase):
         self.assertIsNone(self._label("talks/Doe2020Title"))
 
 
+class VideoAgeTests(SimpleTestCase):
+    """
+    Regression tests for Video.get_age_in_ms (relates to #1091).
+
+    The method computed `datetime.now().date() - self.date`, which raised
+    TypeError when the nullable `date` field was None. It now returns None
+    for a dateless video so video-age.js falls back to the static date.
+    Pure unit tests: Video instances are constructed but never saved.
+    """
+
+    def test_none_date_returns_none(self):
+        from website.models import Video
+        self.assertIsNone(Video(date=None).get_age_in_ms())
+
+    def test_past_date_returns_positive_int(self):
+        from website.models import Video
+        age = Video(date=date.today() - timedelta(days=7)).get_age_in_ms()
+        self.assertIsInstance(age, int)
+        # 7 days in ms, allowing slack for the now() call crossing midnight.
+        self.assertGreaterEqual(age, 6 * 24 * 60 * 60 * 1000)
+
+    def test_future_date_returns_negative_int(self):
+        from website.models import Video
+        age = Video(date=date.today() + timedelta(days=7)).get_age_in_ms()
+        self.assertIsInstance(age, int)
+        self.assertLess(age, 0)
+
+
 # ===========================================================================
 # Database-backed test infrastructure (#1267)
 # ===========================================================================
@@ -1461,3 +1489,90 @@ class DataHealthReadOnlyTests(DatabaseTestCase):
             get_check(slug).get_rows()
         after = (Person.objects.count(), Publication.objects.count())
         self.assertEqual(before, after)
+
+
+# --- Latent correctness fixes (audit batch) -------------------------------
+
+
+class PublicationGetPersonTests(DatabaseTestCase):
+    """
+    Regression for Publication.get_person (models/publication.py).
+
+    The method indexed self.authors.all()[0], raising IndexError on an
+    authorless publication (e.g. a PhD dissertation entered before its
+    author is linked). This path is reached from views/people.py, which
+    iterates dissertations and calls get_person() on each. The fix returns
+    None via .first() so the caller can skip authorless rows.
+    """
+
+    def test_no_authors_returns_none(self):
+        pub = self.make_publication(title="Authorless Paper")
+        self.assertIsNone(pub.get_person())
+
+    def test_returns_first_author_in_sorted_order(self):
+        pub = self.make_publication(title="Authored Paper")
+        first = self.make_person(first_name="First", last_name="Author")
+        second = self.make_person(first_name="Second", last_name="Author")
+        pub.authors.add(first, second)  # SortedManyToManyField preserves order
+        self.assertEqual(pub.get_person(), first)
+
+
+class ProjectGetPeopleTimeWorkedTests(DatabaseTestCase):
+    """
+    Regression for the dead conditional in Project.get_people
+    (models/project.py).
+
+    The original time_worked expression was
+        F('end_date') if F('end_date') is not None else timezone.now()
+    but an F() object is never None, so the else branch was dead: ongoing
+    roles (end_date=None) produced NULL durations and a NULL
+    total_time_worked annotation. The fix coalesces end_date to today in
+    the DB via Coalesce().
+    """
+
+    def _make_project(self, name="Test Project", short_name="testproj"):
+        from website.models import Project
+        return Project.objects.create(name=name, short_name=short_name)
+
+    def _add_role(self, person, project, start, end=None):
+        from website.models import ProjectRole
+        return ProjectRole.objects.create(
+            person=person, project=project, start_date=start, end_date=end
+        )
+
+    def test_ongoing_role_has_non_null_time_worked(self):
+        project = self._make_project()
+        person = self.make_person(first_name="Ada", last_name="Lovelace")
+        self._add_role(
+            person, project, date.today() - timedelta(days=100), end=None
+        )
+
+        result = list(project.get_people())  # default sorted_by="time_on_project"
+        self.assertEqual(len(result), 1)
+        time_worked = result[0].total_time_worked
+        self.assertIsNotNone(time_worked)  # was None before the Coalesce fix
+        self.assertGreaterEqual(time_worked, timedelta(days=99))
+
+    def test_long_completed_role_outranks_short_ongoing_role(self):
+        """
+        Discriminating ordering check. With the bug, the ongoing role's
+        NULL duration sorts NULLS-FIRST under Postgres DESC ordering, so
+        the short ongoing role would wrongly rank first. With the fix the
+        long completed role ranks first by actual duration.
+        """
+        project = self._make_project()
+        long_done = self.make_person(first_name="Long", last_name="Veteran")
+        short_ongoing = self.make_person(first_name="Short", last_name="Newcomer")
+        self._add_role(
+            long_done, project,
+            date.today() - timedelta(days=400),
+            end=date.today() - timedelta(days=35),
+        )  # ~365 days
+        self._add_role(
+            short_ongoing, project,
+            date.today() - timedelta(days=10), end=None,
+        )  # ~10 days
+
+        result = list(project.get_people())
+        self.assertEqual(result[0], long_done)
+        self.assertEqual(result[1], short_ongoing)

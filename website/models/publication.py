@@ -104,8 +104,14 @@ class Publication(Artifact):
         return os.path.join(self.THUMBNAIL_DIR, filename)
     
     def get_person(self):
-        """Returns the first author"""
-        return self.authors.all()[0]
+        """Returns the first author, or None if the publication has no authors yet.
+
+        `authors` is a SortedManyToManyField, so a freshly-created stub
+        publication (e.g. a PhD dissertation entered before its author is
+        linked) has an empty set. Indexing into it raised IndexError; using
+        .first() returns None so callers can skip authorless rows.
+        """
+        return self.authors.all().first()
     
     def get_formatted_forum_name(self):
         """
