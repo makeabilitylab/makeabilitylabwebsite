@@ -72,8 +72,8 @@ else:
     ALLOWED_HOSTS = ['*']
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.3.8" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Project page sidebar (#1245): hybrid sticky behavior — sidebar and main content scroll together until the sidebar's bottom reaches the viewport bottom, then the sidebar pins while main content keeps scrolling. Short sidebars stick at top as before. Adds a seed_demo_projects management command for local visual testing across main x sidebar height combinations."
+ML_WEBSITE_VERSION = "2.4.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Testing & maintainability milestone: adds CI on push/PR (#1279), a DB-backed test package + test-settings shim (#1267), and a read-only Data Health admin dashboard with 7 checks (#1276). Also: view_project_people refactor fixing director hardcoding + N+1 queries (#1284), mobile navbar/logo fixes (#1281/#1282/#1286), and Talk/Poster external slides URL support (#1273)."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
