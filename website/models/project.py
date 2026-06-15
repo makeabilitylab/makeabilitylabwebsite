@@ -40,7 +40,32 @@ class Project(models.Model):
     # Short name is used for urls, and should be name.lower().replace(" ", "")
     short_name = models.CharField(max_length=255)
     short_name.help_text = "This should be the same as name but lower case with no spaces. It is used in the url of the project"
-   
+
+    # is_visible is the single source of truth for whether a project appears
+    # publicly (gallery, landing page, member pages, and as links from
+    # pub/talk/video/award snippets). See issue #1300. This replaces the old
+    # "has a thumbnail AND a publication" heuristic that was duplicated across
+    # views and templates.
+    #
+    # The field is intentionally nullable with no DB default:
+    #   - New projects start PRIVATE: Project.save() sets is_visible=False when
+    #     creating a project that hasn't set it explicitly (see save()).
+    #   - Existing projects (rows that predate this column) are added as NULL by
+    #     the migration, which the one-shot `backfill_project_visibility`
+    #     management command resolves to True/False based on the legacy
+    #     thumbnail+publication criteria. Keying the backfill on NULL keeps it
+    #     idempotent, so it never clobbers a later manual admin override.
+    # A `default=False` is deliberately NOT used: Django would backfill every
+    # pre-existing row with False on ADD COLUMN, silently hiding every
+    # currently-visible project on the first deploy.
+    is_visible = models.BooleanField(null=True, blank=True, default=None)
+    is_visible.help_text = ("Controls whether this project is shown publicly (project gallery, "
+                            "landing page, member pages, and as links from publications/talks/videos). "
+                            "New projects start private so you can set them up and add people before "
+                            "going live; check this when the project is ready to be public.")
+    is_visible.verbose_name = "Visible on website"
+
+
     # grants = models.ManyToManyField('Grant', blank=True)
     # grants.help_text = "Almost all projects in our lab are funded by grants. If you don't know about the project funding, please ask Jon."
    
@@ -89,6 +114,15 @@ class Project(models.Model):
         lab departure date, whichever is earlier.
         """
         _logger.debug("Running Project.save() method...")
+
+        # New projects are private by default (issue #1300). We set this at the
+        # model layer (rather than via a field default) so it applies to every
+        # creation path — admin, shell, seeds, tests — while leaving pre-existing
+        # rows as NULL for the one-shot backfill to resolve. Only applies on
+        # creation (no pk yet) and only when the caller hasn't set it explicitly.
+        if self.pk is None and self.is_visible is None:
+            self.is_visible = False
+
         super(Project, self).save(*args, **kwargs)  # Save the Project instance first
 
         if self.end_date:
@@ -324,8 +358,17 @@ class Project(models.Model):
         return self.publication_set.filter(award__isnull=False).exclude(award__exact='').exists()
 
     def can_show_online(self):
-        """Returns true if we can show this project on the webpage"""
-        return self.has_thumbnail() and self.has_publication()
+        """
+        Returns True if this project should be shown publicly.
+
+        As of issue #1300 this is governed solely by the ``is_visible`` flag
+        (editor-controlled) rather than the old "has a thumbnail AND a
+        publication" heuristic. Kept as a method because templates reference
+        ``project.can_show_online`` to decide whether to link to a project.
+        ``is_visible`` may transiently be None for legacy rows before the
+        ``backfill_project_visibility`` command runs; None is treated as private.
+        """
+        return bool(self.is_visible)
 
     def has_thumbnail(self):
         """Returns true if a project thumbnail has been set"""

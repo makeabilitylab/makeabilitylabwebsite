@@ -94,14 +94,9 @@ def member(request, member_name=None, member_id=None):
     if not person.bio:
         auto_generated_bio = auto_generate_bio(person)
 
-    # filter projects to those that have a thumbnail and have been published
-    # TODO: might consider moving this to ml_utils so we have consistent determination
-    # of what projects to show publicly
-    filtered_projects = list()
-    for proj in projects:
-        if proj.gallery_image is not None and proj.has_publication():
-            filtered_projects.append(proj)
-    projects = filtered_projects
+    # Show only projects marked visible (#1300). Visibility is governed solely
+    # by the is_visible flag, replacing the old thumbnail+publication heuristic.
+    projects = [proj for proj in projects if proj.is_visible]
 
     context = {'person': person,
                'auto_generated_bio': auto_generated_bio,

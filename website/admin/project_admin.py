@@ -53,20 +53,20 @@ class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
     # The list display lets us control what is shown in the Project table at Home > Website > Project
     # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
-    list_display = ('name', 'get_display_thumbnail', 'start_date', 'end_date', 'has_ended', 
+    list_display = ('name', 'is_visible', 'get_display_thumbnail', 'start_date', 'end_date', 'has_ended',
                     'get_contributor_count', 'get_people_count',
                     'get_current_member_count', 'get_past_member_count',
                     'get_most_recent_artifact_date', 'get_most_recent_artifact_type',
                     'get_publication_count', 'get_video_count', 'get_talk_count', 'get_banner_count')
     
     fieldsets = [
-        (None,                      {'fields': ['name', 'short_name']}),
+        (None,                      {'fields': ['name', 'short_name', 'is_visible']}),
         ('About',                   {'fields': ['start_date', 'end_date', 'summary', 'about', 'gallery_image', 'cropping', 'thumbnail_alt_text']}),
         ('Links',                   {'fields': ['website', 'data_url', 'featured_video', 'featured_code_repo_url']}),
         ('Associations',            {'fields': ['project_umbrellas', 'keywords']}),
     ]
     
-    list_filter = (ActiveProjectsFilter, )
+    list_filter = (ActiveProjectsFilter, 'is_visible')
 
     def get_display_thumbnail(self, obj):
         if obj.gallery_image and os.path.isfile(obj.gallery_image.path):
@@ -93,6 +93,16 @@ class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
         formfield = super().formfield_for_dbfield(db_field, **kwargs)
         if db_field.name == 'summary':
             formfield.widget = forms.Textarea(attrs={'rows': 3, 'class': 'vLargeTextField'})
+        if db_field.name == 'is_visible':
+            # is_visible is a nullable BooleanField (NULL = legacy, pre-backfill;
+            # see Project model / #1300), which Django would otherwise render as a
+            # three-state Yes/No/Unknown select. Editors only ever want public vs
+            # private, so present a plain checkbox; unchecked saves False (private).
+            formfield = forms.BooleanField(
+                required=False,
+                label=db_field.verbose_name,
+                help_text=db_field.help_text,
+            )
         return formfield
 
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):

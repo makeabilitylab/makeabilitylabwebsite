@@ -2,7 +2,7 @@ from django.conf import settings # for access to settings variables, see https:/
 from website.models import Banner, Publication, Talk, Video, Project, Person, News, Sponsor
 import website.utils.ml_utils as ml_utils 
 from django.shortcuts import render # for render https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
-from django.db.models import OuterRef, Subquery
+from django.db.models import OuterRef, Subquery, F
 
 from django.db.models import Sum # for summing grant funding amounts
 from django.db.models.functions import Coalesce # for replacing None with 0 when summing grant funding amounts
@@ -51,12 +51,13 @@ def index(request):
     # Get the most recent publication date for each project
     latest_publication_dates = Publication.objects.filter(projects=OuterRef('pk')).order_by('-date')
 
-    # Get all projects that have at least one publication, a gallery image, and
-    # are active (i.e., have no end date)
-    # ordered by most recent pub date and limited to MAX_NUM_PROJECTS
-    active_projects = (Project.objects.filter(publication__isnull=False, gallery_image__isnull=False, end_date__isnull=True)
+    # Get all visible, active projects (i.e., marked is_visible and with no end
+    # date), ordered by most recent pub date and limited to MAX_NUM_PROJECTS.
+    # Visibility is governed solely by the is_visible flag (#1300). nulls_last
+    # keeps a visible project that has no publication yet from sorting to the top.
+    active_projects = (Project.objects.filter(is_visible=True, end_date__isnull=True)
                 .annotate(most_recent_publication=Subquery(latest_publication_dates.values('date')[:1]))
-                .order_by('-most_recent_publication', 'id').distinct())[:MAX_NUM_PROJECTS]
+                .order_by(F('most_recent_publication').desc(nulls_last=True), 'id').distinct())[:MAX_NUM_PROJECTS]
 
     # Get all sponsors, annotate each with the sum of their grants' funding_amount
     # In this code, Coalesce(Sum('grant__funding_amount'), 0) calculates the sum of the 

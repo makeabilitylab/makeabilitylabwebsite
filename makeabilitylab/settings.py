@@ -72,8 +72,8 @@ else:
     ALLOWED_HOSTS = ['*']
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.5.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Frontend modernization (Track A, #1288): removed jQuery 1.9.1 and Bootstrap 3.3.6 JavaScript entirely. The navbar collapse (#1290), citation popover (#1292), and hero/project carousels (#1293) were rewritten in vanilla JS; dead Bootstrap scrollspy (#1291), jQuery UI, jQuery Easing, and a dead back-to-top widget were removed (#1289/#1290). Drops ~70KB of CDN JS from every page and eliminates the security-vulnerable jQuery 1.9.1. Bootstrap's CSS is unchanged. Also adds prefers-reduced-motion handling to the carousel."
+ML_WEBSITE_VERSION = "2.6.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Projects are now private by default (#1300). A single editor-controlled Project.is_visible flag governs whether a project appears publicly (gallery, landing page, member pages, and as links from publications/talks/videos), replacing the old 'has a thumbnail AND a publication' heuristic that was duplicated across views and templates. New projects start private so the team can set them up and add people before going live; logged-in staff can preview a private project's page while the public gets a 404. A one-shot backfill_project_visibility management command preserves the visibility of existing projects on first deploy and is idempotent (it only resolves projects whose visibility was never set, so manual admin choices are never overwritten)."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 

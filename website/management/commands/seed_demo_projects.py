@@ -170,6 +170,7 @@ class Command(BaseCommand):
         proj = Project.objects.create(
             name="Demo Project: Active (Short Sidebar)",
             short_name="demo-active-small",
+            is_visible=True,  # demo projects are public so they render for visual testing
             start_date=date(2024, 1, 1),
             end_date=None,
             summary="A small active demo project for visual testing of the short-sidebar case.",
@@ -195,6 +196,7 @@ class Command(BaseCommand):
         proj = Project.objects.create(
             name="Demo Project: Active (Tall Sidebar — Sidewalk-like)",
             short_name="demo-active-tall",
+            is_visible=True,  # demo projects are public so they render for visual testing
             start_date=date(2019, 1, 1),
             end_date=None,
             summary="A large active demo project with lots of current and former members — sidebar exceeds viewport height.",
@@ -246,6 +248,7 @@ class Command(BaseCommand):
         proj = Project.objects.create(
             name="Demo Project: Ended (Tall Sidebar)",
             short_name="demo-ended-tall",
+            is_visible=True,  # demo projects are public so they render for visual testing
             start_date=date(2018, 1, 1),
             end_date=proj_end,
             summary="A completed demo project for testing the 'Former-prefix-dropped' branch (#1245).",
@@ -285,6 +288,7 @@ class Command(BaseCommand):
         proj = Project.objects.create(
             name="Demo Project: Tall Main + Short Sidebar",
             short_name="demo-tall-main-short-sidebar",
+            is_visible=True,  # demo projects are public so they render for visual testing
             start_date=date(2024, 1, 1),
             end_date=None,
             summary="A project with only a few sidebar entries but lots of publications, so the main content is much taller than the sidebar.",

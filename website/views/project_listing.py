@@ -2,7 +2,7 @@ from django.conf import settings # for access to settings variables, see https:/
 from django.utils import timezone # for timezone-aware date operations
 from website.models import Project, ProjectUmbrella, Publication
 from django.db.models import Count, Q # see https://docs.djangoproject.com/en/4.2/topics/db/aggregation/
-from django.db.models import OuterRef, Subquery
+from django.db.models import OuterRef, Subquery, F
 from django.shortcuts import render # for render https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
 
 # For logging
@@ -22,22 +22,21 @@ def project_listing(request):
     # Get the most recent publication date for each project
     latest_publication_dates = Publication.objects.filter(projects=OuterRef('pk')).order_by('-date')
 
-    # Get all projects that have at least one publication, a gallery image, and
-    # are active (i.e., have no end date OR have an end date today or in the future)
-    # ordered by most recent pub date
-    active_projects = (Project.objects.filter(
-                    publication__isnull=False, 
-                    gallery_image__isnull=False)
+    # Get all visible, active projects (i.e., marked is_visible and with no end
+    # date OR an end date today or in the future), ordered by most recent pub
+    # date. Visibility is governed solely by the is_visible flag (#1300).
+    # nulls_last keeps a visible project that has no publication yet from
+    # sorting to the top.
+    active_projects = (Project.objects.filter(is_visible=True)
                 .filter(Q(end_date__isnull=True) | Q(end_date__gt=today))
                 .annotate(most_recent_publication=Subquery(latest_publication_dates.values('date')[:1]))
-                .order_by('-most_recent_publication', 'id').distinct())
-    
-    # Get completed projects that have at least one publication, a gallery image, 
-    # and have an end date that is before today
+                .order_by(F('most_recent_publication').desc(nulls_last=True), 'id').distinct())
+
+    # Get visible, completed projects (an end date before today),
     # ordered by most recent pub date
-    completed_projects = (Project.objects.filter(publication__isnull=False, gallery_image__isnull=False, end_date__isnull=False, end_date__lte=today)
+    completed_projects = (Project.objects.filter(is_visible=True, end_date__isnull=False, end_date__lte=today)
                 .annotate(most_recent_publication=Subquery(latest_publication_dates.values('date')[:1]))
-                .order_by('-most_recent_publication', 'id').distinct())
+                .order_by(F('most_recent_publication').desc(nulls_last=True), 'id').distinct())
     
     # Now get all project umbrellas for interactive project filtering
     map_project_umbrella_to_projects = {}
