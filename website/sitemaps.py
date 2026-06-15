@@ -27,7 +27,22 @@ from django.urls import reverse
 from website.models import Project, Person, News
 
 
-class StaticViewSitemap(Sitemap):
+class _HttpsSitemap(Sitemap):
+    """
+    Base sitemap that pins generated URLs to the https scheme.
+
+    Apache terminates TLS and proxies to Django over plain HTTP, so the
+    request scheme Django sees is ``http``. Without this, RequestSite would
+    emit ``http://`` <loc> URLs that only 302-redirect to https — making the
+    sitemap advertise non-canonical URLs with an extra hop. Pinning the
+    protocol here makes every sitemap list the canonical https URLs directly.
+    (Cosmetic only in local dev, where the site is served over http.)
+    """
+
+    protocol = "https"
+
+
+class StaticViewSitemap(_HttpsSitemap):
     """Top-level listing pages that aren't tied to a single model instance."""
 
     changefreq = "weekly"
@@ -48,7 +63,7 @@ class StaticViewSitemap(Sitemap):
         return reverse(item)
 
 
-class ProjectSitemap(Sitemap):
+class ProjectSitemap(_HttpsSitemap):
     """Public project pages: /project/<short_name>/."""
 
     changefreq = "weekly"
@@ -69,7 +84,7 @@ class ProjectSitemap(Sitemap):
         return obj.updated
 
 
-class PersonSitemap(Sitemap):
+class PersonSitemap(_HttpsSitemap):
     """Public people pages: /member/<url_name>/."""
 
     changefreq = "monthly"
@@ -95,7 +110,7 @@ class PersonSitemap(Sitemap):
         return obj.bio_datetime_modified
 
 
-class NewsSitemap(Sitemap):
+class NewsSitemap(_HttpsSitemap):
     """News item pages: /news/<slug>/."""
 
     changefreq = "monthly"

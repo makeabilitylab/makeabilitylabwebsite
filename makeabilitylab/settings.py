@@ -72,8 +72,8 @@ else:
     ALLOWED_HOSTS = ['*']
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.8.1" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "SEO: add a dynamic sitemap.xml and advertise it in robots.txt (#1252). /sitemap.xml is generated on each request from our querysets via django.contrib.sitemaps — static listing pages (home, people, publications, projects, awards, news), visible projects, people with a position, and news items — so it stays current with no maintenance. It emits the correct per-environment domain via RequestSite, so no django.contrib.sites and no DB migration are needed. The top-level static robots.txt (served directly by Apache, not Django) now points crawlers at the sitemap. Remaining one-time step: submit the sitemap in Google Search Console once it is live on production."
+ML_WEBSITE_VERSION = "2.8.2" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "SEO: add a dynamic sitemap.xml and advertise it in robots.txt (#1252). /sitemap.xml is generated on each request from our querysets via django.contrib.sitemaps — static listing pages (home, people, publications, projects, awards, news), visible projects, people with a position, and news items — so it stays current with no maintenance. It emits the correct per-environment domain via RequestSite (no django.contrib.sites, no DB migration) and pins URLs to https so the sitemap lists canonical links rather than http URLs that 302-redirect. Validated on the test server: all 189 sitemap URLs return 200. The top-level static robots.txt (served directly by Apache, not Django) now points crawlers at the sitemap. Remaining one-time step: submit the sitemap in Google Search Console once it is live on production."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
