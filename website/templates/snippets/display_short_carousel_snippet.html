@@ -7,7 +7,7 @@
 {% load cropping %}
 {% load ml_tags %}
 
-<div id="main-carousel" class="carousel slide carousel-fade shortCarousel" data-ride="carousel" data-interval="10000"
+<div id="main-carousel" class="carousel slide carousel-fade shortCarousel" data-interval="10000"
      data-pause="false">
     <div class="page-title shadow-left">
         <div class="container carousel-container">
@@ -45,8 +45,7 @@
     </div>
     <ol class="carousel-indicators"  {% if banners|length < 2 %} style="display: none" {% endif %}>
         {% for banner in banners %}
-            <li data-target="#mainCarousel" data-slide-to="{{ forloop.counter0 }}"
-                {% if forloop.first %}class="active"{% endif %}></li>
+            <li {% if forloop.first %}class="active"{% endif %}></li>
         {% endfor %}
     </ol>
 </div>
