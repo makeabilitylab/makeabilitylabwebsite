@@ -8,6 +8,8 @@ from django.utils.text import get_valid_filename
 import time # for generating unique filenames
 from wand.image import Image, Color # for creating thumbnails
 from wand.exceptions import WandException# for creating thumbnails
+from pypdf import PdfReader # for counting PDF pages
+from pypdf.errors import PdfReadError # for counting PDF pages
 
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
@@ -262,5 +264,45 @@ def generate_thumbnail_for_pdf(pdf_file_field, thumbnail_image_field, thumbnail_
 
     _logger.error(f"Thumbnail generation failed at all resolutions for: {pdf_file_field.name}")
     return None
-    
-   
+
+
+def get_pdf_page_count(pdf_file_field):
+    """
+    Returns the number of pages in the given PDF, or None if the count can't be
+    determined (no file, not a PDF, file missing on disk, or unreadable/corrupt).
+
+    Uses pypdf, which reads the PDF's internal page tree directly rather than
+    rendering pages, so it stays fast and light even for large documents. This
+    backs the auto-population of Publication.num_pages (issue #1298) so students
+    no longer have to count pages by hand.
+
+    Returning None rather than raising is intentional: a malformed PDF should
+    never block saving a publication. The caller simply leaves num_pages unset.
+
+    Args:
+        pdf_file_field (models.FileField): The PDF file field to inspect.
+
+    Returns:
+        int | None: The page count, or None if it can't be determined.
+
+    Example:
+        >>> get_pdf_page_count(publication.pdf_file)
+        12
+    """
+    if not pdf_file_field or not pdf_file_field.name:
+        return None
+
+    if not pdf_file_field.name.lower().endswith('.pdf'):
+        _logger.debug(f"Not counting pages for non-PDF file: {pdf_file_field.name}")
+        return None
+
+    if not pdf_file_field.storage.exists(pdf_file_field.name):
+        _logger.debug(f"Cannot count pages; file not found in storage: {pdf_file_field.name}")
+        return None
+
+    try:
+        reader = PdfReader(pdf_file_field.path)
+        return len(reader.pages)
+    except (PdfReadError, OSError, ValueError) as e:
+        _logger.warning(f"Could not determine page count for {pdf_file_field.name}: {e}")
+        return None

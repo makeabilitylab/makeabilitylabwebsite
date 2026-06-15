@@ -105,6 +105,11 @@ echo "3.1 Running 'python manage.py fix_sortedm2m_columns' to fix any missing so
 echo "******************************************"
 python manage.py fix_sortedm2m_columns
 
+echo "****************** STEP 4.6/5: docker-entrypoint.sh ************************"
+echo "4.6 Running 'python manage.py backfill_num_pages' to fill missing publication page counts"
+echo "******************************************"
+python manage.py backfill_num_pages
+
 # echo "****************** STEP 4.3/5: docker-entrypoint.sh ************************"
 # echo "4.3 Running 'python manage.py rename_person_images' to rename person images"
 # echo "******************************************"
