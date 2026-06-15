@@ -20,6 +20,7 @@ from django.core.management import call_command
 from django.urls import reverse
 
 from website.models import Project
+from website.models.project_role import ProjectRole
 from website.tests.base import DatabaseTestCase
 
 
@@ -191,3 +192,108 @@ class IndividualProjectPageVisibilityTests(DatabaseTestCase):
             reverse("website:project", kwargs={"project_name": project.short_name})
         )
         self.assertEqual(response.status_code, 200)
+
+
+# --- Secondary surfaces: nothing should mention a private project --------
+
+
+class AwardVisibleProjectsTests(DatabaseTestCase):
+    """Award.get_visible_projects (used by the public awards snippet) excludes private projects."""
+
+    def test_only_visible_projects_returned(self):
+        from website.models import Award
+        visible = self.make_project(name="Award Visible", is_visible=True)
+        private = self.make_project(name="Award Private", is_visible=False)
+        award = Award.objects.create(title="Best Paper", date=date(2024, 1, 1))
+        award.projects.add(visible, private)
+
+        names = {p.name for p in award.get_visible_projects()}
+        self.assertEqual(names, {"Award Visible"})
+
+
+class PersonProjectsContribVisibilityTests(DatabaseTestCase):
+    """get_projects_sorted_by_contrib (public People page) excludes private projects."""
+
+    def _link(self, person, project):
+        ProjectRole.objects.create(
+            project=project, person=person, start_date=date(2024, 1, 1)
+        )
+        pub = self.make_publication(title=f"Pub {project.name}")
+        pub.authors.add(person)
+        pub.projects.add(project)
+
+    def test_private_project_excluded(self):
+        person = self.make_person(first_name="Grace", last_name="Hopper")
+        visible = self.make_project(name="Contrib Visible", is_visible=True)
+        private = self.make_project(name="Contrib Private", is_visible=False)
+        self._link(person, visible)
+        self._link(person, private)
+
+        names = {p.name for p in person.get_projects_sorted_by_contrib()}
+        self.assertEqual(names, {"Contrib Visible"})
+
+
+class LandingBannerVisibilityTests(DatabaseTestCase):
+    """get_landing_page_banners drops banners tied to a private project."""
+
+    def test_private_project_banner_excluded_but_projectless_kept(self):
+        from website.models import Banner
+        from website.views.index import get_landing_page_banners
+
+        private = self.make_project(name="Banner Private", is_visible=False)
+        visible = self.make_project(name="Banner Visible", is_visible=True)
+        private_banner = Banner.objects.create(
+            title="Private Banner", landing_page=True, favorite=True, project=private
+        )
+        visible_banner = Banner.objects.create(
+            title="Visible Banner", landing_page=True, favorite=True, project=visible
+        )
+        projectless_banner = Banner.objects.create(
+            title="Projectless Banner", landing_page=True, favorite=True
+        )
+
+        returned = set(get_landing_page_banners(10))
+        self.assertIn(visible_banner, returned)
+        self.assertIn(projectless_banner, returned)
+        self.assertNotIn(private_banner, returned)
+
+
+class ProjectListingUmbrellaFilterVisibilityTests(DatabaseTestCase):
+    """The umbrella filter counts/names only publicly-visible projects."""
+
+    def test_private_project_excluded_from_umbrella_map(self):
+        from website.models import ProjectUmbrella
+        umbrella = ProjectUmbrella.objects.create(
+            name="Accessibility", short_name="a11y"
+        )
+        for name, vis in [("U Visible", True), ("U Private", False)]:
+            project = self.make_project(
+                name=name, with_thumbnail=True, is_visible=vis,
+                start_date=date(2020, 1, 1),
+            )
+            project.project_umbrellas.add(umbrella)
+            pub = self.make_publication(title=f"Pub {name}")
+            pub.projects.add(project)
+
+        response = self.client.get(reverse("website:projects"))
+        umbrella_map = response.context["map_project_umbrella_to_projects"]
+        self.assertEqual(umbrella_map.get("a11y"), ["U Visible"])
+
+
+class NewsItemRelatedProjectsVisibilityTests(DatabaseTestCase):
+    """The news item page lists only publicly-visible related projects."""
+
+    def test_private_related_project_hidden(self):
+        visible = self.make_project(name="News Visible Proj", is_visible=True,
+                                    start_date=date(2020, 1, 1))
+        private = self.make_project(name="News Private Proj", is_visible=False,
+                                    start_date=date(2020, 1, 1))
+        news = self.make_news_item(title="A Discovery")
+        news.project.add(visible, private)
+
+        response = self.client.get(
+            reverse("website:news_item_by_id", kwargs={"id": news.id})
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "News Visible Proj")
+        self.assertNotContains(response, "News Private Proj")

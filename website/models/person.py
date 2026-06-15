@@ -598,9 +598,12 @@ class Person(models.Model):
         """
         Project = apps.get_model('website', 'Project')
         
-        # Start with projects where this person has a role
+        # Start with publicly-visible projects where this person has a role.
+        # This feeds the public People page, so private projects (#1300) are
+        # excluded.
         projects_qs = Project.objects.filter(
-            projectrole__person=self
+            projectrole__person=self,
+            is_visible=True
         ).annotate(
             # Count publications by this person on each project
             pub_count=Count(

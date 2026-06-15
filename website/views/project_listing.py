@@ -41,13 +41,16 @@ def project_listing(request):
     # Now get all project umbrellas for interactive project filtering
     map_project_umbrella_to_projects = {}
 
+    # Only count/list publicly-visible projects so private projects (#1300)
+    # don't inflate the filter counts or leak their names into the page.
     project_umbrellas_with_projects = (ProjectUmbrella.objects.annotate(
-        num_projects=Count('project')).filter(num_projects__gt=0)) # Get all project umbrellas with at least one project
+        num_projects=Count('project', filter=Q(project__is_visible=True)))
+        .filter(num_projects__gt=0)) # Get all project umbrellas with at least one visible project
 
     # Iterate over the queryset
     for project_umbrella in project_umbrellas_with_projects:
-        # Get the list of associated Project instances
-        projects = project_umbrella.project_set.all()
+        # Get the list of associated, publicly-visible Project instances
+        projects = project_umbrella.project_set.filter(is_visible=True)
         map_project_umbrella_to_projects[project_umbrella.short_name] = [project.name for project in projects]
 
     # Sort the dictionary by project count

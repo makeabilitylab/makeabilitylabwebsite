@@ -78,9 +78,9 @@ def project(request, project_name):
     # Get all candidates first
     related_project_candidates = project.get_related_projects_by_umbrella(match_all_umbrellas=True)
     
-    # Filter using Python list comprehension to ensure the attribute exists and is not empty
-    # This matches the logic used in your template: {% if related_project.gallery_image %}
-    related_projects = [p for p in related_project_candidates if p.gallery_image][:5]
+    # Only surface related projects that are publicly visible (#1300) and have a
+    # thumbnail (the related-project cards render gallery_image).
+    related_projects = [p for p in related_project_candidates if p.is_visible and p.gallery_image][:5]
 
     # related_projects_by_pub = project.get_related_projects_by_pub()
     # _logger.debug(f"Related projects by publication: {related_projects_by_pub}")
