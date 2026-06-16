@@ -84,6 +84,9 @@ CONTEXT VARIABLES:
 <script src="{% static 'website/js/citationPopoverSimple.js' %}"></script>
 <script src="{% static 'website/js/humanize-duration.js' %}"></script>
 <script src="{% static 'website/js/video-age.js' %}"></script>
+<script src="{% static 'website/js/bio-expand.js' %}"></script>
+<script src="{% static 'website/js/member-load-more.js' %}"></script>
+<script src="{% static 'website/js/member-nav.js' %}"></script>
 {% endblock %}
 
 {% block scripts %}
@@ -91,6 +94,15 @@ document.addEventListener('DOMContentLoaded', function() {
   SwapImage.init();
   CitationPopover.init('.publication-citation-link');
   VideoAge.init();
+  // Collapses over-long bios behind a "Show more" toggle (#1110).
+  BioExpand.init('[data-bio-collapsible]');
+  // Wires the per-section "See more" controls. Re-runs CitationPopover/VideoAge
+  // on any artifacts it appends, so dynamically loaded papers/videos behave
+  // exactly like the ones rendered on first paint.
+  MemberLoadMore.init();
+  // Sticky section nav scroll-spy + floating "Back to top" button, for long
+  // pages (e.g. after "Load all").
+  MemberNav.init();
 });
 {% endblock %}
 
@@ -195,8 +207,13 @@ document.addEventListener('DOMContentLoaded', function() {
           {% endif %}
 
           <!-- Bio Text -->
+          {% comment %}
+            data-bio-collapsible: bio-expand.js measures this element on load and,
+            only if it exceeds the collapsed height (~3 lines), clamps it and
+            inserts a "Show more"/"Show less" toggle. Short bios are untouched.
+          {% endcomment %}
           {% if person.bio %}
-          <div class="person-bio-text">
+          <div class="person-bio-text" data-bio-collapsible>
             {{ person.bio|safe }}
           </div>
           <div class="person-bio-meta">
@@ -205,7 +222,7 @@ document.addEventListener('DOMContentLoaded', function() {
             {% endif %}
           </div>
           {% elif auto_generated_bio %}
-          <div class="person-bio-text">
+          <div class="person-bio-text" data-bio-collapsible>
             {{ auto_generated_bio|safe }}
           </div>
           <div class="person-bio-meta">
@@ -233,47 +250,161 @@ document.addEventListener('DOMContentLoaded', function() {
     {% endif %}
   </div>
 
+  {% comment %}
+    In-page section nav (#1110). Sticks just below the fixed site navbar so you
+    can jump between sections — useful once "Load all" makes a prolific member's
+    page very long. Server-rendered with only the sections that exist, so the
+    anchor links work without JS; member-nav.js adds scroll-spy (aria-current)
+    and the floating "Back to top" button. Hidden entirely if the page has no
+    artifact sections at all.
+  {% endcomment %}
+  {% if projects or publications or videos or talks %}
+  <nav class="member-section-nav" aria-label="Sections on this page" data-member-section-nav>
+    {% comment %}
+      The person's name, revealed by member-nav.js once the <h1> scrolls out of
+      view (and hidden again on scroll-up), so you keep your bearings deep in a
+      long page. Hidden initially and on narrow screens (CSS).
+    {% endcomment %}
+    <span class="member-section-nav-name" data-nav-name hidden>{{ person.get_full_name }}</span>
+
+    {% comment %}
+      Each link shows "<loaded>/<total>". The server stamps the initial loaded
+      count (the desktop slice) and the total; member-nav.js keeps the loaded
+      number in sync with the grid as "Load more"/"Load all" append cards. Counts
+      for sections that never overflow are static (loaded == total).
+    {% endcomment %}
+    <ul class="member-section-nav-list">
+      {% if projects %}
+      <li><a href="#person-projects" data-section-link="person-projects">Projects
+        <span class="member-section-nav-count" data-artifact-count data-count-grid="person-projects-grid" data-count-total="{{ projects_total }}">({{ projects|length }}/{{ projects_total }})</span></a></li>
+      {% endif %}
+      {% if publications %}
+      <li><a href="#person-publications" data-section-link="person-publications">Papers
+        <span class="member-section-nav-count" data-artifact-count data-count-grid="person-publications-grid" data-count-total="{{ publications_total }}">({{ publications|length }}/{{ publications_total }})</span></a></li>
+      {% endif %}
+      {% if videos %}
+      <li><a href="#person-videos" data-section-link="person-videos">Videos
+        <span class="member-section-nav-count" data-artifact-count data-count-grid="person-videos-grid" data-count-total="{{ videos_total }}">({{ videos|length }}/{{ videos_total }})</span></a></li>
+      {% endif %}
+      {% if talks %}
+      <li><a href="#person-talks" data-section-link="person-talks">Talks
+        <span class="member-section-nav-count" data-artifact-count data-count-grid="person-talks-grid" data-count-total="{{ talks_total }}">({{ talks|length }}/{{ talks_total }})</span></a></li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+
+  {% comment %}
+  ============================ Artifact Sections ============================
+  Each section (Projects / Papers / Videos / Talks) renders the DESKTOP count
+  of items (page_sizes.*, e.g. 8 projects) into a grid, then a per-section
+  ".see-more-controls" block (two buttons) directly below that grid.
+
+  How the controls work (see member-load-more.js for the details):
+    - On phones (<=576px) CSS (.is-collapsed cap in member.css) visually limits
+      each grid to mobile_page_sizes.* (e.g. 4 projects). The other rendered
+      cards are in the DOM, just hidden.
+    - "Load N more <type>": one click lifts the mobile cap (revealing any
+      already-rendered-but-hidden cards) AND, if the server has more, appends
+      the next page_sizes.* batch from website:member_artifacts. The label's N
+      is set by JS to exactly how many cards that next click will add.
+    - "Load all <total> <type>": fetches every remaining item in one request
+      (endpoint ?all=1). Hidden when "Load more" would already load the rest.
+    - The whole block starts hidden and is unhidden by JS only when a section
+      actually has more to show. TRADEOFF: with JS disabled it stays hidden, so
+      a no-JS phone visitor sees only the mobile count and can't expand. That's
+      accepted (this site already relies on JS for the citation popover,
+      video-age, etc.); it is strictly more than the old page showed, and there
+      is no per-member full-listing page to fall back to.
+  The shared data-* live on the .see-more-controls wrapper (member id, type,
+  totals, page/mobile sizes, and the grid id to append into).
+  ========================================================================== {% endcomment %}
+
   <!-- ======================== Projects Section ======================== -->
   {% if projects %}
-  <section id="person-projects" 
-           class="person-section" 
+  <section id="person-projects"
+           class="person-section"
            aria-labelledby="projects-heading">
-    <h2 id="projects-heading" 
+    <h2 id="projects-heading"
         class="person-section-header heading-with-anchor {% if left_align_headers %}text-left{% endif %}">
-      {% if projects|length > 4 %}Recent Projects{% else %}Projects{% endif %}
-      <a href="#person-projects" 
-         class="header-anchor" 
+      Projects <span class="person-section-count" data-artifact-count data-count-grid="person-projects-grid" data-count-total="{{ projects_total }}">({{ projects|length }}/{{ projects_total }})</span>
+      <a href="#person-projects"
+         class="header-anchor"
          aria-label="Link to projects section">
         <i class="fa-solid fa-link" aria-hidden="true"></i>
       </a>
     </h2>
-    
-    <div class="project-grid person-project-grid" role="list">
-      {% for project in projects|slice:":4" %}
+
+    <div id="person-projects-grid" class="project-grid person-project-grid is-collapsed" role="list">
+      {% for project in projects %}
       {% include "snippets/display_project_snippet.html" %}
       {% endfor %}
+    </div>
+
+    <div class="see-more-controls" hidden
+         data-member-id="{{ person.id }}"
+         data-artifact-type="projects"
+         data-total="{{ projects_total }}"
+         data-rendered="{{ projects|length }}"
+         data-page-size="{{ page_sizes.projects }}"
+         data-mobile-size="{{ mobile_page_sizes.projects }}"
+         data-grid="person-projects-grid">
+      <button type="button" class="see-more-artifacts" data-load-more
+              aria-controls="person-projects-grid">Load more projects</button>
+      <button type="button" class="see-more-all" data-load-all
+              aria-controls="person-projects-grid">Load all projects</button>
     </div>
   </section>
   {% endif %}
 
   <!-- ======================== Publications Section ======================== -->
   {% if publications %}
-  <section id="person-publications" 
-           class="person-section" 
+  <section id="person-publications"
+           class="person-section"
            aria-labelledby="publications-heading">
-    <h2 id="publications-heading" 
+    <h2 id="publications-heading"
         class="person-section-header heading-with-anchor {% if left_align_headers %}text-left{% endif %}">
-      {% if publications|length > 3 %}Recent Papers{% else %}Papers{% endif %}
-      <a href="#person-publications" 
-         class="header-anchor" 
+      Papers <span class="person-section-count" data-artifact-count data-count-grid="person-publications-grid" data-count-total="{{ publications_total }}">({{ publications|length }}/{{ publications_total }})</span>
+      <a href="#person-publications"
+         class="header-anchor"
          aria-label="Link to publications section">
         <i class="fa-solid fa-link" aria-hidden="true"></i>
       </a>
     </h2>
-    
-    {% if publications|length > 3 %}
+
+    {% comment %}
+      Publications have three layouts, chosen by TOTAL count (never the rendered
+      slice, so the layout can't flip as items load — #1110):
+        - > page size (many): the scannable VERTICAL list (thumbnail-left rows,
+          like /publications) plus the "Load more"/"Load all" controls. A 3-up
+          card grid of 100+ papers is overwhelming, so prolific members get rows.
+          The member_artifacts endpoint renders vertical rows to match.
+        - 4..page size: the compact horizontal 3-up CARD grid (no paging needed).
+        - <= 3: the vertical list (a grid of 1-3 cards looks sparse).
+    {% endcomment %}
+    {% if publications_total > page_sizes.publications %}
+    <div id="person-publications-grid" class="person-publications-list is-collapsed">
+      {% for pub in publications %}
+      {% include "snippets/display_pub_snippet.html" with orientation="vertical" %}
+      {% endfor %}
+    </div>
+
+    <div class="see-more-controls" hidden
+         data-member-id="{{ person.id }}"
+         data-artifact-type="publications"
+         data-total="{{ publications_total }}"
+         data-rendered="{{ publications|length }}"
+         data-page-size="{{ page_sizes.publications }}"
+         data-mobile-size="{{ mobile_page_sizes.publications }}"
+         data-grid="person-publications-grid">
+      <button type="button" class="see-more-artifacts" data-load-more
+              aria-controls="person-publications-grid">Load more papers</button>
+      <button type="button" class="see-more-all" data-load-all
+              aria-controls="person-publications-grid">Load all papers</button>
+    </div>
+    {% elif publications_total > 3 %}
     <div class="person-publications-grid">
-      {% for pub in publications|slice:":3" %}
+      {% for pub in publications %}
       {% include "snippets/display_pub_snippet.html" with orientation="horizontal" %}
       {% endfor %}
     </div>
@@ -289,46 +420,74 @@ document.addEventListener('DOMContentLoaded', function() {
 
   <!-- ======================== Videos Section ======================== -->
   {% if videos %}
-  <section id="person-videos" 
-           class="person-section" 
+  <section id="person-videos"
+           class="person-section"
            aria-labelledby="videos-heading">
-    <h2 id="videos-heading" 
+    <h2 id="videos-heading"
         class="person-section-header heading-with-anchor {% if left_align_headers %}text-left{% endif %}">
-      {% if videos|length > 3 %}Recent Videos{% else %}Videos{% endif %}
-      <a href="#person-videos" 
-         class="header-anchor" 
+      Videos <span class="person-section-count" data-artifact-count data-count-grid="person-videos-grid" data-count-total="{{ videos_total }}">({{ videos|length }}/{{ videos_total }})</span>
+      <a href="#person-videos"
+         class="header-anchor"
          aria-label="Link to videos section">
         <i class="fa-solid fa-link" aria-hidden="true"></i>
       </a>
     </h2>
-    
-    <div class="videos-grid">
-      {% for video in videos|slice:":3" %}
+
+    <div id="person-videos-grid" class="videos-grid is-collapsed">
+      {% for video in videos %}
       {% include "snippets/display_video_snippet.html" %}
       {% endfor %}
+    </div>
+
+    <div class="see-more-controls" hidden
+         data-member-id="{{ person.id }}"
+         data-artifact-type="videos"
+         data-total="{{ videos_total }}"
+         data-rendered="{{ videos|length }}"
+         data-page-size="{{ page_sizes.videos }}"
+         data-mobile-size="{{ mobile_page_sizes.videos }}"
+         data-grid="person-videos-grid">
+      <button type="button" class="see-more-artifacts" data-load-more
+              aria-controls="person-videos-grid">Load more videos</button>
+      <button type="button" class="see-more-all" data-load-all
+              aria-controls="person-videos-grid">Load all videos</button>
     </div>
   </section>
   {% endif %}
 
   <!-- ======================== Talks Section ======================== -->
   {% if talks %}
-  <section id="person-talks" 
-           class="person-section" 
+  <section id="person-talks"
+           class="person-section"
            aria-labelledby="talks-heading">
-    <h2 id="talks-heading" 
+    <h2 id="talks-heading"
         class="person-section-header heading-with-anchor {% if left_align_headers %}text-left{% endif %}">
-      {% if talks|length > 4 %}Recent Talks{% else %}Talks{% endif %}
-      <a href="#person-talks" 
-         class="header-anchor" 
+      Talks <span class="person-section-count" data-artifact-count data-count-grid="person-talks-grid" data-count-total="{{ talks_total }}">({{ talks|length }}/{{ talks_total }})</span>
+      <a href="#person-talks"
+         class="header-anchor"
          aria-label="Link to talks section">
         <i class="fa-solid fa-link" aria-hidden="true"></i>
       </a>
     </h2>
-    
-    <div class="talks-grid">
-      {% for talk in talks|slice:":4" %}
+
+    <div id="person-talks-grid" class="talks-grid is-collapsed">
+      {% for talk in talks %}
       {% include "snippets/display_talk_snippet.html" %}
       {% endfor %}
+    </div>
+
+    <div class="see-more-controls" hidden
+         data-member-id="{{ person.id }}"
+         data-artifact-type="talks"
+         data-total="{{ talks_total }}"
+         data-rendered="{{ talks|length }}"
+         data-page-size="{{ page_sizes.talks }}"
+         data-mobile-size="{{ mobile_page_sizes.talks }}"
+         data-grid="person-talks-grid">
+      <button type="button" class="see-more-artifacts" data-load-more
+              aria-controls="person-talks-grid">Load more talks</button>
+      <button type="button" class="see-more-all" data-load-all
+              aria-controls="person-talks-grid">Load all talks</button>
     </div>
   </section>
   {% endif %}

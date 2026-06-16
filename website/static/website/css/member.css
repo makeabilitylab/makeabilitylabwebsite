@@ -360,35 +360,339 @@
 
 
 /* =============================================================================
-   LOAD MORE BUTTON (Future Enhancement)
+   "LOAD MORE" / "LOAD ALL" ARTIFACT CONTROLS (#1110)
+   -----------------------------------------------------------------------------
+   Per-section controls below each grid: a filled primary "Load N more <type>"
+   button and an outline secondary "Load all <total> <type>" button, side by
+   side. member-load-more.js un-hides the block, sets the exact counts in the
+   labels, swaps in a spinner while loading, and removes the block once
+   everything is shown. Sentence-case, no chevron — reads as action buttons.
    ============================================================================= */
 
-.load-more-btn {
-  display: block;
-  width: fit-content;
-  margin: var(--space-6) auto 0 auto;
-  padding: var(--space-2) var(--space-6);
-  background-color: transparent;
-  border: 1px solid var(--color-border);
+.see-more-controls {
+  display: flex;
+  flex-wrap: wrap;                       /* stack on very narrow phones */
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+/* CRITICAL: a class selector's `display` beats the UA `[hidden]{display:none}`
+   rule, so without these explicit guards the `hidden` attribute that
+   member-load-more.js toggles would be IGNORED — the controls (and the
+   secondary "Load all") would stay on screen even when there's nothing more to
+   load. That was the "projects button shows with no count and does nothing" bug
+   (#1110): Jon has exactly 8 projects, so the projects controls SHOULD be
+   hidden, but display:flex kept them visible showing the un-numbered default
+   label. Keep these. */
+.see-more-controls[hidden],
+.see-more-artifacts[hidden],
+.see-more-all[hidden] {
+  display: none;
+}
+
+/* Shared button shape for both controls. */
+.see-more-artifacts,
+.see-more-all {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  min-height: 44px;                      /* WCAG 2.5.5 touch target */
   border-radius: var(--border-radius-sm);
-  color: var(--color-link);
+  font-family: var(--font-family-secondary);
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: background-color var(--transition-fast),
               border-color var(--transition-fast),
               color var(--transition-fast);
 }
 
-.load-more-btn:hover {
+/* Primary "Load more" — filled accent (the main action). */
+.see-more-artifacts {
+  background-color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  color: var(--color-text-on-dark);
+}
+
+.see-more-artifacts:hover {
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+/* Secondary "Load all" — outline. */
+.see-more-all {
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-link);
+}
+
+.see-more-all:hover {
   background-color: var(--color-bg-surface);
   border-color: var(--color-primary);
   color: var(--color-link-hover);
 }
 
-.load-more-btn:focus {
+.see-more-artifacts:focus,
+.see-more-all:focus {
   outline: var(--focus-ring-width) solid var(--focus-ring-color);
   outline-offset: var(--focus-ring-offset);
+}
+
+.see-more-artifacts[disabled],
+.see-more-all[disabled] {
+  opacity: 0.65;
+  cursor: default;
+}
+
+/* The loading spinner (member-load-more.js injects fa-spinner fa-spin). Don't
+   animate it for users who've asked to reduce motion — the static icon plus the
+   disabled "Loading…" label still communicates the busy state. */
+@media (prefers-reduced-motion: reduce) {
+  .see-more-artifacts .fa-spin,
+  .see-more-all .fa-spin {
+    animation: none;
+  }
+}
+
+
+/* =============================================================================
+   MOBILE ARTIFACT CAP (#1110)
+   -----------------------------------------------------------------------------
+   On phones (<=576px, where every grid is a single column) each section shows
+   only a reduced set: 4 projects, 3 papers, 3 videos, 4 talks. The FULL desktop
+   count is still in the DOM — these rules merely hide the overflow while the
+   grid carries the .is-collapsed class. member-load-more.js removes that class
+   on the first "See more" tap, so the rest appears instantly with no network
+   request; only loads BEYOND the desktop count hit the server.
+
+   TRADEOFF: this cap is pure CSS, so it applies even when JavaScript is off.
+   A no-JS phone visitor therefore sees only the reduced set and cannot expand
+   (the "See more" button stays hidden without JS). That's an accepted
+   limitation — the site already depends on JS for the citation popover,
+   video-age, etc., and there's no per-member full-listing page to fall back to.
+   The alternative (JS-applied cap) would avoid this but flash the full set
+   before collapsing on every mobile load.
+
+   Keep the :nth-child thresholds in sync with ARTIFACT_MOBILE_PAGE_SIZES in
+   website/views/member.py.
+   ============================================================================= */
+
+@media (max-width: 576px) {
+  .person-project-grid.is-collapsed > *:nth-child(n+5),       /* keep 4 projects */
+  .person-publications-grid.is-collapsed > *:nth-child(n+4),  /* keep 3 papers (card grid)  */
+  .person-publications-list.is-collapsed > *:nth-child(n+4),  /* keep 3 papers (vertical >6) */
+  .videos-grid.is-collapsed > *:nth-child(n+4),               /* keep 3 videos   */
+  .talks-grid.is-collapsed > *:nth-child(n+5) {               /* keep 4 talks    */
+    display: none;
+  }
+}
+
+
+/* =============================================================================
+   BIO "SHOW MORE" / "SHOW LESS" (#1110)
+   -----------------------------------------------------------------------------
+   bio-expand.js clamps an over-long bio (more than ~3 lines) and inserts the
+   .bio-toggle button. It adds .is-collapsible to the bio text element (and
+   .is-collapsed while clamped); it manages the inline max-height for the
+   animation. These rules supply the transition and the bottom fade.
+   ============================================================================= */
+
+.person-bio-text.is-collapsible {
+  position: relative;
+  overflow: hidden;
+  transition: max-height var(--transition-slow);
+}
+
+.person-bio-text.is-collapsible.is-collapsed::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2.5em;
+  background: linear-gradient(to bottom, transparent, var(--color-bg-page));
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .person-bio-text.is-collapsible {
+    transition: none;
+  }
+}
+
+.bio-toggle {
+  display: inline-block;
+  margin-top: var(--space-2);
+  padding: var(--space-2) 0;
+  min-height: 44px;                      /* WCAG 2.5.5 touch target */
+  background: none;
+  border: none;
+  font-family: var(--font-family-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-link);
+  cursor: pointer;
+}
+
+.bio-toggle:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+.bio-toggle:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+
+/* =============================================================================
+   LONG-PAGE NAVIGATION: SECTION NAV + BACK TO TOP (#1110)
+   -----------------------------------------------------------------------------
+   For prolific members whose page gets very long (especially after "Load all").
+   The section nav sticks just below the fixed site navbar (height published as
+   --ml-navbar-height by member-nav.js); member-nav.js adds scroll-spy via the
+   .is-active class / aria-current. Anchor jumps use scroll-margin-top so a
+   section's heading lands below both the navbar and this nav.
+   ============================================================================= */
+
+.member-section-nav {
+  position: sticky;
+  top: var(--ml-navbar-height, 0px);
+  z-index: 100;                          /* under the fixed navbar (~1030) */
+  margin: 0 0 var(--space-5) 0;
+  background-color: var(--color-bg-page);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* The person's name, revealed by member-nav.js once the page heading scrolls
+   away. Absolutely positioned so it never shifts the centered link list; tucked
+   away on narrow screens where there isn't room beside the links. */
+.member-section-nav-name {
+  position: absolute;
+  left: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 38%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: var(--font-family-secondary);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.member-section-nav-name[hidden] {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .member-section-nav-name {
+    display: none;
+  }
+}
+
+/* The "loaded/total" count, quieter than the section label. */
+.member-section-nav-count {
+  font-weight: var(--font-weight-normal);
+  font-size: 0.9em;
+  color: var(--color-text-muted);
+}
+
+.member-section-nav-list a.is-active .member-section-nav-count {
+  color: var(--color-primary);
+}
+
+/* The "loaded/total" count appended to each section heading (replaces the old
+   "Recent" prefix, #1110). Lighter and a touch smaller than the heading. */
+.person-section-count {
+  font-weight: var(--font-weight-normal);
+  font-size: 0.8em;
+  color: var(--color-text-muted);
+}
+
+.member-section-nav-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-1) var(--space-2);
+  margin: 0;
+  padding: var(--space-2) 0;
+  list-style: none;
+}
+
+.member-section-nav-list a {
+  display: inline-block;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--border-radius-sm);
+  font-family: var(--font-family-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-link);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+}
+
+.member-section-nav-list a:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+.member-section-nav-list a.is-active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.member-section-nav-list a:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Anchor jumps (and scroll-spy) should land the heading below the fixed navbar
+   AND this sticky nav, not underneath them. */
+.person-section {
+  scroll-margin-top: calc(var(--ml-navbar-height, 60px) + 56px);
+}
+
+/* Floating "Back to top" — injected by member-nav.js, shown after scrolling. */
+.back-to-top {
+  position: fixed;
+  right: var(--space-5);
+  bottom: var(--space-5);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;                          /* >= WCAG 2.5.5 touch target */
+  border: 1px solid var(--color-primary);
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  color: var(--color-text-on-dark);
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: background-color var(--transition-fast),
+              opacity var(--transition-fast);
+}
+
+.back-to-top:hover {
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.back-to-top:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* As with .see-more-controls, a class `display` would otherwise defeat the
+   `hidden` attribute member-nav.js toggles — guard it explicitly. */
+.back-to-top[hidden] {
+  display: none;
 }
 
 

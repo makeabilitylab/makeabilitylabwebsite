@@ -1,0 +1,17 @@
+# Development / test-only dependencies.
+#
+# These are NOT installed into the production (or test/prod server) image — the
+# Dockerfile installs requirements.txt only — which keeps Playwright and its
+# ~120 MB browser out of the deployed stack. This file is used by the Playwright
+# end-to-end CI job (.github/workflows/test.yml) and for running the browser
+# tests locally:
+#
+#   pip install -r requirements-dev.txt
+#   python -m playwright install --with-deps chromium
+#   python manage.py test website.tests.test_member_e2e \
+#       --settings=makeabilitylab.settings_test
+#
+# Pin Playwright so the pip package and the installed browser build stay in
+# lockstep (a mismatch makes `playwright install` download the wrong revision).
+-r requirements.txt
+playwright==1.60.0

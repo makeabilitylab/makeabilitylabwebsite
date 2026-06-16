@@ -519,6 +519,14 @@ const CitationPopover = (function () {
     }
 
     triggers.forEach(trigger => {
+      // init() is safe to call more than once: the member page re-runs it after
+      // AJAX-loading more publications (#1110). Skip triggers we've already
+      // wired up so they don't accumulate duplicate click listeners.
+      if (trigger.dataset.citationBound === 'true') {
+        return;
+      }
+      trigger.dataset.citationBound = 'true';
+
       // Stash the title in data-original-title and remove the title attribute so
       // the browser's native tooltip doesn't show on hover. (Bootstrap did this
       // for us before; we now do it explicitly.)
@@ -529,6 +537,14 @@ const CitationPopover = (function () {
 
       trigger.addEventListener('click', event => handleTriggerClick(event, trigger));
     });
+
+    // The document/window-level listeners below are global, not per-trigger, so
+    // they must be attached exactly once however many times init() is called —
+    // otherwise every re-init would stack another copy.
+    if (init._globalsBound) {
+      return;
+    }
+    init._globalsBound = true;
 
     // Close the open popover when clicking outside of it.
     document.addEventListener('click', handleOutsideClick);

@@ -58,3 +58,66 @@ jobs:
 
       - name: Run tests
         run: python manage.py test website --settings=makeabilitylab.settings_test --verbosity=2
+
+  # Browser end-to-end tests (member-page "Load more"/"Load all", bio toggle,
+  # section nav). Kept in a SEPARATE job from `test` so the fast unit/integration
+  # signal stays fast and isolated — a slow or flaky browser run doesn't muddy
+  # "did the logic break?". Like `test`, this is report-only (it doesn't block
+  # the push or the deploy). Playwright + its browser live in requirements-dev.txt
+  # only, never in the production image.
+  e2e:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: makeability
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U admin -d makeability"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_HOST: localhost
+      DATABASE_PORT: 5432
+      DJANGO_ENV: DEBUG
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Same ImageMagick/Ghostscript deps as `test` — the Talk fixtures the e2e
+      # tests create run Artifact.save()'s PDF->thumbnail path.
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends imagemagick ghostscript libpq-dev
+          sudo cp imagemagick-policy.xml /etc/ImageMagick-6/policy.xml
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install Python dependencies (incl. Playwright)
+        run: pip install -r requirements-dev.txt
+
+      # Cache the downloaded browser keyed on the pinned Playwright version, so
+      # only the first run (or a version bump) pays the ~120 MB download.
+      - name: Cache Playwright browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('requirements-dev.txt') }}
+
+      - name: Install Chromium for Playwright
+        run: python -m playwright install --with-deps chromium
+
+      - name: Run end-to-end tests
+        run: python manage.py test website.tests.test_member_e2e --settings=makeabilitylab.settings_test --verbosity=2

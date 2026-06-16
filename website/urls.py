@@ -27,10 +27,18 @@ urlpatterns = [
     # re_path(r'^member/(?P<member_id>[0-9]+)/$', views.member, name='member'),
     path('member/<int:member_id>/', views.member, name='member_by_id'),
 
-    # Matches URLs like "member/john-doe/" where "john-doe" is a member ID consisting of 
+    # Matches URLs like "member/john-doe/" where "john-doe" is a member ID consisting of
     # lowercase letters and hyphens, and routes it to the `member` view.
     # re_path(r'^member/(?P<member_id>[-a-z]+)/$', views.member, name='member'),
     path('member/<str:member_name>/', views.member, name='member_by_name'),
+
+    # AJAX endpoint backing the per-section "See more" controls on a member page
+    # (#1110). Keyed by numeric pk (the page already knows person.id), so it does
+    # not collide with the single-segment member_by_name route above. Returns the
+    # next batch of the given artifact_type (projects/publications/videos/talks)
+    # as rendered HTML. See website/views/member.py::member_artifacts.
+    path('member/<int:member_id>/artifacts/<str:artifact_type>/',
+         views.member_artifacts, name='member_artifacts'),
 
     # Matches the URL "publications/" and routes it to the `publications` view.
     re_path(r'^publications/$', views.publications, name='publications'),

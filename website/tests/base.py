@@ -110,6 +110,19 @@ class DatabaseTestCase(TestCase):
         )
         return Talk.objects.create(title=title, **kwargs)
 
+    def make_video(self, title="A Test Video", year=2024, **kwargs):
+        """
+        Create and return a Video. video_url defaults to a YouTube URL because
+        Video.get_video_host_str() does a substring check on it (a None url
+        would raise), and the video snippet embeds it. date is set so
+        get_most_recent_artifact_date() has something to sort on.
+        """
+        from datetime import date as _date
+        from website.models import Video
+        kwargs.setdefault("date", _date(year, 1, 1))
+        kwargs.setdefault("video_url", "https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+        return Video.objects.create(title=title, **kwargs)
+
     def make_news_item(self, title="Test News", author=None, **kwargs):
         """
         Create and return a News item. `author` is intentionally optional
