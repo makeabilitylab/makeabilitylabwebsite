@@ -54,6 +54,14 @@ const VideoAge = (function() {
     round: true  // Round to nearest unit
   };
 
+  /**
+   * Milliseconds in a day. Video dates have day granularity (server computes
+   * age from a DateField), so any age below this means "published today".
+   * Without this guard, a same-day video humanizes to "0 seconds ago" — the
+   * symptom reported in issue #1091.
+   */
+  const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
 
   // ==========================================================================
   // INITIALIZATION
@@ -134,9 +142,13 @@ const VideoAge = (function() {
    * 
    * @private
    * @param {number} ageInMs - Age in milliseconds
-   * @returns {string} Formatted string like "2 years ago"
+   * @returns {string} Formatted string like "2 years ago", or "Today" for a
+   *   video published today (avoids "0 seconds ago" — issue #1091)
    */
   function formatPastAge(ageInMs) {
+    if (ageInMs < ONE_DAY_MS) {
+      return 'Today';
+    }
     try {
       const humanized = humanizeDuration(ageInMs, HUMANIZE_OPTIONS);
       return humanized + ' ago';
