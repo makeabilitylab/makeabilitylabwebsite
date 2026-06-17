@@ -565,9 +565,15 @@ State is persisted via URL parameters for easy sharing and bookmarking.
           filtered = filtered.filter(person => person.role !== 'Collaborator');
         }
 
-        // Apply "only my PhD advisees" filter
+        // Apply "only my PhD advisees" filter.
+        // The `last_name === 'Saugstad'` clause is a deliberate special case, not
+        // a bug: Mikey Saugstad was Jon's MS student at UMD and chose not to pursue
+        // a PhD, but has since been the primary/only lead engineer on Project
+        // Sidewalk. He isn't a PhD advisee by the formal rule (server-side
+        // is_phd_advisee), so we include him here explicitly for acknowledgment
+        // grids. Revisit if he ever leaves the lab or another Saugstad joins.
         if (state.onlyMyAdvisees) {
-          filtered = filtered.filter(person => 
+          filtered = filtered.filter(person =>
             person.is_phd_advisee || person.last_name === 'Saugstad'
           );
         }
