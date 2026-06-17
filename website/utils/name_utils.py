@@ -3,23 +3,33 @@ Name-normalization helpers shared across the website app.
 
 The primary use is producing a stable, accent-folded key for a person's
 name so that records that *would* collide on ``Person.url_name`` can be
-detected and clustered. The logic mirrors the url_name derivation in
-``Person.save()`` (website/models/person.py) so callers — e.g. the
-duplicate-people data-health check and a future ``recompute_url_names``
-command — agree on what "the same name" means.
+detected and clustered. ``Person.save()`` derives ``url_name`` through these
+helpers (via ``build_unique_url_name``), so the model, the duplicate-people
+data-health check, and the ``recompute_url_names`` command all agree on what
+"the same name" means.
 """
 
 import re
+import unicodedata
 
-# Common accented characters mapped to ASCII. Kept in sync with the map in
-# website/models/person.py used by Person.save() for url_name derivation.
-SPECIAL_CHARS = {
-    'ã': 'a', 'à': 'a', 'â': 'a',
-    'é': 'e', 'è': 'e', 'ê': 'e',
-    'ñ': 'n', 'ń': 'n',
-    'ö': 'o', 'ô': 'o',
-    'û': 'u', 'ü': 'u', 'ù': 'u',
-}
+
+def _ascii_fold(text):
+    """
+    Fold accented Latin characters to their ASCII base via Unicode NFKD
+    decomposition (e.g. ``á`` -> ``a``, ``ç`` -> ``c``, ``ñ`` -> ``n``), then
+    drop the combining marks.
+
+    This replaces an earlier hand-maintained accent map that only covered
+    grave/circumflex/tilde vowels — it silently *dropped* acute accents and
+    the cedilla, mangling url_names (``Cláudio`` -> ``cludio``) and hiding
+    accented-name duplicates from the dedup check. NFKD handles the whole Latin
+    range generically, so the map no longer has to be kept in sync by hand.
+    """
+    return ''.join(
+        c for c in unicodedata.normalize('NFKD', text)
+        if not unicodedata.combining(c)
+    )
+
 
 # Substrings identifying the auto-assigned "Star Wars" placeholder images
 # (see get_path_to_random_starwars_image / get_upload_to_for_person_easter_egg).
@@ -43,12 +53,11 @@ def normalize_person_name(first_name, last_name):
         'jonfroehlich'
         >>> normalize_person_name('Renée', "O'Brien")
         'reneeobrien'
+        >>> normalize_person_name('Cláudio', 'Silva')
+        'claudiosilva'
     """
-    cleaned = f"{first_name or ''}{last_name or ''}".lower()
-    for c in cleaned:
-        if re.search('[^a-zA-Z]', c) and c in SPECIAL_CHARS:
-            cleaned = cleaned.replace(c, SPECIAL_CHARS[c])
-    return re.sub('[^a-zA-Z]', '', cleaned)
+    cleaned = _ascii_fold(f"{first_name or ''}{last_name or ''}".lower())
+    return re.sub('[^a-z]', '', cleaned)
 
 
 def build_unique_url_name(first_name, middle_name, last_name, is_taken):
@@ -89,9 +98,7 @@ def build_unique_url_name(first_name, middle_name, last_name, is_taken):
     # the same way url_name derivation folds accents, then drop anything non-alpha.
     middle = (middle_name or '').strip()
     if middle:
-        initial = middle[0].lower()
-        initial = SPECIAL_CHARS.get(initial, initial)
-        initial = re.sub('[^a-z]', '', initial)
+        initial = re.sub('[^a-z]', '', _ascii_fold(middle[0].lower()))
         if initial:
             first_key = normalize_person_name(first_name, '')
             last_key = normalize_person_name('', last_name)

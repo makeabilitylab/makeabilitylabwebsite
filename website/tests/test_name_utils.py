@@ -21,6 +21,22 @@ class NormalizePersonNameTests(SimpleTestCase):
     def test_accents_folded_and_punctuation_stripped(self):
         self.assertEqual(normalize_person_name('Renée', "O'Brien"), 'reneeobrien')
 
+    def test_acute_accents_and_cedilla_are_folded_not_dropped(self):
+        # Regression for the incomplete hand-rolled accent map (#1275): acute
+        # accents and the cedilla were dropped, mangling keys (cludiosilva) and
+        # hiding accented-name duplicates. NFKD folds them to ASCII.
+        self.assertEqual(normalize_person_name('Cláudio', 'Silva'), 'claudiosilva')
+        self.assertEqual(normalize_person_name('Edgar', 'Martínez'), 'edgarmartinez')
+        self.assertEqual(normalize_person_name('François', 'Guimbretière'),
+                         'francoisguimbretiere')
+
+    def test_accented_namesakes_share_a_key(self):
+        # The whole point: "Cláudio Silva" and "Claudio Silva" must cluster.
+        self.assertEqual(
+            normalize_person_name('Cláudio', 'Silva'),
+            normalize_person_name('Claudio', 'Silva'),
+        )
+
     def test_handles_none(self):
         self.assertEqual(normalize_person_name(None, 'Zhang'), 'zhang')
 
