@@ -152,7 +152,11 @@ curl -s  https://makeabilitylab.cs.washington.edu/sitemap.xml | grep -c '<loc>' 
 
 The `X-Robots-Tag: noindex` that the sitemap *file* returns is intentional and harmless — it keeps the XML out of search results without affecting the URLs listed inside.
 
-#### One-time: register the sitemap with Google Search Console
+#### Current status: already registered & verified
+
+The production site is **already a verified property** in Google Search Console (`https://makeabilitylab.cs.washington.edu/`, URL-prefix), with the `sitemap.xml` **submitted on 2026-06-17** ("Sitemap submitted successfully — Google will periodically process it and look for changes"). Ownership was verified via the site's **pre-existing Google Analytics property** (the Analytics snippet served on every page), so no verification file lives in the repo. **You do not need to re-do any of the steps below** under normal operation — see "Ongoing maintenance" for what little there is. The steps are retained only for re-setup (e.g. registering a new property or recovering after the Search Console / Analytics account access is lost).
+
+#### Setting up from scratch (only if re-registering)
 
 You only do this once per property (not per content change):
 
