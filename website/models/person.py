@@ -102,9 +102,33 @@ def get_upload_to_for_person_easter_egg(person, original_filename, force_unique=
 class Person(models.Model):
     UPLOAD_DIR = 'person/' # relative path
 
+    # The Makeability Lab has exactly one director/founder for its lifetime:
+    # Jon Froehlich. We identify him by name because that is the real invariant —
+    # he holds a professor title (not a "Director" position), so there is no
+    # title- or flag-based marker to key off of. This is the single source of
+    # truth for "who is the director"; see get_director() and #1284.
+    DIRECTOR_NAME = ("Jon", "Froehlich")
+
     @staticmethod  # use as decorator
     def get_thumbnail_size_as_str():
         return f"{PERSON_THUMBNAIL_SIZE[0]}x{PERSON_THUMBNAIL_SIZE[1]}"
+
+    @classmethod
+    def get_director(cls):
+        """
+        Returns the lab director/founder Person (Jon Froehlich), or None if that
+        Person is not in the database yet.
+
+        Resolved from :attr:`DIRECTOR_NAME` rather than a position title or flag
+        because the lab has a single director for its lifetime. Use this anywhere
+        the director needs to be identified (e.g. the is_director flag and the
+        "Only my PhD advisees" filter) so the answer cannot disagree between call
+        sites.
+        """
+        first, last = cls.DIRECTOR_NAME
+        return cls.objects.filter(
+            first_name__iexact=first, last_name__iexact=last
+        ).first()
 
     first_name = models.CharField(max_length=40)
     middle_name = models.CharField(max_length=50, blank=True, null=True)

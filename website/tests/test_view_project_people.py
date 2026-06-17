@@ -5,8 +5,8 @@ Regression tests for the internal "view project people" page
 This page builds a JSON payload of every Person plus per-project role data and
 renders an entirely client-side grid (used to generate acknowledgment slides for
 talks). These tests lock the contract of that payload — project-role aggregation,
-director identification (by ``Title.DIRECTOR`` position), PhD-advisee flagging, and
-the publication indicators — so the view can be refactored safely.
+director identification (by name, via ``Person.get_director()``), PhD-advisee
+flagging, and the publication indicators — so the view can be refactored safely.
 """
 
 import json
@@ -66,10 +66,11 @@ class ViewProjectPeopleTests(DatabaseTestCase):
         self.assertEqual(roles["TestProj"]["start_date"], "2020-01-01")
         self.assertEqual(roles["TestProj"]["end_date"], "2020-12-31")
 
-    def test_director_flagged_by_title(self):
-        """is_director is true for whoever holds a Title.DIRECTOR position."""
-        director = self.make_person(first_name="Dee", last_name="Rector")
-        self._add_position(director, Title.DIRECTOR, date(2010, 1, 1))
+    def test_director_flagged_by_name(self):
+        """is_director is true only for the canonical director (Person.get_director())."""
+        first, last = Person.DIRECTOR_NAME
+        director = self.make_person(first_name=first, last_name=last)
+        self._add_position(director, Title.FULL_PROF, date(2010, 1, 1))
         other = self.make_person(first_name="Reg", last_name="Ular")
         self._add_position(other, Title.PHD_STUDENT, date(2020, 1, 1))
 
@@ -77,13 +78,38 @@ class ViewProjectPeopleTests(DatabaseTestCase):
         self.assertTrue(people[director.id]["is_director"])
         self.assertFalse(people[other.id]["is_director"])
 
+    def test_director_resolved_when_holding_professor_title(self):
+        """
+        Regression for #1284: in production the lab director holds a professor
+        title (not a ``Title.DIRECTOR`` position), and other people hold professor
+        titles too (collaborators). The director — and therefore the PhD-advisee
+        set the "Only my PhD advisees" filter relies on — must still resolve to the
+        canonical director and no one else.
+        """
+        # Another professor who is not the director and must not be flagged.
+        other_prof = self.make_person(first_name="Alice", last_name="Collaborator")
+        self._add_position(other_prof, Title.FULL_PROF, date(2010, 1, 1))
+
+        first, last = Person.DIRECTOR_NAME
+        director = self.make_person(first_name=first, last_name=last)
+        self._add_position(director, Title.FULL_PROF, date(2010, 1, 1))
+
+        advisee = self.make_person(first_name="Phd", last_name="Student")
+        self._add_position(advisee, Title.PHD_STUDENT, date(2022, 1, 1), advisor=director)
+
+        _, people = self._get_people_by_id()
+        self.assertTrue(people[director.id]["is_director"])
+        self.assertFalse(people[other_prof.id]["is_director"])
+        self.assertTrue(people[advisee.id]["is_phd_advisee"])
+
     def test_phd_advisee_logic_matches_model(self):
         """
         is_phd_advisee mirrors Person.is_phd_advisee_of: current advisee -> true,
         past advisee without dissertation -> false, past advisee with one -> true.
         """
-        director = self.make_person(first_name="Dee", last_name="Rector")
-        self._add_position(director, Title.DIRECTOR, date(2010, 1, 1))
+        first, last = Person.DIRECTOR_NAME
+        director = self.make_person(first_name=first, last_name=last)
+        self._add_position(director, Title.FULL_PROF, date(2010, 1, 1))
 
         current = self.make_person(first_name="Cur", last_name="Rent")
         self._add_position(current, Title.PHD_STUDENT, date(2022, 1, 1), advisor=director)

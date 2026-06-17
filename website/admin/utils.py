@@ -16,7 +16,7 @@ from website.models import Person, Position
 from website.models.position import Title
 
 
-def get_active_professors_queryset(prioritized_name=("Jon", "Froehlich")):
+def get_active_professors_queryset(prioritized_name=Person.DIRECTOR_NAME):
     """
     Build a queryset of currently active professors, optionally prioritizing a specific person.
 
