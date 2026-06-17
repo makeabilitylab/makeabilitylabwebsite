@@ -124,3 +124,18 @@ pyOpenSSL==26.0.0
 
 # Requests - HTTP library for Python
 requests==2.33.0
+
+# -----------------------------------------------------------------------------
+# Testing
+# -----------------------------------------------------------------------------
+# factory_boy - model fixtures for the test suite (#1272). The de-facto Django
+# standard; we use explicit factories (website/tests/factories.py) over
+# model_bakery because they're easier to debug with our M2M / SortedManyToMany /
+# ProjectRole-through relationship graph. Pulls in Faker (pinned below) as a dep.
+# See: https://factoryboy.readthedocs.io/
+factory_boy==3.3.3
+
+# Faker - realistic fake data (names, sentences, dates) used by the factories.
+# Dependency of factory_boy; pinned explicitly so test data stays reproducible.
+# See: https://faker.readthedocs.io/
+Faker==40.23.0

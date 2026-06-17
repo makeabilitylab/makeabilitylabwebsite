@@ -26,7 +26,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import SimpleTestCase, TestCase
 
 import website.utils.fileutils as ml_fileutils
-from website.tests.base import _GIF_1PX
+from website.tests.factories import _GIF_1PX
 
 
 # --- figure listing (single source of truth) -------------------------------
