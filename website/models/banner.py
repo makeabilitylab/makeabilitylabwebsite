@@ -3,6 +3,7 @@ from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_save, m2m_changed, post_delete
 
 from website.utils.fileutils import UniquePathAndRename
+from website.utils.upload_validators import validate_image_upload, validate_video_upload
 from image_cropping import ImageRatioField
 
 from .project import Project
@@ -17,13 +18,13 @@ class Banner(models.Model):
     landing_page = models.BooleanField(default=False)
     landing_page.help_text = 'Check this box if this banner should appear on the landing page.'
 
-    image = models.ImageField(blank=True, upload_to=UniquePathAndRename(UPLOAD_DIR, True), max_length=255)
+    image = models.ImageField(blank=True, upload_to=UniquePathAndRename(UPLOAD_DIR, True), max_length=255, validators=[validate_image_upload])
     cropping = ImageRatioField('image', '1600x500', free_crop=False)
     image.help_text = 'After choosing an image, crop it right here using the cropper below — no need to save first.\
                       Please note that since we are using a responsive design with fixed height banners, your selected image may appear\
                       differently on various screens.'
     
-    video = models.FileField(upload_to=UniquePathAndRename(VIDEO_UPLOAD_DIR, True), blank=True, null=True)
+    video = models.FileField(upload_to=UniquePathAndRename(VIDEO_UPLOAD_DIR, True), blank=True, null=True, validators=[validate_video_upload])
     video.help_text = "Add in a background video. Ideally, video should be 10MB or less. If both a video and image are specified, the video is prioritized. The image is fallback."
     
     alt_text = models.CharField(max_length=1024, blank=True, null=True)

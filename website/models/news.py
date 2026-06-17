@@ -4,6 +4,7 @@ from django.db.models.signals import pre_delete, post_save, m2m_changed, post_de
 
 from ckeditor_uploader.fields import RichTextUploadingField
 from website.utils.fileutils import UniquePathAndRename
+from website.utils.upload_validators import validate_image_upload
 from image_cropping import ImageRatioField
 
 from django.utils.text import slugify
@@ -44,7 +45,7 @@ class News(models.Model):
     content = RichTextUploadingField(config_name='default')
 
     # Following the scheme of above thumbnails in other models
-    image = models.ImageField(blank=True, upload_to=UniquePathAndRename("news", True), max_length=255)
+    image = models.ImageField(blank=True, upload_to=UniquePathAndRename("news", True), max_length=255, validators=[validate_image_upload])
     image.help_text = 'After choosing an image, crop it right here using the cropper below — no need to save first.'
 
     # We use the django-image-cropping ImageRatioField https://github.com/jonasundderwolf/django-image-cropping

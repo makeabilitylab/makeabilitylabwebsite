@@ -3,6 +3,7 @@ import logging # for logging
 import os # for file handling
 import website.utils.fileutils as ml_fileutils # for custom file handling
 from sortedm2m.fields import SortedManyToManyField
+from website.utils.upload_validators import validate_pdf_upload, validate_raw_file_upload
 
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
@@ -34,9 +35,9 @@ class Artifact(models.Model):
     location.help_text = "The geographic location of where this artifact was presented"
     
     # The artifacts themselves
-    pdf_file = models.FileField(upload_to=get_upload_dir, null=True, default=None, max_length=255)
+    pdf_file = models.FileField(upload_to=get_upload_dir, null=True, default=None, max_length=255, validators=[validate_pdf_upload])
     pdf_file.help_text = "The rendered PDF of the artifact"
-    raw_file = models.FileField(upload_to=get_upload_dir, blank=True, null=True, default=None, max_length=255)
+    raw_file = models.FileField(upload_to=get_upload_dir, blank=True, null=True, default=None, max_length=255, validators=[validate_raw_file_upload])
     raw_file.help_text = "The raw file (e.g., pptx, keynote) for the artifact. While not required, this is "\
         "<b>highly</b> recommended as it creates a better archive of the work"
     thumbnail = models.ImageField(upload_to=get_upload_thumbnail_dir, editable=False, null=True, max_length=255)
