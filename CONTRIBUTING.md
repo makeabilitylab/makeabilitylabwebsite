@@ -22,6 +22,8 @@ This document outlines how to set up your local development environment and our 
   - [Running the Test Suite](#running-the-test-suite)
     - [When to add a test](#when-to-add-a-test)
     - [Troubleshooting](#troubleshooting-tests)
+    - [Continuous integration](#continuous-integration)
+    - [Test coverage](#test-coverage)
   - [Accessibility Testing](#accessibility-testing)
     - [Running Accessibility Checks](#running-accessibility-checks)
     - [Configuring Tests](#configuring-tests)
@@ -290,7 +292,21 @@ If you forget the shim and the legacy `manage.py test website` fails at test-DB 
 
 ### Continuous integration
 
-`.github/workflows/test.yml` runs the suite (with the test-settings shim, against a Postgres 16 service container) on every push to `master` and every pull request. GitHub Actions is free and unlimited for this public repo. A failing run shows a red ✗ on the commit/PR and emails the author — it **reports** status, it does not block the push or the test-server deploy. The broader testing roadmap (coverage, Pa11y-in-CI, test backfill) is tracked in [#1278](https://github.com/makeabilitylab/makeabilitylabwebsite/issues/1278).
+`.github/workflows/test.yml` runs the suite (with the test-settings shim, against a Postgres 16 service container) on every push to `master` and every pull request. GitHub Actions is free and unlimited for this public repo. A failing run shows a red ✗ on the commit/PR and emails the author — it **reports** status, it does not block the push or the test-server deploy. Each run also measures coverage (see [Test coverage](#test-coverage)). The remaining testing roadmap (Pa11y-in-CI, test backfill) is tracked in [#1278](https://github.com/makeabilitylab/makeabilitylabwebsite/issues/1278).
+
+### Test coverage
+
+The CI `test` job wraps the suite in [`coverage`](https://coverage.readthedocs.io/) and posts a per-file table to the run's **Summary** tab. Coverage is **report-only** — there is no `--fail-under` gate, so a low number never fails CI; it's a signal for deciding what to backfill next (#1278 item 5). Configuration is in `.coveragerc`: it measures the `website` app with branch coverage on, and leaves the vendored forks (`image_cropping/`, `sortedm2m_filter_horizontal_widget/`) and third-party packages out of scope.
+
+To see coverage locally, inside the container:
+
+```bash
+# coverage lives in requirements-dev.txt (test-only, not in the prod image)
+pip install -r requirements-dev.txt
+coverage run manage.py test website --settings=makeabilitylab.settings_test
+coverage report   # text table with the uncovered line numbers
+coverage html     # browsable htmlcov/index.html
+```
 
 ## Accessibility Testing
 

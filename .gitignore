@@ -48,3 +48,10 @@ docker_makelab_build.log
 a11y-report.json
 repomix-output.xml
 codebase-analysis.md
+
+# coverage.py artifacts (#1278 item 4) — the data file and HTML/XML reports are
+# written into the repo root (the container's CWD is the bind-mounted /code).
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
