@@ -6,6 +6,7 @@ from website.models.position import Role, Title
 from website.models.project_role import ProjectRole
 from django.core.files import File
 import website.utils.fileutils as ml_fileutils
+from website.utils.upload_validators import validate_image_upload
 
 from django.db.models.functions import Coalesce
 from django.conf import settings
@@ -135,7 +136,7 @@ class Person(models.Model):
     # Note: the ImageField requires the pillow library
     # We use the get_unique_path function because otherwise if two people use the same
     # filename (something generic like picture.jpg), one will overwrite the other.
-    image = models.ImageField(blank=True, upload_to=get_upload_to_for_person, max_length=255)
+    image = models.ImageField(blank=True, upload_to=get_upload_to_for_person, max_length=255, validators=[validate_image_upload])
     image.help_text = 'After choosing an image, crop it right here using the cropper below — no need to save first.'
 
     # We use the django-image-cropping ImageRatioField https://github.com/jonasundderwolf/django-image-cropping
@@ -145,7 +146,7 @@ class Person(models.Model):
     cropping = ImageRatioField('image', get_thumbnail_size_as_str(), size_warning=True)
 
     # This is the hover image (aka easter egg)
-    easter_egg = models.ImageField(blank=True, null=True, upload_to=get_upload_to_for_person_easter_egg, max_length=255)
+    easter_egg = models.ImageField(blank=True, null=True, upload_to=get_upload_to_for_person_easter_egg, max_length=255, validators=[validate_image_upload])
     easter_egg.help_text = mark_safe("You do not have to set this field. It defaults to a Star Wars\
             Rebels LEGO character from <a href='https://github.com/makeabilitylab/makeabilitylabwebsite/tree/master/media/images/StarWarsFiguresFullSquare/Rebels'>here</a>\
             but you can use whatever you want. This image is shown on mouseover on the people.html page.")

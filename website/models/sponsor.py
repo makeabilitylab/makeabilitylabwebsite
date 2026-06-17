@@ -1,5 +1,6 @@
 from django.db import models
 from image_cropping import ImageRatioField
+from website.utils.upload_validators import validate_image_upload
 import os
 
 SPONSOR_THUMBNAIL_SIZE = (245, 245)
@@ -18,7 +19,7 @@ class Sponsor(models.Model):
     short_name = models.CharField(max_length=255, null=True)
     short_name.help_text = "Short name for the sponsor (e.g., NSF)"
 
-    icon = models.ImageField(upload_to=ICON_DIR, blank=True, null=True, max_length=255)
+    icon = models.ImageField(upload_to=ICON_DIR, blank=True, null=True, max_length=255, validators=[validate_image_upload])
     icon.help_text = "Icon for the sponsor (e.g., NSF logo)"
 
     alt_text = models.CharField(max_length=1024, blank=True, null=True)

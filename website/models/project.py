@@ -4,6 +4,7 @@ from django.db.models import F, ExpressionWrapper, fields, Sum, Q, Value
 from django.db.models.functions import Coalesce
 
 from image_cropping import ImageRatioField
+from website.utils.upload_validators import validate_image_upload
 
 from datetime import date, datetime, timedelta
 from django.utils import timezone
@@ -82,7 +83,7 @@ class Project(models.Model):
 
     # pis = models.ManyToOneField(Person, blank=True, null=True)
     # TODO: consider switching gallery_image var name to thumbnail
-    gallery_image = models.ImageField(upload_to=IMAGE_DIR, blank=True, null=True, max_length=255)
+    gallery_image = models.ImageField(upload_to=IMAGE_DIR, blank=True, null=True, max_length=255, validators=[validate_image_upload])
     gallery_image.help_text = "This is the image which will show up on the project gallery page.\
                                It is not displayed anywhere else. After choosing an image, crop it right here\
                                using the cropper below — no need to save first."

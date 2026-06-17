@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.safestring import mark_safe
 from image_cropping import ImageRatioField
+from website.utils.upload_validators import validate_image_upload
 
 from .project import Project
 
@@ -12,7 +13,7 @@ class Photo(models.Model):
     def get_cropping_size_as_str():
         return f"{DEFAULT_CROPPING_SIZE[0]}x{DEFAULT_CROPPING_SIZE[1]}"
 
-    picture = models.ImageField(upload_to='projects/images/', max_length=255)
+    picture = models.ImageField(upload_to='projects/images/', max_length=255, validators=[validate_image_upload])
 
     # TODO: force both caption and alt_text to be non-null and non-blank
     # This requires a migration so need to talk with Matt/Jason in IT about it.
