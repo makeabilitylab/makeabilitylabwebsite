@@ -10,6 +10,14 @@
  * (.next/.prev/.left/.right); that machinery went away with the Bootstrap
  * carousel JS (Track A — issues #1288 / #1253), so the fade is now self-
  * contained CSS rather than a hack layered on Bootstrap's animation.
+ *
+ * Dip-free crossfade (issue #1010): the transition is asymmetric on purpose.
+ * The INCOMING slide fades in (opacity 0 -> 1) while the OUTGOING slide holds
+ * at full opacity, then snaps to 0 only after the incoming has fully covered
+ * it. This guarantees an opaque slide always covers the carousel's magenta
+ * gradient backdrop (#main-carousel in base.css). A naive *symmetric* crossfade
+ * (both slides fading at once) lets up to ~25% of that backdrop bleed through
+ * at the midpoint, which read as a "blink"/flash when switching banners.
  */
 
 .carousel-fade .carousel-inner > .item {
@@ -23,19 +31,24 @@
   z-index: 0;
   /* Only the visible slide should capture clicks. */
   pointer-events: none;
-  transition: opacity 0.6s ease-in-out;
+  /* Deactivating: hold opacity (0s change) until the incoming slide has faded
+     fully in, i.e. delay the snap-to-0 by the fade duration. */
+  transition: opacity 0s ease-in-out 0.6s;
 }
 
 .carousel-fade .carousel-inner > .item.active {
   opacity: 1;
   z-index: 1;
   pointer-events: auto;
+  /* Activating: fade in over the still-opaque outgoing slide. */
+  transition: opacity 0.6s ease-in-out 0s;
 }
 
 /* Respect users who prefer reduced motion: switch instantly, no crossfade.
    (carousel.js also disables autoplay under this preference.) */
 @media (prefers-reduced-motion: reduce) {
-  .carousel-fade .carousel-inner > .item {
+  .carousel-fade .carousel-inner > .item,
+  .carousel-fade .carousel-inner > .item.active {
     transition: none;
   }
 }
