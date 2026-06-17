@@ -17,6 +17,7 @@ This document covers the Makeability Lab website's production infrastructure, de
     - [Configuration File](#configuration-file)
     - [Environment Variables](#environment-variables)
     - [Static Files vs. Dynamic Requests (Apache routing)](#static-files-vs-dynamic-requests-apache-routing)
+    - [Search Engine Indexing (Sitemap & Google Search Console)](#search-engine-indexing-sitemap--google-search-console)
   - [Debugging \& Logging](#debugging--logging)
     - [Log Files](#log-files)
     - [Accessing Logs via Web](#accessing-logs-via-web)
@@ -135,7 +136,40 @@ On both servers, Apache sits in front of the Django container. It serves any URL
 - **`/robots.txt` is a static file** — it is the top-level [`robots.txt`](../robots.txt) committed in the repo root, served by Apache from the project checkout. To change crawler rules or the advertised sitemap, edit that file and deploy. A Django view/route for `/robots.txt` would be dead code on the servers (it only runs under local `runserver`, which diverges from production).
 - **`/sitemap.xml` is dynamic** — no such file exists, so Apache proxies it to Django's `django.contrib.sitemaps` (see `website/sitemaps.py`), which builds the XML from the database on each request.
 - **Django sees requests as HTTP, not HTTPS.** Apache terminates TLS and proxies to Django over plain HTTP, so `request.scheme` is `http`. Any code that builds absolute URLs from the request (e.g. the sitemap) must force `https` explicitly — the sitemaps do this via `protocol = "https"`.
-- **The test server is never indexed.** Apache stamps `X-Robots-Tag: noindex, nofollow` on every response from the test host, so staging stays out of search engines regardless of its `robots.txt`.
+- **The test server is never indexed.** Apache stamps `X-Robots-Tag: noindex, nofollow` on every response from the test host, so staging stays out of search engines regardless of its `robots.txt`. (Production pages carry no such header — verify with `curl -sI https://makeabilitylab.cs.washington.edu/ | grep -i x-robots-tag`, which should return nothing.)
+
+### Search Engine Indexing (Sitemap & Google Search Console)
+
+The production sitemap is **dynamically generated from the database** (`website/sitemaps.py`, served at [`/sitemap.xml`](https://makeabilitylab.cs.washington.edu/sitemap.xml)) and advertised in the repo-root [`robots.txt`](../robots.txt). New people, news items, publications, projects, etc. appear in it **automatically** — there is nothing to regenerate or re-upload when content changes. (Sitemap/robots work landed in #1252; the related prod-deploy stall it surfaced is #1313.)
+
+**Quick health check** (anytime — all should be true):
+
+```bash
+curl -sI https://makeabilitylab.cs.washington.edu/sitemap.xml | head -1   # 200, served by Django (WSGIServer)
+curl -s  https://makeabilitylab.cs.washington.edu/robots.txt              # allow-all + a "Sitemap:" line
+curl -s  https://makeabilitylab.cs.washington.edu/sitemap.xml | grep -c '<loc>'  # count of URLs (~700+)
+```
+
+The `X-Robots-Tag: noindex` that the sitemap *file* returns is intentional and harmless — it keeps the XML out of search results without affecting the URLs listed inside.
+
+#### Current status: already registered & verified
+
+The production site is **already a verified property** in Google Search Console (`https://makeabilitylab.cs.washington.edu/`, URL-prefix), with the `sitemap.xml` **submitted on 2026-06-17** ("Sitemap submitted successfully — Google will periodically process it and look for changes"). Ownership was verified via the site's **pre-existing Google Analytics property** (the Analytics snippet served on every page), so no verification file lives in the repo. **You do not need to re-do any of the steps below** under normal operation — see "Ongoing maintenance" for what little there is. The steps are retained only for re-setup (e.g. registering a new property or recovering after the Search Console / Analytics account access is lost).
+
+#### Setting up from scratch (only if re-registering)
+
+You only do this once per property (not per content change):
+
+1. Go to [Google Search Console](https://search.google.com/search-console) → **Add property** → **URL prefix** (not *Domain* — that needs a DNS record we can't add for `cs.washington.edu`).
+2. Enter `https://makeabilitylab.cs.washington.edu/` exactly.
+3. **Verify ownership.** Easiest if it works: the **Google Analytics** method (prod already serves an Analytics snippet). Otherwise use the **HTML file** method — commit Google's `google<token>.html` to the **repo root** (Apache serves it statically, exactly like `robots.txt`) and ship it to prod with a SemVer tag, then click *Verify*. **Leave the verification asset (GA snippet or HTML file) in place permanently** — removing it un-verifies the property.
+4. In the left sidebar → **Sitemaps** → enter `sitemap.xml` → **Submit**. Status moves to *Success* once Google fetches it.
+
+#### Ongoing maintenance: essentially none
+
+- **Per new person / news item / publication: do nothing.** The dynamic sitemap updates itself and Google re-crawls `/sitemap.xml` on its own schedule (days–weeks).
+- **Re-submit only if** the sitemap URL changes or you restructure the site's URL scheme.
+- **Optional:** glance at Search Console's *Pages* (indexing) report ~quarterly for crawl errors, or use *URL Inspection → Request Indexing* to fast-track an important new page.
 
 ## Debugging & Logging
 
