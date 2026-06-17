@@ -15,3 +15,9 @@
 # lockstep (a mismatch makes `playwright install` download the wrong revision).
 -r requirements.txt
 playwright==1.60.0
+
+# coverage.py — test-coverage measurement (#1278 item 4). Used locally
+# (`coverage run manage.py test ...`, see .coveragerc) and pinned identically in
+# the CI `test` job, which installs it directly rather than pulling all of
+# requirements-dev.txt (it has no need for Playwright). Keep the two pins in sync.
+coverage==7.14.1

@@ -56,8 +56,29 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r requirements.txt
 
-      - name: Run tests
-        run: python manage.py test website --settings=makeabilitylab.settings_test --verbosity=2
+      # coverage.py is a test-only tool (lives in requirements-dev.txt) — install
+      # it directly here rather than pulling all of requirements-dev.txt, which
+      # would drag in Playwright. Keep this pin in sync with requirements-dev.txt.
+      - name: Install coverage
+        run: pip install coverage==7.14.1
+
+      # `coverage run` wraps the same test command and propagates its exit code,
+      # so a test failure still fails this step (red ✗ + email). Config is in
+      # .coveragerc (measures the `website` app, branch coverage on).
+      - name: Run tests with coverage
+        run: coverage run manage.py test website --settings=makeabilitylab.settings_test --verbosity=2
+
+      # Report-only: no --fail-under gate. Print to the log and also publish a
+      # table to the run's Summary so the number is visible without opening logs.
+      # Skipped automatically if the test step above failed.
+      - name: Coverage report
+        run: |
+          coverage report
+          {
+            echo "## Coverage — website app"
+            echo
+            coverage report --format=markdown
+          } >> "$GITHUB_STEP_SUMMARY"
 
   # Browser end-to-end tests (member-page "Load more"/"Load all", bio toggle,
   # section nav). Kept in a SEPARATE job from `test` so the fast unit/integration

@@ -1,0 +1,35 @@
+# Coverage.py configuration (#1278 item 4 — testing roadmap).
+#
+# We measure the `website` app only: that's the code we own and want to
+# backfill. Django itself, third-party packages, and the vendored in-repo forks
+# (image_cropping/, sortedm2m_filter_horizontal_widget/) are deliberately out of
+# scope. Coverage is REPORT-ONLY in CI — there is no --fail-under gate yet; the
+# percentage is a signal for targeting backfill (item 5), not a pass/fail bar.
+#
+# Run locally (inside the container, after `pip install -r requirements-dev.txt`):
+#   coverage run manage.py test website --settings=makeabilitylab.settings_test
+#   coverage report          # text table with missing line numbers
+#   coverage html            # browsable htmlcov/ report
+
+[run]
+source = website
+# Branch coverage: also tracks whether both sides of an if/else were taken,
+# not just whether a line ran. More honest signal for view/utility logic.
+branch = True
+omit =
+    # The tests themselves aren't production code.
+    website/tests/*
+    # Per-environment migrations are gitignored and disabled in the test
+    # settings (MIGRATION_MODULES = {'website': None}), so they never execute.
+    website/migrations/*
+
+[report]
+# Show the line numbers that aren't covered, so the report points at the gaps.
+show_missing = True
+# exclude_also ADDS to coverage's built-in defaults (which already include
+# "pragma: no cover"), rather than replacing them.
+exclude_also =
+    def __repr__
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    if TYPE_CHECKING:
