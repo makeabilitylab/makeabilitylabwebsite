@@ -51,6 +51,61 @@ def normalize_person_name(first_name, last_name):
     return re.sub('[^a-zA-Z]', '', cleaned)
 
 
+def build_unique_url_name(first_name, middle_name, last_name, is_taken):
+    """
+    Derive a unique ``url_name`` for a person, preferring readable URLs.
+
+    Resolution order:
+      1. The bare key ``normalize_person_name(first, last)`` (e.g. ``jasminezhang``)
+         if it isn't already taken.
+      2. A **middle-initial differentiator** ``first + middle_initial + last``
+         (e.g. ``jasminexzhang``) when a middle name is present and that form is
+         free — giving namesakes a stable, human-readable URL (issue #1206/#1275).
+      3. A **numeric suffix** fallback (``jasminezhang2``, ``jasminezhang3`` …) —
+         the historical behavior, used when there's no usable middle initial or
+         the middle-initial form is itself taken.
+
+    ``is_taken`` is a callable ``str -> bool`` that reports whether a candidate
+    ``url_name`` is already in use. The caller defines its semantics: when
+    re-deriving for an existing row it should exclude that row's own pk (mirroring
+    the ``.exclude(pk=self.pk)`` check in ``Person.save()``); when assigning in a
+    batch it should consult the names already handed out this pass.
+
+    The result is always non-empty and lowercase alpha (plus an optional trailing
+    number), matching what ``Person.save()`` would store.
+
+    Example:
+        >>> taken = {'jasminezhang'}.__contains__
+        >>> build_unique_url_name('Jasmine', 'Xin', 'Zhang', taken)
+        'jasminexzhang'
+        >>> build_unique_url_name('Jasmine', '', 'Zhang', taken)
+        'jasminezhang2'
+    """
+    base = normalize_person_name(first_name, last_name)
+    if not is_taken(base):
+        return base
+
+    # Middle-initial differentiator: fold the first alpha char of the middle name
+    # the same way url_name derivation folds accents, then drop anything non-alpha.
+    middle = (middle_name or '').strip()
+    if middle:
+        initial = middle[0].lower()
+        initial = SPECIAL_CHARS.get(initial, initial)
+        initial = re.sub('[^a-z]', '', initial)
+        if initial:
+            first_key = normalize_person_name(first_name, '')
+            last_key = normalize_person_name('', last_name)
+            candidate = f"{first_key}{initial}{last_key}"
+            if candidate != base and not is_taken(candidate):
+                return candidate
+
+    # Numeric-suffix fallback (matches the legacy Person.save() collision loop).
+    counter = 2
+    while is_taken(f"{base}{counter}"):
+        counter += 1
+    return f"{base}{counter}"
+
+
 def is_default_person_image(image_field):
     """
     Return True if a Person image field looks like an auto-assigned default
