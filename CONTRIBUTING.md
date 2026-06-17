@@ -264,7 +264,7 @@ The suite has two complementary styles:
 | **Unit** | `SimpleTestCase` + `MagicMock` | Pure logic — formatters, BibTeX generation, single-method behavior. No DB; runs in milliseconds. |
 | **Integration** | `DatabaseTestCase` (subclass of Django's `TestCase`, in `website/tests/base.py`) | View, queryset, template, and URL-routing regressions. Each test runs inside a transaction that is rolled back, so tests stay isolated. |
 
-The `DatabaseTestCase` base provides `make_person`, `make_publication`, `make_talk`, and `make_news_item` helpers built on plain `Model.objects.create()` — use those rather than hand-rolling fixtures.
+The `DatabaseTestCase` base provides `make_person`, `make_publication`, `make_talk`, and `make_news_item` helpers — use those rather than hand-rolling fixtures. They're thin wrappers over the `factory_boy` factories in `website/tests/factories.py`, which are the single source of truth for building model instances; reach for a factory directly when you need an entity the helpers don't cover or want to customize fields.
 
 ### When to add a test
 
