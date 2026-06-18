@@ -2,7 +2,9 @@ from django.conf import settings # for access to settings variables, see https:/
 from website.models import Project, Position, ProjectRole, Grant
 from website.models.project_role import LeadProjectRoleTypes
 from website.models.position import MemberClassification
-import website.utils.ml_utils as ml_utils 
+import website.utils.ml_utils as ml_utils
+from website.utils.metadata import meta_description
+from django.urls import reverse
 from django.shortcuts import render, get_object_or_404, redirect
 from operator import attrgetter
 from django.template.loader import render_to_string
@@ -111,6 +113,17 @@ def project(request, project_name):
                'related_projects': related_projects,
                'has_videos_beyond_featured_video': has_videos_beyond_featured_video,
                'debug': settings.DEBUG}
+
+    # Per-page SEO / social metadata (see base.html + #1142/#1236/#1324). Build
+    # the canonical with reverse('project', ...) so it's byte-for-byte identical
+    # to the URL the sitemap advertises (website/sitemaps.py uses the same
+    # reverse) — that resolves to /project/<short_name>/, collapsing the
+    # /projects/ alias to one indexable URL.
+    context['page_meta'] = {
+        'title': project.name,
+        'description': meta_description(project.summary),
+        'canonical_path': reverse('website:project', args=[project.short_name]),
+    }
 
     context['view_prep_time'] = time.perf_counter() - func_start_time
     _logger.debug(f"Setup view for '{project.name}' (sans render) in {context['view_prep_time']:0.4f} seconds")

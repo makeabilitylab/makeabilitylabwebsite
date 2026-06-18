@@ -2,6 +2,8 @@ from django.conf import settings # for access to settings variables, see https:/
 from website.models import Person, News, Video
 import website.utils.ml_utils as ml_utils
 from website.utils.bio_utils import auto_generate_bio
+from website.utils.metadata import meta_description
+from django.urls import reverse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from django.core.exceptions import MultipleObjectsReturned
@@ -149,7 +151,28 @@ def member(request, member_name=None, member_id=None):
                'debug': settings.DEBUG,
                'navbar_white': True,
                'page_title': person.get_full_name()}
-    
+
+    # Per-page SEO / social metadata (see base.html + #1142/#1236/#1324). Mirror
+    # the previous og:description precedence: bio -> auto-generated bio ->
+    # position sentence -> lab default (base.html supplies the default when None).
+    if person.bio:
+        person_description = meta_description(person.bio)
+    elif auto_generated_bio:
+        person_description = meta_description(auto_generated_bio)
+    elif latest_position:
+        person_description = (f"{person.get_full_name()} is a {latest_position.title} "
+                              "at the Makeability Lab, an advanced research lab in "
+                              "Human-Computer Interaction at University of Washington.")
+    else:
+        person_description = None
+
+    context['page_meta'] = {
+        'title': f"{person.get_full_name()} - Makeability Lab",
+        'description': person_description,
+        'og_type': 'profile',
+        'canonical_path': reverse('website:member_by_name', kwargs={'member_name': person.url_name}),
+    }
+
     # Render is a Django shortcut (aka helper function). It combines a given template—in this case
     # member.html—with a context dictionary and returns an HttpResponse object with that rendered text.
     # See: https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render

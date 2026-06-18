@@ -56,17 +56,54 @@ TEMPLATE BLOCKS:
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta name="description" content="The Makeability Lab is an advanced research lab in Human-Computer Interaction and AI directed by Professor Jon E. Froehlich at University of Washington's Allen School of Computer Science.">
   <meta name="author" content="Jon E. Froehlich and Makeability Lab members">
 
-  <!-- Open Graph meta tags for social sharing -->
-  {% block opengraph %}
-  <meta property="og:title" content="Makeability Lab">
-  <meta property="og:type" content="website">
-  <meta property="og:description" content="The Makeability Lab is an advanced research lab in Human-Computer Interaction directed by Professor Jon E. Froehlich at University of Washington's Allen School of Computer Science.">
-  <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'website/img/logos/makelab_logo_v3_white_with_colors_and_text_og_image_ratio_1200w.png' %}">
-  <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
-  {% endblock %}
+  {% comment %}
+  ============================================================================
+  PAGE METADATA — single source of truth for SEO + social sharing.
+
+  Per-page values come from the optional `page_meta` context dict set by the
+  view (keys: title, description, canonical_path, og_type). Anything not
+  provided falls back to the lab-wide defaults below, so every page gets a
+  complete, valid set of tags. The meta description is computed once and reused
+  by <meta name="description">, og:description, and twitter:description (no
+  duplication).
+
+  Absolute URLs use {{ site_scheme }} (https on the servers, http in local dev)
+  so they don't advertise http:// behind the TLS proxy — see #1236.
+
+  Detail templates customize via:
+    {% block social_image %} — og:image + twitter:image (default: lab logo)
+    {% block meta_extra %}   — structural OG tags (og:profile:*, og:article:*)
+    {% block jsonld %}        — schema.org JSON-LD structured data
+  ============================================================================
+  {% endcomment %}
+  {% with meta_title=page_meta.title|default:"Makeability Lab" og_type=page_meta.og_type|default:"website" canonical_path=page_meta.canonical_path|default:request.path %}
+  {% firstof page_meta.description "The Makeability Lab is an advanced research lab in Human-Computer Interaction and AI directed by Professor Jon E. Froehlich at University of Washington's Allen School of Computer Science." as meta_description %}
+  <meta name="description" content="{{ meta_description }}">
+  <link rel="canonical" href="{{ site_scheme }}://{{ request.get_host }}{{ canonical_path }}">
+
+  <!-- Open Graph (Facebook, LinkedIn, Slack, Bluesky, …) -->
+  <meta property="og:site_name" content="Makeability Lab">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:title" content="{{ meta_title }}">
+  <meta property="og:type" content="{{ og_type }}">
+  <meta property="og:description" content="{{ meta_description }}">
+  <meta property="og:url" content="{{ site_scheme }}://{{ request.get_host }}{{ canonical_path }}">
+  {% block social_image %}
+  <meta property="og:image" content="{{ site_scheme }}://{{ request.get_host }}{% static 'website/img/logos/makelab_logo_v3_white_with_colors_and_text_og_image_ratio_1200w.png' %}">
+  <meta property="og:image:alt" content="Makeability Lab logo">
+  <meta name="twitter:image" content="{{ site_scheme }}://{{ request.get_host }}{% static 'website/img/logos/makelab_logo_v3_white_with_colors_and_text_og_image_ratio_1200w.png' %}">
+  {% endblock social_image %}
+  {% block meta_extra %}{% endblock %}
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ meta_title }}">
+  <meta name="twitter:description" content="{{ meta_description }}">
+
+  {% block jsonld %}{% endblock %}
+  {% endwith %}
 
   <!-- Favicon -->
   <link rel="shortcut icon" href="{% static 'website/img/ml-favicon.png' %}">

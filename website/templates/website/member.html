@@ -50,22 +50,23 @@ CONTEXT VARIABLES:
 {% load thumbnail %}
 {% load ml_tags %}
 
-{% block opengraph %}
-<meta property="og:title" content="{{ person.get_full_name }} - Makeability Lab">
-<meta property="og:type" content="profile">
-{% if person.bio %}
-<meta property="og:description" content="{{ person.bio|striptags|truncatewords:50 }}">
-{% elif auto_generated_bio %}
-<meta property="og:description" content="{{ auto_generated_bio|striptags|truncatewords:50 }}">
+{# Title, description, og:type=profile, and canonical come from page_meta (see
+   website/views/member.py). Here we override the share image and add the
+   profile-specific structural OG tags. #}
+{% block social_image %}
+{% thumbnail person.image '1200x630' box=person.cropping crop=True upscale=True as og_img %}
+{% if og_img %}
+<meta property="og:image" content="{{ site_scheme }}://{{ request.get_host }}{{ og_img.url }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{{ person.get_full_name }}">
+<meta name="twitter:image" content="{{ site_scheme }}://{{ request.get_host }}{{ og_img.url }}">
 {% else %}
-  {% if position %}
-<meta property="og:description" content="{{ person.get_full_name }} is a {{ position.title }} at the Makeability Lab, an advanced research lab in Human-Computer Interaction at University of Washington.">
-  {% else %}
-<meta property="og:description" content="{{ person.get_full_name }} — Makeability Lab, an advanced research lab in Human-Computer Interaction at University of Washington.">
-  {% endif %}
+{{ block.super }}
 {% endif %}
-<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% thumbnail person.image '1200x630' box=person.cropping crop=True upscale=True %}">
-<meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+{% endblock social_image %}
+
+{% block meta_extra %}
 <meta property="og:profile:first_name" content="{{ person.first_name }}">
 <meta property="og:profile:last_name" content="{{ person.last_name }}">
 {% endblock %}
