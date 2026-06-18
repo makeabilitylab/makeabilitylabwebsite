@@ -11,6 +11,13 @@ from the incoming request host. That means the same code emits
 ``makeabilitylab.cs.washington.edu`` in prod, ``makeabilitylab-test...`` on the
 test server, and ``localhost`` in dev — no per-environment configuration.
 
+Scheme handling: the ``<loc>`` protocol comes from ``request.scheme``. Behind
+UW CSE's TLS-terminating Apache proxy that is now ``https`` because
+``SECURE_PROXY_SSL_HEADER`` trusts the proxy's ``X-Forwarded-Proto`` header
+(#1329); in local dev it is ``http``. We previously pinned ``protocol="https"``
+to paper over Django seeing ``http`` behind the proxy — that workaround is gone
+now that the scheme is correct at the framework level.
+
 We map only the pages that have real, indexable URLs:
   - static listing pages (home, people, publications, projects, awards, news)
   - one entry per visible Project        -> /project/<short_name>/
@@ -37,22 +44,7 @@ def _latest(model, field):
     )
 
 
-class _HttpsSitemap(Sitemap):
-    """
-    Base sitemap that pins generated URLs to the https scheme.
-
-    Apache terminates TLS and proxies to Django over plain HTTP, so the
-    request scheme Django sees is ``http``. Without this, RequestSite would
-    emit ``http://`` <loc> URLs that only 302-redirect to https — making the
-    sitemap advertise non-canonical URLs with an extra hop. Pinning the
-    protocol here makes every sitemap list the canonical https URLs directly.
-    (Cosmetic only in local dev, where the site is served over http.)
-    """
-
-    protocol = "https"
-
-
-class StaticViewSitemap(_HttpsSitemap):
+class StaticViewSitemap(Sitemap):
     """Top-level listing pages that aren't tied to a single model instance."""
 
     changefreq = "weekly"
@@ -106,7 +98,7 @@ class StaticViewSitemap(_HttpsSitemap):
         return None
 
 
-class ProjectSitemap(_HttpsSitemap):
+class ProjectSitemap(Sitemap):
     """Public project pages: /project/<short_name>/."""
 
     changefreq = "weekly"
@@ -127,7 +119,7 @@ class ProjectSitemap(_HttpsSitemap):
         return obj.updated
 
 
-class PersonSitemap(_HttpsSitemap):
+class PersonSitemap(Sitemap):
     """Public people pages: /member/<url_name>/."""
 
     changefreq = "monthly"
@@ -153,7 +145,7 @@ class PersonSitemap(_HttpsSitemap):
         return obj.bio_datetime_modified
 
 
-class NewsSitemap(_HttpsSitemap):
+class NewsSitemap(Sitemap):
     """News item pages: /news/<slug>/."""
 
     changefreq = "monthly"
