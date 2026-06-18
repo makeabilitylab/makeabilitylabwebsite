@@ -165,3 +165,49 @@ class PublicationsViewQueryCountTests(DatabaseTestCase):
                 "with 20 publications — prefetch_related likely regressed"
             ),
         )
+
+
+# --- Member ORCID / Google Scholar profile links (#1324) -----------------
+
+
+class MemberSocialLinkTests(DatabaseTestCase):
+    """
+    Pins the ORCID + Google Scholar fields added to Person: that
+    has_website_links() recognizes them and that the member page renders the
+    links (academicons icons) when set.
+    """
+
+    def _give_position(self, person):
+        from datetime import date
+        from website.models import Position
+        from website.models.position import Title
+        Position.objects.create(person=person, start_date=date(2020, 1, 1),
+                                title=Title.PHD_STUDENT)
+
+    def test_has_website_links_true_with_only_scholar_or_orcid(self):
+        p = self.make_person(first_name="Onlyorcid", last_name="Person",
+                             orcid="https://orcid.org/0000-0002-1853-9710")
+        self.assertTrue(p.has_website_links())
+        p2 = self.make_person(first_name="Onlyscholar", last_name="Person",
+                              google_scholar="https://scholar.google.com/citations?user=lFn1Oz0AAAAJ")
+        self.assertTrue(p2.has_website_links())
+
+    def test_has_website_links_false_with_no_links(self):
+        p = self.make_person(first_name="Nolinks", last_name="Person")
+        self.assertFalse(p.has_website_links())
+
+    def test_member_page_renders_orcid_and_scholar(self):
+        person = self.make_person(
+            first_name="Linked", last_name="Person",
+            orcid="https://orcid.org/0000-0002-1853-9710",
+            google_scholar="https://scholar.google.com/citations?user=lFn1Oz0AAAAJ",
+        )
+        self._give_position(person)
+        resp = self.client.get(
+            reverse("website:member_by_name", kwargs={"member_name": person.url_name})
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, 'href="https://orcid.org/0000-0002-1853-9710"')
+        self.assertContains(resp, 'ai ai-orcid')
+        self.assertContains(resp, "scholar.google.com/citations?user=lFn1Oz0AAAAJ")
+        self.assertContains(resp, 'ai ai-google-scholar')

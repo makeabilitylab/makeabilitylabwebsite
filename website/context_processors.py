@@ -17,6 +17,31 @@ def recent_news(request):
 
     return { 'recent_news': news_items, }
 
+def site_scheme(request):
+    """
+    Expose the canonical URL scheme (``http`` / ``https``) to every template.
+
+    The site runs behind UW CSE's Apache TLS-terminating proxy, which talks to
+    the Django container over plain HTTP. Because ``SECURE_PROXY_SSL_HEADER`` is
+    not (yet) configured, ``request.scheme`` reports ``http`` in production/test
+    even though visitors arrive over HTTPS. Building absolute URLs (canonical,
+    Open Graph ``og:url``/``og:image``, Twitter Card images) from
+    ``request.scheme`` therefore advertises ``http://`` links to crawlers and
+    social scrapers — the root cause of issue #1236.
+
+    This processor pins the scheme to ``https`` whenever the site is not in
+    DEBUG (i.e. on the test/prod servers), while leaving local dev on whatever
+    ``request.scheme`` reports (``http`` over localhost). Templates should build
+    absolute URLs as ``{{ site_scheme }}://{{ request.get_host }}{{ path }}``.
+
+    NOTE: This is the in-repo workaround. The cleaner long-term fix is for IT to
+    set ``SECURE_PROXY_SSL_HEADER`` on the proxy (tracked in #1329); once that
+    lands, ``request.scheme`` will be correct and this can fall back to it.
+    """
+    return {
+        'site_scheme': request.scheme if settings.DEBUG else 'https',
+    }
+
 def admin_version_info(request):
     """
     Make version and debug info available to all templates.

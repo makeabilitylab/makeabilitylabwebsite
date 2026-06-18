@@ -44,6 +44,14 @@ def news_listing(request):
     # Render is a Django helper function. It combines a given template—in this case news-listing.html—with
     # a context dictionary and returns an HttpResponse object with that rendered text.
     # See: https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
+    # Per-page SEO / social metadata (see base.html). #1142/#1324.
+    context['page_meta'] = {
+        'title': 'News',
+        'description': "News from the Makeability Lab — new papers, awards, lab "
+                       "members, and project milestones in HCI and accessibility "
+                       "at the University of Washington.",
+    }
+
     render_func_start_time = time.perf_counter()
     render_response = render(request, 'website/news_listing.html', context)
     render_func_end_time = time.perf_counter()

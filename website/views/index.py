@@ -1,6 +1,8 @@
 from django.conf import settings # for access to settings variables, see https://docs.djangoproject.com/en/4.0/topics/settings/#using-settings-in-python-code
 from website.models import Banner, Publication, Talk, Video, Project, Person, News, Sponsor
-import website.utils.ml_utils as ml_utils 
+import website.utils.ml_utils as ml_utils
+from website.utils.metadata import absolute_url, render_jsonld
+from django.templatetags.static import static
 from django.shortcuts import render # for render https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
 from django.db.models import OuterRef, Subquery, F
 
@@ -76,7 +78,35 @@ def index(request):
                'projects': active_projects,
                'sponsors': sponsors,
                'debug': settings.DEBUG}
-    
+
+    # schema.org Organization JSON-LD (home page) — helps Google build a
+    # knowledge panel for "Makeability Lab" (#1142/#1324). Rendered by the
+    # jsonld block in base.html.
+    context['jsonld'] = render_jsonld({
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Makeability Lab",
+        "url": absolute_url(request, "/"),
+        "logo": absolute_url(request, static(
+            "website/img/logos/makelab_logo_v3_white_with_colors_and_text_og_image_ratio_1200w.png")),
+        "description": ("The Makeability Lab is an advanced research lab in "
+                        "Human-Computer Interaction and AI directed by Professor "
+                        "Jon E. Froehlich at the University of Washington's Allen "
+                        "School of Computer Science."),
+        "parentOrganization": {
+            "@type": "CollegeOrUniversity",
+            "name": ("Paul G. Allen School of Computer Science & Engineering, "
+                     "University of Washington"),
+            "url": "https://www.cs.washington.edu/",
+        },
+        "sameAs": [
+            "https://www.linkedin.com/company/makeabilitylab",
+            "https://bsky.app/profile/makeabilitylab.bsky.social",
+            "https://twitter.com/makeabilitylab",
+            "https://github.com/makeabilitylab",
+        ],
+    })
+
     # Render is a Django shortcut (aka helper function). It combines a given template—in this case
     # index.html—with a context dictionary and returns an HttpResponse object with that rendered text.
     # See: https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render 

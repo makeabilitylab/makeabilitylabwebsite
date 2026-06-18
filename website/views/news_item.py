@@ -2,7 +2,9 @@ from django.conf import settings # for access to settings variables, see https:/
 from django.db.models import Prefetch # fore prefetching
 from website.models import News, Project
 
-import website.utils.ml_utils as ml_utils 
+import website.utils.ml_utils as ml_utils
+from website.utils.metadata import meta_description, absolute_url, render_jsonld
+from django.urls import reverse
 from django.shortcuts import render, get_object_or_404
 from django.http import Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -85,6 +87,38 @@ def news_item(request, slug=None, id=None):
                'recent_news_posts_by_author': recent_news_posts_by_author,
                'navbar_white': True,
                'debug': settings.DEBUG}
+
+    # Per-page SEO / social metadata (see base.html + #1142/#1236/#1324). Prefer
+    # the slug URL as canonical (the human-readable, indexable form); fall back
+    # to the numeric-id route for items without a slug yet.
+    if cur_news_item.slug:
+        news_canonical = reverse('website:news_item_by_slug', kwargs={'slug': cur_news_item.slug})
+    else:
+        news_canonical = reverse('website:news_item_by_id', kwargs={'id': cur_news_item.id})
+
+    context['page_meta'] = {
+        'title': cur_news_item.title,
+        'description': meta_description(cur_news_item.content),
+        'og_type': 'article',
+        'canonical_path': news_canonical,
+    }
+
+    # schema.org NewsArticle JSON-LD (news detail). #1324.
+    news_jsonld = {
+        "@context": "https://schema.org",
+        "@type": "NewsArticle",
+        "headline": cur_news_item.title,
+        "url": absolute_url(request, news_canonical),
+        "publisher": {"@type": "Organization", "name": "Makeability Lab"},
+    }
+    if cur_news_item.date:
+        news_jsonld["datePublished"] = cur_news_item.date.isoformat()
+    if cur_news_item.author:
+        news_jsonld["author"] = {"@type": "Person",
+                                 "name": cur_news_item.author.get_full_name()}
+    if cur_news_item.image:
+        news_jsonld["image"] = absolute_url(request, cur_news_item.image.url)
+    context['jsonld'] = render_jsonld(news_jsonld)
     
     
 

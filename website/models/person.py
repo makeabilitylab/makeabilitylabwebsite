@@ -138,7 +138,11 @@ class Person(models.Model):
     threads = models.URLField(blank=True, null=True)
     mastodon = models.URLField(blank=True, null=True)
     linkedin = models.URLField(blank=True, null=True)
-    
+    orcid = models.URLField(blank=True, null=True)
+    orcid.help_text = 'Full ORCID profile URL. For example, <a href="https://orcid.org/0000-0001-8291-3353">https://orcid.org/0000-0001-8291-3353</a>'
+    google_scholar = models.URLField(blank=True, null=True)
+    google_scholar.help_text = 'Full Google Scholar profile URL. For example, <a href="https://scholar.google.com/citations?user=nExKrpsAAAAJ&amp;hl=en&amp;oi=ao">https://scholar.google.com/citations?user=nExKrpsAAAAJ&amp;hl=en&amp;oi=ao</a>'
+
     # If a bio is not added, the member view page will auto-generate one
     bio = models.TextField(blank=True, null=True)
     bio.help_text = "You can use HTML markup here. If a bio is not added, the member view page will auto-generate one."
@@ -172,8 +176,11 @@ class Person(models.Model):
         but you can set it to anything you want and crop it appropriately here")
 
     def has_website_links(self):
-        """Returns True if person has a personal website, github, or twitter, etc. False otherwise."""
-        return self.personal_website or self.github or self.twitter
+        """Returns True if person has any external profile/website link set
+        (personal site, github, twitter, ORCID, Google Scholar, etc.)."""
+        return (self.personal_website or self.github or self.twitter
+                or self.bluesky or self.mastodon or self.threads
+                or self.linkedin or self.orcid or self.google_scholar)
 
     @cached_property
     def is_graduated_phd_student(self):
