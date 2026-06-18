@@ -1,0 +1,24 @@
+{
+  "defaults": {
+    "standard": "WCAG2AA",
+    "runners": ["axe", "htmlcs"],
+    "timeout": 60000,
+    "chromeLaunchConfig": {
+      "args": ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]
+    },
+    "hideElements": "#js-toc",
+    "ignore": []
+  },
+  "_comment": "CI variant of .pa11yci.json (#1278 item 6). The local-dev config targets the docker-compose 'website:8000' host with the maintainer's real DB snapshot (jonfroehlich, sidewalk, ...). CI has no snapshot, so this config targets a native runserver on localhost:8000 seeded with deterministic demo content via `manage.py seed_demo_projects` + `seed_demo_news`. Keep the two URL lists in sync with what those seed commands create.",
+  "urls": [
+    "http://localhost:8000/",
+    "http://localhost:8000/people/",
+    "http://localhost:8000/publications/",
+    "http://localhost:8000/projects/",
+    "http://localhost:8000/news/",
+    "http://localhost:8000/awards/",
+    "http://localhost:8000/project/demo-active-tall/",
+    "http://localhost:8000/member/demolovelace/",
+    "http://localhost:8000/news/demo-news-one/"
+  ]
+}

@@ -142,3 +142,99 @@ jobs:
 
       - name: Run end-to-end tests
         run: python manage.py test website.tests.test_member_e2e --settings=makeabilitylab.settings_test --verbosity=2
+
+  # Accessibility sweep (Pa11y + Axe, WCAG 2.0 AA). CONTRIBUTING requires Pa11y
+  # on UI changes but nothing enforced it (#1278 item 6). This wires it in.
+  #
+  # Like `test` and `e2e`, it is REPORT-ONLY — it surfaces violations in the run
+  # Summary but never fails the build (so a pre-existing violation doesn't sit
+  # red next to every master deploy). Tighten to blocking later once the current
+  # findings are triaged.
+  #
+  # The local `.pa11yci.json` targets the docker-compose host with the
+  # maintainer's real DB snapshot; CI has no snapshot, so we build a fresh DB
+  # from models, seed deterministic demo content (seed_demo_projects +
+  # seed_demo_news), serve it with a native runserver, and scan the localhost
+  # URLs in `.pa11yci.ci.json`.
+  a11y:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: makeability
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U admin -d makeability"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_HOST: localhost
+      DATABASE_PORT: 5432
+      # DJANGO_ENV=DEBUG -> DEBUG=True, so the dev runserver serves media/static
+      # and renders real error pages while pa11y scans.
+      DJANGO_ENV: DEBUG
+      DJANGO_SETTINGS_MODULE: makeabilitylab.settings_test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ImageMagick + Ghostscript power the PDF->thumbnail path the demo
+      # publications hit on save; libpq-dev builds psycopg2.
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends imagemagick ghostscript libpq-dev
+          sudo cp imagemagick-policy.xml /etc/ImageMagick-6/policy.xml
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      # Build the website schema from models (migrations are gitignored;
+      # settings_test sets MIGRATION_MODULES={'website': None}, so --run-syncdb
+      # creates the tables directly) and seed deterministic demo content.
+      - name: Build schema and seed demo data
+        run: |
+          python manage.py migrate --run-syncdb
+          python manage.py seed_demo_projects
+          python manage.py seed_demo_news
+
+      - name: Start dev server
+        run: |
+          python manage.py runserver 0.0.0.0:8000 --noreload &
+          echo "Waiting for the server to come up…"
+          for i in $(seq 1 30); do
+            if curl -sf -o /dev/null http://localhost:8000/; then
+              echo "Server is up."; exit 0
+            fi
+            sleep 1
+          done
+          echo "Server did not start in time"; exit 1
+
+      - name: Install pa11y-ci
+        run: npm install -g pa11y-ci
+
+      # Report-only: `|| true` so violations never fail the job. Output is teed
+      # to the log and a trimmed tail posted to the run Summary.
+      - name: Run Pa11y accessibility sweep
+        run: |
+          pa11y-ci --config .pa11yci.ci.json 2>&1 | tee pa11y-output.txt || true
+          {
+            echo "## Accessibility (Pa11y + Axe, WCAG2AA) — report-only"
+            echo
+            echo '```'
+            tail -n 60 pa11y-output.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
