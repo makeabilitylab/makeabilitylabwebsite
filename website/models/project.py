@@ -335,18 +335,26 @@ class Project(models.Model):
             return self.thumbnail_alt_text
 
     def get_pis(self):
-        """Returns the PIs for the project as a QuerySet of Person objects"""
-        pis_queryset = (self.projectrole_set
-                          .filter(pi_member=LeadProjectRoleTypes.PI)
-                          .values_list('person', flat=True))
-        return pis_queryset
+        """Returns the PIs for the project as a QuerySet of Person objects.
+
+        PI status is tracked on ``ProjectRole.lead_project_role`` (not on the
+        Project itself), so we filter the project's roles by that field.
+        """
+        return Person.objects.filter(
+            projectrole__project=self,
+            projectrole__lead_project_role=LeadProjectRoleTypes.PI,
+        ).distinct()
 
     def get_co_pis(self):
-        """Returns the Co-PIs for this project as a QuerySet of Person objects"""
-        copis_queryset = (self.projectrole_set
-                          .filter(pi_member=LeadProjectRoleTypes.CO_PI)
-                          .values_list('person', flat=True))
-        return copis_queryset
+        """Returns the Co-PIs for this project as a QuerySet of Person objects.
+
+        Co-PI status is tracked on ``ProjectRole.lead_project_role`` (not on the
+        Project itself), so we filter the project's roles by that field.
+        """
+        return Person.objects.filter(
+            projectrole__project=self,
+            projectrole__lead_project_role=LeadProjectRoleTypes.CO_PI,
+        ).distinct()
 
     def has_award(self):
         """
