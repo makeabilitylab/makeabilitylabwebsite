@@ -205,6 +205,45 @@ class JsonLdTests(DatabaseTestCase):
         self.assertEqual(data["headline"], "Pwn </script><b>x</b>")  # round-trips
 
 
+class DescriptionFallbackTests(DatabaseTestCase):
+    """Distinct, length-bounded descriptions instead of the generic boilerplate
+    (#1142/#1324): home mirrors the hero blurb; summary-less projects use About."""
+
+    def _meta_description(self, resp):
+        m = re.search(r'name="description" content="([^"]*)"', resp.content.decode())
+        return m.group(1) if m else None
+
+    def test_home_uses_distinct_hero_description(self):
+        resp = self.client.get(reverse("website:index"))
+        desc = self._meta_description(resp)
+        self.assertIn("advanced research lab in Human-AI, directed by", desc)
+        self.assertLessEqual(len(desc), 160)
+        # not the old generic boilerplate
+        self.assertNotIn("Human-Computer Interaction and AI directed by Professor", desc)
+
+    def test_project_without_summary_falls_back_to_about(self):
+        p = self.make_project(
+            name="GlassEar", short_name="glassear", is_visible=True,
+            start_date=date(2021, 1, 1), summary="",
+            about="<p>GlassEar is a wearable sound-awareness display for d/Deaf users.</p>",
+        )
+        resp = self.client.get(reverse("website:project", args=[p.short_name]))
+        desc = self._meta_description(resp)
+        self.assertIn("GlassEar is a wearable sound-awareness display", desc)
+        self.assertLessEqual(len(desc), 160)
+
+    def test_project_without_summary_or_about_uses_trimmed_default(self):
+        p = self.make_project(
+            name="Empty Proj", short_name="emptyproj", is_visible=True,
+            start_date=date(2021, 1, 1), summary="", about="",
+        )
+        resp = self.client.get(reverse("website:project", args=[p.short_name]))
+        desc = self._meta_description(resp)
+        # last-resort generic default — present but trimmed
+        self.assertIn("Makeability Lab", desc)
+        self.assertLessEqual(len(desc), 160)
+
+
 class PageMetadataSchemeTests(DatabaseTestCase):
     """site_scheme keys off DJANGO_ENV, not DEBUG. The test server runs DEBUG=True
     behind the same TLS proxy as prod, so a DEBUG-based check would emit http://

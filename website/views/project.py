@@ -121,7 +121,10 @@ def project(request, project_name):
     # /projects/ alias to one indexable URL.
     context['page_meta'] = {
         'title': project.name,
-        'description': meta_description(project.summary),
+        # Prefer the one-line summary; fall back to the (HTML) About text,
+        # stripped + truncated. Gives summary-less projects a distinct
+        # description instead of the generic lab boilerplate (#1142/#1324).
+        'description': meta_description(project.summary or project.about),
         'canonical_path': reverse('website:project', args=[project.short_name]),
     }
 

@@ -79,6 +79,14 @@ def index(request):
                'sponsors': sponsors,
                'debug': settings.DEBUG}
 
+    # Distinct home-page description, mirroring the hero "About Us" blurb next to
+    # the animated logo (index.html). Concise (~155 chars) so it isn't truncated
+    # in search/social previews, and not the generic fallback (#1142/#1324).
+    home_description = ("The Makeability Lab is an advanced research lab in Human-AI, "
+                        "directed by Prof. Jon E. Froehlich in UW's Allen School of "
+                        "Computer Science.")
+    context['page_meta'] = {'description': home_description}
+
     # schema.org Organization JSON-LD (home page) — helps Google build a
     # knowledge panel for "Makeability Lab" (#1142/#1324). Rendered by the
     # jsonld block in base.html.
@@ -89,10 +97,7 @@ def index(request):
         "url": absolute_url(request, "/"),
         "logo": absolute_url(request, static(
             "website/img/logos/makelab_logo_v3_white_with_colors_and_text_og_image_ratio_1200w.png")),
-        "description": ("The Makeability Lab is an advanced research lab in "
-                        "Human-Computer Interaction and AI directed by Professor "
-                        "Jon E. Froehlich at the University of Washington's Allen "
-                        "School of Computer Science."),
+        "description": home_description,
         "parentOrganization": {
             "@type": "CollegeOrUniversity",
             "name": ("Paul G. Allen School of Computer Science & Engineering, "
