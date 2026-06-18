@@ -71,6 +71,20 @@ if config.has_option('Django', 'ALLOWED_HOSTS'):
 else:
     ALLOWED_HOSTS = ['*']
 
+# Trust the X-Forwarded-Proto header from UW CSE's TLS-terminating Apache proxy so
+# request.scheme / request.is_secure() report the real (https) scheme (#1329).
+#
+# The deployed Django container is reached over plain HTTP from Apache, so without
+# this Django thinks every request is http even though visitors arrive over https.
+# This is ONLY safe because the proxy is trusted: Apache sets X-Forwarded-Proto and
+# the backend binds to the host's loopback only, so a client can't reach Django
+# directly to spoof the header (confirmed with UW CSE IT). Gated to the deployed
+# environments — in local dev there is no such proxy, so we must NOT trust the
+# header (a direct client could forge it). Supersedes the in-app site_scheme
+# workaround from #1236, which we keep for now and remove once verified on -test.
+if DJANGO_ENV in ('PROD', 'TEST'):
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 # Makeability Lab Global Variables, including Makeability Lab version
 ML_WEBSITE_VERSION = "2.12.1" # Keep this updated with each release and also change the short description below
 ML_WEBSITE_VERSION_DESCRIPTION = "Patch: tighten meta descriptions (#1142/#1324). Home now uses a concise description mirroring the hero blurb; projects without a one-line summary fall back to a truncated About instead of the generic lab boilerplate; the last-resort default is trimmed to ~135 chars. Reduces duplicate/over-long descriptions flagged by social/OG inspectors. Template/view-only — no schema change."
