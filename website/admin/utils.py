@@ -9,11 +9,47 @@ or potential mentors) that would otherwise be duplicated across admin files like
 person_admin.py and position_admin.py.
 """
 
-from django.db.models import Q, Case, When, Value, IntegerField
+from django.db.models import Q, Case, When, Value, IntegerField, Count, OuterRef, Subquery
+from django.db.models.functions import Coalesce
 from django.utils import timezone
 
 from website.models import Person, Position
 from website.models.position import Title
+
+
+def related_count_subquery(model, fk_lookup, *, count_field='pk', distinct=False,
+                           extra_filter=None):
+    """Build a correlated-subquery annotation that counts related ``model`` rows
+    for each outer row, for use in a ``ModelAdmin.get_queryset()`` override.
+
+    Why a subquery instead of ``annotate(Count(...))``: stacking several
+    ``Count()`` annotations over different multi-valued relations in one query
+    makes the joins multiply rows (a cartesian blow-up) and, without care, wrong
+    counts. Each count here is an independent scalar subquery, so N count columns
+    cost N cheap correlated subqueries in a single changelist query — not a
+    growing pile of joins, and not one query per row.
+
+    Args:
+        model: the related model to count (e.g. ``Publication``).
+        fk_lookup: the field on ``model`` pointing back to the outer row
+            (e.g. ``'projects'`` for ``Publication.projects``, ``'person'`` for
+            ``ProjectRole.person``). ``OuterRef('pk')`` is matched against it.
+        count_field: field to count; defaults to ``'pk'`` (i.e. count rows).
+        distinct: count distinct values of ``count_field`` (e.g. distinct people).
+        extra_filter: an optional ``Q`` further constraining the related rows.
+
+    Returns:
+        An expression resolving to an int (0 when there are no related rows).
+    """
+    qs = model.objects.filter(**{fk_lookup: OuterRef('pk')})
+    if extra_filter is not None:
+        qs = qs.filter(extra_filter)
+    # Group by the outer key so the subquery returns exactly one row (the count).
+    qs = (qs.order_by()
+            .values(fk_lookup)
+            .annotate(_c=Count(count_field, distinct=distinct))
+            .values('_c')[:1])
+    return Coalesce(Subquery(qs, output_field=IntegerField()), 0)
 
 
 def get_active_professors_queryset(prioritized_name=Person.DIRECTOR_NAME):

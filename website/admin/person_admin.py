@@ -1,12 +1,13 @@
 from django import forms
 from django.contrib import admin
 from django.core.files import File
-from website.models import Position, Person, ProjectRole
+from website.models import Position, Person, ProjectRole, Publication, Talk
 from website.models.position import Title
 from website.models.person import PERSON_THUMBNAIL_SIZE
 from easy_thumbnails.exceptions import InvalidImageFormatError # for handling invalid images
 from website.admin_list_filters import PositionRoleListFilter, PositionTitleListFilter
-from website.admin.utils import get_active_professors_queryset, get_active_mentors_queryset
+from website.admin.utils import (get_active_professors_queryset, get_active_mentors_queryset,
+                                 related_count_subquery)
 from image_cropping import ImageCroppingMixin
 from image_cropping.widgets import EasterEggCropImageWidget
 import website.utils.fileutils as ml_fileutils
@@ -179,21 +180,66 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
     
     # The list display lets us control what is shown in the default persons table at Home > Website > People
     # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
-    list_display = ('get_full_name', 'get_display_thumbnail', 'get_current_title', 'get_current_role', 'is_active', 
-                    'get_start_date', 'get_cur_pos_start_date', 'get_end_date', 'recent_projects', 'get_project_count', 'get_pub_count',
-                    'get_talk_count', 'display_time_current_position', 'display_total_time_as_member')
+    # The count columns (project_count / pub_count / talk_count) read annotations
+    # set in get_queryset() rather than the per-row model count methods (#1346).
+    list_display = ('get_full_name', 'get_display_thumbnail', 'get_current_title', 'get_current_role', 'is_active',
+                    'get_start_date', 'get_cur_pos_start_date', 'get_end_date', 'recent_projects', 'project_count', 'pub_count',
+                    'talk_count', 'display_time_current_position', 'display_total_time_as_member')
 
     list_filter = (PositionRoleListFilter, PositionTitleListFilter)
 
+    # The changelist renders ~14 columns of position/count data per person; cap
+    # the page so the per-row thumbnail filesystem check stays bounded (#1346).
+    list_per_page = 50
+
+    def get_queryset(self, request):
+        """Make the People changelist issue a roughly constant number of queries
+        regardless of how many people are listed (the #1346 perf audit).
+
+        - ``position_set`` is prefetched because nearly every column ("current
+          title/role", dates, durations, is_active) and the Role filter funnel
+          through ``Person.get_latest_position``, which now reads this prefetch
+          cache instead of issuing ``.latest()`` per row.
+        - ``projectrole_set__project`` backs :meth:`recent_projects`.
+        - the three ``_*_count`` annotations back the sortable count columns,
+          replacing three per-row ``COUNT(*)`` queries with scalar subqueries.
+        """
+        return (super().get_queryset(request)
+                .prefetch_related('position_set', 'projectrole_set__project')
+                .annotate(
+                    _project_count=related_count_subquery(ProjectRole, 'person'),
+                    _pub_count=related_count_subquery(Publication, 'authors'),
+                    _talk_count=related_count_subquery(Talk, 'authors'),
+                ))
+
     def recent_projects(self, obj):
-        # Get the three most recent projects for this person based on start_date
-        recent_projects = (ProjectRole.objects.filter(person=obj)
-                                     .order_by('-start_date')[:3])
-        
-        # Return the project names as a comma-separated string
-        return ', '.join([str(project.project) for project in recent_projects])
+        """The person's three most recent project roles (by start_date), as a
+        comma-separated list of project names. Reads ``obj.projectrole_set.all()``
+        (prefetched with its ``project`` in :meth:`get_queryset`) and sorts in
+        Python, so it adds no per-row queries on the changelist."""
+        roles = sorted(obj.projectrole_set.all(),
+                       key=lambda role: role.start_date, reverse=True)[:3]
+        return ', '.join(str(role.project) for role in roles)
 
     recent_projects.short_description = 'Recent Projects'  # Sets column name in admin interface
+
+    def project_count(self, obj):
+        """Number of project roles (annotated in get_queryset; sortable)."""
+        return obj._project_count
+    project_count.short_description = 'Projects'
+    project_count.admin_order_field = '_project_count'
+
+    def pub_count(self, obj):
+        """Number of publications authored (annotated in get_queryset; sortable)."""
+        return obj._pub_count
+    pub_count.short_description = 'Pubs'
+    pub_count.admin_order_field = '_pub_count'
+
+    def talk_count(self, obj):
+        """Number of talks given (annotated in get_queryset; sortable)."""
+        return obj._talk_count
+    talk_count.short_description = 'Talks'
+    talk_count.admin_order_field = '_talk_count'
 
     def display_time_current_position(self, obj):
         """Displays the time in the current position"""

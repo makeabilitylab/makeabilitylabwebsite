@@ -361,10 +361,24 @@ class Person(models.Model):
             return latest_position.has_started()
         
     def get_total_time_in_role(self, role):
-        """Returns the total time as in the specified role across all positions as a DurationField"""
-        duration = ExpressionWrapper(Coalesce(F('end_date'), date.today()) - F('start_date'), output_field=fields.DurationField())
-        total_time_in_role = self.position_set.filter(role=role).aggregate(total=Sum(duration))['total']
-        return total_time_in_role
+        """Returns the total time in the specified role across all positions as a
+        timedelta, or None if the person never held that role.
+
+        Sums ``(end_date or today) - start_date`` over the person's positions in
+        this role, iterating ``self.position_set.all()`` in Python so a
+        prefetched ``position_set`` (admin changelist) needs no extra query. This
+        matches the prior DB aggregate, which also returned None when no
+        positions matched the role.
+        """
+        today = date.today()
+        total = None
+        for position in self.position_set.all():
+            if position.role != role:
+                continue
+            end_date = position.end_date if position.end_date is not None else today
+            duration = end_date - position.start_date
+            total = duration if total is None else total + duration
+        return total
 
     get_total_time_in_role.short_description = "Total Time In Role"
 
@@ -400,10 +414,16 @@ class Person(models.Model):
         That is, they may have started as high school students then left the lab
         then returned as a grad student. A cached property."""
         
-        # we use Django’s Q objects to construct a complex query. We check if there exists any position 
-        # where the role was Position.MEMBER and the end date is less than the current time (i.e., in the past). 
-        # The exists() method returns True if such a position exists, and False otherwise.
-        return self.position_set.filter(Q(role=Role.MEMBER) & Q(end_date__lt=timezone.now())).exists()
+        # True if any MEMBER position has an end_date on or before today (i.e. it
+        # has ended). Evaluated in Python over self.position_set.all() so a
+        # prefetched position_set (admin changelist / Role filter) avoids a
+        # per-row query; matches the prior DB filter (end_date < now()), where a
+        # same-day end_date also counted as ended.
+        today = timezone.now().date()
+        return any(position.role == Role.MEMBER
+                   and position.end_date is not None
+                   and position.end_date <= today
+                   for position in self.position_set.all())
 
     @cached_property
     def is_current_collaborator(self):
@@ -466,19 +486,33 @@ class Person(models.Model):
 
     @cached_property
     def get_earliest_position(self):
-        """Gets the earliest Position for the person or None if none exists. A cached property."""
-        if self.position_set.exists() is False:
+        """Gets the earliest Position for the person or None if none exists. A cached property.
+
+        Picks the min-start_date position from ``self.position_set.all()`` in
+        Python rather than issuing an ``.earliest()`` query. This lets a caller
+        that has ``prefetch_related('position_set')`` (e.g. the admin People
+        changelist) resolve this with zero extra queries. Positions-per-person is
+        tiny, so the non-prefetched path is unaffected (one query loads them).
+        """
+        positions = self.position_set.all()
+        if not positions:
             return None
-        else:
-            return self.position_set.earliest('start_date')
-    
+        return min(positions, key=lambda position: position.start_date)
+
     @cached_property
     def get_latest_position(self):
-        """Gets the latest Position for the person or None if none exists. A cached property."""
-        if self.position_set.exists() is False:
+        """Gets the latest Position for the person or None if none exists. A cached property.
+
+        See :meth:`get_earliest_position`: picks the max-start_date position in
+        Python so a prefetched ``position_set`` avoids a per-row ``.latest()``
+        query. Nearly every other "current ..." property funnels through here, so
+        this is the single biggest lever for the admin People changelist's query
+        count.
+        """
+        positions = self.position_set.all()
+        if not positions:
             return None
-        else:
-            return self.position_set.latest('start_date')
+        return max(positions, key=lambda position: position.start_date)
         
     @cached_property
     def get_start_date(self):
