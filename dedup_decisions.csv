@@ -1,0 +1,16 @@
+source_id,action,target_id,note
+328,merge,564,jennifermankoff: keep 564 (UW email + more refs)
+624,merge,498,jasonyip: keep 498 (7 refs vs 1)
+649,merge,652,hangdo: keep 652 (richer; 649 has 1 ref)
+719,merge,718,qingshen: 719 is a 0-ref shell
+709,merge,710,claudinadegyves: 709 is a 0-ref shell
+626,merge,625,jiahaoli: 626 is a 0-ref shell
+627,merge,625,jiahaoli: 627 is a 0-ref shell
+643,merge,644,mikesinclair: 643 is a 0-ref shell
+645,merge,644,mikesinclair: 645 is a 0-ref shell
+723,merge,670,erictokuda: keep 670 (older; both refs=1)
+724,merge,707,heatherfeldner: keep 707 (older; both refs=1)
+581,merge,623,wendyroldan: keep 623 (real headshot; scalar fields backfill from 581)
+720,merge,669,claudiosilva: revealed by the NFKD accent fix; keep 669 (correct spelling)
+840,keep,,jasminezhang: genuine namesake - leave separate (#1206)
+869,keep,,jasminezhang: genuine namesake - leave separate (#1206)

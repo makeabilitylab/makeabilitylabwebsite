@@ -7,6 +7,7 @@ from website.models.project_role import ProjectRole
 from django.core.files import File
 import website.utils.fileutils as ml_fileutils
 from website.utils.upload_validators import validate_image_upload
+from website.utils.name_utils import build_unique_url_name
 
 from django.db.models.functions import Coalesce
 from django.conf import settings
@@ -22,7 +23,6 @@ from django.utils.safestring import mark_safe # for the html we use in help_text
 import os # for joining paths
 from uuid import uuid4 # for generating unique filenames
 
-import re
 from datetime import date, timedelta
 
 from image_cropping import ImageRatioField
@@ -35,15 +35,6 @@ import string # for punctuation
 
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
-
-# Special character mappings
-special_chars = {
-    'ã': 'a', 'à': 'a', 'â': 'a',
-    'é': 'e', 'è': 'e', 'ê': 'e',
-    'ñ': 'n', 'ń': 'n',
-    'ö': 'o', 'ô': 'o',
-    'û': 'u', 'ü': 'u', 'ù': 'u'
-}
 
 PERSON_THUMBNAIL_SIZE = (245, 245)
 
@@ -662,29 +653,17 @@ class Person(models.Model):
 
     def save(self, *args, **kwargs):
         
-        # First, automatically set the url_name field
-        # Substitute any common special characters. I haven't found a better automatic way to do
-        # this, so we are manually mapping 'common' special characters.
-        url_name_cleaned = (self.first_name + self.last_name).lower()
-        for c in url_name_cleaned:
-            if bool(re.search('[^a-zA-Z]', c)) and c in special_chars:
-                url_name_cleaned = url_name_cleaned.replace(c, special_chars.get(c))
-
-        # Clean remaining characters (EX: dashes, periods).
-        url_name_cleaned = re.sub('[^a-zA-Z]', '', url_name_cleaned)
-
-        # Check for collisions and append numeric suffix if needed
-        # We exclude the current person (by pk) when checking for duplicates to allow updates
-        base_url_name = url_name_cleaned
-        counter = 2
-
-        # Keep incrementing counter until we find a unique url_name
-        while Person.objects.filter(url_name=url_name_cleaned).exclude(pk=self.pk).exists():
-            url_name_cleaned = f"{base_url_name}{counter}"
-            counter += 1
-            _logger.debug(f"URL name collision detected for {self.get_full_name()}. Trying {url_name_cleaned}")
-
-        self.url_name = url_name_cleaned
+        # Automatically derive a unique url_name. The accent-folding + collision
+        # logic lives in build_unique_url_name (shared with recompute_url_names):
+        # it prefers the bare key (jonfroehlich), then a readable middle-initial
+        # differentiator for namesakes (jasminexzhang), then a numeric suffix
+        # (jasminezhang2). We exclude this row by pk so re-saving keeps its name.
+        self.url_name = build_unique_url_name(
+            self.first_name, self.middle_name, self.last_name,
+            is_taken=lambda candidate: (
+                Person.objects.filter(url_name=candidate).exclude(pk=self.pk).exists()
+            ),
+        )
 
         # Next, automatically set the bio_date_modified field
         if self.pk is not None: # checks if this is an existing object

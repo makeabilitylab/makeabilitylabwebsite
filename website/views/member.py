@@ -64,14 +64,16 @@ def member(request, member_name=None, member_id=None):
             # Try a case-insensitive exact match
             person = get_object_or_404(Person, url_name__iexact=member_name)
         except MultipleObjectsReturned:
-            # This should not happen if url_name uniqueness is working correctly
-            # Log error and return the most recently bio-modified person as fallback
-            # (Person tracks bio_datetime_modified, not modified_date — the latter
-            # is not a field on the model and would raise FieldError.)
-            _logger.error(f"Multiple people found with url_name={member_name}! This indicates url_name uniqueness is broken. Returning most recent.")
-            person = Person.objects.filter(url_name__iexact=member_name).order_by('-bio_datetime_modified').first()
-            if person is None:
-                raise Http404("No person matches the given query.")
+            # url_name is kept unique by Person.save() and the recompute_url_names
+            # command (#1206/#1275), so this branch should be unreachable. If a
+            # collision ever recurs, fail loudly with a clean 404 rather than a 500
+            # or a silent .first() pick (which would make one namesake permanently
+            # unreachable and could surface the wrong person). The fix is always to
+            # re-run `manage.py recompute_url_names`, not to guess a winner here.
+            _logger.error(
+                f"Multiple people share url_name={member_name!r} — url_name uniqueness is "
+                f"broken; run `manage.py recompute_url_names`. Returning 404.")
+            raise Http404("No unique person matches the given query.")
         except Http404:
             _logger.debug(f"{member_name} not found for url_name, looking for closest match in database")
             closest_urlname = get_closest_urlname_in_database(member_name)
