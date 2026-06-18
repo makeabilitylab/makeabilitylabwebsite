@@ -5,7 +5,48 @@ from unittest.mock import MagicMock
 
 from django.test import SimpleTestCase
 
+from website.models.project import Project
 from website.tests.base import DatabaseTestCase
+
+
+# --- Project date-range string --------------------------------------------
+
+
+class ProjectDatesStrTests(SimpleTestCase):
+    """
+    Tests for Project.get_project_dates_str, including the null-start_date
+    guard (#1278).
+
+    start_date is nullable (``null=True, blank=True``), so a project can exist
+    without one. The method accessed ``self.start_date.year`` unconditionally,
+    so rendering such a project's page (the template prints ``{{ date_str }}``)
+    crashed with AttributeError -- a real 500 found by the view smoke-sweep.
+    A missing start_date now yields an empty string (renders as nothing).
+    """
+
+    def _dates_str(self, start, end):
+        obj = MagicMock()
+        obj.start_date = start
+        obj.end_date = end
+        return Project.get_project_dates_str(obj)
+
+    def test_ongoing_project_returns_start_present(self):
+        self.assertEqual(self._dates_str(date(2022, 1, 1), None), "2022–Present")
+
+    def test_same_year_returns_single_year(self):
+        self.assertEqual(
+            self._dates_str(date(2022, 1, 1), date(2022, 6, 1)), "2022"
+        )
+
+    def test_multi_year_returns_start_end_range(self):
+        self.assertEqual(
+            self._dates_str(date(2020, 1, 1), date(2022, 6, 1)), "2020–2022"
+        )
+
+    def test_null_start_date_returns_empty_string(self):
+        self.assertEqual(self._dates_str(None, None), "")
+        # Even with an end_date set, a missing start can't form a range.
+        self.assertEqual(self._dates_str(None, date(2022, 6, 1)), "")
 
 
 # --- Project member count regression --------------------------------------

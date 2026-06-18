@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.12.1" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Patch: tighten meta descriptions (#1142/#1324). Home now uses a concise description mirroring the hero blurb; projects without a one-line summary fall back to a truncated About instead of the generic lab boilerplate; the last-resort default is trimmed to ~135 chars. Reduces duplicate/over-long descriptions flagged by social/OG inspectors. Template/view-only — no schema change."
+ML_WEBSITE_VERSION = "2.12.2" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Patch: test backfill for high-risk untested code (#1278 item 5) surfaced and fixed two latent 500s — Artifact.save() crashed re-saving an artifact with no PDF, and a project with no start_date 500'd its page. Adds a public-view smoke-sweep plus coverage for delete_unused_files, Person.save() side effects, and the pure utils (timeutils/ml_utils/fileutils), lifting app coverage 59%→69%. Two one-line model guards; no schema change."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 

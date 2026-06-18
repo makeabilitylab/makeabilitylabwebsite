@@ -307,28 +307,32 @@ class Artifact(models.Model):
             else:
                 _logger.debug("No authors exist yet, so will wait for m2m authors_changed to rename files")
 
-            # Generate a thumbnail if one does not already exist
-            pdf_filename = os.path.basename(self.pdf_file.name)
-            pdf_filename_no_ext, ext = os.path.splitext(pdf_filename)
-            thumbnail_filename = os.path.basename(pdf_filename_no_ext) + ".jpg" 
-            thumbnail_filename_with_local_path = self.get_upload_thumbnail_dir(thumbnail_filename)
-            thumbnail_exists_in_storage = self.thumbnail.storage.exists(thumbnail_filename_with_local_path)
-            if not self.thumbnail or not thumbnail_exists_in_storage:
-                _logger.debug(f"The thumbnail for artifact.id={self.id} does not exist at {thumbnail_filename_with_local_path}, generating...")
-                
-                # generate a thumbnail
-                if self.pdf_file.storage.exists(self.pdf_file.name):
-                    thumbnail_local_path = os.path.dirname(thumbnail_filename_with_local_path)
-                    ml_fileutils.generate_thumbnail_for_pdf(self.pdf_file, self.thumbnail, thumbnail_local_path)
-                
-                    # If 'update_fields' does not exist in kwargs, all fields are saved
-                    # Add 'thumbnail' to the update_fields list so that it gets updated in the db
-                    if 'update_fields' in kwargs:
-                        kwargs.setdefault('update_fields', []).append('thumbnail')
-                else:
-                    _logger.debug(f"Could not generate a thumbnail because the pdf {self.pdf_file.path} was not found in storage")
-            elif thumbnail_exists_in_storage:
-                _logger.debug(f"The thumbnail for artifact.id={self.id} already exists at {thumbnail_filename_with_local_path}, so not generating")
+            # Generate a thumbnail if one does not already exist. Guard on
+            # pdf_file: it's nullable, and self.pdf_file.name is None when empty,
+            # which would crash os.path.basename below (#1278). No PDF simply
+            # means there is no thumbnail to generate.
+            if self.pdf_file:
+                pdf_filename = os.path.basename(self.pdf_file.name)
+                pdf_filename_no_ext, ext = os.path.splitext(pdf_filename)
+                thumbnail_filename = os.path.basename(pdf_filename_no_ext) + ".jpg"
+                thumbnail_filename_with_local_path = self.get_upload_thumbnail_dir(thumbnail_filename)
+                thumbnail_exists_in_storage = self.thumbnail.storage.exists(thumbnail_filename_with_local_path)
+                if not self.thumbnail or not thumbnail_exists_in_storage:
+                    _logger.debug(f"The thumbnail for artifact.id={self.id} does not exist at {thumbnail_filename_with_local_path}, generating...")
+
+                    # generate a thumbnail
+                    if self.pdf_file.storage.exists(self.pdf_file.name):
+                        thumbnail_local_path = os.path.dirname(thumbnail_filename_with_local_path)
+                        ml_fileutils.generate_thumbnail_for_pdf(self.pdf_file, self.thumbnail, thumbnail_local_path)
+
+                        # If 'update_fields' does not exist in kwargs, all fields are saved
+                        # Add 'thumbnail' to the update_fields list so that it gets updated in the db
+                        if 'update_fields' in kwargs:
+                            kwargs.setdefault('update_fields', []).append('thumbnail')
+                    else:
+                        _logger.debug(f"Could not generate a thumbnail because the pdf {self.pdf_file.path} was not found in storage")
+                elif thumbnail_exists_in_storage:
+                    _logger.debug(f"The thumbnail for artifact.id={self.id} already exists at {thumbnail_filename_with_local_path}, so not generating")
 
         _logger.debug(f"Calling super().save(*args, **kwargs)")
 
