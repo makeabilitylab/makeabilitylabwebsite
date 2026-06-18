@@ -72,8 +72,8 @@ else:
     ALLOWED_HOSTS = ['*']
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.11.1" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Patch: remove the spent #1275 merge one-shot from docker-entrypoint.sh now that the duplicate-Person consolidation has been applied to production in v2.11.0. No data or behavior change — the one-shot was PROD-gated and idempotent (the duplicates are already merged, so it was a no-op); this is entrypoint cleanup so future prod restarts don't re-run it. recompute_url_names remains in the entrypoint as the durable url_name de-collision pass (#1206)."
+ML_WEBSITE_VERSION = "2.12.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Minor: site-wide SEO / social-sharing metadata overhaul (#1236, #1142, #1324). Centralized per-page Open Graph + Twitter Card tags with https URLs behind the TLS proxy (fixes #1236 via a site_scheme context processor), self-referential canonical links, distinct per-page meta descriptions, and schema.org JSON-LD (Organization on home, Person w/ sameAs on member pages, NewsArticle on news). Adds ORCID + Google Scholar fields to Person. IT follow-up #1329 (SECURE_PROXY_SSL_HEADER) would supersede the site_scheme workaround."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
