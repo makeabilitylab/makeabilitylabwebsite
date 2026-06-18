@@ -24,7 +24,17 @@ listing), so they are covered by the static sitemap and not enumerated here.
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 
-from website.models import Project, Person, News
+from website.models import Project, Person, News, Publication, Award
+
+
+def _latest(model, field):
+    """Return the most recent non-null value of ``field`` across ``model``, or None."""
+    return (
+        model.objects.filter(**{f"{field}__isnull": False})
+        .order_by(f"-{field}")
+        .values_list(field, flat=True)
+        .first()
+    )
 
 
 class _HttpsSitemap(Sitemap):
@@ -61,6 +71,39 @@ class StaticViewSitemap(_HttpsSitemap):
 
     def location(self, item):
         return reverse(item)
+
+    def lastmod(self, item):
+        """
+        Most-recent content date for each listing page, so the sitemap signals
+        when a section last changed (helps crawlers prioritize re-crawls).
+
+        Returns ``None`` for an empty section; the framework then simply omits
+        ``<lastmod>`` for that URL. Some sections expose a ``date`` (plain date)
+        and people a datetime — Django's ``get_latest_lastmod`` catches the
+        resulting mixed-type ``max()`` and just drops the sitemap-level lastmod,
+        so this is safe.
+        """
+        if item == "website:people":
+            return _latest(Person, "bio_datetime_modified")
+        if item == "website:publications":
+            return _latest(Publication, "date")
+        if item == "website:projects":
+            return _latest(Project, "updated")
+        if item == "website:awards":
+            return _latest(Award, "date")
+        if item == "website:news_listing":
+            return _latest(News, "date")
+        if item == "website:index":
+            # Home page surfaces recent content across sections; use the most
+            # recent of news, publications, and project updates.
+            candidates = [
+                _latest(News, "date"),
+                _latest(Publication, "date"),
+                _latest(Project, "updated"),
+            ]
+            candidates = [c for c in candidates if c is not None]
+            return max(candidates) if candidates else None
+        return None
 
 
 class ProjectSitemap(_HttpsSitemap):
