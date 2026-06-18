@@ -16,12 +16,24 @@ See website/templates/website/base.html, website/context_processors.py, and
 website/utils/metadata.py.
 """
 
+import json
+import re
 from datetime import date
 
 from django.test import override_settings
 from django.urls import reverse
 
 from website.tests.base import DatabaseTestCase
+
+
+def _extract_jsonld(test, resp):
+    """Pull the JSON-LD block out of a response and parse it (fails the test if
+    it's missing or not valid JSON)."""
+    test.assertEqual(resp.status_code, 200)
+    m = re.search(r'<script type="application/ld\+json">(.*?)</script>',
+                  resp.content.decode(), re.DOTALL)
+    test.assertIsNotNone(m, "expected a JSON-LD <script> block")
+    return json.loads(m.group(1)), m.group(1)
 
 
 def _position(person, title=None):
@@ -149,6 +161,46 @@ class ListPageDescriptionTests(DatabaseTestCase):
                          "website:news_listing"):
             resp = self.client.get(reverse(url_name))
             self.assertNotContains(resp, f'name="description" content="The Makeability Lab is an {self.GENERIC}')
+
+
+class JsonLdTests(DatabaseTestCase):
+    """schema.org JSON-LD structured data (#1324). Every block must be present
+    and parse as valid JSON (guards against template-escaping bugs)."""
+
+    def test_home_emits_organization(self):
+        data, _ = _extract_jsonld(self, self.client.get(reverse("website:index")))
+        self.assertEqual(data["@type"], "Organization")
+        self.assertEqual(data["name"], "Makeability Lab")
+        self.assertIn("sameAs", data)
+
+    def test_member_emits_person_with_sameas(self):
+        person = self.make_person(
+            first_name="Ada", last_name="Lovelace",
+            orcid="https://orcid.org/0000-0002-1853-9710",
+        )
+        _position(person)
+        data, _ = _extract_jsonld(self, self.client.get(
+            reverse("website:member_by_name", kwargs={"member_name": person.url_name})))
+        self.assertEqual(data["@type"], "Person")
+        self.assertEqual(data["name"], "Ada Lovelace")
+        self.assertIn("https://orcid.org/0000-0002-1853-9710", data["sameAs"])
+
+    def test_news_emits_newsarticle(self):
+        item = self.make_news_item(title="Lab wins award", content="Body text.")
+        data, _ = _extract_jsonld(self, self.client.get(
+            reverse("website:news_item_by_id", kwargs={"id": item.id})))
+        self.assertEqual(data["@type"], "NewsArticle")
+        self.assertEqual(data["headline"], "Lab wins award")
+        self.assertIn("datePublished", data)
+
+    def test_jsonld_escapes_script_breakout(self):
+        """A title containing </script> must not break out of the ld+json tag."""
+        item = self.make_news_item(title="Pwn </script><b>x</b>", content="x")
+        data, block = _extract_jsonld(self, self.client.get(
+            reverse("website:news_item_by_id", kwargs={"id": item.id})))
+        self.assertNotIn("</script>", block)       # escaped, not literal
+        self.assertIn("\\u003c", block)
+        self.assertEqual(data["headline"], "Pwn </script><b>x</b>")  # round-trips
 
 
 class PageMetadataSchemeTests(DatabaseTestCase):

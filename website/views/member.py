@@ -2,7 +2,7 @@ from django.conf import settings # for access to settings variables, see https:/
 from website.models import Person, News, Video
 import website.utils.ml_utils as ml_utils
 from website.utils.bio_utils import auto_generate_bio
-from website.utils.metadata import meta_description
+from website.utils.metadata import meta_description, absolute_url, render_jsonld
 from django.urls import reverse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
@@ -166,12 +166,35 @@ def member(request, member_name=None, member_id=None):
     else:
         person_description = None
 
+    member_path = reverse('website:member_by_name', kwargs={'member_name': person.url_name})
     context['page_meta'] = {
         'title': f"{person.get_full_name()} - Makeability Lab",
         'description': person_description,
         'og_type': 'profile',
-        'canonical_path': reverse('website:member_by_name', kwargs={'member_name': person.url_name}),
+        'canonical_path': member_path,
     }
+
+    # schema.org Person JSON-LD (member page). sameAs links the profile to the
+    # person's external scholarly/social identities (ORCID, Scholar, GitHub, …),
+    # which strengthens "<name> Makeability Lab" search results (#1142/#1324).
+    person_same_as = [u for u in (person.personal_website, person.github,
+                                  person.twitter, person.bluesky, person.mastodon,
+                                  person.threads, person.linkedin, person.orcid,
+                                  person.google_scholar) if u]
+    person_jsonld = {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": person.get_full_name(),
+        "url": absolute_url(request, member_path),
+        "affiliation": {"@type": "Organization", "name": "Makeability Lab"},
+    }
+    if latest_position:
+        person_jsonld["jobTitle"] = str(latest_position.title)
+    if person.image:
+        person_jsonld["image"] = absolute_url(request, person.image.url)
+    if person_same_as:
+        person_jsonld["sameAs"] = person_same_as
+    context['jsonld'] = render_jsonld(person_jsonld)
 
     # Render is a Django shortcut (aka helper function). It combines a given template—in this case
     # member.html—with a context dictionary and returns an HttpResponse object with that rendered text.

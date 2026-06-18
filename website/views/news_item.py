@@ -3,7 +3,7 @@ from django.db.models import Prefetch # fore prefetching
 from website.models import News, Project
 
 import website.utils.ml_utils as ml_utils
-from website.utils.metadata import meta_description
+from website.utils.metadata import meta_description, absolute_url, render_jsonld
 from django.urls import reverse
 from django.shortcuts import render, get_object_or_404
 from django.http import Http404
@@ -102,6 +102,23 @@ def news_item(request, slug=None, id=None):
         'og_type': 'article',
         'canonical_path': news_canonical,
     }
+
+    # schema.org NewsArticle JSON-LD (news detail). #1324.
+    news_jsonld = {
+        "@context": "https://schema.org",
+        "@type": "NewsArticle",
+        "headline": cur_news_item.title,
+        "url": absolute_url(request, news_canonical),
+        "publisher": {"@type": "Organization", "name": "Makeability Lab"},
+    }
+    if cur_news_item.date:
+        news_jsonld["datePublished"] = cur_news_item.date.isoformat()
+    if cur_news_item.author:
+        news_jsonld["author"] = {"@type": "Person",
+                                 "name": cur_news_item.author.get_full_name()}
+    if cur_news_item.image:
+        news_jsonld["image"] = absolute_url(request, cur_news_item.image.url)
+    context['jsonld'] = render_jsonld(news_jsonld)
     
     
 

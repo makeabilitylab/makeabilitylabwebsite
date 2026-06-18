@@ -102,7 +102,7 @@ TEMPLATE BLOCKS:
   <meta name="twitter:title" content="{{ meta_title }}">
   <meta name="twitter:description" content="{{ meta_description }}">
 
-  {% block jsonld %}{% endblock %}
+  {% block jsonld %}{% if jsonld %}<script type="application/ld+json">{{ jsonld }}</script>{% endif %}{% endblock %}
   {% endwith %}
 
   <!-- Favicon -->
