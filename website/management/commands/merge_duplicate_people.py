@@ -42,6 +42,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
 from website.models import Person
+from website.utils.name_utils import normalize_person_name
 
 _logger = logging.getLogger(__name__)
 
@@ -101,10 +102,18 @@ class Command(BaseCommand):
             '--apply', action='store_true',
             help='Actually perform the merges/deletes. Without this flag the command is a dry-run.',
         )
+        parser.add_argument(
+            '--allow-name-mismatch', action='store_true',
+            help=('Permit merging two rows whose normalized names differ (e.g. a '
+                  'documented cross-name same-person case). By default such a row '
+                  'is refused — this guards against running a prod-id decisions '
+                  'file against the wrong database (e.g. the test server).'),
+        )
 
     def handle(self, *args, **options):
         decisions = self._read_decisions(options['decisions'])
         apply = options['apply']
+        self.allow_name_mismatch = options['allow_name_mismatch']
 
         mode = 'APPLY' if apply else 'DRY-RUN'
         self.stdout.write(f"=== merge_duplicate_people [{mode}] — {len(decisions)} decision(s) ===")
@@ -172,6 +181,23 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR(
                 f"  ERROR  source and target are the same person ({source.pk}) — skipping"))
             return
+
+        # Safety guard: refuse to merge two rows whose normalized names differ.
+        # The decisions file is keyed by prod ids; this stops a prod-id file from
+        # silently merging unrelated people if run against the wrong database
+        # (e.g. the test server, where id 328 is someone else entirely).
+        if not self.allow_name_mismatch:
+            src_key = normalize_person_name(source.first_name, source.last_name)
+            tgt_key = normalize_person_name(target.first_name, target.last_name)
+            if src_key != tgt_key:
+                self.stdout.write(self.style.ERROR(
+                    f"  ERROR  name mismatch: {source.pk} ({source.get_full_name()!r}) vs "
+                    f"{target.pk} ({target.get_full_name()!r}) — skipping. Pass "
+                    f"--allow-name-mismatch for a deliberate cross-name merge."))
+                _logger.error(
+                    "merge_duplicate_people: refused name-mismatch merge %s -> %s",
+                    source.pk, target.pk)
+                return
 
         if not apply:
             self.stdout.write(

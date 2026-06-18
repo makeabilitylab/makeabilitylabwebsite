@@ -164,6 +164,30 @@ class MergeDuplicatePeopleTests(DatabaseTestCase):
         self.assertFalse(Person.objects.filter(pk=self.source.pk).exists())
         self.assertTrue(Person.objects.filter(pk=self.target.pk).exists())
 
+    def test_name_mismatch_is_refused_by_default(self):
+        # A prod-id decisions file run against the wrong DB would pair unrelated
+        # people; the name guard must refuse rather than corrupt data.
+        other = self.make_person("Totally", "Different")
+        news = self.make_news_item(author=self.source)
+        path = _decisions_file([{
+            'source_id': self.source.pk, 'action': 'merge',
+            'target_id': other.pk, 'note': 'mismatch'}])
+        call_command('merge_duplicate_people', decisions=path, apply=True)
+        # Refused: source survives, its relation untouched.
+        self.assertTrue(Person.objects.filter(pk=self.source.pk).exists())
+        news.refresh_from_db()
+        self.assertEqual(news.author, self.source)
+
+    def test_name_mismatch_allowed_with_flag(self):
+        other = self.make_person("Totally", "Different")
+        self.make_news_item(author=self.source)
+        path = _decisions_file([{
+            'source_id': self.source.pk, 'action': 'merge',
+            'target_id': other.pk, 'note': 'cross-name'}])
+        call_command('merge_duplicate_people', decisions=path, apply=True,
+                     allow_name_mismatch=True)
+        self.assertFalse(Person.objects.filter(pk=self.source.pk).exists())
+
     def test_delete_action_refuses_when_refs_exist(self):
         self.make_news_item(author=self.source)
         path = _decisions_file([{
