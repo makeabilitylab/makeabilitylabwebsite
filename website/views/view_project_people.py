@@ -236,12 +236,10 @@ def view_project_people(request):
     """
     today = date.today()
 
-    # The lab director is identified by their Title.DIRECTOR position. Both the
-    # is_director flag and the PhD-advisee check derive from this single Person so
-    # they cannot disagree.
-    director = (
-        Person.objects.filter(position__title=Title.DIRECTOR).distinct().first()
-    )
+    # The lab director drives both the is_director flag and the PhD-advisee check.
+    # Person.get_director() is the single source of truth, so the two flags cannot
+    # disagree (#1284).
+    director = Person.get_director()
     director_id = director.id if director else None
     phd_advisee_ids = _build_phd_advisee_ids(director)
 
