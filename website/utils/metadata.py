@@ -48,7 +48,9 @@ def site_scheme(request):
     The canonical scheme for absolute URLs built in views (https on the servers,
     request.scheme in local dev). Mirrors the ``site_scheme`` context processor
     (website/context_processors.py) so view-built JSON-LD URLs match the
-    template-built canonical/OG URLs. See #1236.
+    template-built canonical/OG URLs. See #1236 (and #1329 for the IT-side
+    SECURE_PROXY_SSL_HEADER follow-up that would let this fall back to
+    request.scheme).
     """
     return request.scheme if settings.DEBUG else 'https'
 

@@ -35,7 +35,7 @@ def site_scheme(request):
     absolute URLs as ``{{ site_scheme }}://{{ request.get_host }}{{ path }}``.
 
     NOTE: This is the in-repo workaround. The cleaner long-term fix is for IT to
-    set ``SECURE_PROXY_SSL_HEADER`` on the proxy (tracked separately); once that
+    set ``SECURE_PROXY_SSL_HEADER`` on the proxy (tracked in #1329); once that
     lands, ``request.scheme`` will be correct and this can fall back to it.
     """
     return {
