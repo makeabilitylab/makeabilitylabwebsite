@@ -2,7 +2,8 @@ from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_save, m2m_changed, post_delete
 
-from ckeditor_uploader.fields import RichTextUploadingField
+from django.urls import reverse_lazy
+from django_prose_editor.fields import ProseEditorField
 from website.utils.fileutils import UniquePathAndRename
 from website.utils.upload_validators import validate_image_upload
 from image_cropping import ImageRatioField
@@ -42,7 +43,35 @@ class News(models.Model):
     date = models.DateField(default=date.today) 
     author = models.ForeignKey(Person, null=True, on_delete=models.SET_NULL, related_name='authored_news')
 
-    content = RichTextUploadingField(config_name='default')
+    # Rich-text body, edited with django-prose-editor (issue #1269; replaced
+    # CKEditor 4). `sanitize=True` cleans the HTML on save using an nh3 allowlist
+    # derived from the enabled extensions below, so only markup the editor can
+    # actually produce is stored. The Figure extension's `pickerUrl` wires the
+    # "Browse…" image button to our staff-only upload view (see website/urls.py:
+    # news_image_upload); reverse_lazy avoids a URL-resolution-at-import cycle.
+    # Images are inserted without inline width/height so the responsive
+    # `.news-item-content img` CSS governs sizing (news-item.css).
+    content = ProseEditorField(
+        extensions={
+            "Bold": True, "Italic": True, "Underline": True, "Strike": True,
+            "Subscript": True, "Superscript": True, "Code": True,
+            "Heading": {"levels": [2, 3, 4]},
+            "BulletList": True, "OrderedList": True, "ListItem": True,
+            "Blockquote": True, "HorizontalRule": True,
+            "TextAlign": True, "TextStyle": True,
+            # "Edit HTML" source view for occasional manual tweaks. Adds nothing
+            # to the sanitize allowlist, so source edits are still cleaned on
+            # save (can't introduce disallowed tags like <script>).
+            "HTML": True,
+            "Link": {"enableTarget": True},
+            # Figure wraps images in <figure>/<figcaption>; Image covers bare
+            # <img> (all our legacy images) and Caption enables the captions.
+            "Figure": {"pickerUrl": reverse_lazy("website:news_image_upload")},
+            "Image": True, "Caption": True,
+            # Document/Paragraph/Text/HardBreak/History/Menu are implied defaults
+        },
+        sanitize=True,
+    )
 
     # Following the scheme of above thumbnails in other models
     image = models.ImageField(blank=True, upload_to=UniquePathAndRename("news", True), max_length=255, validators=[validate_image_upload])

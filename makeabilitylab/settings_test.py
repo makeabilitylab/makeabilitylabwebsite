@@ -14,7 +14,7 @@ ignore the website app's migration history entirely and build its tables
 directly from the current models during test-DB setup (run_syncdb), which is
 both reproducible across environments and the durable fix for that flakiness.
 
-Only the *website* app is affected; third-party apps (admin, auth, ckeditor,
+Only the *website* app is affected; third-party apps (admin, auth,
 sortedm2m, easy_thumbnails, image_cropping, ...) keep their shipped migrations.
 """
 import os

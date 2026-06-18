@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.12.3" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Patch: SEO/infra cleanup. Removes the in-app site_scheme context-processor workaround now that SECURE_PROXY_SSL_HEADER is trusted on TEST/PROD — canonical/OG/sitemap URLs derive https straight from request.scheme behind UW CSE's TLS proxy (#1329/#1236, verified on the sitemap #1338). Wires the Pa11y accessibility sweep into CI and excludes django-debug-toolbar from the scan (#1278 item 6). No schema change; no user-facing behavior change."
+ML_WEBSITE_VERSION = "2.13.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Feature: replace django-ckeditor (CKEditor 4, EOL with unpatched XSS) with django-prose-editor for the News editor (#1269), unblocking the Django 6.1 LTS upgrade. Content stays raw HTML and migrates near-losslessly; sanitized on save via an nh3 allowlist. In-body image upload moves to a staff-only picker view (reuses media/uploads/ + validate_image_upload); adds an 'Edit HTML' source view. News images are now responsive by default — a one-shot normalize_news_image_styles command strips legacy inline width/height. A small in-repo ckeditor_uploader shim keeps gitignored historical migrations importable (cleanup tracked in #1317). Field swap is TEXT->TEXT (no schema change)."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
@@ -214,9 +214,8 @@ INSTALLED_APPS = [
     'image_cropping',
     'easy_thumbnails', # for dynamically creating thumbnails: https://github.com/SmileyChris/easy-thumbnails
     'sortedm2m', # Used for SortedManyToManyFields in admin interface: https://pypi.org/project/django-sortedm2m-filter-horizontal-widget/
-    'ckeditor', # Used for news page editing in admin interface: https://pypi.org/project/django-ckeditor/
-    'ckeditor_uploader',
-    
+    'django_prose_editor', # ProseMirror rich-text editor for the News admin (replaced django-ckeditor; issue #1269)
+
     # This sortedm2m_filter_horizontal_widget widget was originally from:
     # https://github.com/svleeuwen/sortedm2m-filter-horizontal-widget
     # However, it was incompatible with Django 5.2.9, so we forked it and made some changes.
@@ -358,15 +357,12 @@ MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-# CKEditor - Rich Text Editor
-CKEDITOR_UPLOAD_PATH = "uploads/"
-CKEDITOR_FILENAME_GENERATOR = 'website.utils.fileutils.get_ckeditor_image_filename'
-CKEDITOR_IMAGE_BACKEND = 'pillow'
-CKEDITOR_CONFIGS = {
-    'default': {
-        'toolbar': 'full',
-    },
-}
+# Rich text editing for the News admin is handled by django-prose-editor
+# (issue #1269). Configuration is per-field on website/models/news.py
+# (ProseEditorField extensions + sanitize), so no project-level settings are
+# needed here. Image uploads go through our own staff-only picker view
+# (website/views/news.py: news_image_upload), which still saves into
+# media/uploads/ via website.utils.fileutils.get_ckeditor_image_filename.
 
 # Thumbnail processing
 # LS: from https://github.com/jonasundderwolf/django-image-cropping

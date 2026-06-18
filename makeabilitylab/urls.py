@@ -45,7 +45,6 @@ urlpatterns = [
     #Info on how to route root to website was found here http://stackoverflow.com/questions/7580220/django-urls-howto-map-root-to-app
     re_path(r'', include('website.urls')),
     # re_path(r'^admin/', admin.site.urls),
-    re_path(r'^ckeditor/', include('ckeditor_uploader.urls')),
     path("__debug__/", include("debug_toolbar.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

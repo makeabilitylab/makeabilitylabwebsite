@@ -200,6 +200,20 @@
   border-radius: var(--border-radius-sm);
 }
 
+/* Images inserted via django-prose-editor's Figure extension are wrapped in
+   <figure> with an optional <figcaption> (issue #1269). The img rule above
+   keeps them responsive; these style the wrapper and caption. */
+.news-item-content figure {
+  margin: var(--space-4) 0;
+}
+
+.news-item-content figcaption {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
 .news-item-content h2 {
   margin-top: var(--space-6);
   margin-bottom: var(--space-3);

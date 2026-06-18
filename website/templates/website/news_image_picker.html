@@ -1,0 +1,62 @@
+{% comment %}
+Popup "file picker" for the News rich-text editor image button (issue #1269).
+Served by website.views.news_image_upload via the prose-editor Figure
+`pickerUrl`. This is a standalone page (not extending base.html) because it
+opens in its own popup window. Three states:
+  - GET            -> upload form
+  - POST w/ error  -> upload form + error message
+  - POST success   -> script that calls the editor callback and closes the popup
+{% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Upload image</title>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; margin: 1.5rem; color: #222; }
+    h1 { font-size: 1.15rem; margin-top: 0; }
+    label { display: block; margin: .9rem 0 .25rem; font-weight: 600; }
+    input[type="file"], input[type="text"] { width: 100%; box-sizing: border-box; padding: .45rem; }
+    .hint { color: #555; font-size: .85rem; margin: .25rem 0 0; }
+    .error { color: #b00020; margin: .5rem 0; }
+    button { margin-top: 1.1rem; padding: .55rem 1.1rem; font-size: 1rem; cursor: pointer; }
+  </style>
+</head>
+<body>
+{% if uploaded_url %}
+  <p>Uploaded. You can close this window.</p>
+  <script>
+    (function () {
+      var n = "{{ func_num|escapejs }}";
+      var url = "{{ uploaded_url|escapejs }}";
+      var alt = "{{ alt_text|escapejs }}";
+      var opener = window.opener;
+      if (opener && opener.CKEDITOR && opener.CKEDITOR.tools &&
+          typeof opener.CKEDITOR.tools.callFunction === "function") {
+        opener.CKEDITOR.tools.callFunction(n, url, { alternative_text: alt });
+        window.close();
+      }
+    })();
+  </script>
+{% else %}
+  <h1>Upload an image</h1>
+  {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="CKEditorFuncNum" value="{{ func_num }}">
+    <label for="id_upload">Image file</label>
+    <input id="id_upload" type="file" name="upload"
+           accept="image/png,image/jpeg,image/gif,image/webp" required>
+    <p class="hint">JPEG, PNG, GIF, or WebP. The image displays responsively
+      (full width of the article column) &mdash; no need to set a width.</p>
+    <label for="id_alt_text">Alt text (image description for screen readers)</label>
+    <input id="id_alt_text" type="text" name="alt_text" maxlength="1024"
+           placeholder="e.g., Chu Li presenting her generals exam slides">
+    <p class="hint">Describe the image's content/purpose. Leave blank only if
+      the image is purely decorative.</p>
+    <button type="submit">Upload &amp; insert</button>
+  </form>
+{% endif %}
+</body>
+</html>

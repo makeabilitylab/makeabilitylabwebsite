@@ -36,6 +36,10 @@ class YearListFilter(admin.SimpleListFilter):
 @admin.register(News, site=ml_admin_site)
 class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
+    class Media:
+        # Gives the prose-editor content area a usable min-height (#1269).
+        css = {"all": ("website/css/news_admin.css",)}
+
     # The list display lets us control what is shown in the default table at Home > Website > News
     list_display = ('title', 'get_display_thumbnail', 'author', 'date', 'display_projects', 'display_people') 
 
