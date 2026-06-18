@@ -8,6 +8,10 @@ from website.admin.admin_site import ml_admin_site
 class PositionAdmin(admin.ModelAdmin):
     """Note: We do not want users to edit positions directly. Instead, we want them to edit people and projects.
        See PositionInline in PersonAdmin"""
+    # Needed for autocomplete/search to filter rather than return everything;
+    # the get_search_results override below builds on this base.
+    search_fields = ['person__first_name', 'person__last_name', 'title']
+
     def get_model_perms(self, request):
         """
         Return empty perms dict thus hiding the model from admin index.

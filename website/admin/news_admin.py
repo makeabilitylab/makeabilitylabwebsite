@@ -12,7 +12,10 @@ from django.db.models.functions import TruncYear # for filtering by year
 from django.utils.html import format_html # for formatting thumbnails
 from easy_thumbnails.files import get_thumbnailer # for generating thumbnails
 import os # for checking if thumbnail file exists
+import logging
 from website.admin.admin_site import ml_admin_site
+
+_logger = logging.getLogger(__name__)
 
 class YearListFilter(admin.SimpleListFilter):
     title = 'year' # a label for our filter
@@ -42,6 +45,12 @@ class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
     # Add a filter to the right sidebar that allows us to filter by year
     list_filter = (YearListFilter, 'project')
 
+    # Search by headline or author name (News previously had no search box).
+    search_fields = ['title', 'author__first_name', 'author__last_name']
+
+    # Year/month/day drill-down at the top of the changelist (News is date-driven).
+    date_hierarchy = 'date'
+
     # Define 'author' as an auto-complete field. We must then also define "search_fields"
     # in PersonAdmin or we'll receive a Django error
     autocomplete_fields = ['author']
@@ -51,12 +60,18 @@ class NewsAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
     def get_display_thumbnail(self, obj):
         if obj.image and os.path.isfile(obj.image.path):
-            # Use easy_thumbnails to generate a thumbnail
-            thumbnailer = get_thumbnailer(obj.image)
-            thumbnail_options = {'size': (NEWS_THUMBNAIL_SIZE[0], NEWS_THUMBNAIL_SIZE[1]), 'crop': True}
-            thumbnail_url = thumbnailer.get_thumbnail(thumbnail_options).url
+            try:
+                # Use easy_thumbnails to generate a thumbnail
+                thumbnailer = get_thumbnailer(obj.image)
+                thumbnail_options = {'size': (NEWS_THUMBNAIL_SIZE[0], NEWS_THUMBNAIL_SIZE[1]), 'crop': True}
+                thumbnail_url = thumbnailer.get_thumbnail(thumbnail_options).url
 
-            return format_html('<img src="{}" height="50" style="border-radius: 5%;"/>', thumbnail_url)
+                return format_html('<img src="{}" height="50" style="border-radius: 5%;"/>', thumbnail_url)
+            except Exception:
+                # A single corrupt/unreadable image must not 500 the entire News
+                # changelist (the column is rendered for every row).
+                _logger.warning("Could not generate admin thumbnail for News id=%s", obj.pk, exc_info=True)
+                return 'No Thumbnail'
         return 'No Thumbnail'
     
     get_display_thumbnail.short_description = 'Thumbnail'

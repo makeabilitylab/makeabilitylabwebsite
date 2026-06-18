@@ -22,7 +22,8 @@ class TalkAdmin(ArtifactAdmin):
 
     # search_fields are used for auto-complete, see:
     #   https://docs.djangoproject.com/en/3.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields
-    search_fields = ['title', 'forum_name']
+    # Includes speaker (author) name so talks are findable by who gave them.
+    search_fields = ['title', 'forum_name', 'authors__first_name', 'authors__last_name']
 
     # This auto-complete field is not working
     # See: https://github.com/makeabilitylab/makeabilitylabwebsite/issues/1093#issuecomment-2423843958
@@ -42,6 +43,7 @@ class TalkAdmin(ArtifactAdmin):
 
     ordering = ('-date',)  # Sort talks by date in descending order
     list_filter = ('talk_type',)  # Add a filter for the talk type
+    date_hierarchy = 'date'  # Year/month/day drill-down at the top of the list
 
     def get_changeform_initial_data(self, request):
         """

@@ -15,7 +15,9 @@ class ArtifactAdmin(admin.ModelAdmin):
 
     # search_fields are used for auto-complete, see:
     #   https://docs.djangoproject.com/en/3.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields
-    search_fields = ['title', 'forum_name']
+    # Includes author first/last name so artifacts are findable by who wrote them
+    # (Django auto-applies DISTINCT for the M2M join). Subclasses may extend this.
+    search_fields = ['title', 'forum_name', 'authors__first_name', 'authors__last_name']
 
     fieldsets = [
         (None,                      {'fields': ['title', 'authors', 'date']}),

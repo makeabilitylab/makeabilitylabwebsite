@@ -48,7 +48,9 @@ class GrantInline(admin.TabularInline):
 
 @admin.register(Project, site=ml_admin_site)
 class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
-    search_fields = ['name']  # allows you to search by the name of the project
+    # Search by name plus the research-area facets editors think in (umbrella, keyword).
+    search_fields = ['name', 'short_name', 'project_umbrellas__name', 'keywords__name']
+    ordering = ('name',)  # deterministic alphabetical sort (matched the autocomplete already)
     inlines = [GrantInline, BannerInline, PhotoInline, ProjectRoleInline]
 
     # The list display lets us control what is shown in the Project table at Home > Website > Project

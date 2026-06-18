@@ -22,6 +22,8 @@ class SponsorAdmin(ImageCroppingMixin, admin.ModelAdmin):
     # In this case, the admin will search the 'name' and 'short_name' fields of the Sponsor model.
     search_fields = ['name', 'short_name']
 
+    ordering = ('name',)  # deterministic alphabetical sort (none was defined)
+
     def total_funding(self, obj):
         return obj.grant_set.aggregate(total_funding=Sum('funding_amount'))['total_funding']
     total_funding.short_description = 'Total Funding'

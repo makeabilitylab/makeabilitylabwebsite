@@ -11,6 +11,8 @@ class ProjectInline(admin.TabularInline):  # or admin.StackedInline
 @admin.register(ProjectUmbrella, site=ml_admin_site)
 class ProjectUmbrellaAdmin(admin.ModelAdmin):
     list_display = ('name', 'short_name', 'project_count')
+    search_fields = ['name', 'short_name']
+    ordering = ('name',)
     inlines = [ProjectInline]
 
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
