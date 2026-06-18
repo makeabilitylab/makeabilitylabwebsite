@@ -106,14 +106,14 @@ django-sortedm2m==4.0.0
 #   1. Fork and update the widget package yourself
 #   2. Stay on Django 4.2 LTS (supported until April 2026)
 
-# Django CKEditor - rich text editor for news/content
-# WARNING: This package (despite being version 6.7.3) bundles CKEditor 4, which
-# is the underlying JavaScript editor. CKEditor 4 has reached end-of-life and
-# has unfixed security issues. Consider migrating to one of these alternatives:
-#   - django-ckeditor-5 (separate package that uses CKEditor 5 JS editor)
-#   - django-prose-editor
-# See: https://pypi.org/project/django-ckeditor/
-django-ckeditor==6.7.3
+# django-prose-editor - ProseMirror-based rich text editor for the News admin
+# (issue #1269). Replaced django-ckeditor (CKEditor 4), which was EOL with
+# unpatched XSS and blocked the Django 6.1 LTS upgrade. MIT-licensed, no editor
+# licensing/branding regime. The [sanitize] extra pulls in nh3, which we use for
+# server-side HTML sanitization derived from the enabled editor extensions
+# (ProseEditorField(..., sanitize=True) on website/models/news.py).
+# See: https://pypi.org/project/django-prose-editor/
+django-prose-editor[sanitize]==0.26.0
 
 
 # -----------------------------------------------------------------------------

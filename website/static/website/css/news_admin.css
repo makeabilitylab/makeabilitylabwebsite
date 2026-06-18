@@ -1,0 +1,10 @@
+/*
+ * Admin-only tweaks for the News editor (issue #1269).
+ *
+ * django-prose-editor ships no min-height, so the empty editable area
+ * collapses to ~one line on the "Add news item" page. Give it a comfortable
+ * authoring height; it still grows with content.
+ */
+.prose-editor .ProseMirror {
+  min-height: 22rem;
+}

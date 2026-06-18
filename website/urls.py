@@ -91,6 +91,11 @@ urlpatterns = [
     # re_path(r'^media/publications/(?P<filename>.+)$', views.serve_pdf, name='serve_pdf'),
     # path('media/publications/<path:filename>', views.serve_pdf, name='serve_pdf'),
 
+    # Staff-only image upload popup for the News rich-text editor (issue #1269),
+    # wired to django-prose-editor's Figure `pickerUrl`. Declared BEFORE the
+    # `news/<slug:slug>/` route below so the slug pattern can't swallow it.
+    path('news/upload-image/', views.news_image_upload, name='news_image_upload'),
+
     # Matches URLs like "news/123/" where 123 is a numeric news ID, and routes it to the `news_item` view.
     path('news/<int:id>/', views.news_item, name='news_item_by_id'),
 

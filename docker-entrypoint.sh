@@ -90,6 +90,11 @@ echo "4.2 Running 'python manage.py generate_slugs_for_old_news_items' to genera
 echo "******************************************"
 python manage.py generate_slugs_for_old_news_items
 
+echo "****************** STEP 4.2b/5: docker-entrypoint.sh ************************"
+echo "4.2b Running 'python manage.py normalize_news_image_styles' to make legacy news images responsive (#1269)"
+echo "******************************************"
+python manage.py normalize_news_image_styles
+
 echo "****************** STEP 4.3/5: docker-entrypoint.sh ************************"
 echo "4.3 Running 'python manage.py auto_close_project_roles' to auto-close project roles"
 echo "******************************************"

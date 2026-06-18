@@ -2,6 +2,7 @@ from .index import *
 from .member import *
 from .news_listing import *
 from .news_item import *
+from .news_image_upload import *
 from .people import *
 from .project import *
 from .project_listing import *
