@@ -139,9 +139,9 @@ class Person(models.Model):
     mastodon = models.URLField(blank=True, null=True)
     linkedin = models.URLField(blank=True, null=True)
     orcid = models.URLField(blank=True, null=True)
-    orcid.help_text = 'Full ORCID profile URL. For example, <a href="https://orcid.org/0000-0002-1853-9710">https://orcid.org/0000-0002-1853-9710</a>'
+    orcid.help_text = 'Full ORCID profile URL. For example, <a href="https://orcid.org/0000-0001-8291-3353">https://orcid.org/0000-0001-8291-3353</a>'
     google_scholar = models.URLField(blank=True, null=True)
-    google_scholar.help_text = 'Full Google Scholar profile URL. For example, <a href="https://scholar.google.com/citations?user=lFn1Oz0AAAAJ">https://scholar.google.com/citations?user=lFn1Oz0AAAAJ</a>'
+    google_scholar.help_text = 'Full Google Scholar profile URL. For example, <a href="https://scholar.google.com/citations?user=nExKrpsAAAAJ&amp;hl=en&amp;oi=ao">https://scholar.google.com/citations?user=nExKrpsAAAAJ&amp;hl=en&amp;oi=ao</a>'
 
     # If a bio is not added, the member view page will auto-generate one
     bio = models.TextField(blank=True, null=True)
