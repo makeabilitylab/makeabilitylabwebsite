@@ -7,13 +7,13 @@ centralized metadata block in ``base.html`` (or the ``page_meta`` a view feeds
 it) is caught. They pin three things:
 
   * canonical + Open Graph + Twitter Card tags are present on every page type;
-  * absolute URLs use ``https`` behind the proxy (the #1236 fix), driven by the
-    ``site_scheme`` context processor — verified by toggling ``DEBUG``;
+  * absolute URLs follow ``request.scheme`` — https behind the proxy because
+    ``SECURE_PROXY_SSL_HEADER`` trusts the proxy's ``X-Forwarded-Proto`` header
+    (#1329, which replaced the #1236 ``site_scheme`` workaround);
   * detail pages emit distinct, per-page titles/descriptions/types rather than
     the single generic site description.
 
-See website/templates/website/base.html, website/context_processors.py, and
-website/utils/metadata.py.
+See website/templates/website/base.html and website/utils/metadata.py.
 """
 
 import json
@@ -46,15 +46,17 @@ def _position(person, title=None):
     )
 
 
-# On the servers (DJANGO_ENV TEST/PROD) site_scheme pins https — assert against
-# that (the test client's host is "testserver", auto-added to ALLOWED_HOSTS).
-# NB: DJANGO_ENV, not DEBUG — the test server runs DEBUG=True behind the proxy
-# (see PageMetadataSchemeTests for the regression that motivated this).
-@override_settings(DJANGO_ENV='PROD')
+# Absolute URLs follow request.scheme. We issue secure (https) requests to mirror
+# the deployed servers, where SECURE_PROXY_SSL_HEADER makes request.scheme https
+# behind the TLS proxy (see PageMetadataSchemeTests for the header-driven path).
+# The test client's host is "testserver", auto-added to ALLOWED_HOSTS.
 class PageMetadataHttpsTests(DatabaseTestCase):
+    # Requests are issued with secure=True so request.scheme == "https", mirroring
+    # the deployed servers where SECURE_PROXY_SSL_HEADER makes the scheme https
+    # behind the TLS proxy.
 
     def test_home_has_core_metadata(self):
-        resp = self.client.get(reverse("website:index"))
+        resp = self.client.get(reverse("website:index"), secure=True)
         self.assertEqual(resp.status_code, 200)
         # Canonical present and https.
         self.assertContains(resp, '<link rel="canonical" href="https://testserver/">')
@@ -67,7 +69,7 @@ class PageMetadataHttpsTests(DatabaseTestCase):
 
     def test_no_http_scheme_in_social_urls(self):
         """#1236: og:url / og:image / canonical must never advertise http://."""
-        resp = self.client.get(reverse("website:index"))
+        resp = self.client.get(reverse("website:index"), secure=True)
         self.assertNotContains(resp, 'property="og:url" content="http://')
         self.assertNotContains(resp, 'property="og:image" content="http://')
         self.assertNotContains(resp, 'rel="canonical" href="http://')
@@ -78,7 +80,7 @@ class PageMetadataHttpsTests(DatabaseTestCase):
             start_date=date(2020, 1, 1),
             summary="SoundWatch is a smartwatch system for sound awareness.",
         )
-        resp = self.client.get(reverse("website:project", args=[project.short_name]))
+        resp = self.client.get(reverse("website:project", args=[project.short_name]), secure=True)
         self.assertEqual(resp.status_code, 200)
         # Canonical matches the sitemap's reverse()-built URL exactly.
         canonical = "https://testserver" + reverse("website:project", args=[project.short_name])
@@ -94,7 +96,8 @@ class PageMetadataHttpsTests(DatabaseTestCase):
                                   bio="Ada researches accessible computing.")
         _position(person)
         resp = self.client.get(
-            reverse("website:member_by_name", kwargs={"member_name": person.url_name})
+            reverse("website:member_by_name", kwargs={"member_name": person.url_name}),
+            secure=True,
         )
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, '<meta property="og:type" content="profile">')
@@ -113,7 +116,8 @@ class PageMetadataHttpsTests(DatabaseTestCase):
             content="The Makeability Lab won a best paper award at CHI.",
         )
         resp = self.client.get(
-            reverse("website:news_item_by_id", kwargs={"id": item.id})
+            reverse("website:news_item_by_id", kwargs={"id": item.id}),
+            secure=True,
         )
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, '<meta property="og:type" content="article">')
@@ -245,25 +249,35 @@ class DescriptionFallbackTests(DatabaseTestCase):
 
 
 class PageMetadataSchemeTests(DatabaseTestCase):
-    """site_scheme keys off DJANGO_ENV, not DEBUG. The test server runs DEBUG=True
-    behind the same TLS proxy as prod, so a DEBUG-based check would emit http://
-    there (regression for the #1236 follow-up fix)."""
+    """Absolute URLs follow ``request.scheme``. Behind UW CSE's TLS-terminating
+    proxy that is https because ``SECURE_PROXY_SSL_HEADER`` trusts the proxy's
+    ``X-Forwarded-Proto`` header (#1329, which replaced the DJANGO_ENV-keyed
+    ``site_scheme`` workaround from #1236)."""
 
-    @override_settings(DJANGO_ENV='TEST', DEBUG=True)
-    def test_test_server_uses_https_even_with_debug_true(self):
-        """The crux: DJANGO_ENV=TEST + DEBUG=True must still emit https."""
-        resp = self.client.get(reverse("website:index"))
+    @override_settings(SECURE_PROXY_SSL_HEADER=("HTTP_X_FORWARDED_PROTO", "https"))
+    def test_forwarded_proto_header_drives_https(self):
+        """The deployed path: an http request carrying X-Forwarded-Proto: https
+        is treated as secure, so absolute URLs emit https — exactly what Apache
+        forwards to the container (#1329). This is the crux that the old
+        DEBUG-based check got wrong on the test server (#1236)."""
+        # Send a clean Host header too (as Apache does), so get_host() doesn't
+        # append the test client's :80 port to the now-https URL.
+        resp = self.client.get(
+            reverse("website:index"),
+            HTTP_X_FORWARDED_PROTO="https",
+            HTTP_HOST="testserver",
+        )
         self.assertContains(resp, '<link rel="canonical" href="https://testserver/">')
         self.assertContains(resp, '<meta property="og:url" content="https://testserver/">')
 
-    @override_settings(DJANGO_ENV='PROD', DEBUG=False)
-    def test_prod_uses_https(self):
-        resp = self.client.get(reverse("website:index"))
+    def test_secure_request_uses_https(self):
+        """A direct TLS request (request.scheme == https) emits https URLs."""
+        resp = self.client.get(reverse("website:index"), secure=True)
+        self.assertContains(resp, '<link rel="canonical" href="https://testserver/">')
         self.assertContains(resp, '<meta property="og:url" content="https://testserver/">')
 
-    @override_settings(DJANGO_ENV='DEBUG', DEBUG=True)
     def test_local_dev_uses_request_scheme(self):
-        """Local dev (DJANGO_ENV=DEBUG/unset over http) follows request.scheme."""
+        """Local dev over http (no proxy header) follows request.scheme — http."""
         resp = self.client.get(reverse("website:index"))
         self.assertContains(resp, '<link rel="canonical" href="http://testserver/">')
         self.assertContains(resp, '<meta property="og:url" content="http://testserver/">')

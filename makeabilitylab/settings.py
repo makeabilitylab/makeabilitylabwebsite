@@ -281,7 +281,6 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'website.context_processors.recent_news',
                 'website.context_processors.admin_version_info',
-                'website.context_processors.site_scheme',
             ],
         },
     },

@@ -69,8 +69,9 @@ TEMPLATE BLOCKS:
   by <meta name="description">, og:description, and twitter:description (no
   duplication).
 
-  Absolute URLs use {{ site_scheme }} (https on the servers, http in local dev)
-  so they don't advertise http:// behind the TLS proxy — see #1236.
+  Absolute URLs use request.scheme (https on the servers, http in local dev).
+  It's correct behind the TLS proxy because SECURE_PROXY_SSL_HEADER trusts the
+  proxy's X-Forwarded-Proto header — see #1329 (which replaced the #1236 fix).
 
   Detail templates customize via:
     {% block social_image %} — og:image + twitter:image (default: lab logo)
@@ -81,7 +82,7 @@ TEMPLATE BLOCKS:
   {% with meta_title=page_meta.title|default:"Makeability Lab" og_type=page_meta.og_type|default:"website" canonical_path=page_meta.canonical_path|default:request.path %}
   {% firstof page_meta.description "The Makeability Lab is an advanced research lab in Human-AI directed by Prof. Jon E. Froehlich at UW's Allen School of Computer Science." as meta_description %}
   <meta name="description" content="{{ meta_description }}">
-  <link rel="canonical" href="{{ site_scheme }}://{{ request.get_host }}{{ canonical_path }}">
+  <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ canonical_path }}">
 
   <!-- Open Graph (Facebook, LinkedIn, Slack, Bluesky, …) -->
   <meta property="og:site_name" content="Makeability Lab">
@@ -89,11 +90,11 @@ TEMPLATE BLOCKS:
   <meta property="og:title" content="{{ meta_title }}">
   <meta property="og:type" content="{{ og_type }}">
   <meta property="og:description" content="{{ meta_description }}">
-  <meta property="og:url" content="{{ site_scheme }}://{{ request.get_host }}{{ canonical_path }}">
+  <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ canonical_path }}">
   {% block social_image %}
-  <meta property="og:image" content="{{ site_scheme }}://{{ request.get_host }}{% static 'website/img/logos/makelab_logo_v3_white_with_colors_and_text_og_image_ratio_1200w.png' %}">
+  <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'website/img/logos/makelab_logo_v3_white_with_colors_and_text_og_image_ratio_1200w.png' %}">
   <meta property="og:image:alt" content="Makeability Lab logo">
-  <meta name="twitter:image" content="{{ site_scheme }}://{{ request.get_host }}{% static 'website/img/logos/makelab_logo_v3_white_with_colors_and_text_og_image_ratio_1200w.png' %}">
+  <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'website/img/logos/makelab_logo_v3_white_with_colors_and_text_og_image_ratio_1200w.png' %}">
   {% endblock social_image %}
   {% block meta_extra %}{% endblock %}
 
