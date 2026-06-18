@@ -46,9 +46,11 @@ def _position(person, title=None):
     )
 
 
-# On the servers DEBUG is False, so site_scheme pins https — assert against that
-# (the test client's host is "testserver", auto-added to ALLOWED_HOSTS).
-@override_settings(DEBUG=False)
+# On the servers (DJANGO_ENV TEST/PROD) site_scheme pins https — assert against
+# that (the test client's host is "testserver", auto-added to ALLOWED_HOSTS).
+# NB: DJANGO_ENV, not DEBUG — the test server runs DEBUG=True behind the proxy
+# (see PageMetadataSchemeTests for the regression that motivated this).
+@override_settings(DJANGO_ENV='PROD')
 class PageMetadataHttpsTests(DatabaseTestCase):
 
     def test_home_has_core_metadata(self):
@@ -204,10 +206,25 @@ class JsonLdTests(DatabaseTestCase):
 
 
 class PageMetadataSchemeTests(DatabaseTestCase):
+    """site_scheme keys off DJANGO_ENV, not DEBUG. The test server runs DEBUG=True
+    behind the same TLS proxy as prod, so a DEBUG-based check would emit http://
+    there (regression for the #1236 follow-up fix)."""
 
-    @override_settings(DEBUG=True)
+    @override_settings(DJANGO_ENV='TEST', DEBUG=True)
+    def test_test_server_uses_https_even_with_debug_true(self):
+        """The crux: DJANGO_ENV=TEST + DEBUG=True must still emit https."""
+        resp = self.client.get(reverse("website:index"))
+        self.assertContains(resp, '<link rel="canonical" href="https://testserver/">')
+        self.assertContains(resp, '<meta property="og:url" content="https://testserver/">')
+
+    @override_settings(DJANGO_ENV='PROD', DEBUG=False)
+    def test_prod_uses_https(self):
+        resp = self.client.get(reverse("website:index"))
+        self.assertContains(resp, '<meta property="og:url" content="https://testserver/">')
+
+    @override_settings(DJANGO_ENV='DEBUG', DEBUG=True)
     def test_local_dev_uses_request_scheme(self):
-        """In DEBUG (local dev over http) the absolute URLs follow request.scheme."""
+        """Local dev (DJANGO_ENV=DEBUG/unset over http) follows request.scheme."""
         resp = self.client.get(reverse("website:index"))
         self.assertContains(resp, '<link rel="canonical" href="http://testserver/">')
         self.assertContains(resp, '<meta property="og:url" content="http://testserver/">')
