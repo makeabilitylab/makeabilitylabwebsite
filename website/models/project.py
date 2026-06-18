@@ -613,6 +613,12 @@ class Project(models.Model):
         If the end date is None, it returns a string in the format 'start_year–Present'.
         Otherwise, it returns a string in the format 'start_year–end_year'.
         """
+        # start_date is nullable, so a project may have none. Without it there's
+        # no range to format; return "" so the template renders nothing rather
+        # than 500ing on self.start_date.year (#1278).
+        if self.start_date is None:
+            return ""
+
         # If end_date is None, return 'start_year–Present'
         if self.end_date is None:
             return f"{self.start_date.year}–Present"
