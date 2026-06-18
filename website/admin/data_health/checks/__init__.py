@@ -9,6 +9,7 @@ from website.admin.data_health.checks import (  # noqa: F401
     media_integrity,
     publication_quality,
     project_health,
+    project_leadership,
     position_integrity,
     news_health,
 )

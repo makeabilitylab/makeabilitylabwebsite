@@ -101,3 +101,58 @@ class ProjectGetPeopleTimeWorkedTests(DatabaseTestCase):
         result = list(project.get_people())
         self.assertEqual(result[0], long_done)
         self.assertEqual(result[1], short_ongoing)
+
+
+# --- get_pis / get_co_pis regression --------------------------------------
+
+
+class ProjectGetPisCoPisTests(DatabaseTestCase):
+    """
+    Regression for Project.get_pis / get_co_pis (models/project.py).
+
+    Both methods filtered on a nonexistent ``pi_member`` field (the real field
+    is ``lead_project_role``), so any call raised FieldError. The fix filters
+    on ``lead_project_role`` and returns a QuerySet of Person objects as the
+    docstring promises (#1182).
+    """
+
+    def _add_role(self, person, project, lead_role):
+        from website.models import ProjectRole
+        return ProjectRole.objects.create(
+            person=person, project=project,
+            lead_project_role=lead_role, start_date=date.today(),
+        )
+
+    def test_get_pis_and_co_pis_return_correct_people(self):
+        from website.models import Project
+        from website.models.project_role import LeadProjectRoleTypes
+
+        project = Project.objects.create(name="Lab Project", short_name="lab")
+        pi = self.make_person(first_name="Jon", last_name="Froehlich")
+        co_pi = self.make_person(first_name="Co", last_name="Investigator")
+        student = self.make_person(first_name="Grad", last_name="Student")
+        self._add_role(pi, project, LeadProjectRoleTypes.PI)
+        self._add_role(co_pi, project, LeadProjectRoleTypes.CO_PI)
+        self._add_role(student, project, LeadProjectRoleTypes.STUDENT_LEAD)
+
+        self.assertEqual(list(project.get_pis()), [pi])
+        self.assertEqual(list(project.get_co_pis()), [co_pi])
+
+    def test_no_pi_returns_empty_queryset(self):
+        from website.models import Project
+
+        project = Project.objects.create(name="Empty Project", short_name="empty")
+        self.assertEqual(list(project.get_pis()), [])
+        self.assertEqual(list(project.get_co_pis()), [])
+
+    def test_duplicate_pi_roles_deduplicated(self):
+        """A person with two PI roles on one project appears once."""
+        from website.models import Project
+        from website.models.project_role import LeadProjectRoleTypes
+
+        project = Project.objects.create(name="Dup Project", short_name="dup")
+        pi = self.make_person(first_name="Repeat", last_name="Lead")
+        self._add_role(pi, project, LeadProjectRoleTypes.PI)
+        self._add_role(pi, project, LeadProjectRoleTypes.PI)
+
+        self.assertEqual(list(project.get_pis()), [pi])

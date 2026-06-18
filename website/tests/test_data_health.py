@@ -173,6 +173,74 @@ class ProjectHealthCheckTests(DatabaseTestCase):
         self.assertIn("no publication", rows["Lonely Project"]["issues"])
 
 
+class ProjectLeadershipCheckTests(DatabaseTestCase):
+    def _add_role(self, project, lead_role, start_date, end_date=None):
+        from website.models import ProjectRole
+
+        person = self.make_person(first_name="Lead", last_name="Person")
+        return ProjectRole.objects.create(
+            person=person,
+            project=project,
+            lead_project_role=lead_role,
+            start_date=start_date,
+            end_date=end_date,
+        )
+
+    def test_flags_project_with_no_pi(self):
+        proj = self.make_project(name="PI-less Project")
+        rows = {r["name"]: r for r in get_check("project-leadership").get_rows()}
+        self.assertIn("PI-less Project", rows)
+        self.assertEqual(rows["PI-less Project"]["issues"], "no PI")
+        self.assertEqual(rows["PI-less Project"]["pi_count"], 0)
+
+    def test_ongoing_project_with_only_an_ended_pi_flagged_no_active_pi(self):
+        from datetime import date, timedelta
+        from website.models.project_role import LeadProjectRoleTypes
+
+        proj = self.make_project(name="Stale Lead Project")  # no end_date => ongoing
+        self._add_role(
+            proj,
+            LeadProjectRoleTypes.PI,
+            start_date=date.today() - timedelta(days=400),
+            end_date=date.today() - timedelta(days=30),
+        )
+        rows = {r["name"]: r for r in get_check("project-leadership").get_rows()}
+        self.assertIn("Stale Lead Project", rows)
+        self.assertEqual(rows["Stale Lead Project"]["issues"], "no active PI")
+        self.assertEqual(rows["Stale Lead Project"]["pi_count"], 1)
+        self.assertEqual(rows["Stale Lead Project"]["active_pi_count"], 0)
+
+    def test_project_with_active_pi_not_flagged(self):
+        from datetime import date, timedelta
+        from website.models.project_role import LeadProjectRoleTypes
+
+        proj = self.make_project(name="Well-Led Project")
+        self._add_role(
+            proj,
+            LeadProjectRoleTypes.PI,
+            start_date=date.today() - timedelta(days=30),
+        )
+        names = {r["name"] for r in get_check("project-leadership").get_rows()}
+        self.assertNotIn("Well-Led Project", names)
+
+    def test_ended_project_with_ended_pi_not_flagged(self):
+        from datetime import date, timedelta
+        from website.models.project_role import LeadProjectRoleTypes
+
+        proj = self.make_project(
+            name="Wrapped-Up Project",
+            end_date=date.today() - timedelta(days=10),
+        )
+        self._add_role(
+            proj,
+            LeadProjectRoleTypes.PI,
+            start_date=date.today() - timedelta(days=400),
+            end_date=date.today() - timedelta(days=20),
+        )
+        names = {r["name"] for r in get_check("project-leadership").get_rows()}
+        self.assertNotIn("Wrapped-Up Project", names)
+
+
 class PositionIntegrityCheckTests(DatabaseTestCase):
     def test_no_position_and_self_advisor(self):
         from datetime import date as _date
@@ -243,7 +311,10 @@ class DataHealthReadOnlyTests(DatabaseTestCase):
         self.make_person(first_name="Jane", last_name="Doe")
         self.make_person(first_name="Jane", last_name="Doe")
         before = (Person.objects.count(), Publication.objects.count())
-        for slug in ("duplicate-people", "url-name-collisions", "position-integrity"):
+        for slug in (
+            "duplicate-people", "url-name-collisions", "position-integrity",
+            "project-leadership",
+        ):
             get_check(slug).get_rows()
         after = (Person.objects.count(), Publication.objects.count())
         self.assertEqual(before, after)
