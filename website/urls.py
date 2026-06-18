@@ -1,7 +1,11 @@
 # Django 4+ removed django.conf.urls.url()
 # https://stackoverflow.com/a/70319607
 # from django.conf.urls import url
+import os
+
 from django.urls import re_path, path
+from django.views.static import serve
+from django.conf import settings
 
 from . import views
 from rest_framework.urlpatterns import format_suffix_patterns
@@ -62,8 +66,24 @@ urlpatterns = [
     # Matches the URL "view-project-people/" and routes it to the `view_project_people` view.
     path('view-project-people/', views.view_project_people, name='view_project_people'),
 
-    # Matches URLs like "media/publications/filename.pdf" where "filename.pdf" can be any string, 
-    # and routes it to the `serve_pdf` view. 
+    # Serve publication thumbnail images (easy-thumbnails output under
+    # publications/images/) directly from Django, including in production.
+    #
+    # Why this is needed (issue #1173): prod Apache proxies ALL of
+    # /media/publications/ to Django so serve_pdf below can fuzzy-match renamed
+    # PDF links. That proxy scope also captures /media/publications/images/*,
+    # but in production (DEBUG=False) Django otherwise serves no media — static()
+    # returns [] and the debug-only media route is off — so every thumbnail 404'd
+    # even though the files were on disk. This route makes Django self-sufficient
+    # for the images subtree regardless of how Apache is configured. Must precede
+    # the serve_pdf pattern (serve_pdf's [^/]+ wouldn't match the extra path
+    # segment anyway, but keep the more specific route first for clarity).
+    re_path(r'^media/publications/images/(?P<path>.+)$', serve,
+            {'document_root': os.path.join(settings.MEDIA_ROOT, 'publications', 'images')},
+            name='serve_publication_image'),
+
+    # Matches URLs like "media/publications/filename.pdf" where "filename.pdf" can be any string,
+    # and routes it to the `serve_pdf` view.
     # serve_pdf uses fuzzy matching to find the closest matching filename (within a threshold)
     # Match files directly in the "publications" path
     # re_path(r'^media/publications/(?P<filename>[^/]+)$', views.serve_pdf, name='serve_pdf'),

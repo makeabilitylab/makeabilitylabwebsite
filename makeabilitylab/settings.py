@@ -72,8 +72,8 @@ else:
     ALLOWED_HOSTS = ['*']
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.10.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Maintenance and test-infrastructure release. New: server-side file-type validation on all admin image/video uploads (Person photos + easter eggs, Banner image/video, News, Project, Photo, Sponsor, Artifact) via website/utils/upload_validators.py, rejecting mismatched or disallowed file types before save (#6). Fixes: Video pages now render 'Today' instead of '0 seconds ago' for same-day items (#1091); the homepage banner carousel no longer 'blinks' on crossfade between slides (#1010). Testing: introduces factory_boy factories (website/tests/factories.py) with the make_* fixture helpers now delegating to them (#1272), and adds report-only test-coverage measurement to CI via coverage + .coveragerc (#1278). Housekeeping: modernized docker-compose syntax, requirements updates, and expanded deployment/sitemap + Google Search Console documentation (#1313)."
+ML_WEBSITE_VERSION = "2.10.1" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Hotfix: restore publication thumbnails on production. The #1173 prod Apache change proxies all of /media/publications/ to Django so serve_pdf can fuzzy-match renamed PDF links, but that scope also captured /media/publications/images/* (the easy-thumbnails output), which Django would not serve in production (DEBUG=False), 404'ing every publication thumbnail even though the files were on disk. Adds an unconditional route in website/urls.py mapping /media/publications/images/<path> to Django's static serve view so thumbnails are served regardless of Apache config, with regression tests (#1173)."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
