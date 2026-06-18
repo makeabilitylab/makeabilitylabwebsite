@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.12.2" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Patch: test backfill for high-risk untested code (#1278 item 5) surfaced and fixed two latent 500s — Artifact.save() crashed re-saving an artifact with no PDF, and a project with no start_date 500'd its page. Adds a public-view smoke-sweep plus coverage for delete_unused_files, Person.save() side effects, and the pure utils (timeutils/ml_utils/fileutils), lifting app coverage 59%→69%. Two one-line model guards; no schema change."
+ML_WEBSITE_VERSION = "2.12.3" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Patch: SEO/infra cleanup. Removes the in-app site_scheme context-processor workaround now that SECURE_PROXY_SSL_HEADER is trusted on TEST/PROD — canonical/OG/sitemap URLs derive https straight from request.scheme behind UW CSE's TLS proxy (#1329/#1236, verified on the sitemap #1338). Wires the Pa11y accessibility sweep into CI and excludes django-debug-toolbar from the scan (#1278 item 6). No schema change; no user-facing behavior change."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
