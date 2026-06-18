@@ -72,8 +72,8 @@ else:
     ALLOWED_HOSTS = ['*']
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.10.1" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Hotfix: restore publication thumbnails on production. The #1173 prod Apache change proxies all of /media/publications/ to Django so serve_pdf can fuzzy-match renamed PDF links, but that scope also captured /media/publications/images/* (the easy-thumbnails output), which Django would not serve in production (DEBUG=False), 404'ing every publication thumbnail even though the files were on disk. Adds an unconditional route in website/urls.py mapping /media/publications/images/<path> to Django's static serve view so thumbnails are served regardless of Apache config, with regression tests (#1173)."
+ML_WEBSITE_VERSION = "2.11.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Consolidate duplicate Person records and fix same-name url_name collisions (#1275, #1206). A reviewed, decisions-driven one-shot (merge_duplicate_people, PROD-gated) merges 13 duplicate member records on this deploy, relocating every related object — publications/talks/posters/grants/awards authorship (order preserved), positions, project roles, news, and the advisor/co-advisor/grad-mentor self-references — onto the canonical record and backfilling only-blank fields. Person.url_name now derives via shared logic that prefers a readable middle-initial differentiator for genuine namesakes (jasminexzhang) over a bare numeric suffix; recompute_url_names runs on every start to de-collide historical duplicates, and the member view returns a clean 404 instead of a 500 if a collision ever recurs. Also replaces the hand-maintained accent map with Unicode NFKD folding, correcting mangled url_names (e.g. Claudio Silva, Francois Guimbretiere) and surfacing accented-name duplicates that the dedup dashboard previously hid."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
