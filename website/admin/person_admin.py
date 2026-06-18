@@ -142,7 +142,7 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
     fieldsets = [
         (None,                      {'fields': ['first_name', 'middle_name', 'last_name', 'image', 'cropping', 'easter_egg', 'easter_egg_crop', 'easter_egg_starwars_choice']}),
         ('Bio',                     {'fields': ['bio', 'personal_website', 'github']}),
-        ('Socials',                 {'fields': ['twitter', 'threads', 'mastodon', 'linkedin']}),
+        ('Socials',                 {'fields': ['twitter', 'bluesky', 'threads', 'mastodon', 'linkedin', 'google_scholar', 'orcid']}),
         ('For Alumni (Next Position)', {'fields': ['next_position', 'next_position_url']}),
     ]
 

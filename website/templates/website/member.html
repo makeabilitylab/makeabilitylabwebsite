@@ -197,11 +197,27 @@ document.addEventListener('DOMContentLoaded', function() {
             </a>
             {% endif %}
             {% if person.linkedin %}
-            <a href="{{ person.linkedin }}" 
+            <a href="{{ person.linkedin }}"
                class="person-website-link"
                aria-label="{{ person.first_name }} on LinkedIn">
               <i class="fab fa-linkedin" aria-hidden="true"></i>
               <span>LinkedIn</span>
+            </a>
+            {% endif %}
+            {% if person.google_scholar %}
+            <a href="{{ person.google_scholar }}"
+               class="person-website-link"
+               aria-label="{{ person.first_name }} on Google Scholar">
+              <i class="ai ai-google-scholar" aria-hidden="true"></i>
+              <span>Google Scholar</span>
+            </a>
+            {% endif %}
+            {% if person.orcid %}
+            <a href="{{ person.orcid }}"
+               class="person-website-link"
+               aria-label="{{ person.first_name }} on ORCID">
+              <i class="ai ai-orcid" aria-hidden="true"></i>
+              <span>ORCID</span>
             </a>
             {% endif %}
           </nav>
