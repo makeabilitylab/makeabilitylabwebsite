@@ -116,7 +116,18 @@ echo "******************************************"
 python manage.py backfill_project_visibility
 
 echo "****************** STEP 4.8/5: docker-entrypoint.sh ************************"
-echo "4.8 Running 'python manage.py recompute_url_names' to de-collide historical url_names (#1206)"
+echo "4.8 Running 'python manage.py merge_duplicate_people' (PROD only) to consolidate duplicate Person records (#1275)"
+echo "******************************************"
+# ONE-SHOT (remove after the first prod run confirms in /logs). Gated to PROD
+# because dedup_decisions.csv is keyed by production ids; the merge command also
+# refuses name-mismatched pairs as a backstop. Idempotent, so a lingering run is
+# a harmless no-op once the duplicates are already merged.
+if [ "$DJANGO_ENV" = "PROD" ]; then
+  python manage.py merge_duplicate_people --decisions dedup_decisions.csv --apply
+fi
+
+echo "****************** STEP 4.9/5: docker-entrypoint.sh ************************"
+echo "4.9 Running 'python manage.py recompute_url_names' to de-collide historical url_names (#1206)"
 echo "******************************************"
 python manage.py recompute_url_names
 
