@@ -60,6 +60,19 @@ class SitemapTests(DatabaseTestCase):
         body = self.client.get("/sitemap.xml").content.decode()
         self.assertIn(f"/news/{news.slug}/", body)
 
+    def test_static_listing_pages_have_lastmod(self):
+        # The listing pages should advertise a <lastmod> sourced from their
+        # most-recent content, not be the only entries with none. Create a news
+        # item so the news/home/listing sections are non-empty.
+        self.make_news_item(title="Dated News")
+        body = self.client.get("/sitemap.xml").content.decode()
+        # Pull the <url> block for the /news/ listing and assert it carries a
+        # <lastmod>. (Detail-page news URLs look like /news/<slug>/.)
+        url_blocks = re.findall(r"<url>(.*?)</url>", body, re.DOTALL)
+        listing = [b for b in url_blocks if re.search(r"<loc>[^<]*/news/</loc>", b)]
+        self.assertTrue(listing, "expected a /news/ listing entry in the sitemap")
+        self.assertIn("<lastmod>", listing[0])
+
     def test_sitemap_uses_https_scheme(self):
         # Apache proxies to Django over plain HTTP, so without a pinned
         # protocol the <loc> URLs would be http:// and only 302-redirect to
