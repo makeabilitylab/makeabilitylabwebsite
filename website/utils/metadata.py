@@ -45,14 +45,21 @@ def meta_description(html, max_chars=META_DESCRIPTION_MAX_CHARS):
 
 def site_scheme(request):
     """
-    The canonical scheme for absolute URLs built in views (https on the servers,
-    request.scheme in local dev). Mirrors the ``site_scheme`` context processor
-    (website/context_processors.py) so view-built JSON-LD URLs match the
-    template-built canonical/OG URLs. See #1236 (and #1329 for the IT-side
-    SECURE_PROXY_SSL_HEADER follow-up that would let this fall back to
-    request.scheme).
+    The canonical scheme for absolute URLs (https on the test/prod servers,
+    ``request.scheme`` in local dev). Single source of truth — the ``site_scheme``
+    context processor delegates here, so view-built JSON-LD URLs and template-built
+    canonical/OG URLs always agree.
+
+    We key off ``DJANGO_ENV``, NOT ``DEBUG``: the **test** server runs with
+    ``DEBUG=True`` (config-test.ini) yet sits behind the same TLS-terminating Apache
+    proxy as prod, so a DEBUG-based check emits ``http://`` on test — the exact #1236
+    bug. ``DJANGO_ENV`` is ``'TEST'``/``'PROD'`` on the servers (set by
+    rebuildanddeploy.sh) and ``'DEBUG'``/unset locally, which is the signal we want.
+
+    NOTE: in-repo workaround. #1329 (IT enabling SECURE_PROXY_SSL_HEADER) would make
+    request.scheme correct everywhere and let this fall back to it.
     """
-    return request.scheme if settings.DEBUG else 'https'
+    return 'https' if settings.DJANGO_ENV in ('PROD', 'TEST') else request.scheme
 
 
 def absolute_url(request, path):
