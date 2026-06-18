@@ -49,15 +49,6 @@ class Banner(models.Model):
     date_added = models.DateField(auto_now_add=True)
     date_added.help_text = "This is an automatically set, readonly field. When there are many banners specified for a page, we prioritize more recently added banners"
 
-    def admin_thumbnail(self):
-        if self.image:
-            return u'<img src="%s" height="100"/>' % (self.image.url)
-        else:
-            return "No image found"
-
-    admin_thumbnail.short_description = 'Thumbnail'
-    admin_thumbnail.allow_tags = True
-
     def __str__(self):
         return f"Title={self.title} Project={self.project} LandingPage={self.landing_page} Favorite={self.favorite}"
 
