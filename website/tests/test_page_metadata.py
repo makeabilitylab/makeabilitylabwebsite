@@ -109,6 +109,48 @@ class PageMetadataHttpsTests(DatabaseTestCase):
         self.assertContains(resp, "won a best paper award")
 
 
+class ListPageDescriptionTests(DatabaseTestCase):
+    """Each listing page should ship a distinct, hand-written meta description
+    and og:title rather than the single generic site description (#1142/#1324)."""
+
+    GENERIC = "advanced research lab in Human-Computer Interaction and AI"
+
+    def _assert_distinct(self, url_name, og_title, description_fragment):
+        resp = self.client.get(reverse(url_name))
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, f'<meta property="og:title" content="{og_title}">')
+        self.assertContains(resp, description_fragment)
+        # The per-page description should appear in the description meta tag.
+        self.assertContains(resp, f'<meta name="description" content="{description_fragment}')
+
+    def test_people_description(self):
+        self._assert_distinct("website:people", "People",
+                              "Meet the faculty, students, postdocs, and alumni")
+
+    def test_projects_description(self):
+        self._assert_distinct("website:projects", "Projects",
+                              "Explore Makeability Lab research projects")
+
+    def test_publications_description(self):
+        self._assert_distinct("website:publications", "Publications",
+                              "Peer-reviewed Makeability Lab publications")
+
+    def test_awards_description(self):
+        self._assert_distinct("website:awards", "Awards",
+                              "Awards and honors earned by Makeability Lab members")
+
+    def test_news_description(self):
+        self._assert_distinct("website:news_listing", "News",
+                              "News from the Makeability Lab")
+
+    def test_descriptions_are_not_the_generic_default(self):
+        for url_name in ("website:people", "website:projects",
+                         "website:publications", "website:awards",
+                         "website:news_listing"):
+            resp = self.client.get(reverse(url_name))
+            self.assertNotContains(resp, f'name="description" content="The Makeability Lab is an {self.GENERIC}')
+
+
 class PageMetadataSchemeTests(DatabaseTestCase):
 
     @override_settings(DEBUG=True)

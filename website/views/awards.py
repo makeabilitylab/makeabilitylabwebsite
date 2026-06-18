@@ -52,6 +52,14 @@ def awards(request):
         'navbar_white': True,
     }
 
+    # Per-page SEO / social metadata (see base.html). #1142/#1324.
+    context['page_meta'] = {
+        'title': 'Awards',
+        'description': "Awards and honors earned by Makeability Lab members and "
+                       "projects, including best paper awards in HCI and "
+                       "accessibility research.",
+    }
+
     render_response = render(request, 'website/awards.html', context)
 
     func_end_time = time.perf_counter()

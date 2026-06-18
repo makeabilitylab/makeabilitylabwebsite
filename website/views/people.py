@@ -99,6 +99,15 @@ def people(request):
     # Render is a Django helper function. It combines a given template—in this case people.html—with
     # a context dictionary and returns an HttpResponse object with that rendered text.
     # See: https://docs.djangoproject.com/en/4.0/topics/http/shortcuts/#render
+    # Per-page SEO / social metadata (see base.html). A distinct description per
+    # listing page is the direct antidote to "crawled, not indexed" (#1142/#1324).
+    context['page_meta'] = {
+        'title': 'People',
+        'description': "Meet the faculty, students, postdocs, and alumni of the "
+                       "Makeability Lab — HCI, accessibility, and AI researchers "
+                       "at the University of Washington.",
+    }
+
     render_func_start_time = time.perf_counter()
     render_response = render(request, 'website/people.html', context)
     render_func_end_time = time.perf_counter()
