@@ -11,6 +11,8 @@ servers, not a Django view, so it isn't covered here.
 import re
 from datetime import date
 
+from django.test import override_settings
+
 from website.tests.base import DatabaseTestCase
 
 
@@ -73,16 +75,36 @@ class SitemapTests(DatabaseTestCase):
         self.assertTrue(listing, "expected a /news/ listing entry in the sitemap")
         self.assertIn("<lastmod>", listing[0])
 
-    def test_sitemap_uses_https_scheme(self):
-        # Apache proxies to Django over plain HTTP, so without a pinned
-        # protocol the <loc> URLs would be http:// and only 302-redirect to
-        # https. Every <loc> must be canonical https. See _HttpsSitemap.
+    @override_settings(SECURE_PROXY_SSL_HEADER=("HTTP_X_FORWARDED_PROTO", "https"))
+    def test_sitemap_honors_forwarded_proto_header(self):
+        # The sitemap scheme follows request.scheme (we no longer pin
+        # protocol="https"). Behind UW CSE's TLS-terminating proxy, Django
+        # reaches https via SECURE_PROXY_SSL_HEADER trusting X-Forwarded-Proto
+        # (#1329). Simulate that header here and confirm every <loc> is https.
         self.make_project(name="Scheme Proj", short_name="schemeproj",
                           is_visible=True)
-        body = self.client.get("/sitemap.xml").content.decode()
+        body = self.client.get(
+            "/sitemap.xml", HTTP_X_FORWARDED_PROTO="https"
+        ).content.decode()
         locs = re.findall(r"<loc>(.*?)</loc>", body)
         self.assertTrue(locs)  # guard against an empty sitemap passing vacuously
         self.assertFalse(
             [loc for loc in locs if not loc.startswith("https://")],
-            "all sitemap <loc> URLs should use the https scheme",
+            "with X-Forwarded-Proto=https the sitemap <loc> URLs should be https",
+        )
+
+    def test_sitemap_scheme_follows_request(self):
+        # With the protocol pin removed, a plain request (no forwarded-proto,
+        # no SECURE_PROXY_SSL_HEADER) reflects the request scheme — http here.
+        # This is the local-dev / direct-request case; the proxy supplies https
+        # in the deployed environments (see the test above and #1329).
+        self.make_project(name="Plain Proj", short_name="plainproj",
+                          is_visible=True)
+        body = self.client.get("/sitemap.xml").content.decode()
+        locs = re.findall(r"<loc>(.*?)</loc>", body)
+        self.assertTrue(locs)
+        self.assertTrue(
+            all(loc.startswith("http://") for loc in locs),
+            "without a forwarded-proto header the sitemap should reflect the "
+            "request scheme (http) rather than a pinned https",
         )
