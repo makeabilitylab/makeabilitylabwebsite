@@ -79,7 +79,7 @@ TEMPLATE BLOCKS:
   ============================================================================
   {% endcomment %}
   {% with meta_title=page_meta.title|default:"Makeability Lab" og_type=page_meta.og_type|default:"website" canonical_path=page_meta.canonical_path|default:request.path %}
-  {% firstof page_meta.description "The Makeability Lab is an advanced research lab in Human-Computer Interaction and AI directed by Professor Jon E. Froehlich at University of Washington's Allen School of Computer Science." as meta_description %}
+  {% firstof page_meta.description "The Makeability Lab is an advanced research lab in Human-AI directed by Prof. Jon E. Froehlich at UW's Allen School of Computer Science." as meta_description %}
   <meta name="description" content="{{ meta_description }}">
   <link rel="canonical" href="{{ site_scheme }}://{{ request.get_host }}{{ canonical_path }}">
 

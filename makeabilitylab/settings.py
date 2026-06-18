@@ -72,8 +72,8 @@ else:
     ALLOWED_HOSTS = ['*']
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.12.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Minor: site-wide SEO / social-sharing metadata overhaul (#1236, #1142, #1324). Centralized per-page Open Graph + Twitter Card tags with https URLs behind the TLS proxy (fixes #1236 via a site_scheme context processor), self-referential canonical links, distinct per-page meta descriptions, and schema.org JSON-LD (Organization on home, Person w/ sameAs on member pages, NewsArticle on news). Adds ORCID + Google Scholar fields to Person. IT follow-up #1329 (SECURE_PROXY_SSL_HEADER) would supersede the site_scheme workaround."
+ML_WEBSITE_VERSION = "2.12.1" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Patch: tighten meta descriptions (#1142/#1324). Home now uses a concise description mirroring the hero blurb; projects without a one-line summary fall back to a truncated About instead of the generic lab boilerplate; the last-resort default is trimmed to ~135 chars. Reduces duplicate/over-long descriptions flagged by social/OG inspectors. Template/view-only — no schema change."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
