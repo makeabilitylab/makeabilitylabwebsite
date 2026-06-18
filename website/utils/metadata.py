@@ -11,7 +11,6 @@ See ``website/templates/website/base.html`` for how ``page_meta`` is rendered.
 
 import json
 
-from django.conf import settings
 from django.utils.html import strip_tags
 from django.utils.safestring import mark_safe
 from django.utils.text import Truncator
@@ -43,30 +42,17 @@ def meta_description(html, max_chars=META_DESCRIPTION_MAX_CHARS):
     return Truncator(text).chars(max_chars)
 
 
-def site_scheme(request):
-    """
-    The canonical scheme for absolute URLs (https on the test/prod servers,
-    ``request.scheme`` in local dev). Single source of truth — the ``site_scheme``
-    context processor delegates here, so view-built JSON-LD URLs and template-built
-    canonical/OG URLs always agree.
-
-    We key off ``DJANGO_ENV``, NOT ``DEBUG``: the **test** server runs with
-    ``DEBUG=True`` (config-test.ini) yet sits behind the same TLS-terminating Apache
-    proxy as prod, so a DEBUG-based check emits ``http://`` on test — the exact #1236
-    bug. ``DJANGO_ENV`` is ``'TEST'``/``'PROD'`` on the servers (set by
-    rebuildanddeploy.sh) and ``'DEBUG'``/unset locally, which is the signal we want.
-
-    NOTE: in-repo workaround. #1329 (IT enabling SECURE_PROXY_SSL_HEADER) would make
-    request.scheme correct everywhere and let this fall back to it.
-    """
-    return 'https' if settings.DJANGO_ENV in ('PROD', 'TEST') else request.scheme
-
-
 def absolute_url(request, path):
-    """Build an absolute, scheme-correct URL from a root-relative path."""
+    """Build an absolute, scheme-correct URL from a root-relative path.
+
+    Uses ``request.scheme``, which is correct in every environment now that
+    ``SECURE_PROXY_SSL_HEADER`` trusts the proxy's ``X-Forwarded-Proto`` header
+    behind UW CSE's TLS-terminating Apache (#1329) — https on test/prod, http in
+    local dev. This replaced the old ``site_scheme`` DJANGO_ENV workaround (#1236).
+    """
     if not path:
         return None
-    return f"{site_scheme(request)}://{request.get_host()}{path}"
+    return f"{request.scheme}://{request.get_host()}{path}"
 
 
 def render_jsonld(data):

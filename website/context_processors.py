@@ -9,7 +9,6 @@
 
 from .models import News
 from django.conf import settings
-from website.utils.metadata import site_scheme as metadata_site_scheme
 
 def recent_news(request):
     """ context processors returning recent news """
@@ -17,19 +16,6 @@ def recent_news(request):
     news_items = News.objects.order_by('-date')[:news_items_num]
 
     return { 'recent_news': news_items, }
-
-def site_scheme(request):
-    """
-    Expose the canonical URL scheme (``http`` / ``https``) to every template, so
-    templates can build absolute URLs as
-    ``{{ site_scheme }}://{{ request.get_host }}{{ path }}`` that aren't ``http://``
-    behind UW CSE's TLS-terminating proxy (issue #1236).
-
-    Delegates to :func:`website.utils.metadata.site_scheme` (the single source of
-    truth, keyed on ``DJANGO_ENV``) so the scheme used by view-built JSON-LD URLs
-    and template-built canonical/OG URLs can't drift.
-    """
-    return {'site_scheme': metadata_site_scheme(request)}
 
 def admin_version_info(request):
     """
