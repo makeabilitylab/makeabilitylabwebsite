@@ -6,10 +6,10 @@
     "chromeLaunchConfig": {
       "args": ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]
     },
-    "hideElements": "#js-toc",
+    "hideElements": "#js-toc, #djDebug",
     "ignore": []
   },
-  "_comment": "CI variant of .pa11yci.json (#1278 item 6). The local-dev config targets the docker-compose 'website:8000' host with the maintainer's real DB snapshot (jonfroehlich, sidewalk, ...). CI has no snapshot, so this config targets a native runserver on localhost:8000 seeded with deterministic demo content via `manage.py seed_demo_projects` + `seed_demo_news`. Keep the two URL lists in sync with what those seed commands create.",
+  "_comment": "CI variant of .pa11yci.json (#1278 item 6). The local-dev config targets the docker-compose 'website:8000' host with the maintainer's real DB snapshot (jonfroehlich, sidewalk, ...). CI has no snapshot, so this config targets a native runserver on localhost:8000 seeded with deterministic demo content via `manage.py seed_demo_projects` + `seed_demo_news`. Keep the two URL lists in sync with what those seed commands create. hideElements hides #djDebug because CI runs DEBUG=True (so runserver serves media), which injects the django-debug-toolbar; its markup is dev-only and was ~76% of the reported violations, so we exclude it to keep the baseline representative of production.",
   "urls": [
     "http://localhost:8000/",
     "http://localhost:8000/people/",
