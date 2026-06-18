@@ -445,8 +445,8 @@ document.addEventListener('DOMContentLoaded', function() {
                class="project-sidebar-related-thumbnail-link"
                aria-label="View project: {{ related_project.name }}">
               <img class="project-sidebar-related-thumbnail" 
-                   src="{% thumbnail related_project.gallery_image '160x90' box=related_project.cropping crop=True upscale=True %}" 
-                   alt="{{ related_project.name }}">
+                   src="{% thumbnail related_project.gallery_image '160x90' box=related_project.cropping crop=True upscale=True %}"
+                   alt="{{ related_project.get_thumbnail_alt_text }}">
             </a>
             <div class="project-sidebar-related-info">
               <h4 class="project-sidebar-related-title">
