@@ -651,6 +651,17 @@
   outline-offset: var(--focus-ring-offset);
 }
 
+/* On phones, pin each link to ~half the row so the four sections wrap a clean
+   2-up grid (Projects/Papers, then Videos/Talks) instead of orphaning "Talks"
+   onto its own line (#1331). flex-wrap + justify-content:center (above) center
+   a lone last item for members who have only three sections. */
+@media (max-width: 576px) {
+  .member-section-nav-list li {
+    flex: 0 1 calc(50% - var(--space-2));
+    text-align: center;
+  }
+}
+
 /* Anchor jumps (and scroll-spy) should land the heading below the fixed navbar
    AND this sticky nav, not underneath them. */
 .person-section {
