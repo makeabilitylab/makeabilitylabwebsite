@@ -1,35 +1,72 @@
 {% comment %}
-Renders a single Award (person and/or project recognition).
+Renders a single Award (person and/or project recognition) as a card.
 Expects `award` (an Award instance) in context.
 
-Layout/spacing is handled in awards.css under the `.award` scope, so this
+Layout: a category-specific visual "anchor" on the left + the award details on
+the right, with a prominent year. The anchor varies by award_type (see
+Award.get_anchor_kind):
+  - Student Award / PhD Fellowship -> recipient's photo (circular portrait)
+  - Project Award                  -> project gallery thumbnail
+  - Faculty Honor (or fallback)    -> medal icon
+  - any award with a `badge` image -> that badge (overrides the above)
+
+The anchor is purely decorative: every name, project, title, and organization it
+could convey is already present as text/links in the body, so the anchor is
+marked aria-hidden and its images carry empty alt text to avoid duplicate links
+and redundant screen-reader announcements.
+
+All layout/spacing lives in awards.css under the `.award-card` scope, so this
 markup stays free of inline styles.
 {% endcomment %}
+{% load static thumbnail %}
 
-<div class="award individual-project-listing">
-  <p class="artifact-title">
-    {% if award.url %}
-      <a href="{{ award.url }}" target="_blank" rel="noopener noreferrer">{{ award.title }}</a>
+{% with kind=award.get_anchor_kind %}
+<article class="award-card award-card--{{ kind }}">
+
+  <div class="award-anchor" aria-hidden="true">
+    {% if kind == 'badge' %}
+      <img class="award-anchor-img award-anchor-badge" src="{{ award.badge.url }}" alt="">
+    {% elif kind == 'portrait' %}
+      {% with person=award.get_portrait_person %}
+      <img class="award-anchor-img award-anchor-portrait"
+           src="{% thumbnail person.image 245x245 box=person.cropping crop detail upscale %}" alt="">
+      {% endwith %}
+    {% elif kind == 'thumbnail' %}
+      {% with project=award.get_thumbnail_project %}
+      <img class="award-anchor-img award-anchor-thumb"
+           src="{% thumbnail project.gallery_image project.get_thumbnail_size_as_str box=project.cropping crop upscale %}" alt="">
+      {% endwith %}
     {% else %}
-      {{ award.title }}
+      <span class="award-anchor-medal"><i class="fa-solid fa-medal"></i></span>
     {% endif %}
-    {% if award.organization %}<span class="artifact-venue"> — {{ award.organization }}</span>{% endif %}
-  </p>
+  </div>
 
-  <p class="artifact-authors">
-    {% for person in award.recipients.all %}
-      <a href="{% url 'website:member_by_name' person.get_url_name %}">{{ person.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
-    {% endfor %}
+  <div class="award-body">
+    <span class="award-year">{{ award.date|date:"Y" }}</span>
 
-    {% if award.recipients.exists and award.get_visible_projects.exists %}, {% endif %}
+    <h3 class="award-title">
+      {% if award.url %}
+        <a href="{{ award.url }}" target="_blank" rel="noopener noreferrer">{{ award.title }}</a>
+      {% else %}
+        {{ award.title }}
+      {% endif %}
+    </h3>
 
-    {# Only list publicly-visible projects so private projects aren't named here (#1300) #}
-    {% for project in award.get_visible_projects %}
-      <a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>{% if not forloop.last %}, {% endif %}
-    {% endfor %}
-  </p>
+    {% if award.organization %}<p class="award-org">{{ award.organization }}</p>{% endif %}
 
-  {% if award.description %}
-  <p class="artifact-links award-description">{{ award.description|safe }}</p>
-  {% endif %}
-</div>
+    <p class="award-recipients">
+      {% for person in award.recipients.all %}<a href="{% url 'website:member_by_name' person.get_url_name %}">{{ person.get_full_name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+
+      {% if award.recipients.exists and award.get_visible_projects.exists %}, {% endif %}
+
+      {# Only list publicly-visible projects so private projects aren't named here (#1300) #}
+      {% for project in award.get_visible_projects %}<a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+    </p>
+
+    {% if award.description %}
+    <p class="award-description">{{ award.description|safe }}</p>
+    {% endif %}
+  </div>
+
+</article>
+{% endwith %}
