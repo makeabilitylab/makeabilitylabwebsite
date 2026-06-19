@@ -56,7 +56,12 @@ class PublicationAdmin(ArtifactAdmin):
 
     list_filter = (PubVenueTypeListFilter, PubVenueListFilter)
 
-    # add in auto-complete fields 
+    # Prefetch the M2M relations the changelist renders per row (display_authors,
+    # display_projects) so they don't fire 2-3 queries each per publication (#1346).
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related('authors', 'projects')
+
+    # add in auto-complete fields
     #   this addresses: https://github.com/jonfroehlich/makeabilitylabwebsite/issues/553
     #
     # autocomplete_fields is a list of ForeignKey and/or ManyToManyField fields you would like 
@@ -77,10 +82,13 @@ class PublicationAdmin(ArtifactAdmin):
     display_projects.short_description = 'Projects'
 
     def display_authors(self, obj):
-        authors = [author.get_full_name() for author in obj.authors.all()[:5]]
-        if obj.authors.count() > 5:
-            authors.append("...")
-        return ", ".join(authors) if authors else 'No authors'
+        # list(...) reuses the list_prefetch_related('authors') cache; slicing the
+        # queryset ([:5]) or calling .count() would each re-query per row instead.
+        authors = list(obj.authors.all())
+        names = [author.get_full_name() for author in authors[:5]]
+        if len(authors) > 5:
+            names.append("...")
+        return ", ".join(names) if names else 'No authors'
     display_authors.short_description = 'Authors (First 5)'
 
     def get_display_thumbnail(self, obj):

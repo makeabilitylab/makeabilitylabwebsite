@@ -20,6 +20,12 @@ class PosterAdmin(ArtifactAdmin):
     ordering = ('-date',)  # Poster had no default sort; newest first like its siblings
     date_hierarchy = 'date'  # Year/month/day drill-down
 
+    # Prefetch authors so the inherited get_first_author_last_name column resolves
+    # from cache instead of querying authors per row (#1346). (Artifact.get_first_
+    # author_last_name reads list(self.authors.all()) so it uses this prefetch.)
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related('authors')
+
     def get_changeform_initial_data(self, request):
         """
         Pre-fills the poster form with data from a related publication.

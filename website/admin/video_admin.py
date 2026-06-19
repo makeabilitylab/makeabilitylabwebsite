@@ -23,6 +23,10 @@ class VideoAdmin(admin.ModelAdmin):
     ordering = ('-date',)
     date_hierarchy = 'date'  # Year/month/day drill-down
 
+    # Prefetch projects so display_projects doesn't query them per row (#1346).
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related('projects')
+
     def display_projects(self, obj):
         return ", ".join([project.name for project in obj.projects.all()])
     

@@ -46,6 +46,11 @@ class AwardAdmin(admin.ModelAdmin):
 
     date_hierarchy = 'date'  # Year/month/day drill-down (awards are browsed by year)
 
+    # Prefetch the M2M relations get_recipient_names / get_project_names walk, so
+    # they don't fire two queries per award on the changelist (#1346).
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related('recipients', 'projects')
+
     def get_fieldsets(self, request, obj=None):
         # Built at request time so reverse() can resolve the Publications admin URL.
         publications_url = reverse('admin:website_publication_changelist')
