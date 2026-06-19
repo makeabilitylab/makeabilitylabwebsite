@@ -1,0 +1,220 @@
+/*
+ * Custom error page styling (#1190).
+ *
+ * The 404 page is the light, airy grid-fade: a full-window canvas paints a
+ * staggered triangle grid that resolves into the logo, with the recovery text
+ * overlaid. Because the grid is light and busy, each line of text gets a tight
+ * black highlight (.error-hl, "highlighter" style) for legibility rather than a
+ * full rectangle.
+ *
+ * The 500 page reuses this shell but is static and dark (.error-page--static).
+ */
+
+.error-page {
+  position: relative;
+  overflow: hidden;
+  /* Fill the viewport; the overlay's top padding clears the fixed navbar and
+     the footer flows beneath. */
+  min-height: 100vh;
+  background: #ffffff; /* the grid canvas paints over this */
+  display: flex;
+  /* Default align-items:stretch lets the overlay fill the height so its
+     space-between pushes the heading up and the links down, leaving the
+     vertical center clear for the logo to resolve. */
+}
+
+/* The animated backdrop. Fills the stage; the overlay renders on top. */
+.error-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Text + links layer. Pointer-events pass through to the page (so a click
+   anywhere replays the animation) except on the links themselves. */
+.error-overlay {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  /* Top padding clears the fixed navbar (~70px) but stays tight so the heading
+     sits well above the central logo; the larger bottom padding lifts the foot
+     (text + links) up off the settled leaf pile. */
+  padding: clamp(3.5rem, 7vh, 5.5rem) var(--space-6) clamp(4.5rem, 11vh, 7rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+}
+
+/* Tight black highlight behind the text itself (hugs each wrapped line, not a
+   bounding rectangle). box-decoration-break:clone repeats the padding/radius on
+   every line fragment; the generous line-height keeps the per-line bars apart. */
+.error-hl {
+  display: inline;
+  background: rgba(0, 0, 0, 0.82);
+  color: #ffffff;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  padding: 0.12em 0.35em;
+  border-radius: 5px;
+}
+
+.error-code {
+  font-family: 'Raleway', sans-serif;
+  font-weight: var(--font-weight-bold);
+  font-size: clamp(3rem, 12vw, 7rem);
+  /* Tight line-height so the highlight box hugs the digits (font size unchanged). */
+  line-height: 1.0;
+  letter-spacing: 0.05em;
+  /* Gap below restores breathing room between the 404 box and PAGE NOT FOUND
+     (the tighter line-height had removed it). */
+  margin: 0 0 20px;
+}
+
+/* Slimmer highlight just for the big 404 so its black box isn't oversized. */
+.error-code .error-hl {
+  padding: 0.04em 0.22em;
+}
+
+.error-title {
+  font-family: 'Raleway', sans-serif;
+  font-weight: var(--font-weight-bold);
+  font-size: clamp(var(--font-size-2xl), 5vw, var(--font-size-4xl));
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+/* Nudge the heading block down a touch from the top. */
+.error-text {
+  margin-top: 30px;
+}
+
+/* Supportive text + links, anchored below the central logo. The margin-bottom
+   lifts the whole group (text + chips together) up off the bottom. */
+.error-foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.error-subtitle {
+  font-size: clamp(var(--font-size-base), 2vw, var(--font-size-lg));
+  line-height: 1.7;
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+.error-path {
+  font-family: 'Roboto Mono', 'Courier New', monospace;
+  font-size: 0.9em;
+  /* Override Bootstrap's pink <code> color; keep it light on the black highlight. */
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: var(--border-radius-sm);
+  padding: 0.1em 0.4em;
+  /* Long/odd paths shouldn't blow out the layout. */
+  word-break: break-all;
+}
+
+/* Recovery links sit at the bottom of the stage, below the resolving logo (the
+   overlay's space-between pushes them here; the margin is just a floor). Dark
+   pills read clearly over the light grid. */
+.error-links {
+  pointer-events: auto;
+  margin-top: var(--space-8);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-4);
+  justify-content: center;
+}
+
+.error-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-5);
+  border: 1px solid rgba(0, 0, 0, 0.82);
+  border-radius: 2rem;
+  color: #ffffff;
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  background: rgba(0, 0, 0, 0.82);
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.error-links a:hover,
+.error-links a:focus-visible {
+  background: #000000;
+  border-color: #000000;
+  transform: translateY(-1px);
+}
+
+/* Keyboard focus must stay clearly visible over the light grid. */
+.error-links a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ---- Static variant (500 page: dark, logo image, no canvas) -------------- */
+.error-page--static {
+  background: #0b1622;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-page--static .error-overlay {
+  justify-content: center;
+  color: var(--color-text-on-dark);
+}
+
+/* On the dark 500 page the text is plain (no highlight needed) and the links
+   become light pills. */
+.error-page--static .error-code,
+.error-page--static .error-title {
+  color: #ffffff;
+}
+
+.error-page--static .error-subtitle {
+  color: var(--color-text-on-dark-muted);
+}
+
+.error-page--static .error-links {
+  margin-top: var(--space-8);
+}
+
+.error-page--static .error-links a {
+  color: var(--color-white);
+  border-color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.error-page--static .error-links a:hover,
+.error-page--static .error-links a:focus-visible {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: var(--color-white);
+}
+
+.error-page--static .error-links a:focus-visible {
+  outline-color: var(--color-white);
+}
+
+.error-static-logo {
+  width: clamp(180px, 30vw, 320px);
+  height: auto;
+  margin-bottom: var(--space-6);
+}
+
+@media (max-width: 768px) {
+  .error-overlay {
+    padding-top: clamp(5rem, 12vh, 7rem);
+  }
+}

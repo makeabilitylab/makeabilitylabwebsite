@@ -1,0 +1,80 @@
+{% extends "website/base.html" %}
+{% load static %}
+
+{% comment %}
+================================================================================
+CUSTOM 404 PAGE (#1190)
+
+A branded "leaf fall" experience: the page loads fully assembled (a full-window
+grid of triangles with the logo embedded), then the background grid flutters down
+like falling leaves, leaving the Makeability Lab logo standing in the center
+(makelab-404.js). The real recovery content -- big "404 / Page not found"
+heading above the logo, supportive text and navigation links below -- lives in
+the DOM so it works without JavaScript and for screen readers. Honors
+prefers-reduced-motion: just the static logo, no animation.
+
+The text sits over the busy grid, so each line gets a tight black highlight
+(.error-hl) for legibility.
+================================================================================
+{% endcomment %}
+
+{% block pagetitle %}Page Not Found (404){% endblock %}
+
+{% block stylesheets %}
+  <link rel="stylesheet" href="{% static 'website/css/404.css' %}">
+{% endblock %}
+
+{% block external_scripts %}
+  <script type="module" src="{% static 'website/js/makelab-404.js' %}"></script>
+{% endblock %}
+
+{% comment %} No hero carousel on the error page. {% endcomment %}
+{% block maincarousel %}{% endblock %}
+
+{% block content %}
+<section class="error-page" aria-labelledby="error-title">
+  {% comment %}
+    The canvas is purely the branded backdrop; all meaningful content is the
+    text overlay below. role="img" + aria-label give it an accessible name;
+    makelab-404.js drops "Animated" from the label under reduced motion.
+  {% endcomment %}
+  <canvas id="makelab-404-canvas"
+          class="error-canvas"
+          role="img"
+          aria-label="Animated Makeability Lab logo: a grid of triangles falls away like leaves, leaving the logo standing"></canvas>
+
+  <div class="error-overlay">
+    <div class="error-text">
+      <p class="error-code" aria-hidden="true"><span class="error-hl">404</span></p>
+      <h1 id="error-title" class="error-title"><span class="error-hl">Page not found</span></h1>
+    </div>
+
+    <div class="error-foot">
+      <p class="error-subtitle">
+        <span class="error-hl">
+          We couldn&rsquo;t find <code class="error-path">{{ requested_path }}</code>.
+          The page may have been moved or removed &mdash; here&rsquo;s where to go next:
+        </span>
+      </p>
+
+      <nav class="error-links" aria-label="Helpful links">
+      <a href="{% url 'website:index' %}">
+        <i class="fa-solid fa-house" aria-hidden="true"></i> Home
+      </a>
+      <a href="{% url 'website:people' %}">
+        <i class="fa-solid fa-users" aria-hidden="true"></i> People
+      </a>
+      <a href="{% url 'website:publications' %}">
+        <i class="fa-solid fa-file-lines" aria-hidden="true"></i> Publications
+      </a>
+      <a href="{% url 'website:projects' %}">
+        <i class="fa fa-flask" aria-hidden="true"></i> Projects
+      </a>
+      <a href="{% url 'website:news_listing' %}">
+        <i class="fa-solid fa-newspaper" aria-hidden="true"></i> News
+      </a>
+      </nav>
+    </div>
+  </div>
+</section>
+{% endblock %}
