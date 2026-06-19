@@ -51,10 +51,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         <!-- ===== People & project distinctions, sectioned by award_type ===== -->
         {% for section in distinction_sections %}
-        <section aria-labelledby="section-{{ section.label|slugify }}-heading">
-          <h2 id="section-{{ section.label|slugify }}-heading" class="heading-with-anchor">
+        <section aria-labelledby="{{ section.label|slugify }}">
+          <h2 id="{{ section.label|slugify }}" class="heading-with-anchor">
             {{ section.label }}
-            <a href="#section-{{ section.label|slugify }}-heading" class="header-anchor"
+            <a href="#{{ section.label|slugify }}" class="header-anchor"
                aria-label="Link to {{ section.label }} section">
               <i class="fa-solid fa-link" aria-hidden="true"></i>
             </a>
@@ -71,10 +71,10 @@ document.addEventListener('DOMContentLoaded', function() {
         {% endfor %}
 
         <!-- ===== Best Paper Awards ===== -->
-        <section aria-labelledby="best-paper-awards-heading">
-          <h2 id="best-paper-awards-heading" class="heading-with-anchor">
-            Best Paper Awards
-            <a href="#best-paper-awards-heading" class="header-anchor"
+        <section aria-labelledby="best-paper-awards">
+          <h2 id="best-paper-awards" class="heading-with-anchor">
+            Best Paper Awards ({{ best_paper_pubs|length }})
+            <a href="#best-paper-awards" class="header-anchor"
                aria-label="Link to Best Paper Awards section">
               <i class="fa-solid fa-link" aria-hidden="true"></i>
             </a>
@@ -90,10 +90,10 @@ document.addEventListener('DOMContentLoaded', function() {
         </section>
 
         <!-- ===== Other Paper Awards ===== -->
-        <section aria-labelledby="other-paper-awards-heading">
-          <h2 id="other-paper-awards-heading" class="heading-with-anchor">
-            Other Paper Awards
-            <a href="#other-paper-awards-heading" class="header-anchor"
+        <section aria-labelledby="other-paper-awards">
+          <h2 id="other-paper-awards" class="heading-with-anchor">
+            Other Paper Awards ({{ other_award_pubs|length }})
+            <a href="#other-paper-awards" class="header-anchor"
                aria-label="Link to Other Paper Awards section">
               <i class="fa-solid fa-link" aria-hidden="true"></i>
             </a>

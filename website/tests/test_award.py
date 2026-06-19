@@ -11,6 +11,7 @@ real queryset (M2M relations, project visibility), so it belongs here rather
 than in a SimpleTestCase.
 """
 
+import re
 from datetime import date
 
 from django.urls import reverse
@@ -115,3 +116,35 @@ class AwardsPageRenderTests(DatabaseTestCase):
         self.assertIn("award-card", html)
         self.assertIn("award-card--medal", html)  # faculty honor -> medal anchor
         self.assertIn("2017", html)                # prominent year is rendered
+
+    def test_recipient_and_project_join_has_no_stray_space(self):
+        # Regression: the recipient/project connector rendered as "Name , Project"
+        # due to template whitespace between the two loops.
+        person = self.make_person(first_name="Chu", last_name="Li")
+        project = self.make_project(name="AltGeoViz", short_name="altgeoviz", is_visible=True)
+        award = Award.objects.create(title="People's Choice Award", date=date(2024, 10, 29),
+                                     award_type=AwardType.PROJECT_AWARD)
+        award.recipients.set([person])
+        award.projects.set([project])
+
+        html = self.client.get(reverse("website:awards")).content.decode()
+        # Strip tags (names sit inside <a>…</a>), then collapse whitespace, so we
+        # compare the *visible* text the way a reader sees it.
+        text = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", html))
+        self.assertIn("Chu Li, AltGeoViz", text)
+        self.assertNotIn("Chu Li , AltGeoViz", text)
+
+    def test_section_anchors_are_clean_and_paper_sections_show_counts(self):
+        self.make_publication(title="A Great Paper", year=2020, award="Best Paper Award")
+        Award.objects.create(title="A Faculty Honor", date=date(2017, 5, 1),
+                             award_type=AwardType.FACULTY_HONOR).recipients.set([self.make_person()])
+
+        html = self.client.get(reverse("website:awards")).content.decode()
+        # Clean, shareable anchor IDs (no verbose 'section-...-heading').
+        self.assertIn('id="faculty-honors"', html)
+        self.assertIn('id="best-paper-awards"', html)
+        self.assertNotIn("section-faculty-honors-heading", html)
+        self.assertNotIn("best-paper-awards-heading", html)
+        # Paper-section counts.
+        self.assertIn("Best Paper Awards (1)", html)
+        self.assertIn("Other Paper Awards (0)", html)
