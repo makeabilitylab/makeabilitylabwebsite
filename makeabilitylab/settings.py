@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.14.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Feature: redesigned Awards page. Each award now renders as a card with a category-specific visual anchor — recipient photo (student awards), project thumbnail (project awards), or a gold medal icon (faculty honors), with an optional uploaded emblem (new Award.badge field) overriding any of these — led by a prominent golden-orange year badge. A new idempotent import_awards management command (wired into docker-entrypoint.sh) backfills ~27 people/project/faculty awards mined from the news archive + CV that were missing from the Awards page, and corrects the mis-dated Facilitators' Choice (PrototypAR) entry. Paper awards stay on Publication.award; the one gap ('Playing on Hard Mode') is tracked in #1354. /awards/ added to the Pa11y scan set."
+ML_WEBSITE_VERSION = "2.14.1" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Patch: Awards page polish. Section headings now use clean, shareable anchor IDs (e.g. #student-awards, #best-paper-awards instead of #section-...-heading); recipient/project lists no longer render a stray space before the comma ('Name, Project'); and the Best/Other Paper Award headings show a count, e.g. 'Best Paper Awards (12)'. Also retires the one-time import_awards step from the deploy sequence now that the backfill has run on test + prod — the management command stays in the repo (unwired, re-runnable) so a future rebuild can replay it."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
