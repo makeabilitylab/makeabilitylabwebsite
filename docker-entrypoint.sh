@@ -125,11 +125,6 @@ echo "4.8 Running 'python manage.py recompute_url_names' to de-collide historica
 echo "******************************************"
 python manage.py recompute_url_names
 
-echo "****************** STEP 4.9/5: docker-entrypoint.sh ************************"
-echo "4.9 Running 'python manage.py import_awards' to backfill missing Awards (idempotent)"
-echo "******************************************"
-python manage.py import_awards
-
 # echo "****************** STEP 4.3/5: docker-entrypoint.sh ************************"
 # echo "4.3 Running 'python manage.py rename_person_images' to rename person images"
 # echo "******************************************"
