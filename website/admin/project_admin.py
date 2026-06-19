@@ -84,7 +84,13 @@ class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
     # Bounds the per-row gallery-image filesystem check on the changelist (#1346).
     list_per_page = 50
-    
+
+    # Toggle public/private right in the list (is_visible renders as the plain
+    # checkbox formfield_for_dbfield defines below). 'name' stays the row link.
+    list_editable = ('is_visible',)
+
+    actions = ('make_public', 'make_private')
+
     fieldsets = [
         (None,                      {'fields': ['name', 'short_name', 'is_visible']}),
         ('About',                   {'fields': ['start_date', 'end_date', 'summary', 'about', 'gallery_image', 'cropping', 'thumbnail_alt_text']}),
@@ -248,3 +254,13 @@ class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
             request.GET = q
             request.META['QUERY_STRING'] = request.GET.urlencode()
         return super(ProjectAdmin,self).changelist_view(request, extra_context=extra_context)
+
+    @admin.action(description='Mark selected projects as public (visible)')
+    def make_public(self, request, queryset):
+        updated = queryset.update(is_visible=True)
+        self.message_user(request, f'{updated} project(s) marked public.')
+
+    @admin.action(description='Mark selected projects as private (hidden)')
+    def make_private(self, request, queryset):
+        updated = queryset.update(is_visible=False)
+        self.message_user(request, f'{updated} project(s) marked private.')
