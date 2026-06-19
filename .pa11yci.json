@@ -39,6 +39,7 @@
     "http://website:8000/news/",
     "http://website:8000/news/1/",
     "http://website:8000/news/2/",
-    "http://website:8000/news/3/"
+    "http://website:8000/news/3/",
+    "http://website:8000/awards/"
   ]
 }

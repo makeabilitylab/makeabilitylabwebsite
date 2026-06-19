@@ -112,7 +112,11 @@
   --color-badge-text-hover: #083854;
 
   /* Awards */
-  --color-award: #c25059;
+  --color-award: #c25059;                /* legacy red; used by the publications award label */
+
+  /* Awards page — golden-orange accent (year badge, medal disc). Warm and
+     distinct from the blue link text; paired with dark text for WCAG AA. */
+  --color-award-gold: #e8910c;           /* golden orange; 6.5:1 with dark text - AA ✓ */
 
 
   /* ==========================================================================

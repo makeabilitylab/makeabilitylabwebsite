@@ -36,16 +36,153 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Award snippet (people & project distinctions). The shared .artifact-*
-   classes come from base.css; these rules only adjust spacing for this page.
+   Award card (people & project distinctions).
+
+   Layout: a category-specific visual "anchor" on the left (recipient photo for
+   student awards, project thumbnail for project awards, medal icon for faculty
+   honors, or an uploaded badge that overrides any of these) + the award details
+   on the right, led by a prominent year badge. Markup lives in
+   display_award_snippet.html; Award.get_anchor_kind() sets the
+   `.award-card--{kind}` modifier.
    --------------------------------------------------------------------------- */
 
-/* Title sits flush at the top of each item. */
-.award .artifact-title {
-  margin-top: 0;
+.award-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--color-border);
 }
 
-/* Small gap above the optional description line. */
-.award .award-description {
-  margin-top: var(--space-1);
+/* Don't draw a divider under the last award in a section. */
+.award-item:last-child .award-card {
+  border-bottom: none;
+}
+
+/* ---- Left anchor -------------------------------------------------------- */
+.award-anchor {
+  flex: 0 0 96px;
+  width: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.award-anchor-img {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border: 1px solid var(--color-border);
+}
+
+/* Student awards: circular portrait of the recipient. */
+.award-anchor-portrait {
+  border-radius: 50%;
+}
+
+/* Uploaded emblem/logo: show whole (don't crop) and let it sit on the page. */
+.award-anchor-badge {
+  object-fit: contain;
+  border: none;
+}
+
+/* Faculty honors: medal icon in a soft circular chip. */
+.award-anchor-medal {
+  width: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--color-award-gold);
+  color: var(--color-white);  /* white medal glyph on a gold disc */
+  font-size: 2.5rem;
+}
+
+/* Project awards: a wider 5:3 thumbnail (matches project gallery ratio). */
+.award-card--thumbnail .award-anchor {
+  flex-basis: 150px;
+  width: 150px;
+}
+
+.award-anchor-thumb {
+  width: 150px;
+  height: auto;
+  border-radius: var(--border-radius-md);
+}
+
+/* ---- Body --------------------------------------------------------------- */
+.award-body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Prominent golden-orange year badge. Dark text on --color-award-gold is 6.5:1 (AA). */
+.award-year {
+  display: inline-block;
+  margin-bottom: var(--space-2);
+  padding: 2px var(--space-2);
+  background-color: var(--color-award-gold);
+  color: var(--color-text-primary);
+  border-radius: var(--border-radius-sm);
+  font-family: var(--font-family-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.03em;
+}
+
+.award-title {
+  margin: 0 0 var(--space-1);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+}
+
+.award-org {
+  margin: 0 0 var(--space-1);
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.award-recipients {
+  margin: 0;
+}
+
+.award-recipients a {
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+.award-recipients a:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+.award-description {
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* ---- Small screens: shrink the anchor so the text keeps room. ----------- */
+@media (max-width: 575px) {
+  .award-anchor,
+  .award-card--thumbnail .award-anchor {
+    flex-basis: 64px;
+    width: 64px;
+  }
+
+  .award-anchor-img,
+  .award-anchor-medal {
+    width: 64px;
+    height: 64px;
+  }
+
+  .award-anchor-medal {
+    font-size: 1.75rem;
+  }
+
+  .award-anchor-thumb {
+    width: 64px;
+  }
 }

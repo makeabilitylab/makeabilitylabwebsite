@@ -79,6 +79,13 @@ class AwardAdmin(admin.ModelAdmin):
             ('Links & Details', {
                 'fields': ['url', 'description'],
             }),
+            ('Display', {
+                'fields': ['badge', 'badge_alt_text'],
+                'description': 'Optional. On the Awards page, faculty honors show a medal icon, '
+                               'student awards show the recipient’s photo, and project awards '
+                               'show the project thumbnail. Upload a badge/logo here to override '
+                               'that with a custom emblem (e.g., the awarding org’s logo).',
+            }),
         ]
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):

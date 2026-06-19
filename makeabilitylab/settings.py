@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.13.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Feature: replace django-ckeditor (CKEditor 4, EOL with unpatched XSS) with django-prose-editor for the News editor (#1269), unblocking the Django 6.1 LTS upgrade. Content stays raw HTML and migrates near-losslessly; sanitized on save via an nh3 allowlist. In-body image upload moves to a staff-only picker view (reuses media/uploads/ + validate_image_upload); adds an 'Edit HTML' source view. News images are now responsive by default — a one-shot normalize_news_image_styles command strips legacy inline width/height. A small in-repo ckeditor_uploader shim keeps gitignored historical migrations importable (cleanup tracked in #1317). Field swap is TEXT->TEXT (no schema change)."
+ML_WEBSITE_VERSION = "2.14.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Feature: redesigned Awards page. Each award now renders as a card with a category-specific visual anchor — recipient photo (student awards), project thumbnail (project awards), or a gold medal icon (faculty honors), with an optional uploaded emblem (new Award.badge field) overriding any of these — led by a prominent golden-orange year badge. A new idempotent import_awards management command (wired into docker-entrypoint.sh) backfills ~27 people/project/faculty awards mined from the news archive + CV that were missing from the Awards page, and corrects the mis-dated Facilitators' Choice (PrototypAR) entry. Paper awards stay on Publication.award; the one gap ('Playing on Hard Mode') is tracked in #1354. /awards/ added to the Pa11y scan set."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
