@@ -19,8 +19,7 @@ Design:
   * ``--dry-run`` reports what would happen without writing.
 
 Editors: to drop an award you don't want, delete its dict from ENTRIES before
-this ships (nothing deploys until the branch merges). Items flagged ``# REVIEW``
-are lower-confidence (date/venue/recipient guessed) — confirm or trim them.
+this ships (nothing deploys until the branch merges).
 """
 
 from datetime import date
@@ -45,9 +44,9 @@ ENTRIES = [
          description="A Tangible-Graphical Approach to Engage Young Children in Wearable Design.",
          recipients=["Jon Froehlich"], projects=[]),
     dict(title="Google Faculty Research Award", organization="Google",
-         date=date(2013, 1, 1), award_type=AwardType.FACULTY_HONOR, url=None,
+         date=date(2013, 2, 1), award_type=AwardType.FACULTY_HONOR, url=None,
          description="For “Combining Crowdsourcing and Computer Vision for Street-level Accessibility.”",
-         recipients=["Jon Froehlich"], projects=["Project Sidewalk"]),  # REVIEW: CV says 2012; Grants DB says 2013
+         recipients=["Jon Froehlich"], projects=["Project Sidewalk"]),  # Submitted Oct 2012, awarded Feb 2013.
     dict(title="Google Faculty Research Award", organization="Google",
          date=date(2017, 2, 15), award_type=AwardType.FACULTY_HONOR,
          url=NEWS + "google-faculty-award-on-glassear/",
@@ -56,7 +55,7 @@ ENTRIES = [
     dict(title="Google Faculty Research Award", organization="Google",
          date=date(2020, 2, 1), award_type=AwardType.FACULTY_HONOR, url=None,
          description="For “Transforming How Blind and Low Vision Developers Design and Implement User Interfaces.”",
-         recipients=["Jon Froehlich"], projects=[]),  # REVIEW: not in Grants DB; consider adding there too
+         recipients=["Jon Froehlich"], projects=[]),  # Now also in the Grants table (added on prod).
     dict(title="Google Faculty Research Award", organization="Google",
          date=date(2024, 10, 1), award_type=AwardType.FACULTY_HONOR,
          url=NEWS + "society-centered-ai-google-research-award/",
@@ -65,11 +64,11 @@ ENTRIES = [
     dict(title="3M Non-Tenured Faculty Award", organization="3M",
          date=date(2013, 1, 1), award_type=AwardType.FACULTY_HONOR, url=None,
          description="Using Machine Learning and Intelligent Sensing to Promote Activity Awareness and Modification.",
-         recipients=["Jon Froehlich"], projects=[]),  # REVIEW: found in Grants DB; not on the CV list you sent
+         recipients=["Jon Froehlich"], projects=[]),  # In the Grants DB (not on the CV list); confirmed for the awards page.
     dict(title="Inventors in our Midst", organization="1st DC-area Maker Faire",
          date=date(2013, 9, 29), award_type=AwardType.FACULTY_HONOR, url=None,
          description="One of four recognized at the inaugural DC-area Maker Faire.",
-         recipients=["Jon Froehlich"], projects=[]),  # REVIEW: CV only
+         recipients=["Jon Froehlich"], projects=[]),  # CV only; confirmed.
 
     # ---- PhD Fellowships ---------------------------------------------------
     dict(title="NSF Graduate Research Fellowship", organization="National Science Foundation",
@@ -86,7 +85,7 @@ ENTRIES = [
          recipients=["Matthew Mauriello"], projects=[]),
     dict(title="Precourt Center Fellow", organization="Behavior, Energy and Climate Change Conference (BECC)",
          date=date(2009, 1, 1), award_type=AwardType.PHD_FELLOWSHIP, url=None, description=None,
-         recipients=["Jon Froehlich"], projects=[]),  # REVIEW: CV only
+         recipients=["Jon Froehlich"], projects=[]),  # CV only; confirmed.
 
     # ---- Student Awards ----------------------------------------------------
     dict(title="CRA Outstanding Undergraduate Researcher Award — Honorable Mention",
@@ -125,12 +124,12 @@ ENTRIES = [
          description=None, recipients=["Manaswi Saha"], projects=[]),
     dict(title="Graduate School Distinguished Dissertation Award", organization="University of Washington",
          date=date(2012, 6, 1), award_type=AwardType.STUDENT_AWARD, url=None,
-         description=None, recipients=["Jon Froehlich"], projects=[]),  # REVIEW: CV only
+         description=None, recipients=["Jon Froehlich"], projects=[]),  # CV only; confirmed.
     dict(title="CGS/ProQuest Distinguished Dissertation Award — Honorable Mention",
          organization="Council of Graduate Schools / ProQuest", date=date(2012, 1, 1),
          award_type=AwardType.STUDENT_AWARD, url=None,
          description="In Mathematics, Physical Sciences, and Engineering.",
-         recipients=["Jon Froehlich"], projects=[]),  # REVIEW: CV only
+         recipients=["Jon Froehlich"], projects=[]),  # CV only; confirmed.
 
     # ---- Project Awards ----------------------------------------------------
     dict(title="Smart City Hub Switzerland Award", organization="Smart City Hub Switzerland",
@@ -141,7 +140,7 @@ ENTRIES = [
     dict(title="People’s Choice Award", organization=None,
          date=date(2024, 10, 29), award_type=AwardType.PROJECT_AWARD,
          url=NEWS + "altgeoviz-receives-people-choice-award/",
-         description=None, recipients=["Chu Li"], projects=["AltGeoViz"]),  # REVIEW: confirm venue/organization
+         description=None, recipients=["Chu Li"], projects=["AltGeoViz"]),  # Optional: add the other AltGeoViz paper authors as co-recipients (safe in admin).
     dict(title="People’s Choice Award", organization=None,
          date=date(2019, 11, 20), award_type=AwardType.PROJECT_AWARD,
          url=NEWS + "homesound-wins-peoples-choice-award/",
@@ -157,7 +156,7 @@ ENTRIES = [
          recipients=[], projects=["BodyVis"]),
     dict(title="Madrona Innovation Prize", organization="Allen School Industry Affiliates",
          date=date(2019, 10, 1), award_type=AwardType.PROJECT_AWARD, url=None,
-         description=None, recipients=["Dhruv Jain"], projects=["HomeSound"]),  # REVIEW: date/recipient guessed
+         description=None, recipients=["Dhruv Jain"], projects=["HomeSound"]),  # Optional: date approximate; add the other HomeSound paper authors as co-recipients (safe in admin).
 ]
 
 
