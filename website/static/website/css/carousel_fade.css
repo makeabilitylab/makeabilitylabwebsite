@@ -52,3 +52,53 @@
     transition: none;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Motion pause/play control (WCAG 2.2.2 Pause, Stop, Hide).
+   A discoverable button that pauses/plays the auto-advance and the looping
+   hero video. Shipped `hidden`; carousel.js reveals it when motion exists.
+   Sits above the carousel overlay/indicators (z-index) in the bottom-right.
+   --------------------------------------------------------------------------- */
+.carousel-motion-toggle {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  z-index: 20;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* >= 44x44 CSS px target (WCAG 2.5.5). */
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  /* Solid-ish chip for >= 3:1 non-text contrast over video (WCAG 1.4.11). */
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.carousel-motion-toggle[hidden] {
+  display: none;
+}
+
+.carousel-motion-toggle:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Clearly visible keyboard focus indicator (WCAG 2.4.7), legible over video. */
+.carousel-motion-toggle:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px rgba(0, 0, 0, 0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel-motion-toggle {
+    transition: none;
+  }
+}

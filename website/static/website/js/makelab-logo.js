@@ -70,11 +70,30 @@ const canvas = document.getElementById('makelab-logo-canvas');
 const ctx = canvas.getContext('2d');
 const parentDiv = document.querySelector('.col-md-6.center-canvas');
 
+// Honor prefers-reduced-motion (#1294): when set, the logo is rendered in its
+// assembled END state (lerp = 1) and the scroll-driven morph is skipped — the
+// logo is "stuck" fully assembled, no animation. Uses the shared helper
+// (reduced-motion.js), querying live, with a matchMedia fallback.
+function prefersReducedMotion() {
+  if (window.MakeLab && window.MakeLab.prefersReducedMotion) {
+    return window.MakeLab.prefersReducedMotion();
+  }
+  return !!(window.matchMedia &&
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+}
+
 let logicalWidth, logicalHeight;
 let morpher = null;
 let isReady = false;
 let cachedArtData = null;
-let currentLerpAmt = 0;
+// Reduced motion -> pin to the assembled end state; otherwise start scattered.
+let currentLerpAmt = prefersReducedMotion() ? 1 : 0;
+
+// The canvas markup labels itself "Animated ..."; drop "Animated" when the logo
+// is rendered statically so the accessible name matches what's shown.
+if (prefersReducedMotion()) {
+  canvas.setAttribute('aria-label', 'Makeability Lab logo');
+}
 
 // =============================================================================
 // Core Functions
@@ -184,13 +203,18 @@ function render() {
 // Handlers
 // =============================================================================
 
-window.addEventListener('scroll', () => {
-  currentLerpAmt = Math.min(window.scrollY / SCROLL_DISTANCE, 1);
-  if (morpher) {
-    morpher.update(currentLerpAmt);
-    render();
-  }
-}, { passive: true });
+// Scroll-driven morph — skipped entirely under reduced motion, where the logo
+// stays pinned in its assembled end state (currentLerpAmt = 1). The
+// ResizeObserver below still runs so the static logo stays correctly sized.
+if (!prefersReducedMotion()) {
+  window.addEventListener('scroll', () => {
+    currentLerpAmt = Math.min(window.scrollY / SCROLL_DISTANCE, 1);
+    if (morpher) {
+      morpher.update(currentLerpAmt);
+      render();
+    }
+  }, { passive: true });
+}
 
 const resizeObserver = new ResizeObserver(() => initOrResize());
 resizeObserver.observe(parentDiv);
