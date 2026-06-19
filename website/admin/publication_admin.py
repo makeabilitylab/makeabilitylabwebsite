@@ -14,6 +14,7 @@ from website.admin import ArtifactAdmin
 
 from django.urls import reverse
 from django.utils.html import format_html
+from django.http import HttpResponse
 
 from website.admin.admin_site import ml_admin_site
 
@@ -182,3 +183,27 @@ class PublicationAdmin(ArtifactAdmin):
         extra_context = extra_context or {}
         extra_context['publication_id'] = object_id
         return super().change_view(request, object_id, form_url, extra_context)
+
+    actions = ('export_as_bibtex', 'mark_peer_reviewed', 'unmark_peer_reviewed')
+
+    @admin.action(description='Export selected publications as BibTeX (.bib)')
+    def export_as_bibtex(self, request, queryset):
+        """Download the selected publications as a single .bib file. Uses the
+        model's get_citation_as_bibtex with plain newlines and no HTML hyperlinks
+        so the output is a valid BibTeX file rather than admin display markup."""
+        entries = [pub.get_citation_as_bibtex(newline="\n", use_hyperlinks=False)
+                   for pub in queryset]
+        response = HttpResponse("\n\n".join(entries),
+                                content_type='application/x-bibtex; charset=utf-8')
+        response['Content-Disposition'] = 'attachment; filename="publications.bib"'
+        return response
+
+    @admin.action(description='Mark selected publications as peer-reviewed')
+    def mark_peer_reviewed(self, request, queryset):
+        updated = queryset.update(peer_reviewed=True)
+        self.message_user(request, f'{updated} publication(s) marked peer-reviewed.')
+
+    @admin.action(description='Mark selected publications as NOT peer-reviewed')
+    def unmark_peer_reviewed(self, request, queryset):
+        updated = queryset.update(peer_reviewed=False)
+        self.message_user(request, f'{updated} publication(s) marked not peer-reviewed.')
