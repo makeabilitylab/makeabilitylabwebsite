@@ -94,8 +94,8 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background-color: var(--color-primary-light);
-  color: var(--color-award);
+  background-color: var(--color-award-gold);
+  color: var(--color-white);  /* white medal glyph on a gold disc */
   font-size: 2.5rem;
 }
 
@@ -117,13 +117,13 @@
   min-width: 0;
 }
 
-/* Prominent year badge. White on --color-award is ~4.6:1 (AA). */
+/* Prominent golden-orange year badge. Dark text on --color-award-gold is 6.5:1 (AA). */
 .award-year {
   display: inline-block;
   margin-bottom: var(--space-2);
   padding: 2px var(--space-2);
-  background-color: var(--color-award);
-  color: var(--color-white);
+  background-color: var(--color-award-gold);
+  color: var(--color-text-primary);
   border-radius: var(--border-radius-sm);
   font-family: var(--font-family-secondary);
   font-size: var(--font-size-sm);
