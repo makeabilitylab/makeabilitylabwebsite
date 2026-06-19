@@ -17,6 +17,41 @@ Honor · `PROJ` Project Award · `PAPER` → goes on `Publication.award` · ⚠ 
 
 ---
 
+## ✅ Resolution (2026-06-19) — implemented as `import_awards`
+
+Decisions from Jon's review are now encoded in the idempotent
+`website/management/commands/import_awards.py` command (wired into
+`docker-entrypoint.sh` step 4.9; `--dry-run` supported; covered by
+`website/tests/test_import_awards.py`). That command's `ENTRIES` list is the
+authoritative spec — this doc is the rationale. **Nothing ships until the
+`awards-update` branch merges**, so trim entries there first.
+
+What changed from the raw audit after checking the Grants table + publications:
+
+- **Google awards use canonical titles** (from Grants): 2013 "Combining
+  Crowdsourcing and Computer Vision for Street-level Accessibility", 2017
+  "Wearable Sound Awareness Support for the Deaf and Hard of Hearing" (GlassEar),
+  2024 "Exploring AI-Enhanced Mixed-Ability Social Interactions" (Society-Centered
+  AI). The **2020** "Transforming How Blind and Low Vision Developers…" award is
+  **not in the Grants table** — consider adding it there too.
+- **Section D is closed.** Every paper award is already on its publication —
+  including SoundWatch (Best Artifact) and **UbiFit's 10-Year Impact Award**
+  ("Flowers or a robot army?", 2008) — so those are **not** added as Award rows.
+  The **only** missing paper award is **"Playing on Hard Mode"** (pub #685, award
+  field empty) → spin off a **separate issue** to set `Publication.award`.
+- **Bonus find:** a **2013 "3M Non-Tenured Faculty Award"** (in Grants, not on the
+  CV list) is included as a Faculty Honor — confirm or drop.
+- **Aditya / AJAS** (news 2024-10-02) is the **same** recognition as existing
+  award #20 (WA State delegate) → **skipped**.
+- **#18 Facilitators' Choice** date fix (2020→2019 + PrototypAR) is applied
+  automatically by the command.
+- Items flagged `# REVIEW` in `ENTRIES` are lower-confidence (a guessed date,
+  venue, or recipient): the 2013-vs-2012 Google date, the 3M award, "Inventors in
+  our Midst", the CV-only dissertation/BECC items, and the Madrona/AltGeoViz
+  venue details. Confirm or trim before merge.
+
+---
+
 ## A. Faculty Honors — missing from the 21
 
 - [ ] **2017 · NSF CAREER Award** (FAC) — Jon. News: `/news/nsf-career-award/` (2017-02-14). *On your CV; not in DB.*
@@ -25,6 +60,12 @@ Honor · `PROJ` Project Award · `PAPER` → goes on `Publication.award` · ⚠ 
 - [ ] **2024 · Society-Centered AI Google Research Award** (FAC) — Jon, Jacob Wobbrock, Dhruv Jain, Arnavi Chheda-Kothary. News: `/news/society-centered-ai-google-research-award/`.
 - [ ] **2012 · Google Faculty Research Award** — street-level accessibility (FAC) — Jon. *CV only; no news post found.*
 - [ ] **2013 · "Inventors in our Midst", 1st DC-area Maker Faire** (FAC ⚠ or PROJ) — Jon. *CV only.*
+
+In addition to the list above, I also received a Google Faculty Research Award for "Transforming How Blind and Low Vision Developers Design and Implement User Interfaces" in February 2020.
+
+Here's their email: "We would like to thank you for submitting your proposal "Transforming How Blind and Low Vision Developers Design and Implement User Interfaces," to our Google Faculty Research Awards program. We appreciate your patience, as we conduct a very thorough review of all the submissions that we receive, involving several teams of Google engineers and researchers."
+
+If possible, for all Google-related awards, I'd like to use actual titles. We should check that these are also in the grants database on that production dump.
 
 ## B. Student Awards & Fellowships — missing from the 21
 
@@ -49,6 +90,8 @@ Low-priority / ⚠ judgment calls (probably skip or batch):
 - [ ] 2023 · Ritesh — Google Product Inclusion & Equity Summit — *attended*, not an award. (skip?)
 - [ ] 2018 · Dhruv — Tapia travel award / AccessComputing travel award — minor travel grants. (skip?)
 
+Agree with this list and things to skip. If possible, when we create these entries, can we make sure to link to canonical sources.
+
 ## C. Project Awards — missing from the 21
 
 - [ ] **2024 · Smart City Hub Switzerland Award (ZüriACT)** (PROJ) — Project Sidewalk. News: `/news/zuriact-with-project-sidewalk-win-smart-city-hub-switzerland-award-2024/`.
@@ -58,6 +101,8 @@ Low-priority / ⚠ judgment calls (probably skip or batch):
 - [ ] **2018 · People's Choice Award, Allen School Research Day — AR Captioning** (PROJ) — Dhruv Jain. News: `/news/ar-captioning-wins-the-peoples-choice-award.../`. *CV "2018 People's Choice [C.44]" ✓.*
 - [ ] **2016 · Facilitators' Choice Award, NSF Video Showcase — BodyVis** (PROJ) — "13 of 156 (8.3%)". *CV ✓; missing from DB.*
 - [ ] **2019 · Madrona Innovation Prize — HomeSound [C.58]** (PROJ ⚠ or PAPER) — *CV; verify whether to attach to the HomeSound paper instead.*
+
+Good list.
 
 ## D. Paper awards found in news → set on `Publication.award` (NOT Award rows)
 
@@ -77,6 +122,8 @@ Best/Other Paper sections. Needs a separate publication audit.
 - [ ] 2017 · Best Paper, CHI'17 — MakerWear
 - [ ] 2024 · **Best Academic Research, The Game Accessibility Conference** — "Playing on Hard Mode" [C.69]. *CV ✓.*
 
+I'm pretty sure these are all already marked in publications, except for "Playing on Hard Mode". We could do a double check and create a separate Issue for this.
+
 ## E. Excluded (matched keywords but not awards)
 
 Grants: Mapillary Camera Grant (2025), $1.2m NSF Grant (2018), GPSS Travel Grant (2020).
@@ -84,12 +131,16 @@ Other: "Project Sidewalk used in award-winning APA paper" (someone else's award)
 Lecture @ UMN (invited talk); CS Distinguished Lecture: Bjoern Hartmann (external speaker);
 Liang's CHI'19 t-shirt design contest.
 
+I think we can ignore these.
+
 ## F. Data fixes to existing rows
 
 - [ ] **Award #18 — Facilitators' Choice (NSF Video Showcase)**: dated **2020-05-20**, description
   "21 of 242 (8.7%)". That stat + news #113 indicate this is the **2019 PrototypAR** award.
   Fix the date to 2019 and attach the **PrototypAR** project (recipient Seokbin Kang).
 - [ ] Confirm William Chan #9 (Jon, 2012) vs #10 (Dhruv, 2023) — both correct, leave as-is.
+
+Good call. And yes, both me and Dhruv got the same award.
 
 ## G. CV items already represented (no action)
 
@@ -104,3 +155,5 @@ Project Sidewalk / Scistarter 2023.
 Once you've triaged A–D, do you want these entered **by hand in the admin**, or shipped as an
 **idempotent `import_awards` management command** (wired into `docker-entrypoint.sh`, the
 established pattern) so they land on test/prod via deploy? ~25 new rows makes the command worth it.
+
+I'd like to use the command approach.
