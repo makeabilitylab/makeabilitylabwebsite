@@ -7,6 +7,11 @@ from website.admin.admin_site import ml_admin_site
 class KeywordAdmin(admin.ModelAdmin):
     list_display = ['keyword', 'project_count', 'publication_count']
 
+    # The keyword table had no search box; alphabetical ordering also groups
+    # near-duplicate tags (e.g. "Speech" / "speech") adjacently for cleanup.
+    search_fields = ['keyword']
+    ordering = ['keyword']
+
     def change_view(self, request, object_id, form_url='', extra_context=None):
         """Add projects and publications to the context. We then use this extra data in
         the change_form.html template to display the projects and publications that use this keyword.

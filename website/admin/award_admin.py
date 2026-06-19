@@ -44,6 +44,8 @@ class AwardAdmin(admin.ModelAdmin):
 
     ordering = ('-date',)
 
+    date_hierarchy = 'date'  # Year/month/day drill-down (awards are browsed by year)
+
     def get_fieldsets(self, request, obj=None):
         # Built at request time so reverse() can resolve the Publications admin URL.
         publications_url = reverse('admin:website_publication_changelist')

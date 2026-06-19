@@ -16,11 +16,12 @@ class VideoAdmin(admin.ModelAdmin):
     # search_fields are used for auto-complete, see:
     #   https://docs.djangoproject.com/en/3.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields
     # Jon's note (Dec 16, 2025): We cannot use 'get_video_host_str' here because search_fields requires actual model fields.
-    search_fields = ['title', 'video_url', 'date', 'caption']
-    # search_fields = ['title']
+    # Dropped 'date' (string-searching a DateField is unhelpful) and added project name.
+    search_fields = ['title', 'video_url', 'caption', 'projects__name']
 
     # default the sort order in table to descending order by date
     ordering = ('-date',)
+    date_hierarchy = 'date'  # Year/month/day drill-down
 
     def display_projects(self, obj):
         return ", ".join([project.name for project in obj.projects.all()])

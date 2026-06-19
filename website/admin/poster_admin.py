@@ -13,7 +13,12 @@ class PosterAdmin(ArtifactAdmin):
 
     # search_fields are used for auto-complete, see:
     #   https://docs.djangoproject.com/en/3.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields
-    search_fields = ['title', 'date']
+    # Was ['title', 'date'] — string-searching a DateField is unhelpful; search
+    # venue and author instead (matches the other artifact admins).
+    search_fields = ['title', 'forum_name', 'authors__first_name', 'authors__last_name']
+
+    ordering = ('-date',)  # Poster had no default sort; newest first like its siblings
+    date_hierarchy = 'date'  # Year/month/day drill-down
 
     def get_changeform_initial_data(self, request):
         """

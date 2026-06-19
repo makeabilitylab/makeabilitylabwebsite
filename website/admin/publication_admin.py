@@ -47,6 +47,13 @@ class PublicationAdmin(ArtifactAdmin):
     # default the sort order in table to descending order by date
     ordering = ('-date',)
 
+    # Extend the ArtifactAdmin default (title/forum/authors) with book title and DOI.
+    search_fields = ['title', 'forum_name', 'book_title',
+                     'authors__first_name', 'authors__last_name', 'doi']
+
+    # Year/month/day drill-down for this large, date-ordered table.
+    date_hierarchy = 'date'
+
     list_filter = (PubVenueTypeListFilter, PubVenueListFilter)
 
     # add in auto-complete fields 

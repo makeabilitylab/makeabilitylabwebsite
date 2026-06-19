@@ -9,7 +9,10 @@ class GrantAdmin(ArtifactAdmin):
 
     # search_fields are used for auto-complete, see:
     #   https://docs.djangoproject.com/en/3.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields
-    search_fields = ['title', 'date', 'forum_name']
+    # Dropped 'date' (string-searching a DateField is unhelpful); added PI/Co-PI
+    # (author) and sponsor name so grants are findable by people and funder.
+    search_fields = ['title', 'forum_name', 'authors__first_name',
+                     'authors__last_name', 'sponsor__name']
 
     # The list display lets us control what is shown in the default talk table at Home > Website > Grants
     # See: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_display
@@ -21,6 +24,7 @@ class GrantAdmin(ArtifactAdmin):
     autocomplete_fields = ['sponsor']
 
     ordering = ('-date',)  # sort by date, most recent first
+    date_hierarchy = 'date'  # Year/month/day drill-down by grant start date
 
     fieldsets = [
         (None,                      {'fields': ['title', 'authors']}),
