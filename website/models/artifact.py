@@ -63,14 +63,20 @@ class Artifact(models.Model):
     def get_first_author_last_name(self):
         """
         Returns the last name of the first author of the artifact.
-        
+
         If the artifact has an ID and at least one author, it returns the last name of the first author.
         Otherwise, it returns "Unknown".
+
+        Reads ``list(self.authors.all())`` rather than ``.exists()`` + ``.first()`` so an
+        admin changelist with ``list_prefetch_related('authors')`` resolves it from the
+        prefetch cache (no per-row query). ``authors`` is a SortedManyToManyField, so
+        ``.all()`` preserves the editor-defined order — ``[0]`` is still the first author.
         """
-        if self.id and self.authors.exists(): 
-            return self.authors.first().last_name
-        else:
-            return "Unknown"
+        if self.id:
+            authors = list(self.authors.all())
+            if authors:
+                return authors[0].last_name
+        return "Unknown"
     
     get_first_author_last_name.short_description = 'First Author (Last Name)' # used in the admin display for column header
 

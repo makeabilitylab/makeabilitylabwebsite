@@ -43,6 +43,10 @@ class TalkAdmin(ArtifactAdmin):
 
     ordering = ('-date',)  # Sort talks by date in descending order
     list_filter = ('talk_type',)  # Add a filter for the talk type
+
+    # Prefetch speakers so get_speakers_as_csv doesn't query authors per row (#1346).
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related('authors')
     date_hierarchy = 'date'  # Year/month/day drill-down at the top of the list
 
     def get_changeform_initial_data(self, request):

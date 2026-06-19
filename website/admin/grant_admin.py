@@ -26,6 +26,14 @@ class GrantAdmin(ArtifactAdmin):
     ordering = ('-date',)  # sort by date, most recent first
     date_hierarchy = 'date'  # Year/month/day drill-down by grant start date
 
+    # sponsor is a FK column -> list_select_related (Django applies it to the
+    # changelist query); the get_first_author_last_name column walks authors ->
+    # prefetch in get_queryset. Together these drop the per-row queries (#1346).
+    list_select_related = ('sponsor',)
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related('authors')
+
     fieldsets = [
         (None,                      {'fields': ['title', 'authors']}),
         ('Grant Info',              {'fields': ['date', 'end_date', 'sponsor', 'funding_amount', 'forum_url', 'grant_id']}),
