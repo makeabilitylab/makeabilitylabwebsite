@@ -137,6 +137,7 @@ TEMPLATE BLOCKS:
 
   <!-- Site JavaScript (vanilla; no jQuery / Bootstrap JS — see #1288).
        Bootstrap's CSS is still used; only its JavaScript was removed. -->
+  <script src="{% static 'website/js/reduced-motion.js' %}"></script>
   <script src="{% static 'website/js/top-navbar.js' %}"></script>
   <script src="{% static 'website/js/carousel.js' %}"></script>
 
@@ -304,7 +305,13 @@ TEMPLATE BLOCKS:
            aria-label="{% if banner.alt_text %}{{ banner.alt_text }}{% elif banner.caption %}{{ banner.caption }}{% else %}{{ banner.title }}{% endif %}">
         
         {% if banner.video %}
-        <video class="fill banner-video" playsinline autoplay muted loop aria-hidden="true">
+        {% comment %}
+          autoplay is kept so the no-JS baseline still plays the video; carousel.js
+          pauses it under prefers-reduced-motion and via the pause control (#1294).
+          The poster (banner image, when set) is the still shown while paused.
+        {% endcomment %}
+        <video class="fill banner-video" playsinline autoplay muted loop aria-hidden="true"
+               {% if banner.image %}poster="{% thumbnail banner.image '1600x500' box=banner.cropping crop detail %}"{% endif %}>
           <source src="{{ MEDIA_URL }}{{ banner.video }}" type="video/mp4">
         </video>
         {% elif banner.image %}
@@ -343,7 +350,7 @@ TEMPLATE BLOCKS:
       {% endfor %}
     </div>
 
-    <ol class="carousel-indicators" 
+    <ol class="carousel-indicators"
         {% if banners|length < 2 %}style="display: none"{% endif %}
         aria-label="Carousel navigation">
       {% for banner in banners %}
@@ -352,6 +359,20 @@ TEMPLATE BLOCKS:
       </li>
       {% endfor %}
     </ol>
+
+    {% comment %}
+      WCAG 2.2.2 (Pause, Stop, Hide): a visible mechanism to pause the
+      auto-advance and the looping hero video for all users. Hidden by default
+      so no-JS users never see a non-functional control; carousel.js reveals
+      and wires it only when there is motion to govern.
+    {% endcomment %}
+    <button type="button"
+            class="carousel-motion-toggle"
+            aria-label="Pause background motion"
+            hidden>
+      <i class="fa-solid fa-pause" aria-hidden="true"></i>
+      <span class="sr-only">Pause background motion</span>
+    </button>
   </div>
   {% endblock %}
 
