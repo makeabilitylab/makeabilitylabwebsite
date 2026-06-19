@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import widgets
-from website.models import Project, Banner, Photo, ProjectRole, Grant
+from website.models import (Project, Banner, Photo, ProjectRole, Grant,
+                            Publication, Talk, Video, Person)
 from website.models.project import PROJECT_THUMBNAIL_SIZE
 from website.admin_list_filters import ActiveProjectsFilter
 from image_cropping import ImageCroppingMixin
@@ -9,8 +10,26 @@ from django.utils.html import format_html # for formatting thumbnails
 from easy_thumbnails.files import get_thumbnailer # for generating thumbnails
 import os # for checking if thumbnail file exists
 from django import forms
-from django.db.models import F
+from django.db.models import F, Q, Count, OuterRef, Subquery, IntegerField, Value
+from django.db.models.functions import Greatest, Coalesce
+from website.admin.utils import related_count_subquery
 from website.admin.admin_site import ml_admin_site
+
+
+def _contributor_count_subquery():
+    """Distinct count of people who either hold a ProjectRole on the project OR
+    are an author on one of its publications — matching Project.get_contributors,
+    which unions those two sets (#1346). One correlated subquery: count distinct
+    Person ids matching either relation for the outer project, grouped by a
+    constant so it returns a single scalar."""
+    people = (Person.objects
+              .filter(Q(projectrole__project=OuterRef('pk')) |
+                      Q(publication__projects=OuterRef('pk')))
+              .order_by()
+              .values(_grp=Value(1))               # group by a constant -> one row
+              .annotate(_c=Count('pk', distinct=True))
+              .values('_c')[:1])
+    return Coalesce(Subquery(people, output_field=IntegerField()), 0)
 
 class ProjectRoleInline(admin.TabularInline):
     model = ProjectRole
@@ -55,11 +74,16 @@ class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
 
     # The list display lets us control what is shown in the Project table at Home > Website > Project
     # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
+    # The count / most-recent-artifact columns read annotations set in
+    # get_queryset() (sortable) rather than the per-row model methods (#1346).
     list_display = ('name', 'is_visible', 'get_display_thumbnail', 'start_date', 'end_date', 'has_ended',
-                    'get_contributor_count', 'get_people_count',
-                    'get_current_member_count', 'get_past_member_count',
-                    'get_most_recent_artifact_date', 'get_most_recent_artifact_type',
-                    'get_publication_count', 'get_video_count', 'get_talk_count', 'get_banner_count')
+                    'contributor_count', 'people_count',
+                    'current_member_count', 'past_member_count',
+                    'most_recent_artifact_date', 'most_recent_artifact_type',
+                    'pub_count', 'video_count', 'talk_count', 'banner_count')
+
+    # Bounds the per-row gallery-image filesystem check on the changelist (#1346).
+    list_per_page = 50
     
     fieldsets = [
         (None,                      {'fields': ['name', 'short_name', 'is_visible']}),
@@ -69,6 +93,109 @@ class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
     ]
     
     list_filter = (ActiveProjectsFilter, 'is_visible')
+
+    def get_queryset(self, request):
+        """Collapse the Project changelist's ~10 per-row count/aggregate columns
+        into a single query (#1346). Each count is an independent scalar subquery
+        (see related_count_subquery), so the joins don't multiply each other; the
+        three most-recent-artifact dates are scalar subqueries combined into one
+        sortable date. With the default 100 projects this turns ~1,000+ queries
+        into a handful.
+
+        The model methods (get_publication_count, get_most_recent_artifact, ...)
+        are left intact for the public site / detail views; only the changelist
+        columns are repointed at these annotations.
+        """
+        def latest_artifact_date(model):
+            # Most recent artifact date for this project, as a scalar subquery.
+            return Subquery(
+                model.objects.filter(projects=OuterRef('pk'))
+                .order_by('-date').values('date')[:1]
+            )
+
+        return (super().get_queryset(request).annotate(
+            _pub_count=related_count_subquery(Publication, 'projects'),
+            _talk_count=related_count_subquery(Talk, 'projects'),
+            _video_count=related_count_subquery(Video, 'projects'),
+            _banner_count=related_count_subquery(Banner, 'project'),
+            _people_count=related_count_subquery(
+                ProjectRole, 'project', count_field='person', distinct=True),
+            _current_member_count=related_count_subquery(
+                ProjectRole, 'project', count_field='person', distinct=True,
+                extra_filter=Q(end_date__isnull=True)),
+            _past_member_count=related_count_subquery(
+                ProjectRole, 'project', count_field='person', distinct=True,
+                extra_filter=Q(end_date__isnull=False)),
+            _contributor_count=_contributor_count_subquery(),
+            _pub_max_date=latest_artifact_date(Publication),
+            _talk_max_date=latest_artifact_date(Talk),
+            _video_max_date=latest_artifact_date(Video),
+        ).annotate(
+            # Greatest ignores NULLs on Postgres, so this is the max of whichever
+            # artifact types exist (NULL only when the project has none).
+            _recent_artifact_date=Greatest(
+                '_pub_max_date', '_talk_max_date', '_video_max_date'),
+        ))
+
+    # --- Annotation-backed changelist columns (sortable; see get_queryset) ---
+
+    def pub_count(self, obj):
+        return obj._pub_count
+    pub_count.short_description = 'Pubs'
+    pub_count.admin_order_field = '_pub_count'
+
+    def video_count(self, obj):
+        return obj._video_count
+    video_count.short_description = 'Videos'
+    video_count.admin_order_field = '_video_count'
+
+    def talk_count(self, obj):
+        return obj._talk_count
+    talk_count.short_description = 'Talks'
+    talk_count.admin_order_field = '_talk_count'
+
+    def banner_count(self, obj):
+        return obj._banner_count
+    banner_count.short_description = 'Banners'
+    banner_count.admin_order_field = '_banner_count'
+
+    def people_count(self, obj):
+        return obj._people_count
+    people_count.short_description = 'Num People'
+    people_count.admin_order_field = '_people_count'
+
+    def current_member_count(self, obj):
+        return obj._current_member_count
+    current_member_count.short_description = 'Num Current Members'
+    current_member_count.admin_order_field = '_current_member_count'
+
+    def past_member_count(self, obj):
+        return obj._past_member_count
+    past_member_count.short_description = 'Num Past Members'
+    past_member_count.admin_order_field = '_past_member_count'
+
+    def contributor_count(self, obj):
+        return obj._contributor_count
+    contributor_count.short_description = 'Contributors'
+    contributor_count.admin_order_field = '_contributor_count'
+
+    def most_recent_artifact_date(self, obj):
+        return obj._recent_artifact_date
+    most_recent_artifact_date.short_description = 'Most Recent Artifact Date'
+    most_recent_artifact_date.admin_order_field = '_recent_artifact_date'
+
+    def most_recent_artifact_type(self, obj):
+        """Type ('Publication' / 'Talk' / 'Video') of the most recent artifact,
+        derived from the three annotated max-dates. Ties resolve in the same
+        order as Project.get_most_recent_artifact (pub, then talk, then video)."""
+        candidates = [('Publication', obj._pub_max_date),
+                      ('Talk', obj._talk_max_date),
+                      ('Video', obj._video_max_date)]
+        candidates = [(label, d) for label, d in candidates if d is not None]
+        if not candidates:
+            return None
+        return max(candidates, key=lambda c: c[1])[0]
+    most_recent_artifact_type.short_description = 'Most Recent Artifact Type'
 
     def get_display_thumbnail(self, obj):
         if obj.gallery_image and os.path.isfile(obj.gallery_image.path):

@@ -59,8 +59,12 @@ class PositionRoleListFilter(admin.SimpleListFilter):
         
         # Compare the requested value (either True or False)
         # to decide how to filter the queryset.
+        # prefetch_related('position_set') so the membership checks below
+        # (is_current_member, is_alumni_member, ...) — which all read the
+        # person's positions — resolve from one prefetched query instead of
+        # ~2 queries per person on every People changelist load.
         filtered_person_ids = []
-        for person in Person.objects.all():
+        for person in Person.objects.all().prefetch_related('position_set'):
             if person.is_current_member is True and self.value() is None:
                 filtered_person_ids.append(person.id)
             elif person.is_alumni_member is True and person.is_current_member is False and self.value() == "past_member":
