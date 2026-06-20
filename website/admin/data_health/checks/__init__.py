@@ -12,4 +12,5 @@ from website.admin.data_health.checks import (  # noqa: F401
     project_leadership,
     position_integrity,
     news_health,
+    duplicate_keywords,
 )

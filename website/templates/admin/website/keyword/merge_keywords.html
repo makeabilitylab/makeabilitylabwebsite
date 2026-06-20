@@ -1,0 +1,59 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+  <div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+    &rsaquo; <a href="{% url 'admin:website_keyword_changelist' %}">{% translate 'Keywords' %}</a>
+    &rsaquo; {% translate 'Merge keywords' %}
+  </div>
+{% endblock %}
+
+{% block content %}
+  <p>
+    {% blocktranslate trimmed %}
+      Choose which keyword to <strong>keep</strong>. Every reference to the other
+      selected keywords (across publications, talks, posters, grants, projects,
+      and project umbrellas) will be reassigned to it, and the others will be
+      <strong>permanently deleted</strong>. This cannot be undone.
+    {% endblocktranslate %}
+  </p>
+
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="merge_keywords">
+    <input type="hidden" name="confirm_merge" value="yes">
+    {% for id in selected_ids %}
+      <input type="hidden" name="{{ action_checkbox_name }}" value="{{ id }}">
+    {% endfor %}
+
+    <fieldset class="module aligned">
+      <table id="result_list">
+        <thead>
+          <tr>
+            <th scope="col">{% translate 'Keep as target' %}</th>
+            <th scope="col">{% translate 'Keyword' %}</th>
+            <th scope="col">{% translate 'Total uses' %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for candidate in candidates %}
+            <tr class="{% cycle 'row1' 'row2' %}">
+              <td>
+                <input type="radio" name="target" id="target_{{ candidate.keyword.pk }}"
+                       value="{{ candidate.keyword.pk }}"{% if forloop.first %} checked{% endif %}>
+              </td>
+              <td><label for="target_{{ candidate.keyword.pk }}">{{ candidate.keyword.keyword }}</label></td>
+              <td>{{ candidate.total_uses }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </fieldset>
+
+    <div class="submit-row">
+      <input type="submit" class="default" value="{% translate 'Merge keywords' %}">
+      <a href="{% url 'admin:website_keyword_changelist' %}" class="button cancel-link">{% translate 'Cancel' %}</a>
+    </div>
+  </form>
+{% endblock %}
