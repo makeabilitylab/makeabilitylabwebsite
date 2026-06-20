@@ -133,6 +133,10 @@ class AwardsPageRenderTests(DatabaseTestCase):
         text = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", html))
         self.assertIn("Chu Li, AltGeoViz", text)
         self.assertNotIn("Chu Li , AltGeoViz", text)
+        # A multi-line {# #} renders as literal text in Django (the 2.14.1 -> 2.14.2
+        # hotfix). Guard against any leaked template comment.
+        self.assertNotIn("{#", html)
+        self.assertNotIn("whitespace-tight", html)
 
     def test_section_anchors_are_clean_and_paper_sections_show_counts(self):
         self.make_publication(title="A Great Paper", year=2020, award="Best Paper Award")
