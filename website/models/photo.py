@@ -44,8 +44,15 @@ class Photo(models.Model):
     admin_thumbnail.short_description = 'Thumbnail'
 
     def get_resolution_as_str(self):
-        return f"{self.picture.width}x{self.picture.height}"
-    
+        # Reading width/height opens the underlying file, so a missing or
+        # unreadable image raises (FileNotFoundError / OSError). The Photo
+        # changelist renders this for every row, so one bad file must not 500
+        # the whole page (same crash class as the News thumbnail guard, #1346).
+        try:
+            return f"{self.picture.width}x{self.picture.height}"
+        except (FileNotFoundError, OSError, ValueError):
+            return 'Unknown'
+
     get_resolution_as_str.short_description = 'Resolution'
 
     def __str__(self):
