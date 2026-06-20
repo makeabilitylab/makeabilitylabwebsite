@@ -65,8 +65,10 @@ CONTEXT VARIABLES:
 {% load thumbnail %}
 {% load ml_tags %}
 
-{# Title, description, og:type, and canonical come from page_meta (see
-   website/views/project.py). Here we only override the social share image. #}
+{% comment %}
+Title, description, og:type, and canonical come from page_meta (see
+website/views/project.py). Here we only override the social share image.
+{% endcomment %}
 {% block social_image %}
 {% thumbnail project.gallery_image 1200x630 box=project.cropping crop=True upscale=True as og_img %}
 {% if og_img %}

@@ -42,9 +42,11 @@ CONTEXT VARIABLES:
 {% load thumbnail %}
 {% load ml_tags %}
 
-{# Title, description, og:type=article, and canonical come from page_meta (see
-   website/views/news_item.py). Here we override the share image and add the
-   article-specific structural OG tags. #}
+{% comment %}
+Title, description, og:type=article, and canonical come from page_meta (see
+website/views/news_item.py). Here we override the share image and add the
+article-specific structural OG tags.
+{% endcomment %}
 {% block social_image %}
 {% if news_item.image %}{% thumbnail news_item.image '1200x630' box=news_item.cropping crop=True upscale=True as og_img %}{% endif %}
 {% if og_img %}
