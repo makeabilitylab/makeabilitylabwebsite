@@ -53,13 +53,19 @@ def detail(request, check_slug):
     if check is None:
         raise Http404("Unknown data-health check.")
     # Flatten dict rows into cell lists aligned to the column order so the
-    # template can render them without a dynamic dict-lookup filter.
+    # template can render them without a dynamic dict-lookup filter. Each row
+    # also carries an optional (label, url) action link the check may provide.
     columns = check.columns
-    rows = [[row.get(col, '') for col in columns] for row in check.get_rows()]
+    rows = [
+        {'cells': [row.get(col, '') for col in columns],
+         'link': check.row_link(row)}
+        for row in check.get_rows()
+    ]
     context = _admin_context(request, title=check.title)
     context['check'] = check
     context['columns'] = columns
     context['rows'] = rows
+    context['has_links'] = any(row['link'] for row in rows)
     return render(request, 'admin/data_health/detail.html', context)
 
 

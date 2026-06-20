@@ -13,6 +13,9 @@ to support the merge decision (which variant to keep as the target).
 """
 
 from collections import defaultdict
+from urllib.parse import urlencode
+
+from django.urls import reverse
 
 from website.admin.data_health.registry import HealthCheck, register_check
 from website.models import (Keyword, Publication, Talk, Poster, Grant,
@@ -72,6 +75,16 @@ class DuplicateKeywordsCheck(HealthCheck):
         # Stable, scannable ordering: cluster together, then by id.
         rows.sort(key=lambda r: (r['cluster_key'], r['id']))
         return rows
+
+    def row_link(self, row):
+        """Deep-link each row to the Keyword changelist pre-filtered to its
+        cluster, so the editor lands on exactly the variants to select and run
+        the "Merge selected keywords" action on — wiring this finder to its
+        fixer. The admin search is icontains on ``keyword``, so the folded
+        cluster key matches every casing variant in the cluster.
+        """
+        url = reverse('admin:website_keyword_changelist')
+        return ('Merge in admin →', f"{url}?{urlencode({'q': row['cluster_key']})}")
 
     def _row(self, key, kw):
         counts = {col: getattr(kw, accessor).count()

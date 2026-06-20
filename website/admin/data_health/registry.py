@@ -39,6 +39,14 @@ class HealthCheck:
         """Return a list of row dicts (read-only). Override in subclasses."""
         raise NotImplementedError
 
+    def row_link(self, row):
+        """Optional: a ``(label, url)`` pair to act on ``row`` from the detail
+        page, or ``None``. Lets a check wire its read-only findings to a fixer
+        elsewhere in the admin (e.g. the keyword-merge changelist). Default: no
+        link. Only affects the on-screen table — the CSV export is unchanged.
+        """
+        return None
+
     def count(self):
         """Number of flagged rows. Override for a cheaper count if available."""
         return len(self.get_rows())

@@ -14,8 +14,10 @@ Coverage:
 
 from datetime import date
 
+from django.contrib.auth import get_user_model
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.test import RequestFactory
+from django.urls import reverse
 
 from website.models import (Keyword, Publication, Talk, Poster, Grant,
                             Project, ProjectUmbrella, Sponsor)
@@ -174,3 +176,31 @@ class DuplicateKeywordsCheckTests(DatabaseTestCase):
 
         self.assertEqual(rows[kw_a.pk]['publication_count'], 1)
         self.assertEqual(rows[kw_a.pk]['total_uses'], 1)
+
+    def test_row_link_points_to_filtered_keyword_changelist(self):
+        kw = Keyword.objects.create(keyword="Speech")
+        Keyword.objects.create(keyword="speech")  # makes the cluster qualify
+
+        rows = {r['id']: r for r in DuplicateKeywordsCheck().get_rows()}
+        label, url = DuplicateKeywordsCheck().row_link(rows[kw.pk])
+
+        self.assertIn('Merge', label)
+        # Deep-links to the Keyword changelist filtered to the folded cluster key.
+        self.assertIn('/admin/website/keyword/', url)
+        self.assertIn('q=speech', url)
+
+    def test_detail_page_renders_deep_link(self):
+        # End-to-end: the data-health detail page renders the per-row "Merge in
+        # admin" deep link (exercises the template's optional-link branch).
+        Keyword.objects.create(keyword="Speech")
+        Keyword.objects.create(keyword="speech")
+        superuser = get_user_model().objects.create_superuser(
+            username="dh_admin", email="a@b.co", password="pw")
+        self.client.force_login(superuser)
+
+        resp = self.client.get(
+            reverse("admin:data_health_detail", args=["duplicate-keywords"]))
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, "/admin/website/keyword/?q=speech")
+        self.assertContains(resp, "Merge in admin")
