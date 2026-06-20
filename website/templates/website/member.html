@@ -50,9 +50,11 @@ CONTEXT VARIABLES:
 {% load thumbnail %}
 {% load ml_tags %}
 
-{# Title, description, og:type=profile, and canonical come from page_meta (see
-   website/views/member.py). Here we override the share image and add the
-   profile-specific structural OG tags. #}
+{% comment %}
+Title, description, og:type=profile, and canonical come from page_meta (see
+website/views/member.py). Here we override the share image and add the
+profile-specific structural OG tags.
+{% endcomment %}
 {% block social_image %}
 {% thumbnail person.image '1200x630' box=person.cropping crop=True upscale=True as og_img %}
 {% if og_img %}
