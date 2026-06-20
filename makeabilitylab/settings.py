@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.14.1" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Patch: Awards page polish. Section headings now use clean, shareable anchor IDs (e.g. #student-awards, #best-paper-awards instead of #section-...-heading); recipient/project lists no longer render a stray space before the comma ('Name, Project'); and the Best/Other Paper Award headings show a count, e.g. 'Best Paper Awards (12)'. Also retires the one-time import_awards step from the deploy sequence now that the backfill has run on test + prod — the management command stays in the repo (unwired, re-runnable) so a future rebuild can replay it."
+ML_WEBSITE_VERSION = "2.14.2" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Hotfix: a multi-line {# #} explanatory comment added to the award snippet in 2.14.1 rendered as literal text on every award card (Django's {# #} only supports single-line comments). Replaced it with a {% comment %} block so it no longer leaks into the page; added a regression test guarding against leaked template comments."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 

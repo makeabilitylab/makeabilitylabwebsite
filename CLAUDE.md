@@ -136,6 +136,12 @@ News items use `django-ckeditor`. Uploaded files via CKEditor land under `media/
 - Document to language convention: JSDoc for JS, docstrings for Python views/
   models/management commands. Add usage examples for non-obvious logic.
 - HTML/Django templates: 2-space indentation; djlint is the formatter.
+- **Django template comments — `{# … #}` is SINGLE-LINE ONLY.** A `{# … #}` that
+  spans multiple lines is NOT parsed as a comment; Django renders the whole thing
+  (text and `#}` included) as visible page content. For any multi-line comment use
+  `{% comment %} … {% endcomment %}`. This is a recurring footgun (it shipped to
+  prod once as a comment printed on every award card, fixed in 2.14.2) — when
+  adding or editing a `{# … #}`, confirm it stays on one line.
 - Prefer clarity over cleverness; mark placeholders and TODOs clearly.
 
 ## Pull request conventions (from CONTRIBUTING.md)

@@ -54,9 +54,12 @@ markup stays free of inline styles.
 
     {% if award.organization %}<p class="award-org">{{ award.organization }}</p>{% endif %}
 
-    {# Recipients, then publicly-visible projects (private ones omitted, #1300). The
-       endfor/connector/for junctions are kept whitespace-tight on one line so the
-       output reads "Name, Project" and never "Name , Project". #}
+    {% comment %}
+    Recipients, then publicly-visible projects (private ones omitted, #1300). The
+    endfor/connector/for junctions below are kept whitespace-tight on one line so
+    the output reads "Name, Project" and never "Name , Project". (Django's {# #}
+    only supports single-line comments, so this multi-line note uses a block tag.)
+    {% endcomment %}
     <p class="award-recipients">
       {% for person in award.recipients.all %}<a href="{% url 'website:member_by_name' person.get_url_name %}">{{ person.get_full_name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}{% if award.recipients.exists and award.get_visible_projects.exists %}, {% endif %}{% for project in award.get_visible_projects %}<a href="{% url 'website:project' project.short_name %}">{{ project.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
     </p>
