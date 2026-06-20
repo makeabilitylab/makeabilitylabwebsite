@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.14.2" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Hotfix: a multi-line {# #} explanatory comment added to the award snippet in 2.14.1 rendered as literal text on every award card (Django's {# #} only supports single-line comments). Replaced it with a {% comment %} block so it no longer leaks into the page; added a regression test guarding against leaked template comments."
+ML_WEBSITE_VERSION = "2.15.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "New feature: a branded, animated custom 404 page (#1190). The page loads with the Makeability Lab logo embedded in a full-window triangle grid, then the grid flutters down like falling leaves and settles into a pile, leaving the logo standing; click or press R to replay. Adds a matching dark 500 error page. Both are accessible -- all recovery text and links are real DOM (the canvas is decorative), and prefers-reduced-motion renders a static state. Uses MakeabilityLabLogoLeafFall from makeabilitylab/js 0.6.0."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
