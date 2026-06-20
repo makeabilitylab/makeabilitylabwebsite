@@ -130,20 +130,38 @@ class KeywordMergeActionTests(DatabaseTestCase):
                          [target.pk])
 
 
+class KeywordNormalizationTests(DatabaseTestCase):
+    """Layer-1 ward: Keyword.save() normalizes whitespace (#1352)."""
+
+    def test_save_trims_and_collapses_whitespace(self):
+        kw = Keyword.objects.create(keyword="  Speech   recognition  ")
+        kw.refresh_from_db()
+        self.assertEqual(kw.keyword, "Speech recognition")
+
+    def test_casing_is_preserved(self):
+        # Whitespace is normalized, but casing is intentionally left alone so
+        # acronyms like VR / HCI / iOS keep their intended form.
+        kw = Keyword.objects.create(keyword="  HCI ")
+        kw.refresh_from_db()
+        self.assertEqual(kw.keyword, "HCI")
+
+
 class DuplicateKeywordsCheckTests(DatabaseTestCase):
     """The finder must cluster case/whitespace variants and skip singletons."""
 
-    def test_clusters_variants_and_ignores_unique_keywords(self):
+    def test_clusters_case_variants_and_ignores_unique_keywords(self):
+        # Whitespace variants are now prevented at save (layer 1), so the
+        # finder's remaining job is case variants, which still coexist until the
+        # layer-2 case-insensitive constraint lands.
         Keyword.objects.create(keyword="Speech")
         Keyword.objects.create(keyword="speech")
-        Keyword.objects.create(keyword="Speech ")   # trailing whitespace
         Keyword.objects.create(keyword="Robotics")  # unique → not flagged
 
         rows = DuplicateKeywordsCheck().get_rows()
 
         flagged = {r['keyword'] for r in rows}
-        self.assertEqual(flagged, {"Speech", "speech", "Speech "})
-        # All three share one normalized cluster key.
+        self.assertEqual(flagged, {"Speech", "speech"})
+        # Both share one normalized cluster key.
         self.assertEqual({r['cluster_key'] for r in rows}, {"speech"})
 
     def test_total_uses_counts_references(self):
