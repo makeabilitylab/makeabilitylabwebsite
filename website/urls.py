@@ -110,4 +110,16 @@ urlpatterns = [
     # re_path(r'(?P<project_name>[a-zA-Z\- ]+)/$', views.redirect_project, name='project'),
 ]
 
+# Local-dev only (#1190): the real 404/500 pages render only when DEBUG=False,
+# but DEBUG=False also stops runserver from serving static files, so the page's
+# CSS/JS break -- which is exactly what derailed the earlier attempts. These
+# preview routes let you view the error pages at a normal URL with DEBUG=True
+# (static files intact). They are registered ONLY when DEBUG is on, so they can
+# never appear in production. The handler wiring itself is covered by tests.
+if settings.DEBUG:
+    urlpatterns += [
+        path('404-preview/', views.preview_404, name='custom_404_preview'),
+        path('500-preview/', views.preview_500, name='custom_500_preview'),
+    ]
+
 urlpatterns = format_suffix_patterns(urlpatterns)

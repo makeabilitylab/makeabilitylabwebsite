@@ -1,0 +1,49 @@
+{% extends "website/base.html" %}
+{% load static %}
+
+{% comment %}
+================================================================================
+CUSTOM 500 PAGE (#1190)
+
+Deliberately minimal and static: handler500 renders with a bare context (no
+custom context processors) and a 500 means something already went wrong, so this
+page avoids the canvas animation / CDN dependency entirely. It reuses the dark
+error-page styling with a static logo image instead.
+================================================================================
+{% endcomment %}
+
+{% block pagetitle %}Server Error (500){% endblock %}
+
+{% block stylesheets %}
+  <link rel="stylesheet" href="{% static 'website/css/404.css' %}">
+{% endblock %}
+
+{% block maincarousel %}{% endblock %}
+
+{% block content %}
+<section class="error-page error-page--static" aria-labelledby="error-title">
+  <div class="error-overlay">
+    <img class="error-static-logo"
+         src="{% static 'website/img/logos/makelab_logo_v3_white_with_colors_and_text_og_image_ratio_1200w.png' %}"
+         alt="Makeability Lab">
+    <p class="error-code" aria-hidden="true">500</p>
+    <h1 id="error-title" class="error-title">Something broke on our end.</h1>
+    <p class="error-subtitle">
+      A server error occurred while loading this page. It&rsquo;s us, not you.
+      Try again in a moment, or head back home.
+    </p>
+
+    <nav class="error-links" aria-label="Helpful links">
+      <a href="{% url 'website:index' %}">
+        <i class="fa-solid fa-house" aria-hidden="true"></i> Home
+      </a>
+      <a href="{% url 'website:people' %}">
+        <i class="fa-solid fa-users" aria-hidden="true"></i> People
+      </a>
+      <a href="{% url 'website:publications' %}">
+        <i class="fa-solid fa-file-lines" aria-hidden="true"></i> Publications
+      </a>
+    </nav>
+  </div>
+</section>
+{% endblock %}

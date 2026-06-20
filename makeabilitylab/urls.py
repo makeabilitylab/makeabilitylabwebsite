@@ -28,6 +28,14 @@ from django.conf import settings
 
 from website.sitemaps import sitemaps
 
+# Custom error pages (#1190). These MUST be declared in the root URLconf -- Django
+# only looks for handler404/handler500 here, not in the app-level website/urls.py.
+# They take effect only when DEBUG=False; see website.views.custom_404 for how to
+# preview them in local dev.
+# https://docs.djangoproject.com/en/5.2/topics/http/views/#customizing-error-views
+handler404 = "website.views.custom_404"
+handler500 = "website.views.custom_500"
+
 urlpatterns = [
 
     re_path(r'^admin/', admin.site.urls),
