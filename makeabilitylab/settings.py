@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.16.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Keyword taxonomy cleanup tooling (#1352): a 'Merge selected keywords' admin action on the Keyword changelist that reassigns every reference (across Publications, Talks, Posters, Grants, Projects, and Project Umbrellas) onto a chosen target and deletes the duplicates, plus a read-only 'Duplicate keywords' Data Health check that finds case/whitespace variants and deep-links to the filtered changelist to merge them. Keyword.save() now normalizes whitespace so casual variants can't be created. Also: the merge reassigns at the M2M through-table level to stay compatible with the legacy sort_value column on website_publication_keywords. Admin hygiene (#1346): the Photo changelist no longer crashes on a missing image file and now shows the owning project. SEO on-page fixes (duplicate <title>, /None sponsor links, YouTube embed)."
+ML_WEBSITE_VERSION = "2.16.1" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "SEO: shorten the home page <title> to 'HCI & AI Research at UW | Makeability Lab' so it stays under Google's ~60-character display limit (the 2.16.0 'University of Washington' variant was truncated). Follow-up to the 2.16.0 on-page SEO fixes."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 

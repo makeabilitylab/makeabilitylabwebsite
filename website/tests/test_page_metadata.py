@@ -76,9 +76,7 @@ class PageMetadataHttpsTests(DatabaseTestCase):
         resp = self.client.get(reverse("website:index"), secure=True)
         self.assertNotContains(resp, "<title>Makeability Lab | Makeability Lab</title>")
         self.assertContains(
-            resp,
-            "<title>HCI &amp; AI Research at the University of Washington "
-            "| Makeability Lab</title>",
+            resp, "<title>HCI &amp; AI Research at UW | Makeability Lab</title>"
         )
 
     def test_no_http_scheme_in_social_urls(self):
