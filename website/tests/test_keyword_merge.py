@@ -16,6 +16,7 @@ from datetime import date
 
 from django.contrib.auth import get_user_model
 from django.contrib.messages.storage.fallback import FallbackStorage
+from django.db import connection
 from django.test import RequestFactory
 from django.urls import reverse
 
@@ -72,6 +73,54 @@ class KeywordMergeHelperTests(DatabaseTestCase):
         merge_keywords_into_target(target, [source])
 
         # add() is idempotent, so the target appears exactly once — not twice.
+        self.assertEqual(list(pub.keywords.values_list('pk', flat=True)),
+                         [target.pk])
+        self.assertFalse(Keyword.objects.filter(pk=source.pk).exists())
+
+    def test_object_tagged_with_two_sources_at_once(self):
+        target = Keyword.objects.create(keyword="Design")
+        source_a = Keyword.objects.create(keyword="design")
+        source_b = Keyword.objects.create(keyword="DESIGN")
+        pub = self.make_publication(title="Double tagged")
+        pub.keywords.add(source_a, source_b)  # tagged with BOTH sources, not target
+
+        merge_keywords_into_target(target, [source_a, source_b])
+
+        # Both sources collapse to a single target row, not a duplicate pair.
+        self.assertEqual(list(pub.keywords.values_list('pk', flat=True)),
+                         [target.pk])
+        self.assertEqual(Keyword.objects.filter(
+            pk__in=[source_a.pk, source_b.pk]).count(), 0)
+
+    def test_merge_survives_legacy_sort_value_column(self):
+        """Reproduces the -test/prod failure: the deployed keywords through table
+        carries a leftover NOT-NULL ``sort_value`` column (the field used to be a
+        SortedManyToManyField). Inserting a new through row via .add() violates
+        the constraint; the merge must repoint existing rows instead.
+
+        settings_test builds the schema from the current (plain M2M) models, so
+        the column isn't there by default — we add it here to mimic the deployed
+        drift, then assert the merge still succeeds.
+        """
+        target = Keyword.objects.create(keyword="Design Process")
+        source = Keyword.objects.create(keyword="design process")
+        pub = self.make_publication(title="Legacy schema paper")
+        pub.keywords.add(source)  # inserted before the column exists — fine
+
+        table = Publication.keywords.through._meta.db_table
+        with connection.cursor() as cursor:
+            # The .add() above left deferred FK trigger events pending, which
+            # block ALTER TABLE; force them to resolve now so we can add the
+            # column inside this test transaction.
+            cursor.execute('SET CONSTRAINTS ALL IMMEDIATE')
+            cursor.execute(f'ALTER TABLE {table} ADD COLUMN sort_value integer')
+            cursor.execute(f'UPDATE {table} SET sort_value = 0')
+            cursor.execute(
+                f'ALTER TABLE {table} ALTER COLUMN sort_value SET NOT NULL')
+
+        # Must not raise IntegrityError on the NOT-NULL sort_value column.
+        merge_keywords_into_target(target, [source])
+
         self.assertEqual(list(pub.keywords.values_list('pk', flat=True)),
                          [target.pk])
         self.assertFalse(Keyword.objects.filter(pk=source.pk).exists())
