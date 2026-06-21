@@ -12,7 +12,7 @@ Two kinds of coverage:
 
 from django.core.files.base import ContentFile
 
-from website.models import News
+from website.models import News, Photo
 from website.admin.admin_site import ml_admin_site
 from website.admin.news_admin import NewsAdmin
 from website.admin.keyword_admin import KeywordAdmin
@@ -44,6 +44,17 @@ class NewsAdminThumbnailRobustnessTests(DatabaseTestCase):
         admin = NewsAdmin(News, ml_admin_site)
         # Must not raise; the guard returns the same placeholder as the no-image case.
         self.assertEqual(admin.get_display_thumbnail(news), 'No Thumbnail')
+
+
+class PhotoResolutionRobustnessTests(DatabaseTestCase):
+    """A missing/unreadable image file must not crash the Photo changelist (#1346)."""
+
+    def test_missing_file_returns_unknown_instead_of_raising(self):
+        # Point the ImageField at a path with no backing file, so reading
+        # width/height (which opens the file) raises FileNotFoundError.
+        photo = Photo(caption="Ghost photo", picture="projects/images/does_not_exist.jpg")
+        # Must not raise; the guard returns a placeholder.
+        self.assertEqual(photo.get_resolution_as_str(), 'Unknown')
 
 
 class AdminChangelistConfigTests(DatabaseTestCase):
@@ -92,6 +103,12 @@ class AdminChangelistConfigTests(DatabaseTestCase):
 
     def test_photo_search(self):
         self.assertIn('project__name', PhotoAdmin.search_fields)
+
+    def test_photo_project_column_and_select_related(self):
+        # The owning project is surfaced as a column; select_related keeps the
+        # changelist constant-query as rows grow (#1346 Phase 4).
+        self.assertIn('project', PhotoAdmin.list_display)
+        self.assertEqual(PhotoAdmin.list_select_related, ('project',))
 
     def test_position_search(self):
         self.assertIn('person__last_name', PositionAdmin.search_fields)
