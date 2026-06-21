@@ -72,11 +72,22 @@ class GetVideoEmbedTests(SimpleTestCase):
         self.assertIn("i0IDbHGir-8", embed)
 
     def test_youtube_watch_url(self):
-        self.assertTrue(
-            get_video_embed("https://www.youtube.com/watch?v=dQw4w9WgXcQ").startswith(
-                "https://youtube.com/embed"
-            )
+        # The watch?v= form must resolve to /embed/<id>, NOT /embed/watch?v=<id>.
+        self.assertEqual(
+            get_video_embed("https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
+            "https://youtube.com/embed/dQw4w9WgXcQ?showinfo=0&iv_load_policy=3",
         )
+
+    def test_youtube_share_url_with_si_param(self):
+        # YouTube "Share" links carry a ?si=... tracking token. It must be
+        # dropped, not concatenated, so the embed URL has a single '?' and the
+        # player actually loads (regression: ...?si=x?showinfo=0).
+        embed = get_video_embed("https://youtu.be/i0IDbHGir-8?si=AbC123dEf")
+        self.assertEqual(
+            embed, "https://youtube.com/embed/i0IDbHGir-8?showinfo=0&iv_load_policy=3"
+        )
+        self.assertEqual(embed.count("?"), 1, "embed URL must have exactly one '?'")
+        self.assertNotIn("si=", embed)
 
     def test_vimeo_url(self):
         self.assertEqual(

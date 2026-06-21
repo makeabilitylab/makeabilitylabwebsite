@@ -67,6 +67,20 @@ class PageMetadataHttpsTests(DatabaseTestCase):
         # Twitter Card.
         self.assertContains(resp, '<meta name="twitter:card" content="summary_large_image">')
 
+    def test_home_title_is_not_duplicated(self):
+        """The home <title> must not be "Makeability Lab | Makeability Lab".
+
+        base.html appends " | Makeability Lab", so the index pagetitle block
+        must carry only a descriptive prefix, not the lab name again.
+        """
+        resp = self.client.get(reverse("website:index"), secure=True)
+        self.assertNotContains(resp, "<title>Makeability Lab | Makeability Lab</title>")
+        self.assertContains(
+            resp,
+            "<title>HCI &amp; AI Research at the University of Washington "
+            "| Makeability Lab</title>",
+        )
+
     def test_no_http_scheme_in_social_urls(self):
         """#1236: og:url / og:image / canonical must never advertise http://."""
         resp = self.client.get(reverse("website:index"), secure=True)

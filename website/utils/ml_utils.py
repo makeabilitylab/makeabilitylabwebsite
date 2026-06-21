@@ -3,9 +3,10 @@ Hosts general utility functions for Makeability Lab Django website
 """
 
 import datetime
-import random 
+import random
 import difflib
 import logging
+from urllib.parse import urlparse, parse_qs
 
 # for access to settings variables, see https://docs.djangoproject.com/en/4.0/topics/settings/#using-settings-in-python-code
 from django.conf import settings 
@@ -83,20 +84,48 @@ def get_department_abbreviated(dept_name):
     else:
         return "Unknown"
 
+def _get_youtube_id(video_url):
+    """Extract the YouTube video id from the common URL forms.
+
+    Handles ``youtu.be/<id>``, ``youtube.com/watch?v=<id>``,
+    ``youtube.com/embed/<id>`` and ``youtube.com/shorts/<id>``. Any extra query
+    string is ignored — notably the ``?si=...`` share-tracking token YouTube now
+    appends to "Share" links, which used to collide with our own ``?showinfo=``
+    params and produce a malformed ``...?si=x?showinfo=0`` URL (an SEO bug, since
+    the broken embed renders nothing). Returns None if no id can be found.
+
+    >>> _get_youtube_id("https://youtu.be/i0IDbHGir-8?si=abc123")
+    'i0IDbHGir-8'
+    >>> _get_youtube_id("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+    'dQw4w9WgXcQ'
+    """
+    parsed = urlparse(video_url)
+    if 'youtu.be' in parsed.netloc:
+        return parsed.path.lstrip('/').split('/')[0] or None
+    query = parse_qs(parsed.query)
+    if 'v' in query:
+        return query['v'][0]
+    parts = [segment for segment in parsed.path.split('/') if segment]
+    if len(parts) >= 2 and parts[0] in ('embed', 'shorts', 'v'):
+        return parts[1]
+    return None
+
+
 def get_video_embed(video_url):
     """Returns proper embed code for a video url"""
 
     if 'youtu.be' in video_url or 'youtube.com' in video_url:
-        # https://youtu.be/i0IDbHGir-8 or https://www.youtube.com/watch?v=i0IDbHGir-8
-
-        base_url = "https://youtube.com/embed"
-        unique_url = video_url[video_url.find("/", 9):]
-
-        # See https://developers.google.com/youtube/youtube_player_demo for details on parameterizing YouTube video
-        return base_url + unique_url + "?showinfo=0&iv_load_policy=3"
+        # Rebuild the embed URL from the bare video id so any existing query
+        # string (e.g. YouTube's ?si=... share token) can't collide with our
+        # params. See https://developers.google.com/youtube/youtube_player_demo
+        # for the parameter reference.
+        video_id = _get_youtube_id(video_url)
+        if video_id is None:
+            return "unknown video service for '{}'".format(video_url)
+        return "https://youtube.com/embed/{}?showinfo=0&iv_load_policy=3".format(video_id)
     elif 'vimeo' in video_url:
-        # https://player.vimeo.com/video/164630179
-        vimeo_video_id = video_url.rsplit('/', 1)[-1]
+        # https://player.vimeo.com/video/164630179 (drop any trailing query string)
+        vimeo_video_id = urlparse(video_url).path.rstrip('/').rsplit('/', 1)[-1]
         return "https://player.vimeo.com/video/" + vimeo_video_id
     else:
         return "unknown video service for '{}'".format(video_url)

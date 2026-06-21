@@ -50,7 +50,8 @@ CONTEXT VARIABLES:
 ================================================================================
 {% endcomment %}
 
-{% block pagetitle %}Makeability Lab{% endblock %}
+{# base.html appends " | Makeability Lab", so this block holds only the descriptive prefix (repeating the lab name here caused a duplicated title). #}
+{% block pagetitle %}HCI &amp; AI Research at the University of Washington{% endblock %}
 
 {% load static %}
 {% load thumbnail %}
@@ -279,13 +280,13 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="sponsor-card" role="listitem">
       <div class="sponsor-logo">
         {% if sponsor.icon %}
-        <a href="{{ sponsor.url }}" 
-           aria-label="Visit {{ sponsor.name }} website">
-          <img class="sponsor-img" 
-               src="{% thumbnail sponsor.icon sponsor.get_thumbnail_size_as_str box=sponsor.icon_cropping crop=True upscale=True %}" 
+        {# Only link the logo when the sponsor has a URL; a null URLField would otherwise produce a broken link to a nonexistent page. #}
+        {% if sponsor.url %}<a href="{{ sponsor.url }}" aria-label="Visit {{ sponsor.name }} website">{% endif %}
+          <img class="sponsor-img"
+               src="{% thumbnail sponsor.icon sponsor.get_thumbnail_size_as_str box=sponsor.icon_cropping crop=True upscale=True %}"
                alt="{{ sponsor.get_icon_alt_text }}"
                title="{{ sponsor.name }}">
-        </a>
+        {% if sponsor.url %}</a>{% endif %}
         {% endif %}
       </div>
     </div>
