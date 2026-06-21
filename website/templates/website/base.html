@@ -152,13 +152,15 @@ TEMPLATE BLOCKS:
   {% if debug %}
   <script>console.log("Development mode: Google Analytics disabled");</script>
   {% else %}
+  <!-- Google tag (gtag.js) — GA4 property G-M18PCH55ZP (#855).
+       Loads GA4 directly instead of chain-loading it off the retired Universal
+       Analytics analytics.js tag via a console-side "connected site tag". -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-M18PCH55ZP"></script>
   <script>
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-    ga('create', 'UA-79723676-1', 'auto');
-    ga('send', 'pageview');
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-M18PCH55ZP');
   </script>
   {% endif %}
 </head>

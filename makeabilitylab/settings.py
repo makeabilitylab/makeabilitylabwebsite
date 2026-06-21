@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.16.1" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "SEO: shorten the home page <title> to 'HCI & AI Research at UW | Makeability Lab' so it stays under Google's ~60-character display limit (the 2.16.0 'University of Washington' variant was truncated). Follow-up to the 2.16.0 on-page SEO fixes."
+ML_WEBSITE_VERSION = "2.16.2" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Analytics: load Google Analytics 4 (G-M18PCH55ZP) directly via the native gtag.js snippet instead of chain-loading it off the retired Universal Analytics analytics.js tag (a console-side 'connected site tag'). Removes the dead UA-79723676-1 snippet so GA4 collection no longer depends on deprecated UA machinery (#855)."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
