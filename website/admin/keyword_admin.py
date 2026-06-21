@@ -39,29 +39,59 @@ class KeywordUsageFilter(admin.SimpleListFilter):
         return queryset
 
 
+def _parent_fk_field_name(through_model):
+    """Name of the FK on a keywords-through model that points to the *owning*
+    object (Publication/Talk/…) — i.e. the relation that isn't the Keyword side.
+    """
+    for field in through_model._meta.get_fields():
+        if field.many_to_one and field.related_model is not Keyword:
+            return field.name
+    raise RuntimeError(f"No owning FK found on {through_model.__name__}")
+
+
 @transaction.atomic
 def merge_keywords_into_target(target, sources):
     """Reassign every reference from ``sources`` onto ``target``, then delete the
     sources. Returns the number of source keywords removed.
 
-    For each source keyword and each model that references keywords, every
-    tagged object gains the target via ``obj.keywords.add(target)`` — idempotent,
-    so an object already tagged with the target ends up with a single row, not a
-    duplicate. Deleting the source then drops its own M2M rows, so no explicit
-    ``remove()`` is needed. ``target`` is skipped if present in ``sources``.
+    Works at the M2M *through-table* level: each existing ``(object, source)``
+    row is repointed to ``(object, target)`` rather than calling
+    ``obj.keywords.add(target)``. This is deliberate — the deployed
+    ``website_*_keywords`` tables carry a legacy NOT-NULL ``sort_value`` column
+    (the field used to be a SortedManyToManyField), so *inserting* a fresh row
+    via .add() violates that constraint, whereas *updating* an existing row
+    preserves its sort_value. When the object is already tagged with the target,
+    the source row is deleted instead, so no duplicate ``(object, keyword)`` pair
+    is created (this also covers an object tagged with two different sources at
+    once). ``target`` is ignored if present in ``sources``.
 
     Runs in a transaction: a failure mid-merge rolls back rather than leaving the
     taxonomy half-merged.
     """
-    removed = 0
+    sources = [s for s in sources if s.pk != target.pk]
+
+    for model in KEYWORD_USERS:
+        through = model.keywords.through
+        owner_id_field = f"{_parent_fk_field_name(through)}_id"
+        # Snapshot the source rows first; we mutate/delete as we go.
+        for row in list(through.objects.filter(keyword__in=sources)):
+            owner_id = getattr(row, owner_id_field)
+            target_already_present = (
+                through.objects
+                .filter(keyword=target, **{owner_id_field: owner_id})
+                .exclude(pk=row.pk)
+                .exists()
+            )
+            if target_already_present:
+                row.delete()
+            else:
+                row.keyword = target
+                row.save(update_fields=['keyword'])
+
+    removed = len(sources)
     for source in sources:
-        if source.pk == target.pk:
-            continue
-        for accessor in KEYWORD_REVERSE_ACCESSORS:
-            for obj in getattr(source, accessor).all():
-                obj.keywords.add(target)
+        # Any stray through rows are CASCADE-dropped with the keyword.
         source.delete()
-        removed += 1
     return removed
 
 
