@@ -23,12 +23,16 @@
         <thead>
           <tr>
             {% for col in columns %}<th scope="col">{{ col }}</th>{% endfor %}
+            {% if has_links %}<th scope="col">{% translate 'Action' %}</th>{% endif %}
           </tr>
         </thead>
         <tbody>
           {% for row in rows %}
             <tr class="{% cycle 'row1' 'row2' %}">
-              {% for cell in row %}<td>{{ cell }}</td>{% endfor %}
+              {% for cell in row.cells %}<td>{{ cell }}</td>{% endfor %}
+              {% if has_links %}
+                <td>{% if row.link %}<a class="button" href="{{ row.link.1 }}">{{ row.link.0 }}</a>{% endif %}</td>
+              {% endif %}
             </tr>
           {% endfor %}
         </tbody>
