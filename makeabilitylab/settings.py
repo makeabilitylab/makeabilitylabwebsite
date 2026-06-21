@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.15.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "New feature: a branded, animated custom 404 page (#1190). The page loads with the Makeability Lab logo embedded in a full-window triangle grid, then the grid flutters down like falling leaves and settles into a pile, leaving the logo standing; click or press R to replay. Adds a matching dark 500 error page. Both are accessible -- all recovery text and links are real DOM (the canvas is decorative), and prefers-reduced-motion renders a static state. Uses MakeabilityLabLogoLeafFall from makeabilitylab/js 0.6.0."
+ML_WEBSITE_VERSION = "2.16.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Keyword taxonomy cleanup tooling (#1352): a 'Merge selected keywords' admin action on the Keyword changelist that reassigns every reference (across Publications, Talks, Posters, Grants, Projects, and Project Umbrellas) onto a chosen target and deletes the duplicates, plus a read-only 'Duplicate keywords' Data Health check that finds case/whitespace variants and deep-links to the filtered changelist to merge them. Keyword.save() now normalizes whitespace so casual variants can't be created. Also: the merge reassigns at the M2M through-table level to stay compatible with the legacy sort_value column on website_publication_keywords. Admin hygiene (#1346): the Photo changelist no longer crashes on a missing image file and now shows the owning project. SEO on-page fixes (duplicate <title>, /None sponsor links, YouTube embed)."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
