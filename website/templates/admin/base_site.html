@@ -14,6 +14,11 @@
 </div>
 {% endblock %}
 
+{% block userlinks %}
+  <a href="https://github.com/makeabilitylab/makeabilitylabwebsite" target="_blank" rel="noopener">GitHub</a> /
+  {{ block.super }}
+{% endblock %}
+
 {% block extrastyle %}
 {{ block.super }}
 <style>
