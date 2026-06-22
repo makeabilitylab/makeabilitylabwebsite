@@ -270,18 +270,19 @@
 
 .project-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  /*
+    minmax(min(100%, 250px), 1fr): the min() guard caps each track at the
+    container width, so a track can never overflow its parent (the classic
+    CSS-grid mobile overflow bug). At ~250px the layout naturally yields a
+    single column on phones, 2 on tablets, and 3+ on desktop. See the
+    @media (max-width: 991px) block below, which also un-flexes .row-flex so
+    the grid's parent reports a definite width (otherwise auto-fill collapses
+    to one full-width column on tablets — the original off-screen-thumbnail bug).
+  */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
   gap: var(--space-8);
   margin-top: var(--space-5);
   /* Removed min-height - let grid size naturally based on content */
-}
-
-/* Responsive adjustments */
-@media (max-width: 576px) {
-  .project-grid {
-    grid-template-columns: 1fr;
-    gap: var(--space-6);
-  }
 }
 
 
@@ -291,6 +292,7 @@
 
 .project-card {
   position: relative;
+  min-width: 0;  /* Allow the card to shrink inside its grid track (prevents overflow) */
   transition: opacity 500ms ease;  /* Match FADE_DURATION in JS */
 }
 
@@ -319,13 +321,22 @@
   display: block;
   width: 100%;
   height: auto;
+  /* Thumbnails are cropped to 500x300 (5:3); reserving the box prevents
+     layout shift (CLS) while the image loads. object-fit guards any
+     off-ratio source. */
+  aspect-ratio: 5 / 3;
+  object-fit: cover;
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-md);
   transition: transform var(--transition-normal);
 }
 
-.project-image:hover .project-thumbnail {
-  transform: scale(1.05);
+/* Only apply the hover zoom on devices with a real pointer; on touchscreens
+   a :hover transform sticks awkwardly after a tap. */
+@media (hover: hover) {
+  .project-image:hover .project-thumbnail {
+    transform: scale(1.05);
+  }
 }
 
 /* Reduce motion for users who prefer it */
@@ -406,10 +417,28 @@
    RESPONSIVE ADJUSTMENTS
    ============================================================================= */
 
-/* Tablet and below: adjust grid gaps */
+/* Tablet and below: tighten the grid gap. (The flex->block switch that makes
+   the grid go multi-column here lives in the FLEXBOX ROW HELPER section, which
+   is mobile-first: block by default, flex only at >=992px.) */
 @media (max-width: 991px) {
   .project-grid {
     gap: var(--space-6);
+  }
+
+  /* Narrow columns truncate titles aggressively; allow up to two lines.
+     Overrides the shared .line-clamp-one-line utility for this page only. */
+  .project-title a {
+    white-space: normal;
+    overflow: visible;
+  }
+
+  .project-title .line-clamp-one-line {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    white-space: normal;
+    overflow: hidden;
   }
 }
 
@@ -419,11 +448,11 @@
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .filter-mobile-container {
     width: 100%;
   }
-  
+
   .filter-mobile-select {
     width: 100%;
   }
@@ -434,9 +463,19 @@
    FLEXBOX ROW HELPER
    ============================================================================= */
 
-.row-flex {
-  display: flex;
-  flex-wrap: wrap;
+/*
+  Mobile-first: the row is a plain block by default so that .project-grid's
+  parent (.col-md-10) has a DEFINITE width and the grid's auto-fill resolves
+  to multiple columns. Only at >=992px — where the desktop filter sidebar
+  appears — do we switch to flex to place the sidebar beside the content.
+  (A flex parent gives the grid an indefinite width, which collapses auto-fill
+  to a single oversized column — the original off-screen-thumbnail bug.)
+*/
+@media (min-width: 992px) {
+  .row-flex {
+    display: flex;
+    flex-wrap: wrap;
+  }
 }
 
 /* Keep sidebar column aligned to top */
