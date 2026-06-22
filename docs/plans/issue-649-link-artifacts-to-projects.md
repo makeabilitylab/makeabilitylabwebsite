@@ -14,9 +14,16 @@ propagation flagged, deep-links to each edit page, CSV export, regression-tested
 (`website/tests/test_unlinked_artifacts_check.py`).
 Issue #649 updated with the scope table + decision.
 
-**Deferred:** the semi-automated suggestion/apply pipeline below. Not built —
-held unless the manual route through the health check proves too slow. Kept here
-for reference.
+**Shipped (Tier-1 propagation):** `propagate_publication_projects` management
+command (`website/management/commands/`) copies a publication's projects onto any
+childless `talk`/`video`/`poster` — additive-only, idempotent — wired into
+`docker-entrypoint.sh` so it self-heals on every container start. Clears the
+"parent publication is linked — inherit its projects" rows automatically. Tested
+in `website/tests/test_propagate_publication_projects.py`.
+
+**Deferred:** the Tier-2 semi-automated suggestion/apply pipeline below (for
+artifacts with *no* parent publication to inherit from). Not built — held unless
+the manual route through the health check proves too slow. Kept for reference.
 
 ---
 

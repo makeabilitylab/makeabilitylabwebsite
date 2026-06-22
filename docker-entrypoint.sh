@@ -143,6 +143,11 @@ echo "4.8 Running 'python manage.py recompute_url_names' to de-collide historica
 echo "******************************************"
 python manage.py recompute_url_names
 
+echo "****************** STEP 4.9/5: docker-entrypoint.sh ************************"
+echo "4.9 Running 'python manage.py propagate_publication_projects' to link talks/videos/posters to their publication's projects (#649)"
+echo "******************************************"
+python manage.py propagate_publication_projects
+
 # echo "****************** STEP 4.3/5: docker-entrypoint.sh ************************"
 # echo "4.3 Running 'python manage.py rename_person_images' to rename person images"
 # echo "******************************************"

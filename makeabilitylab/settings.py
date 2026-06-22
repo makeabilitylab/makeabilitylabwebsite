@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.17.2" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Fix the /version/ endpoint reporting git_sha and built_at as 'unknown' in deployed environments. The build-info capture in docker-entrypoint.sh needs git (it wasn't installed in the image) and trips git's 'dubious ownership' guard because /code/.git is apache:makelab-owned while the container runs as root. Installs git in the Dockerfile and runs rev-parse with -c safe.directory=/code. The Dockerfile change also forces an image rebuild on deploy, so the entrypoint actually re-runs and writes build-info.json (#1366)."
+ML_WEBSITE_VERSION = "2.17.3" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Auto-link a publication's talk, video, and poster to the publication's projects (#649). A publication's child artifacts are the same scholarly work, so they belong to the same projects; the new propagate_publication_projects management command copies a publication's projects onto any of its children that currently have none. It is additive-only (never removes a link, never touches a child that already has projects) and idempotent, and runs on every container start via docker-entrypoint.sh so it self-heals. This clears the 'parent publication is linked — inherit its projects' rows in the Artifacts-not-linked data-health check, leaving only the artifacts that need a human decision."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
