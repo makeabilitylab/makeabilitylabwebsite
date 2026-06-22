@@ -1,0 +1,96 @@
+{% comment %}
+================================================================================
+ARTIFACT PREVIEW LINK SNIPPET (#840)
+================================================================================
+
+Renders a publication's Poster / Talk download link. When the related artifact
+has a generated thumbnail, the link becomes a popover *trigger* (mirroring the
+Cite popover): hovering (mouse) or clicking / Enter / tapping it opens a small
+card showing the thumbnail plus download actions (PDF, the raw file e.g. PPTX,
+and the editable Source link). Without a thumbnail it degrades to the plain
+direct-to-PDF link it was before.
+
+The card markup lives inside a <template>, which is inert until thumbnailPreview.js
+clones it into the DOM on open — so the preview image is only fetched when the
+card is actually shown (lazy), even on a page listing dozens of publications.
+
+USAGE:
+  {% include 'snippets/artifact_preview_link.html' with artifact=pub.poster label='Poster' label_lower='poster' icon='fa-image' title=pub.title %}
+
+CONTEXT VARIABLES (all required):
+  - artifact:    the Poster or Talk instance (must have a pdf_file)
+  - label:       button text, e.g. "Poster" / "Talk"
+  - label_lower: lowercased phrase for aria-labels, e.g. "poster" / "talk slides"
+  - icon:        Font Awesome icon class, e.g. "fa-image" / "fa-person-chalkboard"
+  - title:       the parent publication's title (for accessible labels)
+
+DEPENDENCIES:
+  - thumbnailPreview.js (open/close/position/focus handling)
+  - publications.css (.artifact-preview-* styles; reuses Bootstrap .popover)
+
+ACCESSIBILITY:
+  - Trigger is role="button" with aria-haspopup="dialog"; aria-expanded is
+    toggled by the JS. The card is a role="dialog" with an accessible name.
+  - On click/Enter, focus moves into the card and is kept within it until close;
+    Escape closes and restores focus to the trigger.
+  - The clickable preview image duplicates the PDF action, so it is tabindex=-1
+    and aria-hidden (the PDF action below is the accessible control).
+================================================================================
+{% endcomment %}
+{% load thumbnail %}
+
+{% if artifact.thumbnail %}{% thumbnail artifact.thumbnail 600x0 detail as preview_img %}{% endif %}
+
+{% if preview_img %}
+<span class="artifact-preview">
+  <a class="artifact-preview-trigger"
+     href="{{ artifact.pdf_file.url }}"
+     role="button"
+     aria-haspopup="dialog"
+     aria-expanded="false"
+     aria-label="{{ label }} options for {{ title }}">
+    <i class="fa-solid {{ icon }}" aria-hidden="true"></i>{{ label }}
+  </a>
+  <template class="artifact-preview-template">
+    <div class="artifact-preview-card" role="dialog" aria-label="{{ label }} for {{ title }}">
+      <a class="artifact-preview-image-link"
+         href="{{ artifact.pdf_file.url }}"
+         tabindex="-1"
+         aria-hidden="true">
+        <img class="artifact-preview-image" src="{{ preview_img.url }}" alt="">
+      </a>
+      <div class="artifact-preview-actions">
+        <a class="artifact-preview-action" href="{{ artifact.pdf_file.url }}">
+          <i class="fa-solid fa-file-pdf" aria-hidden="true"></i>
+          <span class="artifact-preview-action-label">PDF</span>
+          {% if artifact.pdf_file_size %}
+          <span class="artifact-preview-size">{{ artifact.pdf_file_size|filesizeformat }}</span>
+          {% endif %}
+        </a>
+        {% if artifact.raw_file %}
+        <a class="artifact-preview-action" href="{{ artifact.raw_file.url }}">
+          <i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i>
+          <span class="artifact-preview-action-label">{{ artifact.raw_file_label }}</span>
+          {% if artifact.raw_file_size %}
+          <span class="artifact-preview-size">{{ artifact.raw_file_size|filesizeformat }}</span>
+          {% endif %}
+        </a>
+        {% endif %}
+        {% if artifact.external_slides_url %}
+        <a class="artifact-preview-action"
+           href="{{ artifact.external_slides_url }}"
+           target="_blank"
+           rel="noopener">
+          <i class="fa-solid fa-up-right-from-square" aria-hidden="true"></i>
+          <span class="artifact-preview-action-label">Source</span>
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </template>
+</span>
+{% else %}
+<a href="{{ artifact.pdf_file.url }}" aria-label="Download {{ label_lower }}">
+  <i class="fa-solid {{ icon }}" aria-hidden="true"></i>{{ label }}
+</a>
+{% endif %}

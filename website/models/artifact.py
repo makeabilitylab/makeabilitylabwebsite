@@ -106,6 +106,39 @@ class Artifact(models.Model):
             return None
         return self.RAW_FILE_LABELS.get(ext, ext.lstrip('.').upper())
 
+    @staticmethod
+    def _safe_file_size(file_field):
+        """
+        Size of a FileField's file in bytes, or None if there is no file or it
+        can't be read.
+
+        Reading ``FieldFile.size`` hits storage (a stat) and raises
+        ``FileNotFoundError`` when the file has gone missing on disk — which
+        happens in practice on the servers (the fuzzy ``serve_pdf`` view exists
+        precisely because publication files get renamed/removed). The public
+        preview card (#840) reads these sizes at render time for every card on
+        a listing, so a single missing file must degrade to "no size shown"
+        rather than 500 the whole page.
+        """
+        if not file_field:
+            return None
+        try:
+            return file_field.size
+        except (OSError, ValueError):
+            return None
+
+    @property
+    def pdf_file_size(self):
+        """Size of ``pdf_file`` in bytes, or None if empty/missing. See
+        :meth:`_safe_file_size`."""
+        return self._safe_file_size(self.pdf_file)
+
+    @property
+    def raw_file_size(self):
+        """Size of ``raw_file`` in bytes, or None if empty/missing. See
+        :meth:`_safe_file_size`."""
+        return self._safe_file_size(self.raw_file)
+
     def __str__(self):
         if self.id and self.authors.exists():          
             return "{}, '{}', {} {}".format(self.get_first_author_last_name(), self.title, self.forum_name, self.date)
