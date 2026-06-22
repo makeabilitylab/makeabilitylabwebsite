@@ -92,7 +92,7 @@ class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
     actions = ('make_public', 'make_private')
 
     fieldsets = [
-        (None,                      {'fields': ['name', 'short_name', 'is_visible']}),
+        (None,                      {'fields': ['name', 'display_short_name', 'short_name', 'is_visible']}),
         ('About',                   {'fields': ['start_date', 'end_date', 'summary', 'about', 'gallery_image', 'cropping', 'thumbnail_alt_text']}),
         ('Links',                   {'fields': ['website', 'data_url', 'featured_video', 'featured_code_repo_url']}),
         ('Associations',            {'fields': ['project_umbrellas', 'keywords']}),

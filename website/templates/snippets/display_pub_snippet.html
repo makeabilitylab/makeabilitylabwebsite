@@ -125,7 +125,7 @@ CONTEXT VARIABLES:
     {% for project in pub.projects.all %}
     {% if project.can_show_online %}
     <a href="{% url 'website:project' project.short_name %}" aria-label="View project: {{ project.name }}">
-      <i class="fa-solid fa-flask" aria-hidden="true"></i>{{ project.name }}
+      <i class="fa-solid fa-flask" aria-hidden="true"></i>{{ project.get_display_short_name }}
     </a>
     {% endif %}
     {% endfor %}
@@ -255,7 +255,7 @@ CONTEXT VARIABLES:
       {% for project in pub.projects.all %}
       {% if project.can_show_online %}
       <a href="{% url 'website:project' project.short_name %}" aria-label="View project: {{ project.name }}">
-        <i class="fa-solid fa-flask" aria-hidden="true"></i>{{ project.name }}
+        <i class="fa-solid fa-flask" aria-hidden="true"></i>{{ project.get_display_short_name }}
       </a>
       {% endif %}
       {% endfor %}
