@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.18.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Poster and Talk links on publications now open a preview card (#840): hover or click to see the artifact thumbnail plus one-click downloads for the PDF, the raw slides/design file (e.g. PPTX), and the editable Source link, each with file size. The card opens on hover, click, Enter, or tap and manages focus, so it works for mouse, keyboard, and touch alike, and degrades to a plain PDF link when there is no thumbnail. This release also hardens the publications page against files missing on disk (a missing file no longer 500s the listing), adds an 'Open →' edit action to the Media/file-integrity data-health check so missing files are one click to fix (#1376), and corrects the admin Position field label to 'Mentor' (#806)."
+ML_WEBSITE_VERSION = "2.19.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Publication, talk, and video cards now show an optional short project label on the 'View project' chip (#1156): a project can define a concise display name (e.g. 'Sidewalk' for 'Project Sidewalk') that renders on these compact cards, while the full name is preserved in the accessible aria-label and used as a fallback when no short name is set. This release also guards against a duplicate project URL slug that previously caused a 500 on the project page. In the admin, the Publication/Talk/Poster change forms now show a read-only thumbnail preview so editors can visually confirm the right PDF is attached (#1380), the artifact upload field is redesigned as a standard drag-and-drop zone, and your file selection is now preserved when a form is re-shown after a validation error instead of being silently cleared (#248)."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
