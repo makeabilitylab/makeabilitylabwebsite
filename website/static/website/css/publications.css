@@ -694,9 +694,14 @@
    and style its contents. */
 
 .artifact-preview-popover {
-  /* Compact card. Talk slides are landscape, so width drives the size; keep it
-     modest. Posters (often portrait) are bounded by the image max-height. */
-  max-width: 272px;
+  /* The card hugs its image: thumbnailPreview.js sizes the image to a fixed box
+     and the card shrink-wraps it. base.css sets a global `.popover { width: 50vw;
+     min-width: 300px }`, so we must reset both here or the card can't shrink to
+     the image (that was the whitespace beside portrait posters). max-width is a
+     generous ceiling so a full-width landscape image (+ padding) is never clipped. */
+  width: auto;
+  min-width: 0;
+  max-width: 300px;
   /* Bootstrap sets .popover { display: none }; the JS reveals it. Keep it
      above page chrome but below modals. */
   z-index: 1060;
@@ -713,12 +718,16 @@
 
 .artifact-preview-image {
   display: block;
-  width: 100%;
-  height: auto;
-  /* Never let a tall poster run past the viewport. */
-  max-height: 45vh;
-  object-fit: contain;
-  border-radius: var(--border-radius-sm, 3px);
+  /* Height-capped (not width-driven), so portrait posters stay compact instead
+     of running tall; landscape ones still fill the card width. width/height are
+     left to intrinsic aspect, bounded by the maxes. Narrower (portrait) images
+     are centered. */
+  margin: 0 auto;
+  max-width: 100%;
+  max-height: 240px;
+  /* Rounded rect + subtle outline so the thumbnail reads as a framed preview. */
+  border-radius: var(--border-radius-md, 8px);
+  border: 1px solid var(--color-border, #d0d0d0);
 }
 
 .artifact-preview-actions {
@@ -750,9 +759,10 @@
   outline-offset: var(--focus-ring-offset, 2px);
 }
 
-/* File size, pushed to the trailing edge of each action row. */
+/* File size sits right after its label (not pushed to the trailing edge), so a
+   lone action doesn't leave an awkward gap when the card is as wide as the
+   poster image. */
 .artifact-preview-size {
-  margin-left: auto;
   color: var(--color-text-secondary, #666);
   font-size: 0.85em;
 }
