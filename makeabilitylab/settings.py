@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.16.3" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Fix the project listing page (/projects/) overflowing horizontally on mobile, which cut thumbnails and the filter UI off on the right. Below the 992px sidebar breakpoint the card grid's flex parent reported an indefinite width, blowing a grid track wider than the viewport; .row-flex is now mobile-first (block <992px, flex >=992px) and the track is capped with minmax(min(100%, 250px), 1fr). Also adds anti-CLS image sizing, touch-friendly hover, two-line titles, and lazy-loaded thumbnails (#1367)."
+ML_WEBSITE_VERSION = "2.17.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Add an unauthenticated machine-readable build/version endpoint at /version/ (and /version.json) returning JSON: version, description, environment, git_sha, and built_at. The git short SHA and build timestamp are captured once at container start by docker-entrypoint.sh into a gitignored build-info.json (falling back to 'unknown'), so you can confirm what code a server is actually running without scraping the HTML comment in base.html. Sets Cache-Control: no-store so no proxy serves a stale version (#1366)."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 

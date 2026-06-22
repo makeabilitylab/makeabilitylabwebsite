@@ -49,6 +49,10 @@ a11y-report.json
 repomix-output.xml
 codebase-analysis.md
 
+# Build/version info written by docker-entrypoint.sh at container start (#1366),
+# read by the /version/ endpoint. Per-deploy, never committed.
+build-info.json
+
 # coverage.py artifacts (#1278 item 4) — the data file and HTML/XML reports are
 # written into the repo root (the container's CWD is the bind-mounted /code).
 .coverage

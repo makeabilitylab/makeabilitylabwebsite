@@ -47,6 +47,19 @@ echo ""
 # setfacl -m u:48:rwx /code
 # chown -R apache /code
 
+# Capture build/version info for the /version/ endpoint (#1366).
+# The servers deploy via git, so .git is present and `git rev-parse` works; we
+# capture the short SHA + a timestamp ONCE here (not per request) into a small
+# build-info.json that website/views/version.py reads. Falls back to "unknown"
+# if git isn't available (the view also tolerates a missing file).
+echo "****************** STEP -1/5: docker-entrypoint.sh ************************"
+echo "-1. Writing build-info.json (git sha + build timestamp) for /version/"
+echo "******************************************"
+GIT_SHA=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+BUILT_AT=$(date --iso-8601=seconds 2>/dev/null || echo "unknown")
+printf '{"git_sha": "%s", "built_at": "%s"}\n' "$GIT_SHA" "$BUILT_AT" > build-info.json
+cat build-info.json
+
 # Collect static files
 echo "****************** STEP 0/5: docker-entrypoint.sh ************************"
 echo "0. Printing environment variables visible to Django"
