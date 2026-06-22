@@ -59,9 +59,11 @@ THUMBNAIL NOTES:
   <div class="project-image">
     <a href="{% url 'website:project' project.short_name %}"
        aria-label="View project: {{ project.name }}">
-      <img class="project-thumbnail" 
-           src="{% thumbnail project.gallery_image project.get_thumbnail_size_as_str box=project.cropping crop=True upscale=True %}" 
-           alt="{{ project.get_thumbnail_alt_text }}">
+      <img class="project-thumbnail"
+           src="{% thumbnail project.gallery_image project.get_thumbnail_size_as_str box=project.cropping crop=True upscale=True %}"
+           alt="{{ project.get_thumbnail_alt_text }}"
+           loading="lazy"
+           decoding="async">
       
       {% if project.has_award %}
       <img class="project-award-banner" 
