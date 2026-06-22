@@ -117,14 +117,10 @@ CONTEXT VARIABLES:
     </a>
     {% endif %}
     {% if pub.talk and pub.talk.pdf_file %}
-    <a href="{{ pub.talk.pdf_file.url }}" aria-label="Download talk slides">
-      <i class="fa-solid fa-person-chalkboard" aria-hidden="true"></i>Talk
-    </a>
+    {% include 'snippets/artifact_preview_link.html' with artifact=pub.talk label='Talk' label_lower='talk slides' icon='fa-person-chalkboard' title=pub.title %}
     {% endif %}
     {% if pub.poster and pub.poster.pdf_file %}
-    <a href="{{ pub.poster.pdf_file.url }}" aria-label="Download poster">
-      <i class="fa-solid fa-image" aria-hidden="true"></i>Poster
-    </a>
+    {% include 'snippets/artifact_preview_link.html' with artifact=pub.poster label='Poster' label_lower='poster' icon='fa-image' title=pub.title %}
     {% endif %}
     {% for project in pub.projects.all %}
     {% if project.can_show_online %}
@@ -251,14 +247,10 @@ CONTEXT VARIABLES:
       </a>
       {% endif %}
       {% if pub.talk and pub.talk.pdf_file %}
-      <a href="{{ pub.talk.pdf_file.url }}" aria-label="Download talk slides">
-        <i class="fa-solid fa-person-chalkboard" aria-hidden="true"></i>Talk
-      </a>
+      {% include 'snippets/artifact_preview_link.html' with artifact=pub.talk label='Talk' label_lower='talk slides' icon='fa-person-chalkboard' title=pub.title %}
       {% endif %}
       {% if pub.poster and pub.poster.pdf_file %}
-      <a href="{{ pub.poster.pdf_file.url }}" aria-label="Download poster">
-        <i class="fa-solid fa-image" aria-hidden="true"></i>Poster
-      </a>
+      {% include 'snippets/artifact_preview_link.html' with artifact=pub.poster label='Poster' label_lower='poster' icon='fa-image' title=pub.title %}
       {% endif %}
       {% for project in pub.projects.all %}
       {% if project.can_show_online %}

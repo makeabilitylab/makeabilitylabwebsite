@@ -685,3 +685,74 @@
   border-color: var(--color-primary);
   font-weight: var(--font-weight-medium);
 }
+/* ============================================================================
+   ARTIFACT PREVIEW CARD (#840)
+   ============================================================================
+   Poster / Talk preview popover opened by thumbnailPreview.js: a thumbnail
+   plus download actions (PDF, raw file, Source). It reuses Bootstrap's
+   `.popover` base class (border, shadow, arrow); the rules below size the card
+   and style its contents. */
+
+.artifact-preview-popover {
+  /* Compact card. Talk slides are landscape, so width drives the size; keep it
+     modest. Posters (often portrait) are bounded by the image max-height. */
+  max-width: 272px;
+  /* Bootstrap sets .popover { display: none }; the JS reveals it. Keep it
+     above page chrome but below modals. */
+  z-index: 1060;
+}
+
+.artifact-preview-popover .popover-content {
+  padding: 6px;
+}
+
+.artifact-preview-image-link {
+  display: block;
+  cursor: pointer;
+}
+
+.artifact-preview-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* Never let a tall poster run past the viewport. */
+  max-height: 45vh;
+  object-fit: contain;
+  border-radius: var(--border-radius-sm, 3px);
+}
+
+.artifact-preview-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 6px;
+}
+
+.artifact-preview-action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: var(--border-radius-sm, 3px);
+  color: var(--color-text-primary);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.artifact-preview-action:hover,
+.artifact-preview-action:focus {
+  background-color: var(--color-bg-muted, #f0f0f0);
+  text-decoration: none;
+}
+
+.artifact-preview-action:focus-visible {
+  outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #1b6ec2);
+  outline-offset: var(--focus-ring-offset, 2px);
+}
+
+/* File size, pushed to the trailing edge of each action row. */
+.artifact-preview-size {
+  margin-left: auto;
+  color: var(--color-text-secondary, #666);
+  font-size: 0.85em;
+}
