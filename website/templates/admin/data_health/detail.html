@@ -50,6 +50,9 @@
   .dh-actions { margin: 0 0 16px; }
   .dh-rowcount { margin-left: 12px; color: #777; }
   .dh-table-wrap { overflow-x: auto; }
+  /* Keep row-action buttons (e.g. "Open →") on one line instead of wrapping
+     mid-word in a narrow column; the table scrolls horizontally if needed. */
+  .dh-table-wrap td .button { white-space: nowrap; }
   .dh-empty { font-size: 14px; color: #2e7d32; }
   @media (prefers-color-scheme: dark) {
     .dh-desc, .dh-rowcount { color: #aaa; }
