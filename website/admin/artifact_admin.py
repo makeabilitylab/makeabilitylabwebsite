@@ -3,6 +3,7 @@ from website.models import Artifact
 from django.contrib.admin import widgets
 from django.utils.html import format_html
 from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
+from website.utils.upload_validators import PDF_EXTENSIONS, RAW_FILE_EXTENSIONS
 from easy_thumbnails.files import get_thumbnailer
 import os
 import logging
@@ -10,7 +11,25 @@ import logging
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
 
+
+def _accept_attr(extensions):
+    """Build an HTML ``accept`` value (e.g. ``.pdf,.pptx``) from an extension
+    allowlist. Used to seed the file inputs so both the OS file picker and the
+    client-side check in ``admin_artifact_form.js`` read the allowed types
+    straight from the markup — keeping them in sync with the server validators
+    (issue #248)."""
+    return ",".join(f".{ext}" for ext in extensions)
+
+
 class ArtifactAdmin(admin.ModelAdmin):
+
+    # Loaded on every artifact add/change form (Talk/Poster/Publication, which
+    # all subclass this). Guards against losing selected files when the form is
+    # submitted with a missing required field, plus drag-and-drop (issue #248).
+    # PublicationAdmin defines its own Media; Django merges this base in.
+    class Media:
+        css = {"all": ("website/css/admin_artifact_form.css",)}
+        js = ("website/js/admin_artifact_form.js",)
 
     # The list display lets us control what is shown in the default talk table at Home > Website > Talk
     # See: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_display
@@ -99,9 +118,28 @@ class ArtifactAdmin(admin.ModelAdmin):
             updated.append((name, opts))
         return updated
 
+    def get_form(self, request, obj=None, **kwargs):
+        """
+        Seed the ``accept`` attribute on the file inputs from the same extension
+        allowlists the server validators enforce (``PDF_EXTENSIONS`` /
+        ``RAW_FILE_EXTENSIONS`` in ``website.utils.upload_validators``). This gives
+        the OS file picker a native type filter and is the single source of truth
+        the client-side check in ``admin_artifact_form.js`` reads back from the
+        DOM, so the JS can't drift from the Python rules (issue #248).
+
+        Subclasses (Talk/Publication) call ``super().get_form()`` first and then
+        layer their own widget tweaks, so this runs for all artifact admins.
+        """
+        form = super().get_form(request, obj, **kwargs)
+        if "pdf_file" in form.base_fields:
+            form.base_fields["pdf_file"].widget.attrs["accept"] = _accept_attr(PDF_EXTENSIONS)
+        if "raw_file" in form.base_fields:
+            form.base_fields["raw_file"].widget.attrs["accept"] = _accept_attr(RAW_FILE_EXTENSIONS)
+        return form
+
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         """
-        Overrides the formfield_for_manytomany method of the parent ModelAdmin class to customize the widgets 
+        Overrides the formfield_for_manytomany method of the parent ModelAdmin class to customize the widgets
         used for ManyToMany fields in the admin interface.
 
         Parameters:
