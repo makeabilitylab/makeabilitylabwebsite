@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.17.1" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Add an admin Data Health check, 'Artifacts not linked to a project' (/admin/data-health/), that surfaces every talk, paper, video, and poster with no project assigned so the backlog stays visible and shrinks over time. Pre-Makeability-Lab work (before settings.DATE_MAKEABILITYLAB_FORMED) is excluded, rows whose parent publication is already linked are flagged as quick wins (inherit its projects), and each row deep-links to its admin edit page. Read-only with CSV export. Also keeps data-health row-action buttons from wrapping mid-word in narrow columns (#649)."
+ML_WEBSITE_VERSION = "2.17.2" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Fix the /version/ endpoint reporting git_sha and built_at as 'unknown' in deployed environments. The build-info capture in docker-entrypoint.sh needs git (it wasn't installed in the image) and trips git's 'dubious ownership' guard because /code/.git is apache:makelab-owned while the container runs as root. Installs git in the Dockerfile and runs rev-parse with -c safe.directory=/code. The Dockerfile change also forces an image rebuild on deploy, so the entrypoint actually re-runs and writes build-info.json (#1366)."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
