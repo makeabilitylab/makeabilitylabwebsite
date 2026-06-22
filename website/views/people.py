@@ -103,7 +103,7 @@ def people(request):
     # listing page is the direct antidote to "crawled, not indexed" (#1142/#1324).
     context['page_meta'] = {
         'title': 'People',
-        'description': "Meet the faculty, students, postdocs, and alumni of the "
+        'description': "Meet the faculty, students, and alumni of the "
                        "Makeability Lab — HCI, accessibility, and AI researchers "
                        "at the University of Washington.",
     }
