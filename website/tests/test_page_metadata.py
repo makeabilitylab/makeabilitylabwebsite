@@ -155,7 +155,7 @@ class ListPageDescriptionTests(DatabaseTestCase):
 
     def test_people_description(self):
         self._assert_distinct("website:people", "People",
-                              "Meet the faculty, students, postdocs, and alumni")
+                              "Meet the faculty, students, and alumni")
 
     def test_projects_description(self):
         self._assert_distinct("website:projects", "Projects",
