@@ -150,3 +150,19 @@ News items use `django-ckeditor`. Uploaded files via CKEditor land under `media/
 - UI changes require before/after screenshots or mockups in the PR (see issue #287 as a reference).
 - Run the Pa11y a11y service before submitting any UI change.
 - PRs target `master`.
+
+## Issue conventions (labeling)
+
+**Always apply labels when filing a GitHub issue via Claude Code** (`gh issue create --label ...`). Pick from the existing taxonomy below — most issues warrant 2–4 labels (typically one *kind* + one or more *areas*). Run `gh label list` to see the current set before creating new ones; only add a new label when nothing existing fits, and keep names/casing consistent with what's there.
+
+The taxonomy (as of June 2026):
+
+- **Kind:** `Bug`, `New Feature`, `Maintenance`, `Code Cleanup`, `Data Entry`, `Discuss`, `Won't Fix`, `Dependencies`, `Security`
+- **Priority** (optional, maintainer's call — don't guess): `Priority: Very High` / `High` / `Medium` / `Low`
+- **Effort** (optional): `Easy Fix`, `Time Consuming`
+- **Backend / infra:** `Backend`, `Docker`, `Logging`, `Server Start Scripts`, `Django Upgrade`, `Testing / Test Harness`, `Rest API`, `Requires Updating Model Database`, `Needs UW CSE IT`
+- **Frontend / UI:** `UI Design`, `CSS`, `Mobile`, `Accessibility`, `Navbar`, `Menu Bar`, `Footer`, `Banner`
+- **Content areas / pages:** `Publications`, `Talks`, `Posters`, `Videos`, `Projects`, `Project Gallery Page`, `People`, `Member Page`, `News`, `Awards`, `Landing Page`, `FAQ Page`, `Admin`, `Sponsors`, `Grants & Funding`, `SEO`
+- **Status:** `FixedNeedsToBeTestedOnTestServer`
+
+Notes: `Awards` is for external recognitions and award content/data work; paper-level awards live on `Publication.award` (see Key model relationships) but issues about them still get `Awards` + `Publications`. Use `Grants & Funding` for proposals/funding-source tracking; `Sponsors` for sponsor logos/listings. Add `Requires Updating Model Database` whenever the work implies a schema/model change.
