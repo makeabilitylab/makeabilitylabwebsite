@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import Max, Min
 from django.db.models import F, ExpressionWrapper, fields, Sum, Q, Value
 from django.db.models.functions import Coalesce
+from django.core.exceptions import ValidationError
 
 from image_cropping import ImageRatioField
 from website.utils.upload_validators import validate_image_upload
@@ -37,10 +38,21 @@ class Project(models.Model):
         return f"{PROJECT_THUMBNAIL_SIZE[0]}x{PROJECT_THUMBNAIL_SIZE[1]}"
     
     name = models.CharField(max_length=255)
+    name.help_text = ("Full project name, shown as the title on the project page and as the "
+                      "heading on cards (e.g., \"Project Sidewalk\").")
+
+    # Optional short label for compact UI (publication/talk/video cards). Falls
+    # back to `name` via get_display_short_name() when left blank (#1156). This is
+    # a *display* name, distinct from `short_name` (the URL slug) below.
+    display_short_name = models.CharField(max_length=255, blank=True, null=True)
+    display_short_name.help_text = ("Optional short label shown in compact places like publication, "
+                                    "talk, and video cards (e.g., \"Sidewalk\"). Leave blank to use "
+                                    "the full name.")
 
     # Short name is used for urls, and should be name.lower().replace(" ", "")
     short_name = models.CharField(max_length=255)
-    short_name.help_text = "This should be the same as name but lower case with no spaces. It is used in the url of the project"
+    short_name.help_text = ("URL slug only — lowercase, no spaces (e.g., \"projectsidewalk\"). "
+                            "Used in the project's web address, not shown to readers.")
 
     # is_visible is the single source of truth for whether a project appears
     # publicly (gallery, landing page, member pages, and as links from
@@ -104,6 +116,32 @@ class Project(models.Model):
                        "For example, you can use <b>bold</b>, <i>italics</i>, <a href='https://makeabilitylab.cs.washington.edu'>links</a>")
 
     updated = models.DateField(auto_now=True)
+
+    def clean(self):
+        """
+        Validate that short_name (the URL slug) is unique case-insensitively.
+
+        The project view resolves /projects/<slug>/ with
+        ``short_name__iexact`` (see views/project.py), so two projects sharing a
+        slug — even differing only in case — make get_object_or_404 raise
+        MultipleObjectsReturned, i.e. a 500 on *both* project pages. There is no
+        DB-level unique constraint yet (existing data must be de-duped first), so
+        enforce it at the form layer here; the admin runs full_clean() and will
+        surface this as a field error (#1156).
+        """
+        super().clean()
+        if self.short_name:
+            clash = Project.objects.filter(short_name__iexact=self.short_name)
+            if self.pk:
+                clash = clash.exclude(pk=self.pk)
+            if clash.exists():
+                raise ValidationError({
+                    'short_name': (
+                        f'A project with the slug "{self.short_name}" already exists. '
+                        f'Slugs are compared case-insensitively because they are used '
+                        f'in project URLs. Please choose a different short name.'
+                    )
+                })
 
     def save(self, *args, **kwargs):
         """
@@ -630,6 +668,15 @@ class Project(models.Model):
         # Otherwise, return 'start_year–end_year'
         return f"{self.start_date.year}–{self.end_date.year}"
 
+
+    def get_display_short_name(self):
+        """
+        Returns the short display label for compact UI (publication, talk, and
+        video cards). Falls back to the full `name` when `display_short_name` is
+        blank or unset (#1156). Note this is distinct from `short_name`, which is
+        the lowercase, no-spaces URL slug.
+        """
+        return self.display_short_name or self.name
 
     def __str__(self):
         return self.name

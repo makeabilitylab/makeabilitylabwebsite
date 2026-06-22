@@ -82,7 +82,7 @@ NOTE ON VIDEO AGE:
       <a href="{% url 'website:project' project.short_name %}" 
          aria-label="View project: {{ project.name }}">
         <i class="fa-solid fa-flask" aria-hidden="true"></i>
-        <span>{{ project.name }}</span>
+        <span>{{ project.get_display_short_name }}</span>
       </a>
       {% endif %}
       {% endfor %}

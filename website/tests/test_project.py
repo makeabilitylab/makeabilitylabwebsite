@@ -3,10 +3,74 @@
 from datetime import date, timedelta
 from unittest.mock import MagicMock
 
+from django.core.exceptions import ValidationError
 from django.test import SimpleTestCase
 
 from website.models.project import Project
 from website.tests.base import DatabaseTestCase
+
+
+# --- Project display short name (#1156) ------------------------------------
+
+
+class ProjectDisplayShortNameTests(SimpleTestCase):
+    """
+    Tests for Project.get_display_short_name, the short label shown on compact
+    publication/talk/video cards (#1156). It returns `display_short_name` when
+    set and falls back to the full `name` when blank or unset. (`short_name` is
+    the URL slug and is intentionally not used here.)
+    """
+
+    def _display(self, name, display_short_name):
+        obj = MagicMock()
+        obj.name = name
+        obj.display_short_name = display_short_name
+        return Project.get_display_short_name(obj)
+
+    def test_returns_display_short_name_when_set(self):
+        self.assertEqual(self._display("Project Sidewalk", "Sidewalk"), "Sidewalk")
+
+    def test_falls_back_to_name_when_none(self):
+        self.assertEqual(self._display("Project Sidewalk", None), "Project Sidewalk")
+
+    def test_falls_back_to_name_when_empty(self):
+        self.assertEqual(self._display("Project Sidewalk", ""), "Project Sidewalk")
+
+
+# --- Project short_name (slug) uniqueness (#1156) --------------------------
+
+
+class ProjectShortNameUniquenessTests(DatabaseTestCase):
+    """
+    Project.clean() rejects a short_name that collides (case-insensitively) with
+    an existing project's slug. The view resolves /projects/<slug>/ via
+    short_name__iexact, so a duplicate slug would 500 (MultipleObjectsReturned)
+    both project pages.
+    """
+
+    def test_duplicate_slug_rejected(self):
+        self.make_project(name="Project Sidewalk", short_name="projectsidewalk")
+        dupe = Project(name="Sidewalk Redux", short_name="projectsidewalk")
+        with self.assertRaises(ValidationError) as ctx:
+            dupe.full_clean()
+        self.assertIn("short_name", ctx.exception.message_dict)
+
+    def test_duplicate_slug_rejected_case_insensitively(self):
+        self.make_project(name="Project Sidewalk", short_name="projectsidewalk")
+        dupe = Project(name="Sidewalk Redux", short_name="ProjectSidewalk")
+        with self.assertRaises(ValidationError) as ctx:
+            dupe.full_clean()
+        self.assertIn("short_name", ctx.exception.message_dict)
+
+    def test_unique_slug_allowed(self):
+        self.make_project(name="Project Sidewalk", short_name="projectsidewalk")
+        ok = Project(name="Project Aware", short_name="projectaware")
+        ok.full_clean()  # should not raise
+
+    def test_editing_existing_project_keeps_its_own_slug(self):
+        proj = self.make_project(name="Project Sidewalk", short_name="projectsidewalk")
+        proj.summary = "Updated summary"
+        proj.full_clean()  # its own slug must not count as a clash
 
 
 # --- Project date-range string --------------------------------------------
