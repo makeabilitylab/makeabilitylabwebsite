@@ -1,0 +1,93 @@
+/*
+ * Styles for the artifact (Talk / Poster / Publication) admin upload guard and
+ * drag-and-drop. See website/static/website/js/admin_artifact_form.js (issue #248).
+ *
+ * Accessibility: error state is never signaled by color alone — it always pairs
+ * with an outline plus text (the inline message and the top-of-form summary), so
+ * it remains perceivable for low-vision and color-blind users (WCAG 2.0 AA).
+ */
+
+/* --- Drag-and-drop zone (mouse-only enhancement; aria-hidden in the JS) --- */
+.artifact-dropzone {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border: 2px dashed #b0b0b0;
+  border-radius: 6px;
+  color: #555;
+  font-size: 12px;
+  text-align: center;
+  cursor: pointer;
+  max-width: 420px;
+  background: #fafafa;
+  transition: border-color 0.12s ease, background-color 0.12s ease;
+}
+
+.artifact-dropzone:hover {
+  border-color: #79aec8; /* Django admin accent */
+}
+
+.artifact-dropzone-active {
+  border-color: #417690;
+  border-style: solid;
+  background: #eef6fb;
+  color: #205067;
+}
+
+/* --- Per-field readout / error (under each file input) --- */
+.artifact-file-note {
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.artifact-file-note .artifact-file-name {
+  display: block;
+  color: #2a2a2a;
+}
+
+.artifact-file-note .artifact-file-error {
+  display: block;
+  margin-top: 2px;
+  color: #ba2121; /* Django admin error red */
+  font-weight: 600;
+}
+
+/* Invalid control: outline + the accompanying text above (never color alone). */
+.artifact-field-invalid {
+  outline: 2px solid #ba2121;
+  outline-offset: 1px;
+}
+
+/* --- Top-of-form error summary --- */
+.artifact-error-summary {
+  margin: 0 0 16px 0;
+  padding: 12px 16px;
+  border: 1px solid #ba2121;
+  border-left-width: 6px;
+  border-radius: 4px;
+  background: #fff4f4;
+}
+
+.artifact-error-summary:focus {
+  outline: 2px solid #417690;
+  outline-offset: 2px;
+}
+
+.artifact-error-summary-heading {
+  margin: 0 0 8px 0;
+  font-weight: 700;
+  color: #6b1414;
+}
+
+.artifact-error-summary ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.artifact-error-summary li {
+  margin: 2px 0;
+}
+
+.artifact-error-summary a {
+  color: #ba2121;
+  text-decoration: underline;
+}
