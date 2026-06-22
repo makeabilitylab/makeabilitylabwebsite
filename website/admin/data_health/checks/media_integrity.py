@@ -16,6 +16,7 @@ import glob
 import os
 
 from django.conf import settings
+from django.urls import reverse
 
 from website.admin.data_health.registry import HealthCheck, register_check
 from website.models import Poster, Publication, Talk
@@ -52,6 +53,20 @@ class MediaIntegrityCheck(HealthCheck):
             rows.extend(self._missing_files(model))
             rows.extend(self._orphan_files(model))
         return rows
+
+    def row_link(self, row):
+        """Deep-link a ``missing-file`` row to its artifact's admin edit page so
+        the editor can re-upload the file or clear the dead reference right
+        there (mirrors the action buttons on the other checks).
+
+        ``orphan-file`` rows have no DB object to open — they're files on disk
+        that ``delete_unused_files`` would remove — so they get no link.
+        """
+        if row.get('status') != 'missing-file' or not row.get('id'):
+            return None
+        url = reverse(f"admin:website_{row['type'].lower()}_change",
+                      args=[row['id']])
+        return ('Open →', url)
 
     def _missing_files(self, model):
         """DB rows whose file field is set but the file is gone from disk."""
