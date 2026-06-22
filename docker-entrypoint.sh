@@ -52,10 +52,15 @@ echo ""
 # capture the short SHA + a timestamp ONCE here (not per request) into a small
 # build-info.json that website/views/version.py reads. Falls back to "unknown"
 # if git isn't available (the view also tolerates a missing file).
+#
+# On the servers /code is a bind-mount whose .git is owned by apache:makelab
+# while this script runs as root, so git's "dubious ownership" guard would
+# otherwise refuse to run -- mark /code safe first (-c is process-local, no
+# global config side effects). git is installed in the Dockerfile.
 echo "****************** STEP -1/5: docker-entrypoint.sh ************************"
 echo "-1. Writing build-info.json (git sha + build timestamp) for /version/"
 echo "******************************************"
-GIT_SHA=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+GIT_SHA=$(git -c safe.directory=/code -C /code rev-parse --short HEAD 2>/dev/null || echo "unknown")
 BUILT_AT=$(date --iso-8601=seconds 2>/dev/null || echo "unknown")
 printf '{"git_sha": "%s", "built_at": "%s"}\n' "$GIT_SHA" "$BUILT_AT" > build-info.json
 cat build-info.json

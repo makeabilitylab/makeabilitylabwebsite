@@ -26,6 +26,8 @@ RUN pip install --upgrade pip
 # - imagemagick: Image processing for thumbnails and conversions
 # - ghostscript: PDF processing (required by imagemagick for PDFs)
 # - sqlite3: Useful for debugging, though we use PostgreSQL in production
+# - git: lets docker-entrypoint.sh capture the deployed commit SHA into
+#        build-info.json for the /version/ endpoint (#1366)
 #
 # We clean up the apt cache afterward to reduce the final image size.
 RUN apt-get update \
@@ -33,6 +35,7 @@ RUN apt-get update \
         imagemagick \
         ghostscript \
         sqlite3 \
+        git \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
