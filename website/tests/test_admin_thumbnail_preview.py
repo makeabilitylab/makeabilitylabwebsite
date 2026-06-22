@@ -112,7 +112,7 @@ class ArtifactThumbnailPreviewTests(DatabaseTestCase):
 
         self.assertEqual(resp.status_code, 200)
         body = resp.content.decode()
-        self.assertIn('alt="Thumbnail preview"', body)
+        self.assertIn('alt="PDF thumbnail"', body)
         self.assertIn("<img", body)
         # The tag is real markup, not escaped into visible text.
         self.assertNotIn("&lt;img", body)

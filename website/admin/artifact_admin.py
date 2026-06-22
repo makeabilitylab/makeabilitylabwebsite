@@ -89,12 +89,13 @@ class ArtifactAdmin(admin.ModelAdmin):
             )
             return placeholder
         return format_html(
-            '<img src="{}" alt="Thumbnail preview" '
+            '<img src="{}" alt="PDF thumbnail" '
             'style="height:{}px; width:auto; border:1px solid #ddd;" />',
             thumbnail_url, self.THUMBNAIL_PREVIEW_HEIGHT,
         )
 
-    thumbnail_preview.short_description = 'Thumbnail preview'
+    # Django auto-appends the trailing colon in the admin label.
+    thumbnail_preview.short_description = 'PDF thumbnail'
 
     def get_fieldsets(self, request, obj=None):
         """
