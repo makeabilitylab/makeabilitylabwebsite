@@ -1,8 +1,11 @@
 from django.contrib import admin
 from website.models import Artifact
 from django.contrib.admin import widgets
+from django.utils.html import format_html
 from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
 from website.utils.upload_validators import PDF_EXTENSIONS, RAW_FILE_EXTENSIONS
+from easy_thumbnails.files import get_thumbnailer
+import os
 import logging
 
 # This retrieves a Python logging instance (or creates it)
@@ -38,6 +41,10 @@ class ArtifactAdmin(admin.ModelAdmin):
     # (Django auto-applies DISTINCT for the M2M join). Subclasses may extend this.
     search_fields = ['title', 'forum_name', 'authors__first_name', 'authors__last_name']
 
+    # thumbnail_preview is a computed, read-only display (see below). It must be
+    # listed here so Django allows it in get_fieldsets() on the change form.
+    readonly_fields = ('thumbnail_preview',)
+
     fieldsets = [
         (None,                      {'fields': ['title', 'authors', 'date']}),
         ('Files',                   {'fields': ['pdf_file', 'raw_file']}),
@@ -45,6 +52,72 @@ class ArtifactAdmin(admin.ModelAdmin):
         ('Project Info',            {'fields': ['projects', 'project_umbrellas']}),
         ('Keyword Info',            {'fields': ['keywords']}),
     ]
+
+    # Height (px) of the change-form thumbnail preview image.
+    THUMBNAIL_PREVIEW_HEIGHT = 220
+
+    def thumbnail_preview(self, obj):
+        """
+        Read-only image preview of the artifact's auto-generated ``thumbnail``,
+        shown on the change form so editors can confirm the correct PDF is
+        attached (the form otherwise only shows the "Currently: ..." filename).
+
+        Renders an ``<img>`` (~220px tall) via easy_thumbnails — the same
+        pipeline as the changelist ``get_display_thumbnail`` in TalkAdmin /
+        PublicationAdmin. Degrades to a text placeholder when there is no
+        thumbnail yet or the source file is missing on disk (which happens on
+        the servers), rather than 500ing the whole change page.
+        """
+        placeholder = format_html(
+            '<span style="color:#666;">Save with a PDF attached to generate a thumbnail.</span>'
+        )
+        if obj is None or not obj.thumbnail:
+            return placeholder
+        try:
+            if not os.path.isfile(obj.thumbnail.path):
+                return placeholder
+            thumbnailer = get_thumbnailer(obj.thumbnail)
+            # (0, H) constrains height to H and lets width scale with the
+            # source aspect ratio (no crop — show the whole thumbnail).
+            thumbnail_url = thumbnailer.get_thumbnail(
+                {'size': (0, self.THUMBNAIL_PREVIEW_HEIGHT)}
+            ).url
+        except Exception:
+            _logger.exception(
+                "Could not render thumbnail preview for artifact=%s",
+                getattr(obj, 'pk', None),
+            )
+            return placeholder
+        return format_html(
+            '<img src="{}" alt="PDF thumbnail" '
+            'style="height:{}px; width:auto; border:1px solid #ddd;" />',
+            thumbnail_url, self.THUMBNAIL_PREVIEW_HEIGHT,
+        )
+
+    # Django auto-appends the trailing colon in the admin label.
+    thumbnail_preview.short_description = 'PDF thumbnail'
+
+    def get_fieldsets(self, request, obj=None):
+        """
+        Inject the read-only ``thumbnail_preview`` into the 'Files' fieldset on
+        the change form only. Done here (rather than in each child admin's
+        ``fieldsets``) so Publication / Talk / Poster all get the preview.
+        On the Add form there is no saved thumbnail yet, so it is omitted.
+        """
+        fieldsets = super().get_fieldsets(request, obj)
+        if obj is None:
+            return fieldsets
+        # Build new tuples/dicts rather than mutating the class-level fieldsets
+        # (ModelAdmin.get_fieldsets returns self.fieldsets by reference).
+        updated = []
+        for name, opts in fieldsets:
+            if name == 'Files':
+                fields = list(opts.get('fields', []))
+                if 'thumbnail_preview' not in fields:
+                    fields = fields + ['thumbnail_preview']
+                opts = {**opts, 'fields': fields}
+            updated.append((name, opts))
+        return updated
 
     def get_form(self, request, obj=None, **kwargs):
         """
