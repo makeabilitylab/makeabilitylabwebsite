@@ -303,6 +303,33 @@ class MediaIntegrityCheckTests(DatabaseTestCase):
         ]
         self.assertTrue(hits)
 
+    def test_missing_file_row_links_to_admin_edit(self):
+        """A missing-file row gets an 'Open →' action to the artifact's admin
+        edit page; orphan-file rows (no DB object) get no link."""
+        pub = self.make_publication(title="Vanishing Paper")
+        path = pub.pdf_file.path
+        if os.path.exists(path):
+            os.remove(path)
+
+        check = get_check("media-integrity")
+        missing = next(
+            r
+            for r in check.get_rows()
+            if r["type"] == "Publication"
+            and r["id"] == pub.pk
+            and r["status"] == "missing-file"
+        )
+        label, url = check.row_link(missing)
+        self.assertEqual(label, "Open →")
+        self.assertEqual(
+            url, reverse("admin:website_publication_change", args=[pub.pk])
+        )
+
+        # Orphan-file rows carry no id and must not produce a link.
+        self.assertIsNone(
+            check.row_link({"type": "Publication", "id": "", "status": "orphan-file"})
+        )
+
 
 class DataHealthReadOnlyTests(DatabaseTestCase):
     def test_get_rows_does_not_mutate_db(self):
