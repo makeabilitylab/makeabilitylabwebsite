@@ -59,6 +59,12 @@
   const ARROW_HALF = 11;
   /** Delay (ms) before a hover-opened card hides, so the pointer can reach it. */
   const HIDE_DELAY = 140;
+  /** Box the preview image is fit into (px). The image is sized explicitly in
+   *  JS to these bounds so the card hugs it — CSS shrink-to-fit uses the image's
+   *  intrinsic (600px-wide thumbnail) size and can't account for the height cap,
+   *  which is what left whitespace beside portrait thumbnails. */
+  const PREVIEW_MAX_W = 260;
+  const PREVIEW_MAX_H = 240;
 
   /* ===========================================================================
      STATE
@@ -125,6 +131,35 @@
     content.className = 'popover-content';
     content.appendChild(template.content.cloneNode(true));
     popover.appendChild(content);
+
+    // Size the preview image explicitly (fit within PREVIEW_MAX_W x
+    // PREVIEW_MAX_H, preserving aspect) so the card hugs it. Without a definite
+    // width the card sizes to the thumbnail's intrinsic 600px (capped), then the
+    // height cap shrinks the image — leaving whitespace beside portrait posters.
+    const img = popover.querySelector('.artifact-preview-image');
+    if (img) {
+      const sizeToImage = function () {
+        const nw = img.naturalWidth;
+        const nh = img.naturalHeight;
+        if (!nw || !nh) {
+          return;
+        }
+        const scale = Math.min(PREVIEW_MAX_W / nw, PREVIEW_MAX_H / nh, 1);
+        img.style.width = Math.round(nw * scale) + 'px';
+        img.style.height = Math.round(nh * scale) + 'px';
+        // The card's size just changed; re-anchor it to the trigger.
+        if (activePopover === popover && activeTrigger === trigger) {
+          positionPopover(trigger, popover);
+        }
+      };
+      // Cached images are already complete (no 'load' will fire); size now so the
+      // popover is measured correctly when open() positions it.
+      if (img.complete && img.naturalWidth) {
+        sizeToImage();
+      } else {
+        img.addEventListener('load', sizeToImage);
+      }
+    }
 
     return popover;
   }
