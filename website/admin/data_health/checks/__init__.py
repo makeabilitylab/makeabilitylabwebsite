@@ -8,6 +8,7 @@ from website.admin.data_health.checks import (  # noqa: F401
     url_name_collisions,
     media_integrity,
     publication_quality,
+    unlinked_artifacts,
     project_health,
     project_leadership,
     position_integrity,

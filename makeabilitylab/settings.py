@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.17.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Add an unauthenticated machine-readable build/version endpoint at /version/ (and /version.json) returning JSON: version, description, environment, git_sha, and built_at. The git short SHA and build timestamp are captured once at container start by docker-entrypoint.sh into a gitignored build-info.json (falling back to 'unknown'), so you can confirm what code a server is actually running without scraping the HTML comment in base.html. Sets Cache-Control: no-store so no proxy serves a stale version (#1366)."
+ML_WEBSITE_VERSION = "2.17.1" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Add an admin Data Health check, 'Artifacts not linked to a project' (/admin/data-health/), that surfaces every talk, paper, video, and poster with no project assigned so the backlog stays visible and shrinks over time. Pre-Makeability-Lab work (before settings.DATE_MAKEABILITYLAB_FORMED) is excluded, rows whose parent publication is already linked are flagged as quick wins (inherit its projects), and each row deep-links to its admin edit page. Read-only with CSV export. Also keeps data-health row-action buttons from wrapping mid-word in narrow columns (#649)."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
