@@ -11,4 +11,5 @@ from .view_project_people import *
 from .serve_pdf import *
 from .awards import awards
 from .custom_404 import custom_404, custom_500, preview_404, preview_500
+from .version import version
 

@@ -60,6 +60,13 @@ urlpatterns = [
     # and spaces, and routes it to the `project` view.
     re_path(r'^project/(?P<project_name>[a-zA-Z\- ]+)/$', views.project, name='project'),
 
+    # Machine-readable build/version info as JSON (#1366). Lets us confirm what
+    # code a server is actually running (version + git_sha + built_at) without
+    # scraping the HTML comment in base.html. Both /version/ and /version.json
+    # hit the same view; the view sets Cache-Control: no-store.
+    path('version/', views.version, name='version'),
+    path('version.json', views.version, name='version_json'),
+
     # Matches the URL "news/" and routes it to the `news_listing` view.
     re_path(r'^news/$', views.news_listing, name='news_listing'),
 
