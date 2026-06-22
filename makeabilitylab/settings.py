@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.16.2" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Analytics: load Google Analytics 4 (G-M18PCH55ZP) directly via the native gtag.js snippet instead of chain-loading it off the retired Universal Analytics analytics.js tag (a console-side 'connected site tag'). Removes the dead UA-79723676-1 snippet so GA4 collection no longer depends on deprecated UA machinery (#855)."
+ML_WEBSITE_VERSION = "2.16.3" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Fix the project listing page (/projects/) overflowing horizontally on mobile, which cut thumbnails and the filter UI off on the right. Below the 992px sidebar breakpoint the card grid's flex parent reported an indefinite width, blowing a grid track wider than the viewport; .row-flex is now mobile-first (block <992px, flex >=992px) and the track is capped with minmax(min(100%, 250px), 1fr). Also adds anti-CLS image sizing, touch-friendly hover, two-line titles, and lazy-loaded thumbnails (#1367)."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
