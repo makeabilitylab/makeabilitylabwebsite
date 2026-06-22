@@ -20,7 +20,15 @@
  *   2. File pre-checks: on selection, validates extension (against the field's
  *      `accept` list) and, for PDF-only fields, the `%PDF-` signature — mirroring
  *      the server validators so a bad file is caught before it costs a round-trip.
- *   3. Drag-and-drop onto each file field, plus a selected-filename readout.
+ *   3. A standard drag-and-drop upload zone per file field: the raw file input is
+ *      hidden (but kept focusable), the zone is the primary control with idle /
+ *      hover / drag-over / filled / error states, and the selected file is shown
+ *      with its name, size, and a Remove/Replace control.
+ *
+ * Accessibility: the native <input type=file> stays in the DOM, focusable, and
+ * keeps its <label> association — it is the control assistive tech uses. The zone
+ * is a mouse/visual layer (aria-hidden); it mirrors the input's focus with a ring
+ * so keyboard users get a visible focus state, and error state is never color-only.
  *
  * Staying in sync with the backend (see also website/utils/upload_validators.py):
  *   - Required-ness is read from the DOM (`[required]`), which Django derives from
@@ -40,6 +48,14 @@
   // How many leading bytes to sniff for the PDF signature (matches the server's
   // _read_header default in upload_validators.py).
   var PDF_HEADER_BYTES = 1024;
+
+  // Inline icons (no external assets / build step). currentColor follows the zone.
+  var UPLOAD_SVG =
+    '<svg class="artifact-dropzone-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+    '<path fill="currentColor" d="M12 3l5.5 5.5-1.42 1.42L13 6.83V16h-2V6.83L8.92 9.92 7.5 8.5 12 3zM5 18h14v2H5z"/></svg>';
+  var FILE_SVG =
+    '<svg class="artifact-dropzone-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+    '<path fill="currentColor" d="M6 2h7l5 5v15H6V2zm7 1.5V8h4.5L13 3.5z"/></svg>';
 
   /**
    * The main artifact form: the multipart add/change form. Returns null on any
@@ -93,6 +109,23 @@
   function extensionOf(name) {
     var dot = name.lastIndexOf(".");
     return dot === -1 ? "" : name.slice(dot + 1).toLowerCase();
+  }
+
+  /** Short accepted-types hint from the input's accept list, e.g. "PDF only". */
+  function acceptHint(input) {
+    var exts = allowedExtensions(input);
+    if (!exts.length) return "";
+    if (exts.length === 1) return exts[0].toUpperCase() + " only";
+    return exts.map(function (e) { return e.toUpperCase(); }).join(", ");
+  }
+
+  /** Human-readable file size, e.g. "128 KB" / "3.4 MB". */
+  function humanFileSize(bytes) {
+    if (typeof bytes !== "number") return "";
+    if (bytes < 1024) return bytes + " B";
+    var kb = bytes / 1024;
+    if (kb < 1024) return (kb < 10 ? kb.toFixed(1) : Math.round(kb)) + " KB";
+    return (kb / 1024).toFixed(1) + " MB";
   }
 
   /**
@@ -150,39 +183,50 @@
     return Promise.resolve("");
   }
 
-  // --- DOM helpers for messaging -------------------------------------------
+  // --- Drop-zone rendering --------------------------------------------------
 
-  /** The little per-field readout/error element, created on demand after `input`. */
-  function fieldNote(input) {
-    var note = input.parentNode.querySelector(".artifact-file-note");
-    if (!note) {
-      note = document.createElement("div");
-      note.className = "artifact-file-note";
-      input.parentNode.insertBefore(note, input.nextSibling);
-    }
-    return note;
-  }
+  /**
+   * Paint the drop zone for the current state of its input: a "filled" card
+   * (filename + size + Remove) when a file is selected, otherwise the idle
+   * prompt. `error` (string) puts the zone in its error state. Also records the
+   * validity on the input so the submit guard can read it.
+   * @param {HTMLInputElement} input
+   * @param {string} error
+   */
+  function renderZone(input, error) {
+    var zone = input._artifactZone;
+    var hasFile = input.files && input.files.length > 0;
+    zone.classList.toggle("has-error", !!error);
 
-  /** Show the selected filename and any error under a file input. */
-  function renderFieldNote(input, error) {
-    var note = fieldNote(input);
-    var name = input.files && input.files.length ? input.files[0].name : "";
-    note.innerHTML = "";
-    if (name) {
-      var fn = document.createElement("span");
-      fn.className = "artifact-file-name";
-      fn.textContent = "Selected: " + name;
-      note.appendChild(fn);
+    if (hasFile) {
+      var file = input.files[0];
+      var size = humanFileSize(file.size);
+      zone.innerHTML =
+        FILE_SVG +
+        '<span class="artifact-dropzone-copy">' +
+        '  <span class="artifact-dropzone-filename"></span>' +
+        '  <span class="artifact-dropzone-sub"></span>' +
+        '</span>' +
+        '<button type="button" class="artifact-file-remove">Remove</button>';
+      // textContent (not innerHTML) so a crafted filename can't inject markup.
+      zone.querySelector(".artifact-dropzone-filename").textContent = file.name;
+      zone.querySelector(".artifact-dropzone-sub").textContent = error
+        ? error
+        : (size ? size + " · drag or click to replace" : "drag or click to replace");
+    } else {
+      var hint = acceptHint(input);
+      zone.innerHTML =
+        UPLOAD_SVG +
+        '<span class="artifact-dropzone-copy">' +
+        '  <span class="artifact-dropzone-title">Drag &amp; drop a file here</span>' +
+        '  <span class="artifact-dropzone-sub">or <span class="artifact-dropzone-link">click to browse</span>' +
+        (hint ? " · " + hint : "") +
+        '</span></span>';
     }
-    if (error) {
-      var err = document.createElement("span");
-      err.className = "artifact-file-error";
-      err.textContent = error;
-      note.appendChild(err);
-    }
-    input.classList.toggle("artifact-field-invalid", !!error);
     input.setAttribute("data-artifact-invalid", error ? "true" : "false");
   }
+
+  // --- Error summary (top of form) -----------------------------------------
 
   /** Remove any existing top-of-form error summary. */
   function clearSummary(form) {
@@ -217,8 +261,8 @@
         link.textContent = p.label;
         link.addEventListener("click", function (e) {
           e.preventDefault();
+          (p.scrollTo || p.target).scrollIntoView({ behavior: "smooth", block: "center" });
           p.target.focus();
-          p.target.scrollIntoView({ behavior: "smooth", block: "center" });
         });
         li.appendChild(link);
       } else {
@@ -236,18 +280,32 @@
   // --- Wiring --------------------------------------------------------------
 
   /**
-   * Add drag-and-drop + change-time validation + a filename readout to one file
-   * input. The native input stays fully functional and is the accessible control;
-   * the drop zone is a mouse-only visual enhancement (hidden from assistive tech).
+   * Turn one native file input into a standard drag-and-drop upload zone.
+   * The native input is hidden (but kept focusable + submittable); the zone
+   * becomes the visible control. See the file header for the a11y model.
    * @param {HTMLInputElement} input
    */
   function enhanceFileInput(input) {
+    input.classList.add("artifact-file-input-hidden");
+
     var zone = document.createElement("div");
     zone.className = "artifact-dropzone";
     zone.setAttribute("aria-hidden", "true");
-    zone.innerHTML = '<span class="artifact-dropzone-text">Drag a file here</span>';
-    // Clicking the zone opens the same native file picker.
-    zone.addEventListener("click", function () { input.click(); });
+    input._artifactZone = zone;
+    input.parentNode.insertBefore(zone, input.nextSibling);
+
+    // One click handler: the Remove button clears the file; anywhere else in the
+    // zone opens the native picker.
+    zone.addEventListener("click", function (e) {
+      if (e.target.closest(".artifact-file-remove")) {
+        e.preventDefault();
+        input.files = new DataTransfer().files; // clear selection
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+        input.focus();
+        return;
+      }
+      input.click();
+    });
 
     ["dragenter", "dragover"].forEach(function (evt) {
       zone.addEventListener(evt, function (e) {
@@ -267,14 +325,17 @@
       zone.classList.remove("artifact-dropzone-active");
       if (!e.dataTransfer || !e.dataTransfer.files.length) return;
       // Assign the dropped file to the real input via DataTransfer, then fire a
-      // change event so the normal validation/readout path runs.
+      // change event so the normal validation/render path runs.
       var dt = new DataTransfer();
       dt.items.add(e.dataTransfer.files[0]);
       input.files = dt.files;
       input.dispatchEvent(new Event("change", { bubbles: true }));
     });
 
-    input.parentNode.insertBefore(zone, input.nextSibling);
+    // Mirror the (visually hidden) input's focus onto the zone so keyboard users
+    // see a focus ring on the visible control.
+    input.addEventListener("focus", function () { zone.classList.add("is-focused"); });
+    input.addEventListener("blur", function () { zone.classList.remove("is-focused"); });
 
     // validateFile resolves asynchronously (it may read the file's header). If the
     // user picks a second file before the first finished validating, the stale
@@ -284,9 +345,11 @@
     input.addEventListener("change", function () {
       var token = ++changeSeq;
       validateFile(input).then(function (error) {
-        if (token === changeSeq) renderFieldNote(input, error);
+        if (token === changeSeq) renderZone(input, error || "");
       });
     });
+
+    renderZone(input, ""); // initial paint (idle prompt)
   }
 
   /**
@@ -301,13 +364,24 @@
     form.querySelectorAll("[required]").forEach(function (el) {
       if (el.disabled || el.type === "hidden") return;
       if (isEmpty(el)) {
-        problems.push({ label: labelFor(el) + " is required.", target: el });
+        var problem = { label: labelFor(el) + " is required.", target: el };
+        // For a missing required file, flag its zone and scroll to it (the input
+        // itself is visually hidden).
+        if (el.type === "file" && el._artifactZone) {
+          el._artifactZone.classList.add("has-error");
+          problem.scrollTo = el._artifactZone;
+        }
+        problems.push(problem);
       }
     });
 
     form.querySelectorAll('input[type="file"]').forEach(function (input) {
       if (input.getAttribute("data-artifact-invalid") === "true") {
-        problems.push({ label: labelFor(input) + ": please choose a valid file.", target: input });
+        problems.push({
+          label: labelFor(input) + ": please choose a valid file.",
+          target: input,
+          scrollTo: input._artifactZone || input,
+        });
       }
     });
 
