@@ -57,7 +57,13 @@ class Position(models.Model):
     end_date = models.DateField(blank=True, null=True)
     advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Advisor', on_delete=models.SET_NULL)
     co_advisor = models.ForeignKey('Person', blank=True, null=True, related_name='Co_Advisor', verbose_name='Co-advisor', on_delete=models.SET_NULL)
-    grad_mentor = models.ForeignKey('Person', blank=True, null=True, related_name='Grad_Mentor', on_delete=models.SET_NULL)
+    # Field is named ``grad_mentor`` for historical reasons, but the dropdown allows any active
+    # senior lab member (not just grad students) — see get_active_mentors_queryset — so the
+    # user-facing label is simply "Mentor" (issue #806). The DB column is intentionally NOT
+    # renamed: this repo regenerates migrations non-interactively per-environment, where a field
+    # rename can't be confirmed and would drop the column. verbose_name fixes the label with no
+    # schema change.
+    grad_mentor = models.ForeignKey('Person', blank=True, null=True, related_name='Grad_Mentor', verbose_name='Mentor', on_delete=models.SET_NULL)
     role = models.CharField(max_length=50, choices=Role.choices, default=Role.MEMBER)
     title = models.CharField(max_length=50, choices=Title.choices)
 
