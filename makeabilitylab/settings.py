@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.20.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "This release restructures Django admin access (#1125). Editing is now organized as personal user accounts assigned to one of two permission groups instead of shared, role-named logins: Editors (PhD students and long-term staff) get full management of the public content models, while Contributors (undergraduates and interns) can add and review publications, talks, posters, and project roles and edit bios, but cannot delete anything. Site administration — managing accounts, Grants, and Awards — is reserved for superusers. The two groups are defined in code and created/refreshed automatically on every deploy. This release also fixes publication 'View project' chips that could overlap neighboring cards on the project gallery (#1377)."
+ML_WEBSITE_VERSION = "2.21.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "This release moves the test and production sites onto Gunicorn, a production-grade WSGI server, replacing Django's development 'runserver' that we had been running in production since 2017 (#1034). Django's docs explicitly warn against runserver in production (it has not been security-audited); Gunicorn gives us managed worker processes, crash recovery, and request timeouts. The swap is entirely inside the container — Apache still reverse-proxies dynamic requests and serves static/media directly — so nothing changed for visitors except a more robust server. The /version/ endpoint now also reports which WSGI server is live so a deploy can be confirmed at a glance."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
