@@ -148,6 +148,11 @@ echo "4.9 Running 'python manage.py propagate_publication_projects' to link talk
 echo "******************************************"
 python manage.py propagate_publication_projects
 
+echo "****************** STEP 4.10/5: docker-entrypoint.sh ************************"
+echo "4.10 Running 'python manage.py setup_admin_groups' to create/refresh the Editors and Contributors admin groups (#1125)"
+echo "******************************************"
+python manage.py setup_admin_groups
+
 # echo "****************** STEP 4.3/5: docker-entrypoint.sh ************************"
 # echo "4.3 Running 'python manage.py rename_person_images' to rename person images"
 # echo "******************************************"

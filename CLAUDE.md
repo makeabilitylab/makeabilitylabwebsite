@@ -85,6 +85,8 @@ Each domain concept gets a dedicated file across three parallel directories. Whe
 
 Custom admin organization lives in `website/admin/admin_site.py` (`MakeabilityLabAdminSite`). It overrides Django's default app-based grouping with workflow-based groups: Artifacts (Publications/Talks/Posters/Videos), People & News, Projects & Media, Grants & Funding, Configuration, Administration. Section order and which models go in which group are defined in `CUSTOM_GROUPS`. Update this when adding a new top-level model that should appear on the admin index.
 
+**Admin users & permissions (#1125):** editing access is structured as personal accounts assigned to one of two declarative groups — `Editors` (PhD/staff, full content) and `Contributors` (ugrads/interns, submit-and-review, no deletes) — plus superuser (maintainer + a break-glass backup). Grant, Award, and all account-administration models are superuser-only. The groups' permission sets are the source of truth in `setup_admin_groups` (run on every container start via `docker-entrypoint.sh`, pinned by `test_setup_admin_groups`); group *membership* is managed in `/admin`. When adding a new model that editors should manage, add it to `EDITORS_MODELS`/`CONTRIBUTORS_SPEC` and update the test. Full reference + onboarding/offboarding runbook: `docs/ADMIN_USERS_AND_GROUPS.md`.
+
 ### Key model relationships
 
 - A `Publication` is the central artifact. `Talk`, `Poster`, `Video` are related artifacts; the admin tip is to start from the Publication's edit page so shared fields (title, authors, date, venue) auto-fill on the children.
