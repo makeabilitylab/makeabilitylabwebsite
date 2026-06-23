@@ -56,6 +56,17 @@ class VersionResponseTests(SimpleTestCase):
         # Always present, even without a build-info file.
         self.assertIn("git_sha", data)
         self.assertIn("built_at", data)
+        # The live WSGI server's self-reported SERVER_SOFTWARE (#1034); always
+        # present so we can confirm gunicorn vs. the dev runserver in deploys.
+        self.assertIn("server", data)
+
+    def test_server_reflects_wsgi_server_software(self):
+        # The view reports request.META["SERVER_SOFTWARE"] verbatim; on the real
+        # servers that's "gunicorn/<ver>" after #1034. Simulate it here.
+        data = json.loads(
+            self.client.get("/version/", SERVER_SOFTWARE="gunicorn/23.0.0").content
+        )
+        self.assertEqual(data["server"], "gunicorn/23.0.0")
 
     def test_build_info_missing_falls_back_to_unknown(self):
         with override_settings():

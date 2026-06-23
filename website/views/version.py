@@ -25,8 +25,14 @@ Example::
       "description": "Fix the project listing page ...",
       "environment": "PROD",
       "git_sha": "02909b0",
-      "built_at": "2026-06-21T18:30:00-07:00"
+      "built_at": "2026-06-21T18:30:00-07:00",
+      "server": "gunicorn/23.0.0"
     }
+
+The ``server`` field is the WSGI server's self-reported ``SERVER_SOFTWARE``
+(``gunicorn/<ver>`` vs. Django's ``WSGIServer/<ver> CPython/<ver>``), read off
+the live request -- it's the ground-truth answer to *"is this actually running
+Gunicorn?"* after the #1034 swap, not an inference from env vars or git_sha.
 """
 
 import json
@@ -83,6 +89,9 @@ def version(request, format=None):
         "environment": settings.DJANGO_ENV or "unknown",
         "git_sha": build_info["git_sha"],
         "built_at": build_info["built_at"],
+        # WSGI server handling this request: "gunicorn/<ver>" under #1034,
+        # "WSGIServer/<ver> CPython/<ver>" if the dev runserver is somehow live.
+        "server": request.META.get("SERVER_SOFTWARE", "unknown"),
     }
     response = JsonResponse(payload)
     response["Cache-Control"] = "no-store"
