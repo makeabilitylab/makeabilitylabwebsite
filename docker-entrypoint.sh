@@ -164,8 +164,39 @@ python manage.py setup_admin_groups
 # python manage.py rename_talk_files
 
 # Start server
-echo "Starting server"
+#
+# Production-grade environments (TEST, PROD) run Gunicorn, the recommended WSGI
+# server. Local development (DJANGO_ENV=DEBUG) keeps Django's `runserver` for
+# its auto-reload on code edits, friendlier tracebacks, debug toolbar, and
+# static-file serving under DEBUG=True. See issue #1034.
+#
+# This swap is entirely inside the container -- UW CSE's Apache still reverse-
+# proxies dynamic requests to 127.0.0.1:8571 (-> container :8000) and serves
+# /static/ and /media/ directly, exactly as before -- so it ships via the
+# normal push-to-deploy path with no Apache/IT changes.
+#
+# Gunicorn tuning (overridable via env vars in the compose file):
+#   GUNICORN_WORKERS  number of worker processes. The (2*cores)+1 rule of thumb
+#                     would be ~49 on the 24-core host, but that box is SHARED
+#                     with all Project Sidewalk instances (see #959), so we
+#                     default to a modest 3.
+#   GUNICORN_TIMEOUT  per-request worker timeout in seconds. Gunicorn's default
+#                     of 30s can kill slow admin operations (ImageMagick/PDF
+#                     thumbnail generation), so we default to 120.
 echo "****************** STEP 5/5: docker-entrypoint.sh ************************"
-echo "5. Starting server with 'python manage.py runserver 0.0.0.0:8000'"
-echo "******************************************"
-python manage.py runserver 0.0.0.0:8000
+if [ "$DJANGO_ENV" = "TEST" ] || [ "$DJANGO_ENV" = "PROD" ]; then
+  GUNICORN_WORKERS="${GUNICORN_WORKERS:-3}"
+  GUNICORN_TIMEOUT="${GUNICORN_TIMEOUT:-120}"
+  echo "5. Starting Gunicorn (DJANGO_ENV=$DJANGO_ENV, workers=$GUNICORN_WORKERS, timeout=${GUNICORN_TIMEOUT}s)"
+  echo "******************************************"
+  exec gunicorn makeabilitylab.wsgi:application \
+    --bind 0.0.0.0:8000 \
+    --workers "$GUNICORN_WORKERS" \
+    --timeout "$GUNICORN_TIMEOUT" \
+    --access-logfile - \
+    --error-logfile -
+else
+  echo "5. Starting dev server with 'python manage.py runserver 0.0.0.0:8000' (DJANGO_ENV=$DJANGO_ENV)"
+  echo "******************************************"
+  exec python manage.py runserver 0.0.0.0:8000
+fi

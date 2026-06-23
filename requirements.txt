@@ -117,6 +117,23 @@ django-prose-editor[sanitize]==0.26.0
 
 
 # -----------------------------------------------------------------------------
+# WSGI Server (production)
+# -----------------------------------------------------------------------------
+# Gunicorn is the production WSGI server. We previously ran Django's dev
+# `runserver` on test AND prod, which the Django docs explicitly warn against
+# ("DO NOT USE THIS SERVER IN A PRODUCTION SETTING ... has not gone through
+# security audits or performance tests"). See issue #1034.
+#
+# Gunicorn runs inside the same container behind UW CSE's Apache reverse proxy
+# (Apache still serves /static/ and /media/ directly and proxies dynamic
+# requests to 127.0.0.1:8571 -> container :8000), so this swap is contained to
+# the container and ships via the normal push-to-deploy path -- no Apache or
+# UW CSE IT changes required. Worker count and request timeout are tunable via
+# the GUNICORN_WORKERS / GUNICORN_TIMEOUT env vars in docker-entrypoint.sh.
+# See: https://docs.djangoproject.com/en/5.2/howto/deployment/wsgi/gunicorn/
+gunicorn==23.0.0
+
+# -----------------------------------------------------------------------------
 # Security & Networking
 # -----------------------------------------------------------------------------
 # pyOpenSSL - Python wrapper around OpenSSL
