@@ -165,9 +165,20 @@
   transition: opacity var(--transition-fast);
 }
 
+/* On hover/focus, reveal the chips AND lift them onto a higher stacking
+   layer so they paint on top of whatever sits below them rather than
+   tangling behind it (#1377). The .pub-download-links row can extend past
+   the card's 129px box, and the landing grid is a flex-wrap row, so a
+   card's chips can overlap the title of the card in the row below; raising
+   z-index keeps the revealed chips legible and on top. z-index is applied
+   only on hover/focus so the invisible (opacity:0) layer never sits over —
+   and swallows clicks meant for — the card below. 30 clears the thumbnail
+   (z-index:10) and award banner (z-index:20). */
 .pub-column-horiz-layout:hover .pub-download-links,
 .pub-column-horiz-layout:focus-within .pub-download-links {
   opacity: 1;
+  position: relative;
+  z-index: 30;
 }
 
 
