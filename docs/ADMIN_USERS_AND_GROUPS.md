@@ -89,7 +89,12 @@ To preview without writing: `python manage.py setup_admin_groups --dry-run`.
   deleting it orphans their admin-history (`LogEntry`) attribution. Deactivating
   blocks login while preserving the record of what they changed.
 
-**Rotate**
-- The legacy shared accounts (`gradmin`/`ugradmin`/`collabmin`/old `makeadmin`)
-  should be deactivated, and any retained superuser password reset, since their
-  hashes exist in old DB dumps.
+**Legacy accounts**
+- The genuinely *shared* accounts (`gradmin`/`ugradmin`/`collabmin`) should be
+  **deactivated** (`is_active = False`) once people are on personal accounts.
+- `makeadmin` is **not** shared (only the maintainer has it), so don't deactivate
+  it — repurpose it as the **break-glass backup superuser**: rotate its password
+  to a strong, unique one, store it securely, and don't use it day-to-day (use a
+  named personal superuser like `jonfroehlich` instead, so admin-history
+  attribution stays clean). Rotating matters because its hash exists in old DB
+  dumps and it is a long-lived (2016-era) credential.
