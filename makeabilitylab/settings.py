@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.22.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "This release fixes broken links when a project is renamed (#944). Renaming a project changes its URL slug, which previously made the old /project/<old-name>/ URL return a 404 — breaking external links and search-engine results. Renamed projects now 301-redirect their old slug to the current page, and renames are captured automatically going forward; the historical renames mapoutloud→geovisally, mixed-ability-art→artinsight, and smarthomedhh→homesound are backfilled. This also fixes a 500 error when searching for projects in the admin (#1388). Both surfaced during the #1142 search-indexing audit."
+ML_WEBSITE_VERSION = "2.23.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "This release redesigns the mobile layout of individual project pages (#1271). On phones, project metadata previously rendered as a jumbled grid of mismatched cards sitting above the description; it's now a compact status chip strip (active/completed · date range · contributor count), followed by the description, then a clean labeled info-list — website/code/data links as tappable chips, a de-emphasized team list that collapses long rosters behind a 'show more' control, and a tidy funding logo row that no longer orphans the last sponsor. The desktop two-column layout is unchanged. Also includes role-filtered advisor/mentor autocomplete in the admin so the dropdowns only offer eligible people (#1126), and removal of dead Banner code paths from the people/news/member views (#661)."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
