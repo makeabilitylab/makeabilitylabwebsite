@@ -68,7 +68,7 @@ class GrantInline(admin.TabularInline):
 @admin.register(Project, site=ml_admin_site)
 class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
     # Search by name plus the research-area facets editors think in (umbrella, keyword).
-    search_fields = ['name', 'short_name', 'project_umbrellas__name', 'keywords__name']
+    search_fields = ['name', 'short_name', 'project_umbrellas__name', 'keywords__keyword']
     ordering = ('name',)  # deterministic alphabetical sort (matched the autocomplete already)
     inlines = [GrantInline, BannerInline, PhotoInline, ProjectRoleInline]
 

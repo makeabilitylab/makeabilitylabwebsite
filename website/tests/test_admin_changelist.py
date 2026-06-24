@@ -10,9 +10,11 @@ Two kinds of coverage:
      regress.
 """
 
+from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
+from django.test import RequestFactory
 
-from website.models import News, Photo
+from website.models import News, Photo, Keyword
 from website.admin.admin_site import ml_admin_site
 from website.admin.news_admin import NewsAdmin
 from website.admin.keyword_admin import KeywordAdmin
@@ -97,6 +99,22 @@ class AdminChangelistConfigTests(DatabaseTestCase):
         self.assertIn('project_umbrellas__name', ProjectAdmin.search_fields)
         self.assertEqual(ProjectAdmin.ordering, ('name',))
 
+    def test_project_search_executes(self):
+        """Regression for the project changelist search 500: search_fields
+        referenced 'keywords__name', but Keyword's field is 'keyword', so any
+        admin search raised FieldError ('Unsupported lookup name__icontains for
+        ForeignKey'). Exercise the real search query so a bad field path can't
+        silently regress. (admin search on /admin/website/project/?q=...)"""
+        project = self.make_project(name="Sound Awareness", short_name="soundaware")
+        project.keywords.add(Keyword.objects.create(keyword="accessibility"))
+
+        admin = ProjectAdmin(type(project), ml_admin_site)
+        request = RequestFactory().get('/admin/website/project/', {'q': 'access'})
+        request.user = None
+        qs, _ = admin.get_search_results(request, admin.get_queryset(request), 'access')
+        # Force SQL evaluation — this is what raised the 500 before the fix.
+        self.assertIn(project, list(qs))
+
     def test_project_umbrella_search_and_ordering(self):
         self.assertEqual(ProjectUmbrellaAdmin.search_fields, ['name', 'short_name'])
         self.assertEqual(ProjectUmbrellaAdmin.ordering, ('name',))
@@ -115,3 +133,40 @@ class AdminChangelistConfigTests(DatabaseTestCase):
 
     def test_sponsor_ordering(self):
         self.assertEqual(SponsorAdmin.ordering, ('name',))
+
+
+class AdminSearchExecutesTests(DatabaseTestCase):
+    """Every registered admin's search must actually *run*, not just be declared.
+
+    The project changelist 500'd in prod because search_fields pointed at a
+    field path that doesn't exist ('keywords__name' — Keyword's field is
+    'keyword'). The older config tests only asserted that search_fields
+    *contained* a given string, so they never built the SQL and couldn't catch a
+    bad path. This sweep loops over every ModelAdmin registered on the custom
+    admin site, runs its search with a benign term, and forces query evaluation
+    — turning any invalid field path (FieldError) into a failing test for the
+    specific admin, automatically covering admins added in the future.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.superuser = get_user_model().objects.create_superuser(
+            username="search_sweep_admin", email="sweep@example.com", password="pw")
+
+    def test_all_admin_searches_execute(self):
+        rf = RequestFactory()
+        checked = []
+        for model, model_admin in ml_admin_site._registry.items():
+            if not model_admin.search_fields:
+                continue
+            url = f"/admin/{model._meta.app_label}/{model._meta.model_name}/"
+            request = rf.get(url, {"q": "test"})
+            request.user = self.superuser
+            with self.subTest(admin=type(model_admin).__name__):
+                qs, _ = model_admin.get_search_results(
+                    request, model_admin.get_queryset(request), "test")
+                # Force SQL evaluation — a bad field path raises here, not above.
+                list(qs[:1])
+            checked.append(type(model_admin).__name__)
+        # Guard against the loop silently finding nothing to check.
+        self.assertGreater(len(checked), 5)
