@@ -1,5 +1,5 @@
 from django.conf import settings # for access to settings variables, see https://docs.djangoproject.com/en/4.0/topics/settings/#using-settings-in-python-code
-from website.models import Banner, Position, Person, Publication
+from website.models import Position, Person, Publication
 from website.models.position import Role
 from website.models.publication import PubType
 import website.utils.ml_utils as ml_utils 
