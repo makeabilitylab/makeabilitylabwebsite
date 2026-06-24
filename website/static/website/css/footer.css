@@ -160,6 +160,21 @@
   margin-right: auto;
 }
 
+/* Make the logo link a block so the injected easter-egg <canvas> (#1397)
+   inherits a definite width from the column instead of collapsing to the
+   inline content width. */
+.makelab-footer-logo-link {
+  display: block;
+}
+
+/* The canvas reuses .makelab-footer-logo for responsive sizing/centering;
+   it just needs to render as a block and advertise its interactivity. */
+.makelab-footer-logo-canvas {
+  display: block;
+  width: 100%;
+  cursor: pointer;
+}
+
 
 /* ============================================================================
    SOCIAL LINKS - Desktop

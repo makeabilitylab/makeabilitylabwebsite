@@ -140,6 +140,7 @@ TEMPLATE BLOCKS:
   <script src="{% static 'website/js/reduced-motion.js' %}"></script>
   <script src="{% static 'website/js/top-navbar.js' %}"></script>
   <script src="{% static 'website/js/carousel.js' %}"></script>
+  <script type="module" src="{% static 'website/js/makelab-footer-logo.js' %}"></script>
 
   {% block external_scripts %}{% endblock %}
 
@@ -392,9 +393,16 @@ TEMPLATE BLOCKS:
 
       <!-- Logo -->
       <div class="col-xs-2 makelab-footer-col">
-        <a href="{% url 'website:index' %}" aria-label="Makeability Lab home">
+        {% comment %}
+          The static <img> is the default / no-JS / reduced-motion logo.
+          makelab-footer-logo.js (#1397) progressively enhances it into an
+          interactive morph easter egg by swapping in a <canvas>.
+        {% endcomment %}
+        <a href="{% url 'website:index' %}" aria-label="Makeability Lab home"
+           class="makelab-footer-logo-link">
           <img src="{% static 'website/img/logos/MakeabilityLab-Logo-v3-w-Text-BlackAndWhite-White_978x789.png' %}"
                alt="Makeability Lab"
+               id="makelab-footer-logo-img"
                class="img-responsive makelab-footer-logo">
         </a>
       </div>
