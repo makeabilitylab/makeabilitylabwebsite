@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.21.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "This release moves the test and production sites onto Gunicorn, a production-grade WSGI server, replacing Django's development 'runserver' that we had been running in production since 2017 (#1034). Django's docs explicitly warn against runserver in production (it has not been security-audited); Gunicorn gives us managed worker processes, crash recovery, and request timeouts. The swap is entirely inside the container — Apache still reverse-proxies dynamic requests and serves static/media directly — so nothing changed for visitors except a more robust server. The /version/ endpoint now also reports which WSGI server is live so a deploy can be confirmed at a glance."
+ML_WEBSITE_VERSION = "2.22.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "This release fixes broken links when a project is renamed (#944). Renaming a project changes its URL slug, which previously made the old /project/<old-name>/ URL return a 404 — breaking external links and search-engine results. Renamed projects now 301-redirect their old slug to the current page, and renames are captured automatically going forward; the historical renames mapoutloud→geovisally, mixed-ability-art→artinsight, and smarthomedhh→homesound are backfilled. This also fixes a 500 error when searching for projects in the admin (#1388). Both surfaced during the #1142 search-indexing audit."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
