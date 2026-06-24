@@ -143,6 +143,23 @@ class Project(models.Model):
                     )
                 })
 
+            # The slug namespace also includes *retired* slugs (ProjectAlias), each
+            # of which 301-redirects to its project (#944). Reject a short_name that
+            # collides with another project's alias, or the alias's redirect and this
+            # new project would fight over the same URL. Reclaiming this project's own
+            # former slug is fine — save() clears that alias.
+            from website.models.project_alias import ProjectAlias
+            alias_clash = (ProjectAlias.objects
+                           .filter(slug__iexact=self.short_name)
+                           .exclude(project=self if self.pk else None))
+            if alias_clash.exists():
+                raise ValidationError({
+                    'short_name': (
+                        f'The slug "{self.short_name}" is a former slug of another project '
+                        f'and still redirects there. Please choose a different short name.'
+                    )
+                })
+
     def save(self, *args, **kwargs):
         """
         This method overrides the default save method for the Project model.
@@ -154,6 +171,16 @@ class Project(models.Model):
         """
         _logger.debug("Running Project.save() method...")
 
+        # Capture the slug as it currently stands in the DB *before* saving, so we
+        # can detect a rename below and record the old slug as a redirecting alias
+        # (#944). None for a brand-new project (no row yet).
+        old_short_name = None
+        if self.pk is not None:
+            old_short_name = (Project.objects
+                              .filter(pk=self.pk)
+                              .values_list('short_name', flat=True)
+                              .first())
+
         # New projects are private by default (issue #1300). We set this at the
         # model layer (rather than via a field default) so it applies to every
         # creation path — admin, shell, seeds, tests — while leaving pre-existing
@@ -163,6 +190,20 @@ class Project(models.Model):
             self.is_visible = False
 
         super(Project, self).save(*args, **kwargs)  # Save the Project instance first
+
+        # Auto-capture renames as redirecting aliases (#944). When short_name
+        # changes, the previous slug becomes a ProjectAlias pointing at this
+        # project so its old URL 301-redirects instead of 404ing.
+        if old_short_name and self.short_name and old_short_name.lower() != self.short_name.lower():
+            from website.models.project_alias import ProjectAlias
+            # This project just vacated old_short_name, so it's the rightful owner
+            # of that alias (update_or_create repoints any stale alias to us).
+            ProjectAlias.objects.update_or_create(
+                slug=old_short_name.lower(), defaults={'project': self})
+            # If this project reclaimed a slug that was previously an alias, drop
+            # that alias so it can't self-redirect (slug now resolves to a live
+            # project).
+            ProjectAlias.objects.filter(slug__iexact=self.short_name).delete()
 
         if self.end_date:
             # Get ProjectRoles related to the Project that have a null end_date

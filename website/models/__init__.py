@@ -7,6 +7,7 @@ from .photo import Photo
 from .position import Position
 from .poster import Poster
 from .project import Project
+from .project_alias import ProjectAlias
 from .project_role import ProjectRole
 from .project_umbrella import ProjectUmbrella
 from .publication import Publication

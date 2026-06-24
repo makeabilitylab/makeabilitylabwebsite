@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin import widgets
-from website.models import (Project, Banner, Photo, ProjectRole, Grant,
+from website.models import (Project, ProjectAlias, Banner, Photo, ProjectRole, Grant,
                             Publication, Talk, Video, Person)
 from website.models.project import PROJECT_THUMBNAIL_SIZE
 from website.admin_list_filters import ActiveProjectsFilter
@@ -65,12 +65,25 @@ class GrantInline(admin.TabularInline):
     model = Grant.projects.through
     extra = 1
 
+class ProjectAliasInline(admin.TabularInline):
+    """Former URL slugs that 301-redirect to this project (#944).
+
+    Rows appear automatically when a project's short_name is changed (see
+    Project.save()); editors can also add historical aliases by hand here so old
+    links keep resolving."""
+    model = ProjectAlias
+    extra = 0
+    fields = ['slug', 'created']
+    readonly_fields = ['created']
+    verbose_name = "Former slug (redirect)"
+    verbose_name_plural = "Former slugs (redirect to this project)"
+
 @admin.register(Project, site=ml_admin_site)
 class ProjectAdmin(ImageCroppingMixin, admin.ModelAdmin):
     # Search by name plus the research-area facets editors think in (umbrella, keyword).
     search_fields = ['name', 'short_name', 'project_umbrellas__name', 'keywords__name']
     ordering = ('name',)  # deterministic alphabetical sort (matched the autocomplete already)
-    inlines = [GrantInline, BannerInline, PhotoInline, ProjectRoleInline]
+    inlines = [GrantInline, BannerInline, PhotoInline, ProjectRoleInline, ProjectAliasInline]
 
     # The list display lets us control what is shown in the Project table at Home > Website > Project
     # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin

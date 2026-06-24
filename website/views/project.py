@@ -1,11 +1,11 @@
 from django.conf import settings # for access to settings variables, see https://docs.djangoproject.com/en/4.0/topics/settings/#using-settings-in-python-code
-from website.models import Project, Position, ProjectRole, Grant
+from website.models import Project, Position, ProjectRole, Grant, ProjectAlias
 from website.models.project_role import LeadProjectRoleTypes
 from website.models.position import MemberClassification
 import website.utils.ml_utils as ml_utils
 from website.utils.metadata import meta_description
 from django.urls import reverse
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
 from operator import attrgetter
 from django.template.loader import render_to_string
 from django.http import HttpResponse, Http404
@@ -34,7 +34,30 @@ def project(request, project_name):
     func_start_time = time.perf_counter()
     _logger.debug(f"Starting views/project {project_name} at {func_start_time:0.4f}")
 
-    project = get_object_or_404(Project, short_name__iexact=project_name)
+    # Resolve the slug to a live project. On a miss, fall back to the retired-slug
+    # table (ProjectAlias) and 301-redirect renamed projects to their current URL
+    # (#944) rather than 404ing. A live project always wins over an alias.
+    try:
+        project = Project.objects.get(short_name__iexact=project_name)
+    except Project.DoesNotExist:
+        alias = (ProjectAlias.objects
+                 .filter(slug__iexact=project_name)
+                 .select_related('project')
+                 .first())
+        if alias:
+            # Permanent redirect so search engines consolidate the old URL onto the
+            # canonical singular /project/<short_name>/ (reverse resolves to it).
+            return redirect(reverse('website:project', args=[alias.project.short_name]),
+                            permanent=True)
+        raise Http404("Project not found")
+    except Project.MultipleObjectsReturned:
+        # short_name uniqueness is enforced case-insensitively in Project.clean()
+        # (#1156), so this should be unreachable. Fail with a clean 404 rather than
+        # a 500 if duplicate slugs ever recur; the fix is to de-dupe the data.
+        _logger.error(
+            f"Multiple projects share short_name={project_name!r} (case-insensitively) — "
+            f"slug uniqueness is broken. Returning 404.")
+        raise Http404("No unique project matches the given query.")
 
     # Private projects (is_visible False/None) are hidden from the public but
     # remain previewable by logged-in staff so they can build a project before
