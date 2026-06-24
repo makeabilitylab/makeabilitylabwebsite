@@ -176,8 +176,37 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
     inlines = [PositionInline, ProjectRoleInline]
 
     # We must define search_fields in order to use the autocomplete_fields option
-    search_fields = ['first_name', 'last_name',] 
-    
+    search_fields = ['first_name', 'last_name',]
+
+    def get_search_results(self, request, queryset, search_term):
+        """Role-filter the admin autocomplete results for advisor/mentor fields (#1126).
+
+        ``PositionInline.formfield_for_foreignkey`` filters the plain ``advisor``
+        <select>, but ``co_advisor`` and ``grad_mentor`` are ``autocomplete_fields``:
+        their options come from this endpoint (``AutocompleteJsonView``), which
+        bypasses ``formfield_for_foreignkey``. Without this, the autocomplete search
+        would offer every person (e.g. undergrads as co-advisors). We narrow the
+        queryset to the same role-appropriate sets used for the plain dropdowns,
+        keyed off the requesting Position field passed by the autocomplete view.
+        """
+        queryset, may_have_duplicates = super().get_search_results(
+            request, queryset, search_term)
+
+        if request.GET.get('model_name') == 'position':
+            field_name = request.GET.get('field_name')
+            if field_name in ('advisor', 'co_advisor'):
+                allowed = get_active_professors_queryset()
+            elif field_name == 'grad_mentor':
+                allowed = get_active_mentors_queryset()
+            else:
+                allowed = None
+
+            if allowed is not None:
+                queryset = queryset.filter(
+                    pk__in=allowed.values_list('pk', flat=True))
+
+        return queryset, may_have_duplicates
+
     # The list display lets us control what is shown in the default persons table at Home > Website > People
     # info on displaying multiple entries comes from http://stackoverflow.com/questions/9164610/custom-columns-using-django-admin
     # The count columns (project_count / pub_count / talk_count) read annotations
