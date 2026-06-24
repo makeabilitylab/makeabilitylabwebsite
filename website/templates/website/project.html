@@ -185,12 +185,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
       {% comment %}
       Mobile-only metadata info-list (#1271): Links (as clickable chips), Team
-      (leads, with "+N more" collapsed into a native <details>), and Funding.
-      Placed below the description + featured video so this supporting context no
-      longer sits above the description (the core complaint in #1271). Hidden
-      ≥992px, where the desktop sidebar renders the same data.
+      (current leads inline, former leads collapsed into a native <details>),
+      and Funding. Placed below the description + featured video so this
+      supporting context no longer sits above the description (the core complaint
+      in #1271). Hidden ≥992px, where the desktop sidebar renders the same data.
       {% endcomment %}
-      {% if website or featured_code_repo_url or data_url or active_leads_ordered or sponsors %}
+      {% if website or featured_code_repo_url or data_url or project_leads_current or project_leads_former or sponsors %}
       <div class="project-mobile-meta project-meta-info">
         <dl class="project-info-list">
 
@@ -219,21 +219,21 @@ document.addEventListener('DOMContentLoaded', function() {
           </div>
           {% endif %}
 
-          {% if active_leads_ordered %}
+          {% if project_leads_current or project_leads_former %}
           <div class="project-info-row">
             <dt class="project-info-label">Team</dt>
             <dd class="project-info-value">
-              {% for lead in active_leads_ordered|slice:":4" %}
+              {% for lead in project_leads_current %}
               {% include "snippets/display_project_team_member_mobile.html" with lead=lead %}
               {% endfor %}
-              {% if active_leads_ordered|length > 4 %}
+              {% if project_leads_former %}
               <details class="project-team-more">
                 <summary class="project-team-more-summary">
                   <span class="project-team-more-caret" aria-hidden="true">›</span>
-                  <span class="project-team-more-show">+ {{ active_leads_ordered|length|add:"-4" }} more</span>
+                  <span class="project-team-more-show">{{ project_leads_former|length }} former lead{{ project_leads_former|length|pluralize }}</span>
                   <span class="project-team-more-hide">Show fewer</span>
                 </summary>
-                {% for lead in active_leads_ordered|slice:"4:" %}
+                {% for lead in project_leads_former %}
                 {% include "snippets/display_project_team_member_mobile.html" with lead=lead %}
                 {% endfor %}
               </details>
@@ -251,8 +251,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 {% if sponsor.icon %}
                 <div class="project-funder">
                   {% if sponsor.url %}<a href="{{ sponsor.url }}" aria-label="Visit {{ sponsor.name }} website">{% endif %}
-                    <img class="project-funder-img"
-                         src="{% thumbnail sponsor.icon sponsor.get_thumbnail_size_as_str box=sponsor.icon_cropping crop=True upscale=True %}"
+                    {% comment %}
+                  Aspect-preserving (no crop=True): scale each logo to fit within
+                  the box so wide wordmarks (e.g. Mapillary) render full-width
+                  instead of being squished into a square and shrinking. CSS pins
+                  a uniform display height (#1271).
+                  {% endcomment %}
+                  <img class="project-funder-img"
+                         src="{% thumbnail sponsor.icon '600x60' box=sponsor.icon_cropping upscale=True %}"
                          alt="{{ sponsor.get_icon_alt_text }}"
                          title="{{ sponsor.name }}">
                   {% if sponsor.url %}</a>{% endif %}

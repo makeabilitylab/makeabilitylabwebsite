@@ -99,29 +99,39 @@ def project(request, project_name):
     project_leadership = project.get_project_leadership()
     _logger.debug(f"The project leadership for {project_name}: {project_leadership}")
 
-    # Flat, de-duplicated, seniority-ordered list of active leads for the mobile
-    # "Team" list (#1271). The desktop sidebar still renders each lead group
-    # separately; this convenience list lets the mobile template show the first
-    # few leads and collapse the rest into a <details> without per-group logic.
-    # Order mirrors the sidebar: PIs → Co-PIs → research scientists → postdocs →
-    # student leads. Each role carries a short inline label ("PI"/"Co-PI"/"Lead").
+    # Flat, de-duplicated, seniority-ordered lead lists for the mobile "Team"
+    # list (#1271). The desktop sidebar still renders each lead group separately;
+    # these convenience lists let the mobile template show current leads inline
+    # and collapse former leads into a <details> without per-group logic. Order
+    # within each list mirrors the sidebar: PIs → Co-PIs → research scientists →
+    # postdocs → student leads. Each role carries a short inline label.
     _lead_labels = {
         LeadProjectRoleTypes.PI: 'PI',
         LeadProjectRoleTypes.CO_PI: 'Co-PI',
     }
-    active_leads_ordered = []
+    _active_lead_groups = ('active_PIs', 'active_CoPIs',
+                           'active_research_scientist_leads',
+                           'active_postdoc_leads', 'active_student_leads')
+    _inactive_lead_groups = ('inactive_PIs', 'inactive_CoPIs',
+                             'inactive_research_scientist_leads',
+                             'inactive_postdoc_leads', 'inactive_student_leads')
+
+    def _flatten_leads(group_keys, seen):
+        leads = []
+        for _key in group_keys:
+            for _role in project_leadership[_key]:
+                if _role.person_id in seen:
+                    continue
+                seen.add(_role.person_id)
+                # Transient attribute read by the mobile team snippet; not persisted.
+                _role.mobile_role_label = _lead_labels.get(_role.lead_project_role, 'Lead')
+                leads.append(_role)
+        return leads
+
     _seen_lead_person_ids = set()
-    for _role in (project_leadership['active_PIs']
-                  + project_leadership['active_CoPIs']
-                  + project_leadership['active_research_scientist_leads']
-                  + project_leadership['active_postdoc_leads']
-                  + project_leadership['active_student_leads']):
-        if _role.person_id in _seen_lead_person_ids:
-            continue
-        _seen_lead_person_ids.add(_role.person_id)
-        # Transient attribute read by the mobile team snippet; not persisted.
-        _role.mobile_role_label = _lead_labels.get(_role.lead_project_role, 'Lead')
-        active_leads_ordered.append(_role)
+    project_leads_current = _flatten_leads(_active_lead_groups, _seen_lead_person_ids)
+    # Former leads are collapsed behind the "+N former" disclosure on mobile.
+    project_leads_former = _flatten_leads(_inactive_lead_groups, _seen_lead_person_ids)
 
     # Query for related projects. Limit to top 5
     # Get all candidates first
@@ -157,7 +167,8 @@ def project(request, project_name):
                'inactive_student_leads': project_leadership["inactive_student_leads"],
                'active_postdoc_leads': project_leadership["active_postdoc_leads"],
                'active_research_scientist_leads': project_leadership["active_research_scientist_leads"],
-               'active_leads_ordered': active_leads_ordered,
+               'project_leads_current': project_leads_current,
+               'project_leads_former': project_leads_former,
                'related_projects': related_projects,
                'has_videos_beyond_featured_video': has_videos_beyond_featured_video,
                'debug': settings.DEBUG}

@@ -762,6 +762,13 @@
 
 /* --- Labeled info-list (Links / Team / Funding) ---------------------------- */
 
+/* Space above the info-list so its first row's top border doesn't crowd the
+   preceding prose on metadata-light projects where it follows the description
+   directly (no featured video between them) (#1271). */
+.project-meta-info {
+  margin-top: var(--space-6);
+}
+
 .project-info-list {
   margin: 0;
 }
@@ -955,9 +962,14 @@
   justify-content: center;
 }
 
+/* Uniform display height with aspect preserved (the thumbnail is generated
+   un-cropped), so badge logos and wide wordmarks read at consistent weight and
+   the wide ones aren't shrunk. max-width keeps an unusually wide logo from
+   overflowing the column. */
 .project-funder-img {
-  max-height: 38px;
+  height: 30px;
   width: auto;
+  max-width: 100%;
   object-fit: contain;
 }
 

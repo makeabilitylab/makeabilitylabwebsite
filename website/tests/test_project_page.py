@@ -27,10 +27,6 @@ from website.tests.factories import image_upload
 class ProjectPageMobileMetaTests(DatabaseTestCase):
     """Renders a fully-populated, visible project and asserts the mobile blocks."""
 
-    # The Team list shows this many leads before collapsing the rest into
-    # <details>. Kept in sync with project.html's slice value.
-    VISIBLE_LEADS = 4
-
     def setUp(self):
         # Ongoing (no end_date) → "Active"; start in 2021 → date range "2021–Present".
         self.project = self.make_project(
@@ -42,22 +38,30 @@ class ProjectPageMobileMetaTests(DatabaseTestCase):
             data_url="https://example.org/sidewalk/data",
         )
 
-        # 1 PI + 6 student leads = 7 leads, which exceeds VISIBLE_LEADS so the
-        # "+N more" <details> overflow is exercised.
+        # Current leads (ongoing roles) render inline; former leads (ended roles)
+        # collapse into the "+N former" <details>. 1 PI + 2 active student leads
+        # are current; 3 ended student-lead roles are former.
         self.pi = self.make_person(first_name="Jon", last_name="Froehlich")
         ProjectRole.objects.create(
             person=self.pi, project=self.project,
             lead_project_role=LeadProjectRoleTypes.PI, start_date=date(2021, 1, 1),
         )
-        self.leads = []
-        for i in range(6):
-            person = self.make_person(first_name=f"Lead{i}", last_name="Student")
+        for i in range(2):
+            person = self.make_person(first_name=f"Current{i}", last_name="Lead")
             ProjectRole.objects.create(
                 person=person, project=self.project,
                 lead_project_role=LeadProjectRoleTypes.STUDENT_LEAD,
                 start_date=date(2021, 1, 1),
             )
-            self.leads.append(person)
+        self.former_leads = []
+        for i in range(3):
+            person = self.make_person(first_name=f"Former{i}", last_name="Lead")
+            ProjectRole.objects.create(
+                person=person, project=self.project,
+                lead_project_role=LeadProjectRoleTypes.STUDENT_LEAD,
+                start_date=date(2018, 1, 1), end_date=date(2019, 1, 1),
+            )
+            self.former_leads.append(person)
 
         # One sponsor via a grant so the Funding row renders.
         sponsor = Sponsor.objects.create(
@@ -99,13 +103,16 @@ class ProjectPageMobileMetaTests(DatabaseTestCase):
         self.assertIn("https://example.org/sidewalk", html)
         self.assertIn("https://example.org/sidewalk/data", html)
 
-    def test_team_overflow_collapses_into_details(self):
+    def test_current_leads_render_and_former_collapse_into_details(self):
         html = self._get()
-        # The PI is among the always-visible leads.
+        # Current leads (PI + active student leads) render inline.
         self.assertIn("Jon Froehlich", html)
-        # With 7 leads > VISIBLE_LEADS, the overflow disclosure must appear.
+        # Former leads collapse into the "+N former" <details> disclosure.
         self.assertIn("project-team-more", html)
         self.assertIn("<details", html)
+        self.assertIn("former lead", html.lower())
+        # A specific former lead is present (inside the disclosure).
+        self.assertIn("Former0 Lead", html)
 
     def test_funding_row_renders_sponsor(self):
         html = self._get()
