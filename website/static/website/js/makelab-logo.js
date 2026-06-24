@@ -8,7 +8,8 @@
  * As the user scrolls down the page, the logo morphs from its start state into
  * the assembled logo; scrolling back up returns to the start state.
  *
- * Default mode: triangles scatter from random positions and assemble on scroll.
+ * Default mode: triangles scatter from random positions and spiral inward to
+ * assemble on scroll (see SPIRAL_TURNS / spiralPath).
  *
  * Easter egg: within the window of certain holidays, triangles morph from
  * holiday artwork (e.g., Santa, shamrock) into the logo instead.
@@ -38,6 +39,7 @@ import {
   MakeabilityLabLogo,
   MakeabilityLabLogoMorpher,
   TriangleArt,
+  spiralPath,
 } from 'https://cdn.jsdelivr.net/gh/makeabilitylab/js@main/dist/makelab.logo.js';
 
 // =============================================================================
@@ -50,6 +52,10 @@ const TRIANGLE_SIZE = 70;
 // runs off-screen on narrow (mobile) viewports. See issue #1281.
 const LOGO_WIDTH_FRACTION = 0.9;
 const SCROLL_DISTANCE = 300;
+// Trajectory the scattered triangles follow as they assemble into the logo.
+// `turns` is the number of extra full revolutions each triangle sweeps around the
+// logo centroid — higher = more swirl. See spiralPath() in the makelab js lib.
+const SPIRAL_TURNS = 1;
 const DPR = window.devicePixelRatio || 1;
 const BG_FILL_COLOR = "rgba(255, 255, 255, 1)"; // Solid white for website clean look
 const START_FILL_COLOR = "rgba(255, 255, 255, 0.5)";
@@ -134,6 +140,11 @@ async function initOrResize() {
   // Initialize Morpher if it doesn't exist
   if (!morpher) {
     morpher = new MakeabilityLabLogoMorpher(0, 0, TRIANGLE_SIZE, START_FILL_COLOR);
+    // Swap the default straight-line (reverse-explosion) trajectory for a spiral
+    // so the triangles swirl inward into place. pathFunction persists, and each
+    // reset()/resetFromArt() below re-prepares per-triangle path data, so this
+    // only needs to be set once at creation. See spiralPath() in the makelab lib.
+    morpher.setPath(spiralPath({ turns: SPIRAL_TURNS }));
   }
 
   // Size the assembled logo so it always fits within the canvas width. On wide
