@@ -99,6 +99,30 @@ def project(request, project_name):
     project_leadership = project.get_project_leadership()
     _logger.debug(f"The project leadership for {project_name}: {project_leadership}")
 
+    # Flat, de-duplicated, seniority-ordered list of active leads for the mobile
+    # "Team" list (#1271). The desktop sidebar still renders each lead group
+    # separately; this convenience list lets the mobile template show the first
+    # few leads and collapse the rest into a <details> without per-group logic.
+    # Order mirrors the sidebar: PIs → Co-PIs → research scientists → postdocs →
+    # student leads. Each role carries a short inline label ("PI"/"Co-PI"/"Lead").
+    _lead_labels = {
+        LeadProjectRoleTypes.PI: 'PI',
+        LeadProjectRoleTypes.CO_PI: 'Co-PI',
+    }
+    active_leads_ordered = []
+    _seen_lead_person_ids = set()
+    for _role in (project_leadership['active_PIs']
+                  + project_leadership['active_CoPIs']
+                  + project_leadership['active_research_scientist_leads']
+                  + project_leadership['active_postdoc_leads']
+                  + project_leadership['active_student_leads']):
+        if _role.person_id in _seen_lead_person_ids:
+            continue
+        _seen_lead_person_ids.add(_role.person_id)
+        # Transient attribute read by the mobile team snippet; not persisted.
+        _role.mobile_role_label = _lead_labels.get(_role.lead_project_role, 'Lead')
+        active_leads_ordered.append(_role)
+
     # Query for related projects. Limit to top 5
     # Get all candidates first
     related_project_candidates = project.get_related_projects_by_umbrella(match_all_umbrellas=True)
@@ -133,6 +157,7 @@ def project(request, project_name):
                'inactive_student_leads': project_leadership["inactive_student_leads"],
                'active_postdoc_leads': project_leadership["active_postdoc_leads"],
                'active_research_scientist_leads': project_leadership["active_research_scientist_leads"],
+               'active_leads_ordered': active_leads_ordered,
                'related_projects': related_projects,
                'has_videos_beyond_featured_video': has_videos_beyond_featured_video,
                'debug': settings.DEBUG}

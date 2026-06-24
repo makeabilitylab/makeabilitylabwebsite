@@ -216,8 +216,12 @@
    ============================================================================= */
 
 .project-sidebar {
-  /* On mobile, appears above main content due to order property */
-  order: -1;
+  /* #1271: the sidebar is desktop-only. On mobile (<992px) its metadata is
+     rendered inline in the main column as chips + a labeled info-list
+     (.project-mobile-meta), so hide the sidebar below the breakpoint to avoid
+     duplicating that content. The ≥992px block below restores it as the sticky
+     right column. */
+  display: none;
 }
 
 /* Single source of truth for the sidebar sticky layout constants.
@@ -243,6 +247,7 @@
        Fallback: if the JS doesn't run, var() falls back to the top-offset value,
        which is fine for short sidebars and degrades gracefully on tall ones
        (sidebar's top sticks; bottom is hidden — same as pre-JS state). */
+    display: block; /* #1271: restore the sidebar (hidden on mobile) on desktop */
     order: 0;
     position: sticky;
     top: var(--sidebar-sticky-top, var(--project-sidebar-top-offset));
@@ -702,5 +707,257 @@
 .project-main-content .pub-row-vert-layout {
   margin-left: 0;
   margin-right: 0;
+}
+
+
+/* =============================================================================
+   MOBILE METADATA (#1271)
+   =============================================================================
+   Replaces the old auto-fit sidebar grid on small screens. Two blocks live in
+   the main column: a compact chip strip under the title (.project-meta-chips)
+   and a labeled info-list below the description (.project-meta-info) holding
+   Links (as clickable chips), Team (with a "+N more" disclosure), and Funding.
+   Both are hidden ≥992px, where the sticky right sidebar takes over.
+   ============================================================================= */
+
+.project-mobile-meta {
+  display: block;
+}
+
+@media (min-width: 992px) {
+  .project-mobile-meta {
+    display: none; /* desktop uses the sidebar instead */
+  }
+}
+
+/* --- Status / meta chips (read-only badges) -------------------------------- */
+
+.project-meta-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.project-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--border-radius-full);
+  background: var(--color-bg-surface);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+/* Active = green; completed projects keep the neutral grey chip. */
+.project-chip--status {
+  background: var(--color-status-active-bg);
+  color: var(--color-status-active-text);
+  border-color: var(--color-status-active-border);
+}
+
+/* --- Labeled info-list (Links / Team / Funding) ---------------------------- */
+
+.project-info-list {
+  margin: 0;
+}
+
+.project-info-row {
+  display: grid;
+  grid-template-columns: 84px 1fr;
+  gap: var(--space-3);
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.project-info-row:last-child {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.project-info-label {
+  padding-top: var(--space-1);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.project-info-value {
+  margin: 0;
+  min-width: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+/* --- Link chips (interactive — outlined, distinct from the grey status chips).
+   Compact so three (Website / Code / Data) fit one line in the value column. --- */
+
+.project-chip-set {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.project-meta-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 36px;
+  padding: 0 var(--space-3);
+  border-radius: var(--border-radius-full);
+  border: 1.5px solid var(--color-primary);
+  background: var(--color-white);
+  color: var(--color-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.project-meta-link:hover,
+.project-meta-link:focus-visible {
+  background: var(--color-primary-light);
+  color: var(--color-primary-hover);
+}
+
+.project-meta-link i {
+  font-size: 0.8rem;
+}
+
+/* --- Team member rows ------------------------------------------------------ */
+
+.project-team-member {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-1) 0;
+}
+
+.project-team-member-link {
+  flex: 0 0 auto;
+  display: inline-flex;
+  border-radius: 50%;
+}
+
+.project-team-member-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.project-team-member-avatar--initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
+  color: var(--color-white);
+  font-family: var(--font-family-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+.project-team-member-name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+}
+
+.project-team-member-name a {
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+.project-team-member-name a:hover,
+.project-team-member-name a:focus-visible {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+.project-team-member-role {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-normal);
+}
+
+/* --- "+N more" disclosure (native <details>, no JS) ------------------------ */
+
+.project-team-more {
+  margin-top: var(--space-1);
+}
+
+.project-team-more-summary {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 34px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-link);
+}
+
+.project-team-more-summary::-webkit-details-marker {
+  display: none;
+}
+
+.project-team-more-summary:hover {
+  color: var(--color-link-hover);
+}
+
+.project-team-more-caret {
+  transition: transform var(--transition-fast);
+}
+
+.project-team-more[open] .project-team-more-caret {
+  transform: rotate(90deg);
+}
+
+/* Swap the summary label between collapsed and expanded states. */
+.project-team-more-hide {
+  display: none;
+}
+
+.project-team-more[open] .project-team-more-show {
+  display: none;
+}
+
+.project-team-more[open] .project-team-more-hide {
+  display: inline;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-team-more-caret,
+  .project-meta-link {
+    transition: none;
+  }
+}
+
+/* --- Funding logos ---------------------------------------------------------
+   A wrapping flex row of capped-height logos so the funders distribute evenly
+   without orphaning the last logo onto its own row (issue #1271 defect #4). --- */
+
+.project-funder-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.project-funder {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.project-funder-img {
+  max-height: 38px;
+  width: auto;
+  object-fit: contain;
 }
 
