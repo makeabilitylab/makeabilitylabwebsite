@@ -87,12 +87,8 @@ def member(request, member_name=None, member_id=None):
         raise Http404("No person matches the given query.")
 
     news_items_num = 5  # Defines the number of news items that will be selected
-    # all_banners = Banner.objects.filter(page=Banner.PEOPLE)
-    # displayed_banners = ml_utils.choose_banners(all_banners)
 
-    
-
-    # Returns QuerySet of News objects that mention the specified person. 
+    # Returns QuerySet of News objects that mention the specified person.
     # The order_by('-date') part sorts the QuerySet by date in descending order 
     # (so the most recent news comes first), and [:4] limits the QuerySet to 
     # the first 4 objects.
@@ -146,7 +142,6 @@ def member(request, member_name=None, member_id=None):
                'mobile_page_sizes': ARTIFACT_MOBILE_PAGE_SIZES,
                'project_roles': project_roles,
                'position' : latest_position,
-               # 'banners': displayed_banners,
                'left_align_headers': left_align_headers,
                'debug': settings.DEBUG,
                'navbar_white': True,
