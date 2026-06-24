@@ -136,7 +136,19 @@ document.addEventListener('DOMContentLoaded', function() {
       
       <!-- Screen-reader-only heading (visible title is in carousel) -->
       <h1 class="sr-only">{{ project.name }}</h1>
-      
+
+      {% comment %}
+      Mobile-only metadata chips (#1271): a compact status / date / contributor
+      strip under the title. Hidden ≥992px (.project-mobile-meta), where the
+      sticky right sidebar carries this same information. Kept compact enough to
+      sit above the description without pushing it down the page.
+      {% endcomment %}
+      <div class="project-mobile-meta project-meta-chips">
+        <span class="project-chip project-chip--status">{% if project.has_ended %}Completed{% else %}Active{% endif %}</span>
+        {% if date_str %}<span class="project-chip">{{ date_str }}</span>{% endif %}
+        {% if num_contributors %}<span class="project-chip">{{ num_contributors }} contributor{{ num_contributors|pluralize }}</span>{% endif %}
+      </div>
+
       <!-- Project Description Section -->
       <section id="project-description" 
                class="project-section"
@@ -170,7 +182,92 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
       </div>
       {% endif %}
-      
+
+      {% comment %}
+      Mobile-only metadata info-list (#1271): Links (as clickable chips), Team
+      (leads, with "+N more" collapsed into a native <details>), and Funding.
+      Placed below the description + featured video so this supporting context no
+      longer sits above the description (the core complaint in #1271). Hidden
+      ≥992px, where the desktop sidebar renders the same data.
+      {% endcomment %}
+      {% if website or featured_code_repo_url or data_url or active_leads_ordered or sponsors %}
+      <div class="project-mobile-meta project-meta-info">
+        <dl class="project-info-list">
+
+          {% if website or featured_code_repo_url or data_url %}
+          <div class="project-info-row">
+            <dt class="project-info-label">Links</dt>
+            <dd class="project-info-value">
+              <div class="project-chip-set">
+                {% if website %}
+                <a class="project-meta-link" href="{{ website }}">
+                  <i class="fa-solid fa-globe" aria-hidden="true"></i><span>Website</span>
+                </a>
+                {% endif %}
+                {% if featured_code_repo_url %}
+                <a class="project-meta-link" href="{{ featured_code_repo_url }}">
+                  <i class="fa-brands fa-github" aria-hidden="true"></i><span>Code</span>
+                </a>
+                {% endif %}
+                {% if data_url %}
+                <a class="project-meta-link" href="{{ data_url }}">
+                  <i class="fa-solid fa-database" aria-hidden="true"></i><span>Data</span>
+                </a>
+                {% endif %}
+              </div>
+            </dd>
+          </div>
+          {% endif %}
+
+          {% if active_leads_ordered %}
+          <div class="project-info-row">
+            <dt class="project-info-label">Team</dt>
+            <dd class="project-info-value">
+              {% for lead in active_leads_ordered|slice:":4" %}
+              {% include "snippets/display_project_team_member_mobile.html" with lead=lead %}
+              {% endfor %}
+              {% if active_leads_ordered|length > 4 %}
+              <details class="project-team-more">
+                <summary class="project-team-more-summary">
+                  <span class="project-team-more-caret" aria-hidden="true">›</span>
+                  <span class="project-team-more-show">+ {{ active_leads_ordered|length|add:"-4" }} more</span>
+                  <span class="project-team-more-hide">Show fewer</span>
+                </summary>
+                {% for lead in active_leads_ordered|slice:"4:" %}
+                {% include "snippets/display_project_team_member_mobile.html" with lead=lead %}
+                {% endfor %}
+              </details>
+              {% endif %}
+            </dd>
+          </div>
+          {% endif %}
+
+          {% if sponsors %}
+          <div class="project-info-row">
+            <dt class="project-info-label">Funding</dt>
+            <dd class="project-info-value">
+              <div class="project-funder-row">
+                {% for sponsor in sponsors %}
+                {% if sponsor.icon %}
+                <div class="project-funder">
+                  {% if sponsor.url %}<a href="{{ sponsor.url }}" aria-label="Visit {{ sponsor.name }} website">{% endif %}
+                    <img class="project-funder-img"
+                         src="{% thumbnail sponsor.icon sponsor.get_thumbnail_size_as_str box=sponsor.icon_cropping crop=True upscale=True %}"
+                         alt="{{ sponsor.get_icon_alt_text }}"
+                         title="{{ sponsor.name }}">
+                  {% if sponsor.url %}</a>{% endif %}
+                </div>
+                {% endif %}
+                {% endfor %}
+              </div>
+            </dd>
+          </div>
+          {% endif %}
+
+        </dl>
+      </div>
+      {% endif %}
+
       <!-- Publications Section -->
       {% if publications %}
       <section id="project-publications" 

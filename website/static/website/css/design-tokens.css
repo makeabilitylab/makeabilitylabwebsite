@@ -111,6 +111,13 @@
   --color-badge-text: #0d5a8c;           /* 5.0:1 on badge-bg - AA ✓ */
   --color-badge-text-hover: #083854;
 
+  /* Project status chip (#1271) — "Active" badge on project pages.
+     Dark green text on a light green fill; the border is decorative (the
+     text + fill convey state, so it isn't held to the 3:1 UI threshold). */
+  --color-status-active-text: #1b5e20;   /* 6.9:1 on --color-status-active-bg - AA ✓ */
+  --color-status-active-bg: #e7f3e8;
+  --color-status-active-border: #bfe0c1;
+
   /* Awards */
   --color-award: #c25059;                /* legacy red; used by the publications award label */
 

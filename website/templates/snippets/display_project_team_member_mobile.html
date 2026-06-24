@@ -1,0 +1,41 @@
+{% comment %}
+================================================================================
+PROJECT TEAM MEMBER SNIPPET (mobile) — #1271
+================================================================================
+
+Compact single-row rendering of one project lead for the mobile "Team" info-list:
+a small round headshot (or initials fallback) + name + short inline role label.
+
+This is the mobile counterpart to display_project_lead_snippet.html (which renders
+the desktop sidebar lead groups). Kept separate because the mobile presentation is
+deliberately denser (one flat, seniority-ordered list with inline role suffixes
+instead of grouped sub-sections).
+
+CONTEXT VARIABLES:
+  - lead: a ProjectRole with
+      .person (.url_name, .get_full_name, .image, .cropping)
+      .mobile_role_label: short label ("PI" / "Co-PI" / "Lead"), set in
+        website/views/project.py.
+
+DEPENDENCIES: project.css (.project-team-member* styles)
+================================================================================
+{% endcomment %}
+{% load thumbnail %}
+{% with person=lead.person %}
+<div class="project-team-member">
+  <a class="project-team-member-link"
+     href="{% url 'website:member_by_name' member_name=person.url_name %}"
+     aria-label="View profile of {{ person.get_full_name }}">
+    {% if person.image %}
+    <img class="project-team-member-avatar"
+         src="{% thumbnail person.image '48x48' box=person.cropping crop=True upscale=True detail=True %}"
+         alt="">
+    {% else %}
+    <span class="project-team-member-avatar project-team-member-avatar--initials" aria-hidden="true">{{ person.first_name|first }}{{ person.last_name|first }}</span>
+    {% endif %}
+  </a>
+  <span class="project-team-member-name">
+    <a href="{% url 'website:member_by_name' member_name=person.url_name %}">{{ person.get_full_name }}</a>{% if lead.mobile_role_label %} <span class="project-team-member-role">· {{ lead.mobile_role_label }}</span>{% endif %}
+  </span>
+</div>
+{% endwith %}
