@@ -113,17 +113,24 @@ let rafId = null;
 // =============================================================================
 
 /**
- * Applies the color scheme to both internal logos (the hidden target used for
- * the outline/label overlay, and the animated morphing one). The M/L outlines
- * and the wordmark label are drawn from dedicated properties, not setColors, so
- * each is set explicitly: white fills, black facet/outline lines, white label.
+ * Applies the color scheme to both internal logos (the hidden target whose
+ * triangle colors the morpher snapshots as the assembled end state, and the
+ * animated one). White fills, black facet/outline lines, white label. The L's
+ * inner facet strokes are made transparent so the L reads as a clean white
+ * shape. NOTE: the morpher snapshots stroke *color* into its frozen draw
+ * triangles but not stroke *visibility*, so we recolor (not hide) the L
+ * strokes; and applyColors must run before the first reset() so the snapshot
+ * captures these colors.
  */
 function applyColors() {
   for (const logo of [morpher.makeLabLogo, morpher.makeLabLogoAnimated]) {
     logo.setColors(LOGO_FILL_COLOR, LOGO_LINE_COLOR); // fill, facet strokes
     logo.mOutlineColor = LOGO_LINE_COLOR;
     logo.lOutlineColor = LOGO_LINE_COLOR;
-    logo.setLTriangleStrokeColor(LOGO_LINE_COLOR);
+    // Never turn on the facet strokes of the triangles *inside* the L — keep
+    // the L a clean white shape (only the M shows black facet lines). Set after
+    // setColors(), which would otherwise re-enable every triangle's stroke.
+    logo.areLTriangleStrokesVisible = false;
     logo.labelColor = LOGO_LABEL_COLOR;
   }
 }
