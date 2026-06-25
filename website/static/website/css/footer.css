@@ -341,7 +341,9 @@
   .makelab-footer-logo {
     float: left;
     width: 100%;
-    max-width: 180px;
+    /* Shrink the logo on phones so the mission blurb gets more vertical room
+       (#1395). Was 180px, which dominated the narrow single-column layout. */
+    max-width: 110px;
   }
 
   .makelab-footer-connect-links-mobile {
