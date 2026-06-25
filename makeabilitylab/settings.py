@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.24.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "This release adds a playful footer easter egg (#1397): the Makeability Lab logo in the footer now morphs apart and reassembles as you move the cursor across the footer row — fully exploded at the left, assembled at the right — and on touch devices a tap plays a one-shot explode-and-reassemble. It's built on our own makeabilitylab/js library and fully honors prefers-reduced-motion (the static logo is shown, with no animation, when reduced motion is requested). It also shrinks the footer logo on phones so the lab's mission statement gets more room (#1395)."
+ML_WEBSITE_VERSION = "2.25.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "This release records the original uploaded filename of talk, poster, and publication files and shows it (admin-only) on the change form (#1391). When an editor uploads a file, the site renames it to a standardized Author_Title_VenueYear scheme, which previously discarded the human-recognizable upload name (e.g. MyTalk_v3_final.pptx). We now capture that original name and display it read-only as 'Originally uploaded as …' so editors have a provenance breadcrumb for confirming or debugging which file was attached. A one-time backfill also recovers the original names for the many historical talks and posters whose files were never renamed."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
