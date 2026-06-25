@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.23.1" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "This patch polishes the new mobile project-page layout (#1271): funding logos now render at a consistent size (wide wordmarks like Mapillary were being squished into a square crop and shrinking to a sliver); the metadata info-list no longer crowds the description on projects with little metadata; and the Team section now surfaces former leads — current leads show inline while past leads collapse into a 'show former leads' control."
+ML_WEBSITE_VERSION = "2.24.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "This release adds a playful footer easter egg (#1397): the Makeability Lab logo in the footer now morphs apart and reassembles as you move the cursor across the footer row — fully exploded at the left, assembled at the right — and on touch devices a tap plays a one-shot explode-and-reassemble. It's built on our own makeabilitylab/js library and fully honors prefers-reduced-motion (the static logo is shown, with no animation, when reduced motion is requested). It also shrinks the footer logo on phones so the lab's mission statement gets more room (#1395)."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
