@@ -48,8 +48,13 @@ const TRIANGLE_SIZE = 70;
 const LOGO_WIDTH_FRACTION = 0.9;
 // Extra vertical breathing room (logical px) added above/below the logo.
 const VERTICAL_PADDING = 6;
-// The logo renders white-on-dark to match the footer's white wordmark PNG.
-const LOGO_COLOR = 'white';
+// The assembled logo reads as the canonical Makeability Lab mark on the blue
+// footer: white triangle fills with black facet/outline lines. The wordmark
+// label stays white so it keeps AA contrast on the blue background (black text
+// on #1565A7 is only ~3.4:1).
+const LOGO_FILL_COLOR = 'white';
+const LOGO_LINE_COLOR = 'black';
+const LOGO_LABEL_COLOR = 'white';
 // Faint white for the exploded (scattered) triangles before they assemble.
 const START_FILL_COLOR = 'rgba(255, 255, 255, 0.35)';
 // Fraction of the canvas width treated as dead margin on each side, so the
@@ -91,6 +96,10 @@ function prefersReducedMotion() {
 let canvas = null;
 let ctx = null;
 let link = null;
+// The element whose width the cursor X is mapped across to drive the morph.
+// We use the whole footer's first row so the logo responds to the cursor
+// anywhere in the blue band, not just directly over the small logo.
+let hoverRegion = null;
 let morpher = null;
 let logicalWidth = 0;
 let logicalHeight = 0;
@@ -104,18 +113,18 @@ let rafId = null;
 // =============================================================================
 
 /**
- * Applies the white-on-dark color scheme. The M/L outlines and the wordmark
- * label are drawn from dedicated properties (not setColors), and the morpher
- * keeps two logo instances (the hidden target + the animated one), so we whiten
- * every channel on both to get a clean all-white logo on the blue footer.
+ * Applies the color scheme to both internal logos (the hidden target used for
+ * the outline/label overlay, and the animated morphing one). The M/L outlines
+ * and the wordmark label are drawn from dedicated properties, not setColors, so
+ * each is set explicitly: white fills, black facet/outline lines, white label.
  */
 function applyColors() {
   for (const logo of [morpher.makeLabLogo, morpher.makeLabLogoAnimated]) {
-    logo.setColors(LOGO_COLOR, LOGO_COLOR);
-    logo.mOutlineColor = LOGO_COLOR;
-    logo.lOutlineColor = LOGO_COLOR;
-    logo.setLTriangleStrokeColor(LOGO_COLOR);
-    logo.labelColor = LOGO_COLOR;
+    logo.setColors(LOGO_FILL_COLOR, LOGO_LINE_COLOR); // fill, facet strokes
+    logo.mOutlineColor = LOGO_LINE_COLOR;
+    logo.lOutlineColor = LOGO_LINE_COLOR;
+    logo.setLTriangleStrokeColor(LOGO_LINE_COLOR);
+    logo.labelColor = LOGO_LABEL_COLOR;
   }
 }
 
@@ -201,14 +210,16 @@ function tweenTo(target, duration, easing, onDone) {
 // =============================================================================
 
 // Desktop: track the cursor's X position across the logo.
-function onPointerEnter() {
-  // Re-scatter so each hover gets a fresh explosion pattern.
-  if (morpher) morpher.reset(logicalWidth, logicalHeight);
-}
-
+// NOTE: we deliberately do NOT call morpher.reset() on hover/tap. reset()
+// snapshots the logo's *current* positions as the scatter origin, so resetting
+// from the assembled resting state collapses the explosion to nothing. The
+// single reset() in layout() establishes the scatter once; update() then
+// interpolates against it, so every hover/tap explodes correctly.
 function onPointerMove(e) {
   cancelTween();
-  const rect = canvas.getBoundingClientRect();
+  // Map the cursor's X across the whole footer row (hoverRegion), not just the
+  // logo, so sweeping anywhere in the blue band drives the morph.
+  const rect = hoverRegion.getBoundingClientRect();
   const margin = rect.width * EDGE_MARGIN_FRACTION;
   const usable = rect.width - 2 * margin;
   const x = e.clientX - rect.left;
@@ -226,7 +237,6 @@ function onTap(e) {
   // The easter egg owns this tap; don't also navigate home.
   e.preventDefault();
   if (rafId) return; // ignore taps mid-animation
-  morpher.reset(logicalWidth, logicalHeight);
   tweenTo(0, TAP_EXPLODE_MS, easeOutCubic, () =>
     tweenTo(1, TAP_ASSEMBLE_MS, easeInOutCubic)
   );
@@ -257,14 +267,18 @@ function enhance(img) {
   applyColors();
   layout(true);
 
+  // Drive the morph from the cursor anywhere in the footer's first row; fall
+  // back to the logo itself if that row can't be found.
+  hoverRegion = link.closest('.makelab-footer-row') || canvas;
+
   const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   if (canHover) {
-    // Hover drives the morph; a normal click still navigates home.
-    canvas.addEventListener('pointerenter', onPointerEnter);
-    canvas.addEventListener('pointermove', onPointerMove);
-    canvas.addEventListener('pointerleave', onPointerLeave);
+    // Hover anywhere in the row drives the morph; a normal click on the logo
+    // still navigates home.
+    hoverRegion.addEventListener('pointermove', onPointerMove);
+    hoverRegion.addEventListener('pointerleave', onPointerLeave);
   } else {
-    // Touch: tap plays the animation (and suppresses navigation).
+    // Touch: tap the logo plays the animation (and suppresses navigation).
     link.addEventListener('click', onTap);
   }
 
