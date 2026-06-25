@@ -138,6 +138,11 @@ echo "4.7 Running 'python manage.py backfill_project_visibility' to resolve is_v
 echo "******************************************"
 python manage.py backfill_project_visibility
 
+echo "****************** STEP 4.7b/5: docker-entrypoint.sh ************************"
+echo "4.7b Running 'python manage.py backfill_original_filenames' to recover original upload filenames for never-renamed artifacts (#1391)"
+echo "******************************************"
+python manage.py backfill_original_filenames
+
 echo "****************** STEP 4.8/5: docker-entrypoint.sh ************************"
 echo "4.8 Running 'python manage.py recompute_url_names' to de-collide historical url_names (#1206)"
 echo "******************************************"
