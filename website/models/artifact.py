@@ -41,7 +41,18 @@ class Artifact(models.Model):
     raw_file.help_text = "The raw file (e.g., pptx, keynote) for the artifact. While not required, this is "\
         "<b>highly</b> recommended as it creates a better archive of the work"
     thumbnail = models.ImageField(upload_to=get_upload_thumbnail_dir, editable=False, null=True, max_length=255)
-    
+
+    # Provenance: the human-recognizable name of the file as it was uploaded
+    # (e.g., "MyTalk_v3_final.pptx"), before save() renames it to the
+    # standardized Author_Title_VenueYear scheme. Admin-only (editable=False so
+    # it never appears on the public-facing form; surfaced read-only on the
+    # admin change form). Captured only on a genuine new upload — see save().
+    # Existing rows whose file was already renamed can't be recovered and stay
+    # null (the backfill_original_filenames command fills the never-renamed
+    # ones whose on-disk name is still the original). See issue #1391.
+    original_pdf_filename = models.CharField(max_length=255, blank=True, null=True, editable=False)
+    original_raw_filename = models.CharField(max_length=255, blank=True, null=True, editable=False)
+
     # Project and keyword associations
     projects = models.ManyToManyField('Project', blank=True)
     projects.help_text = "Most artifacts are associated with only one project but "\
@@ -233,7 +244,35 @@ class Artifact(models.Model):
 
         first_time_saved = self.id is None
         _logger.debug(f"For artifact.id={self.id}, first_time_saved={first_time_saved}")
-        
+
+        # --- #1391: snapshot the original uploaded filename(s) ---
+        # The rename logic further down destroys the human-recognizable upload
+        # name (e.g. "MyTalk_v3_final.pptx"). We capture it here, but ONLY on a
+        # genuine new upload — never on a later edit or the m2m-triggered rename
+        # pass, where the file already carries the standardized name. A new
+        # upload is detectable two ways:
+        #   1. the first save of this artifact (the file is the just-uploaded
+        #      one), or
+        #   2. an edit where the form reported the file field as changed, i.e.
+        #      it is in the incoming update_fields BEFORE the rename block below
+        #      appends to that list.
+        # On an edit we must also add the original_* field to update_fields so
+        # it persists (the first save writes all fields anyway).
+        incoming_update_fields = kwargs.get('update_fields')
+        for file_attr, original_attr in (('pdf_file', 'original_pdf_filename'),
+                                         ('raw_file', 'original_raw_filename')):
+            file_field = getattr(self, file_attr)
+            if not file_field:
+                continue
+            is_new_upload = first_time_saved or (
+                incoming_update_fields is not None and file_attr in incoming_update_fields
+            )
+            if is_new_upload:
+                setattr(self, original_attr, os.path.basename(file_field.name))
+                _logger.debug(f"Captured {original_attr}={getattr(self, original_attr)} for artifact.id={self.id}")
+                if not first_time_saved:
+                    kwargs.setdefault('update_fields', []).append(original_attr)
+
         # Note that "update_fields" is custom filled by our save_model in ArtifactAdmin
         # It will never contain the m2m fields (e.g., authors, keywords, etc.) due to
         # how Django handles m2m fields. Instead, you can hook up an m2m_changed signal

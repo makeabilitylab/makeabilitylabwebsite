@@ -1,7 +1,7 @@
 from django.contrib import admin
 from website.models import Artifact
 from django.contrib.admin import widgets
-from django.utils.html import format_html
+from django.utils.html import format_html, format_html_join
 from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
 from website.utils.upload_validators import PDF_EXTENSIONS, RAW_FILE_EXTENSIONS
 from easy_thumbnails.files import get_thumbnailer
@@ -41,9 +41,10 @@ class ArtifactAdmin(admin.ModelAdmin):
     # (Django auto-applies DISTINCT for the M2M join). Subclasses may extend this.
     search_fields = ['title', 'forum_name', 'authors__first_name', 'authors__last_name']
 
-    # thumbnail_preview is a computed, read-only display (see below). It must be
-    # listed here so Django allows it in get_fieldsets() on the change form.
-    readonly_fields = ('thumbnail_preview',)
+    # thumbnail_preview and original_upload_filenames are computed, read-only
+    # displays (see below). They must be listed here so Django allows them in
+    # get_fieldsets() on the change form.
+    readonly_fields = ('thumbnail_preview', 'original_upload_filenames')
 
     fieldsets = [
         (None,                      {'fields': ['title', 'authors', 'date']}),
@@ -97,12 +98,45 @@ class ArtifactAdmin(admin.ModelAdmin):
     # Django auto-appends the trailing colon in the admin label.
     thumbnail_preview.short_description = 'PDF thumbnail'
 
+    def original_upload_filenames(self, obj):
+        """
+        Read-only provenance breadcrumb showing the human-recognizable name(s)
+        the file(s) had when uploaded (e.g. "MyTalk_v3_final.pptx"), before
+        ``Artifact.save()`` renamed them to the standardized scheme. Admin-only
+        — sourced from the ``original_pdf_filename`` / ``original_raw_filename``
+        model fields (issue #1391).
+
+        Shows a muted placeholder when neither is recorded: historical rows
+        whose file was already renamed can't be recovered (the original name is
+        gone), and PDF-less / raw-file-less artifacts simply have nothing to
+        show.
+        """
+        if obj is None:
+            return format_html('<span style="color:#666;">—</span>')
+        rows = []
+        if obj.original_pdf_filename:
+            rows.append(('PDF', obj.original_pdf_filename))
+        if obj.original_raw_filename:
+            rows.append(('Raw file', obj.original_raw_filename))
+        if not rows:
+            return format_html(
+                '<span style="color:#666;">Not recorded — uploaded before this '
+                'was tracked, or no file attached.</span>'
+            )
+        return format_html_join(
+            '', '<div><strong>{}:</strong> {}</div>', rows
+        )
+
+    # Django auto-appends the trailing colon in the admin label.
+    original_upload_filenames.short_description = 'Originally uploaded as'
+
     def get_fieldsets(self, request, obj=None):
         """
-        Inject the read-only ``thumbnail_preview`` into the 'Files' fieldset on
-        the change form only. Done here (rather than in each child admin's
-        ``fieldsets``) so Publication / Talk / Poster all get the preview.
-        On the Add form there is no saved thumbnail yet, so it is omitted.
+        Inject the read-only ``thumbnail_preview`` and ``original_upload_filenames``
+        displays into the 'Files' fieldset on the change form only. Done here
+        (rather than in each child admin's ``fieldsets``) so Publication / Talk /
+        Poster all get them. On the Add form there is no saved thumbnail or
+        captured upload name yet, so both are omitted.
         """
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
@@ -113,8 +147,9 @@ class ArtifactAdmin(admin.ModelAdmin):
         for name, opts in fieldsets:
             if name == 'Files':
                 fields = list(opts.get('fields', []))
-                if 'thumbnail_preview' not in fields:
-                    fields = fields + ['thumbnail_preview']
+                for extra in ('thumbnail_preview', 'original_upload_filenames'):
+                    if extra not in fields:
+                        fields = fields + [extra]
                 opts = {**opts, 'fields': fields}
             updated.append((name, opts))
         return updated
