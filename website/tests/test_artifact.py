@@ -296,6 +296,40 @@ class BackfillOriginalFilenamesTests(DatabaseTestCase):
         talk.refresh_from_db()
         self.assertIsNone(talk.original_pdf_filename)
 
+    def test_one_bad_row_does_not_abort_the_batch(self):
+        """
+        The backfill runs on every container start over the whole dataset, so a
+        single malformed row must not abort the run and leave every other row
+        untouched. A null ``date`` makes ``generate_filename`` raise
+        (``date.year``); before per-row isolation that exception propagated out
+        of the command. Here the bad row is skipped and a good legacy row is
+        still backfilled.
+        """
+        # Malformed: no authors (so save() skips the rename and accepts the
+        # null date) + a file, which makes it a backfill candidate that raises.
+        bad = TalkFactory(
+            title="Bad Row", forum_name="CHI", date=None,
+            pdf_file=_pdf("bad_upload.pdf"),
+        )
+        # A good legacy candidate with a non-standard (never-renamed) name.
+        good = TalkFactory(
+            title="Good Row", forum_name="CHI", date=date(2019, 1, 1),
+            pdf_file=_pdf("good_upload_final.pdf"),
+        )
+        good_name = os.path.basename(good.pdf_file.name)
+        Talk.objects.filter(pk__in=[bad.pk, good.pk]).update(
+            original_pdf_filename=None
+        )
+
+        # Must not raise despite the malformed row...
+        call_command("backfill_original_filenames")
+
+        good.refresh_from_db()
+        bad.refresh_from_db()
+        # ...and the good row is still processed.
+        self.assertEqual(good.original_pdf_filename, good_name)
+        self.assertIsNone(bad.original_pdf_filename)
+
 
 class OriginalUploadFilenamesDisplayTests(SimpleTestCase):
     """ArtifactAdmin.original_upload_filenames read-only display (issue #1391)."""
