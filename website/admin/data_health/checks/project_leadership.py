@@ -30,6 +30,7 @@ class ProjectLeadershipCheck(HealthCheck):
         'have all ended (no currently-active PI).'
     )
     group = 'Projects'
+    link_model = 'project'
     columns = [
         'id', 'name', 'short_name', 'is_visible', 'has_ended',
         'pi_count', 'active_pi_count', 'copi_count', 'pis', 'issues',

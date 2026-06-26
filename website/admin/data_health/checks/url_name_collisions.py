@@ -8,6 +8,9 @@ collision loop landed. Strictly read-only.
 """
 
 from collections import defaultdict
+from urllib.parse import urlencode
+
+from django.urls import reverse
 
 from website.admin.data_health.registry import HealthCheck, register_check
 from website.models import Person
@@ -45,3 +48,11 @@ class UrlNameCollisionsCheck(HealthCheck):
         # Worst offenders first, then alphabetical.
         rows.sort(key=lambda r: (-r['count'], r['url_name']))
         return rows
+
+    def row_link(self, row):
+        """Each row is a cluster of people (not a single object), so link to the
+        Person changelist searched for the offending url_name — surfacing the
+        rows to renumber/merge. (``url_name`` is in PersonAdmin.search_fields.)
+        """
+        url = reverse('admin:website_person_changelist')
+        return ('Open in admin →', f"{url}?{urlencode({'q': row['url_name']})}")

@@ -31,6 +31,7 @@ class DuplicatePeopleCheck(HealthCheck):
         'delete shell.'
     )
     group = 'People'
+    link_model = 'person'
     columns = [
         'cluster_key', 'id', 'first_name', 'middle_name', 'last_name',
         'url_name', 'email', 'personal_website', 'github', 'linkedin',

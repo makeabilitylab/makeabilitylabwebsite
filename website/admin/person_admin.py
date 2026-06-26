@@ -175,8 +175,10 @@ class PersonAdmin(ImageCroppingMixin, admin.ModelAdmin):
     # see: https://docs.djangoproject.com/en/1.11/ref/contrib/admin/#inlinemodeladmin-objects
     inlines = [PositionInline, ProjectRoleInline]
 
-    # We must define search_fields in order to use the autocomplete_fields option
-    search_fields = ['first_name', 'last_name',]
+    # We must define search_fields in order to use the autocomplete_fields option.
+    # url_name is included so the Data Health "url_name collisions" check can deep-link
+    # here with ?q=<url_name> to surface the colliding rows.
+    search_fields = ['first_name', 'last_name', 'url_name',]
 
     def get_search_results(self, request, queryset, search_term):
         """Role-filter the admin autocomplete results for advisor/mentor fields (#1126).

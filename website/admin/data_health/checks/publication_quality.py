@@ -27,6 +27,7 @@ class PublicationQualityCheck(HealthCheck):
         'and publications that share a normalized title (possible duplicates).'
     )
     group = 'Artifacts'
+    link_model = 'publication'
     columns = ['id', 'title', 'date', 'missing_fields', 'dup_title']
 
     def get_rows(self):

@@ -14,7 +14,7 @@ from django.contrib.auth.models import User
 from django.test import SimpleTestCase, override_settings
 from django.urls import reverse
 
-from website.admin.data_health.registry import get_check
+from website.admin.data_health.registry import REGISTRY, HealthCheck, get_check
 from website.tests.base import DatabaseTestCase
 from website.utils.name_utils import normalize_person_name, is_default_person_image
 
@@ -328,6 +328,24 @@ class MediaIntegrityCheckTests(DatabaseTestCase):
         # Orphan-file rows carry no id and must not produce a link.
         self.assertIsNone(
             check.row_link({"type": "Publication", "id": "", "status": "orphan-file"})
+        )
+
+
+class ActionLinkStandardizationTests(SimpleTestCase):
+    """Every registered check must give its rows an action link (issue #1405),
+    keeping admins one click from the fix. A check qualifies by either declaring
+    ``link_model`` (default deep-link to the object's admin change page) or
+    overriding ``row_link`` (custom target). This pins the standardization so a
+    future check can't silently ship without one."""
+
+    def test_every_check_provides_an_action_link(self):
+        offenders = [
+            c.slug for c in REGISTRY
+            if c.link_model is None
+            and type(c).row_link is HealthCheck.row_link
+        ]
+        self.assertEqual(
+            offenders, [], f"checks lacking a per-row action link: {offenders}"
         )
 
 

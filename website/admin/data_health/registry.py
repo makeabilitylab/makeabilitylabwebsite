@@ -13,6 +13,7 @@ import csv
 import io
 
 from django.http import HttpResponse
+from django.urls import reverse
 from django.utils import timezone
 
 
@@ -34,18 +35,36 @@ class HealthCheck:
     group = 'Other'
     #: Ordered column keys; used as table headers and the CSV header row.
     columns = []
+    #: Lowercase ``website`` model name (e.g. ``"publication"``) whose admin
+    #: change page each row links to. Leave ``None`` for checks that build
+    #: their own link (or none) by overriding :meth:`row_link`.
+    link_model = None
+    #: Row key holding the primary key used to build the default link.
+    link_id_key = 'id'
 
     def get_rows(self):
         """Return a list of row dicts (read-only). Override in subclasses."""
         raise NotImplementedError
 
     def row_link(self, row):
-        """Optional: a ``(label, url)`` pair to act on ``row`` from the detail
-        page, or ``None``. Lets a check wire its read-only findings to a fixer
-        elsewhere in the admin (e.g. the keyword-merge changelist). Default: no
-        link. Only affects the on-screen table — the CSV export is unchanged.
+        """Return an ``(label, url)`` pair to act on ``row`` from the detail
+        page, or ``None``.
+
+        Default behavior keeps every flagged row one click from its fix: when
+        the subclass sets :attr:`link_model` and the row carries a primary key
+        under :attr:`link_id_key`, deep-link to that object's admin change page.
+        Checks with a non-trivial target — clusters, per-row model types, or a
+        filtered changelist — override this instead (e.g. the keyword-merge
+        changelist). Only affects the on-screen table; the CSV export is
+        unchanged.
         """
-        return None
+        if not self.link_model:
+            return None
+        obj_id = row.get(self.link_id_key)
+        if not obj_id:
+            return None
+        url = reverse(f'admin:website_{self.link_model}_change', args=[obj_id])
+        return ('Open →', url)
 
     def count(self):
         """Number of flagged rows. Override for a cheaper count if available."""

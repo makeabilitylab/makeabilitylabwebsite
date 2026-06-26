@@ -18,6 +18,7 @@ class NewsHealthCheck(HealthCheck):
     title = 'News health'
     description = "News items missing a slug or an author."
     group = 'People'
+    link_model = 'news'
     columns = ['id', 'title', 'date', 'missing_slug', 'has_author']
 
     def get_rows(self):
