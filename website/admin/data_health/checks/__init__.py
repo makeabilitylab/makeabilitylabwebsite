@@ -9,6 +9,8 @@ from website.admin.data_health.checks import (  # noqa: F401
     media_integrity,
     publication_quality,
     unlinked_artifacts,
+    conference_papers_without_talk,
+    poster_papers_without_poster,
     project_health,
     project_leadership,
     position_integrity,
