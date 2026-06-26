@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.25.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "This release records the original uploaded filename of talk, poster, and publication files and shows it (admin-only) on the change form (#1391). When an editor uploads a file, the site renames it to a standardized Author_Title_VenueYear scheme, which previously discarded the human-recognizable upload name (e.g. MyTalk_v3_final.pptx). We now capture that original name and display it read-only as 'Originally uploaded as …' so editors have a provenance breadcrumb for confirming or debugging which file was attached. A one-time backfill also recovers the original names for the many historical talks and posters whose files were never renamed."
+ML_WEBSITE_VERSION = "2.25.1" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Diagnostic release for the legacy-filename re-standardization (#1390/#1401). The re-standardization step (entrypoint 4.10b) runs in --dry-run mode only: it logs to debug.log exactly which historical talk/poster/publication files it WOULD rename to the standardized Author_Title_VenueYear scheme, without touching disk or the database, so we can review the prod rename set before doing it for real. Also ships the hardened original-filename backfill (#1402), which makes the #1391 provenance capture resilient to per-row failures. No files are renamed in this release."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 

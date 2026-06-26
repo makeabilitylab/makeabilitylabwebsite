@@ -120,7 +120,11 @@ class Command(BaseCommand):
 
         if dry_run:
             new_name = Artifact.generate_filename(artifact)
-            _logger.debug(
+            # Log the per-row preview at INFO (not DEBUG) so it is captured on
+            # prod, where the file handler logs at INFO when DEBUG is off. This
+            # is what makes the dry-run reviewable in prod's debug.log. The real
+            # (non-dry-run) path below stays at DEBUG to avoid noise.
+            _logger.info(
                 f"[dry-run] Would re-standardize {model_name} id={artifact.pk} "
                 f"to '{new_name}' (pdf='{artifact.pdf_file.name if artifact.pdf_file else None}', "
                 f"raw='{artifact.raw_file.name if artifact.raw_file else None}')"
