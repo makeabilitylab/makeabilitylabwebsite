@@ -168,6 +168,14 @@ echo "4.10b Running 'python manage.py restandardize_artifact_filenames' to renam
 echo "******************************************"
 python manage.py restandardize_artifact_filenames
 
+echo "****************** STEP 4.10c/5: docker-entrypoint.sh ************************"
+echo "4.10c Running 'python manage.py repair_diverged_artifact_filenames' to recover artifacts whose files were renamed on disk but not in the DB (#1390 dotted-name bug)"
+echo "******************************************"
+# TEMPORARY (#1390): --dry-run logs which diverged artifacts WOULD be repaired,
+# touching nothing on disk or in the DB, so we can review on prod before doing it
+# for real. REMOVE --dry-run and redeploy to perform the recovery.
+python manage.py repair_diverged_artifact_filenames --dry-run
+
 # echo "****************** STEP 4.3/5: docker-entrypoint.sh ************************"
 # echo "4.3 Running 'python manage.py rename_person_images' to rename person images"
 # echo "******************************************"

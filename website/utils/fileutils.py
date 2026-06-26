@@ -202,9 +202,13 @@ def rename_artifact_in_db_and_filesystem(model, file_field, new_filename, update
     old_full_path = os.path.dirname(old_filename_with_full_path)
     old_filename_ext = os.path.splitext(old_filename_with_full_path)[1]
 
-    # Check if filename has an extension. If not, add one
-    if not os.path.splitext(new_filename)[1]:
-        # Add the extension to the new filename
+    # Ensure the new filename carries the original file's extension. We compare
+    # against the actual extension (endswith) rather than os.path.splitext():
+    # callers pass standardized names that legitimately contain dots (e.g.
+    # "...SciencesD.C.ArtScience...2014", "...Dr.SangMook2009"), and splitext
+    # would treat the text after the last dot as an "extension" and skip adding
+    # the real .pdf/.pptx — renaming the file extension-less on disk (#1390).
+    if old_filename_ext and not new_filename.lower().endswith(old_filename_ext.lower()):
         new_filename = new_filename + old_filename_ext
 
     # Use Django helper function to ensure a clean filename

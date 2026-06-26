@@ -401,12 +401,26 @@ class Artifact(models.Model):
                     # generate a thumbnail
                     if self.pdf_file.storage.exists(self.pdf_file.name):
                         thumbnail_local_path = os.path.dirname(thumbnail_filename_with_local_path)
-                        ml_fileutils.generate_thumbnail_for_pdf(self.pdf_file, self.thumbnail, thumbnail_local_path)
+                        # Thumbnail generation must never abort save(): by this
+                        # point any file rename above has already happened on
+                        # disk, so raising here would leave the DB out of sync
+                        # with the filesystem (this is exactly what corrupted 3
+                        # dotted-name talks in #1390). A missing/odd thumbnail is
+                        # cosmetic and self-heals on a later save; a half-renamed
+                        # artifact is not. So log and continue rather than raise.
+                        try:
+                            ml_fileutils.generate_thumbnail_for_pdf(self.pdf_file, self.thumbnail, thumbnail_local_path)
 
-                        # If 'update_fields' does not exist in kwargs, all fields are saved
-                        # Add 'thumbnail' to the update_fields list so that it gets updated in the db
-                        if 'update_fields' in kwargs:
-                            kwargs.setdefault('update_fields', []).append('thumbnail')
+                            # If 'update_fields' does not exist in kwargs, all fields are saved
+                            # Add 'thumbnail' to the update_fields list so that it gets updated in the db
+                            if 'update_fields' in kwargs:
+                                kwargs.setdefault('update_fields', []).append('thumbnail')
+                        except Exception:
+                            _logger.exception(
+                                f"Thumbnail generation failed for artifact.id={self.id} "
+                                f"(pdf={self.pdf_file.name}); continuing without it so "
+                                f"the save (and any preceding rename) still commits."
+                            )
                     else:
                         _logger.debug(f"Could not generate a thumbnail because the pdf {self.pdf_file.path} was not found in storage")
                 elif thumbnail_exists_in_storage:
