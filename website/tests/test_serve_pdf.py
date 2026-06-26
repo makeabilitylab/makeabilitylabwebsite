@@ -4,6 +4,17 @@ from unittest.mock import MagicMock, patch
 
 from django.test import SimpleTestCase
 
+from website.models import Publication
+from website.tests.base import DatabaseTestCase
+
+
+def _miss_original_fallback(mock_pub):
+    """Stub the #1401 original_pdf_filename fallback chain
+    (``filter(...).exclude(...).exclude(...).first()``) to miss, so tests
+    exercising the exact/fuzzy/404 paths fall through it as before."""
+    qs = mock_pub.objects.filter.return_value
+    qs.exclude.return_value.exclude.return_value.first.return_value = None
+
 
 class ServePdfTests(SimpleTestCase):
     """
@@ -56,9 +67,13 @@ class ServePdfTests(SimpleTestCase):
             return_value=None,
         ):
             MockPub.objects.filter.return_value.first.return_value = None
+            _miss_original_fallback(MockPub)
             with self.assertRaises(Http404):
                 serve_pdf(MagicMock(), ".pdf")
-            MockPub.objects.filter.assert_called_with(pdf_file__iendswith=".pdf")
+            # assert_any_call (not assert_called_with): the original-filename
+            # fallback issues a later filter() call, so the iendswith call is
+            # no longer the most recent one.
+            MockPub.objects.filter.assert_any_call(pdf_file__iendswith=".pdf")
 
     def test_no_exact_match_uses_fuzzy_redirect(self):
         """
@@ -72,6 +87,7 @@ class ServePdfTests(SimpleTestCase):
             return_value="publications/Froehlich2018Updated.pdf",
         ):
             MockPub.objects.filter.return_value.first.return_value = None
+            _miss_original_fallback(MockPub)
             response = serve_pdf(MagicMock(), "Froehlich2018Old.pdf")
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/media/publications/Froehlich2018Updated.pdf")
@@ -85,5 +101,34 @@ class ServePdfTests(SimpleTestCase):
             return_value=None,
         ):
             MockPub.objects.filter.return_value.first.return_value = None
+            _miss_original_fallback(MockPub)
             with self.assertRaises(Http404):
                 serve_pdf(MagicMock(), "NoSuchPaper.pdf")
+
+
+class ServePdfOriginalFilenameFallbackTests(DatabaseTestCase):
+    """
+    DB-backed test for the #1401 original_pdf_filename fallback: after a
+    publication PDF is re-standardized, a stale external link to its old
+    (original upload) filename must still resolve. serve_pdf matches the
+    requested name against the captured ``original_pdf_filename`` and redirects
+    to the current file — an exact resolution, before the difflib guess.
+    """
+
+    def test_old_filename_redirects_to_current_via_original_pdf_filename(self):
+        from website.views.serve_pdf import serve_pdf
+        pub = self.make_publication(title="Gamifying Green", year=2013)
+        # Simulate a re-standardized pub: current file is the standardized
+        # name; the old upload name is preserved in original_pdf_filename.
+        Publication.objects.filter(pk=pub.pk).update(
+            pdf_file="publications/Froehlich_GamifyingGreen_CHI2013.pdf",
+            original_pdf_filename="Gamifying_Green_yY7Jx99.pdf",
+        )
+
+        response = serve_pdf(MagicMock(), "Gamifying_Green_yY7Jx99.pdf")
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url,
+            "/media/publications/Froehlich_GamifyingGreen_CHI2013.pdf",
+        )

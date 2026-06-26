@@ -4,6 +4,8 @@ import os
 from datetime import date
 from unittest.mock import MagicMock, patch
 
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.test import SimpleTestCase
@@ -357,3 +359,99 @@ class OriginalUploadFilenamesDisplayTests(SimpleTestCase):
     def test_placeholder_when_nothing_recorded(self):
         html = self._render(pdf=None, raw=None)
         self.assertIn("Not recorded", html)
+
+
+# --- #1401: re-standardize legacy filenames -------------------------------
+
+
+class RestandardizeArtifactFilenamesTests(DatabaseTestCase):
+    """
+    Tests for the restandardize_artifact_filenames command (#1401), which
+    renames legacy never-renamed files to the Author_Title_Venue scheme by
+    reusing Artifact.save(). See also the #1391 capture tests above.
+    """
+
+    def _legacy_talk(self, last_name="Kim", title="My Talk", year=2019,
+                     base="Original_Upload_v2"):
+        """
+        Build a talk with authors but NON-standard files actually present on
+        disk (so the os.rename in save() has something to rename). The factory
+        auto-standardizes on create, so we drop real files at non-standard
+        paths and repoint the row at them, mimicking a never-renamed import.
+        Returns (talk, pdf_basename, raw_basename).
+        """
+        person = self.make_person(last_name=last_name)
+        talk = TalkFactory(title=title, forum_name="CHI",
+                           date=date(year, 1, 1), authors=[person])
+        pdf_name = default_storage.save(
+            f"talks/{base}.pdf", ContentFile(b"%PDF-1.4 x"))
+        raw_name = default_storage.save(
+            f"talks/{base}.pptx", ContentFile(b"PKx"))
+        Talk.objects.filter(pk=talk.pk).update(
+            pdf_file=pdf_name, raw_file=raw_name,
+            original_pdf_filename=os.path.basename(pdf_name),
+            original_raw_filename=os.path.basename(raw_name),
+        )
+        talk.refresh_from_db()
+        return talk, os.path.basename(pdf_name), os.path.basename(raw_name)
+
+    def test_renames_pdf_and_raw_preserving_original_and_idempotent(self):
+        talk, pdf_base, raw_base = self._legacy_talk()
+        orig_pdf = talk.original_pdf_filename
+        orig_raw = talk.original_raw_filename
+
+        call_command("restandardize_artifact_filenames")
+
+        talk.refresh_from_db()
+        # Both files renamed away from the original toward the standardized
+        # scheme (which contains the author last name), on disk and in the DB.
+        self.assertNotIn("Original_Upload", talk.pdf_file.name)
+        self.assertNotIn("Original_Upload", talk.raw_file.name)
+        self.assertIn("Kim", os.path.basename(talk.pdf_file.name))
+        self.assertIn("Kim", os.path.basename(talk.raw_file.name))
+        self.assertTrue(default_storage.exists(talk.pdf_file.name))
+        self.assertTrue(default_storage.exists(talk.raw_file.name))
+        # Provenance preserved (not clobbered by the rename).
+        self.assertEqual(talk.original_pdf_filename, orig_pdf)
+        self.assertEqual(talk.original_raw_filename, orig_raw)
+
+        # Idempotent: a second run leaves the now-standardized names alone.
+        pdf_after = talk.pdf_file.name
+        raw_after = talk.raw_file.name
+        call_command("restandardize_artifact_filenames")
+        talk.refresh_from_db()
+        self.assertEqual(talk.pdf_file.name, pdf_after)
+        self.assertEqual(talk.raw_file.name, raw_after)
+
+    def test_already_standardized_talk_is_untouched(self):
+        # A normally-created talk is auto-standardized on save, so the command
+        # should find nothing to do and leave its filename unchanged.
+        person = self.make_person(last_name="Lee")
+        talk = TalkFactory(title="Standard Talk", forum_name="CHI",
+                           date=date(2021, 1, 1), authors=[person])
+        before = talk.pdf_file.name
+
+        call_command("restandardize_artifact_filenames")
+
+        talk.refresh_from_db()
+        self.assertEqual(talk.pdf_file.name, before)
+
+    def test_malformed_row_is_skipped_and_batch_continues(self):
+        # A null-date talk can't form a standardized name; it must be skipped
+        # (not renamed, no crash) while a good legacy row in the same run is
+        # still re-standardized.
+        bad = TalkFactory(title="Bad Row", forum_name="CHI", date=None,
+                          pdf_file=_pdf("bad_upload.pdf"))
+        bad_name = bad.pdf_file.name
+        good, _, _ = self._legacy_talk(last_name="Park", title="Good Talk",
+                                       base="Good_Original_v1")
+
+        # Must not raise despite the malformed row.
+        call_command("restandardize_artifact_filenames")
+
+        good.refresh_from_db()
+        bad.refresh_from_db()
+        self.assertIn("Park", os.path.basename(good.pdf_file.name))
+        self.assertNotIn("Good_Original", good.pdf_file.name)
+        # The malformed row is left exactly as it was.
+        self.assertEqual(bad.pdf_file.name, bad_name)

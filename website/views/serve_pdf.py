@@ -45,7 +45,28 @@ def serve_pdf(request, filename):
         response['Content-Disposition'] = f'inline;filename={basename}'
         return response
 
-    # No exact match — try fuzzy fallback for stale external links.
+    # No exact match. Before the fuzzy guess, try an EXACT match on the
+    # captured original upload name (#1391/#1401): when a publication's PDF was
+    # re-standardized (Author_Title_Venue), its previous on-disk basename was
+    # saved to ``original_pdf_filename``. A stale external link still points at
+    # that old name, so match it there and redirect to the current file. This
+    # resolves renamed-paper links exactly, rather than relying on the difflib
+    # similarity guess below.
+    requested_basename = os.path.basename(filename)
+    renamed = (Publication.objects
+               .filter(original_pdf_filename__iexact=requested_basename)
+               .exclude(pdf_file="")
+               .exclude(pdf_file__isnull=True)
+               .first())
+    if renamed is not None:
+        current_basename = os.path.basename(renamed.pdf_file.name)
+        _logger.debug(
+            f"{filename} matched original_pdf_filename of pub id={renamed.pk}; "
+            f"redirecting to /media/publications/{current_basename}"
+        )
+        return redirect(f'/media/publications/{current_basename}')
+
+    # Still no match — try fuzzy fallback for stale external links.
     _logger.debug(f"{filename} not found exactly; trying fuzzy match")
     closest = get_closest_filename_from_database(filename, 0.7)
     if closest:

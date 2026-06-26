@@ -163,6 +163,11 @@ echo "4.10 Running 'python manage.py setup_admin_groups' to create/refresh the E
 echo "******************************************"
 python manage.py setup_admin_groups
 
+echo "****************** STEP 4.10b/5: docker-entrypoint.sh ************************"
+echo "4.10b Running 'python manage.py restandardize_artifact_filenames' to rename legacy talk/poster/pub files to the standardized scheme (#1401)"
+echo "******************************************"
+python manage.py restandardize_artifact_filenames
+
 # echo "****************** STEP 4.3/5: docker-entrypoint.sh ************************"
 # echo "4.3 Running 'python manage.py rename_person_images' to rename person images"
 # echo "******************************************"
