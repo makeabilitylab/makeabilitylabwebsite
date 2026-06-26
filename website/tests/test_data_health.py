@@ -349,6 +349,73 @@ class ActionLinkStandardizationTests(SimpleTestCase):
         )
 
 
+class CompanionArtifactCheckTests(DatabaseTestCase):
+    """Conference-paper-needs-talk and poster-needs-poster checks (issue #1405)."""
+
+    def test_conference_paper_without_talk_is_flagged_and_linked(self):
+        # make_publication defaults to a post-lab Conference paper with no talk.
+        pub = self.make_publication(title="Talkless Conference Paper")
+        check = get_check("conference-papers-without-talk")
+        rows = {r["id"]: r for r in check.get_rows()}
+        self.assertIn(pub.pk, rows)
+        label, url = check.row_link(rows[pub.pk])
+        self.assertEqual(label, "Open →")
+        self.assertEqual(
+            url, reverse("admin:website_publication_change", args=[pub.pk])
+        )
+
+    def test_conference_paper_with_talk_not_flagged(self):
+        talk = self.make_talk(title="The Talk")
+        pub = self.make_publication(title="Conference Paper With Talk", talk=talk)
+        ids = [r["id"] for r in get_check("conference-papers-without-talk").get_rows()]
+        self.assertNotIn(pub.pk, ids)
+
+    def test_extended_abstract_conference_paper_not_flagged(self):
+        pub = self.make_publication(
+            title="Short-form Conference Paper", extended_abstract=True
+        )
+        ids = [r["id"] for r in get_check("conference-papers-without-talk").get_rows()]
+        self.assertNotIn(pub.pk, ids)
+
+    def test_to_appear_conference_paper_not_flagged(self):
+        from datetime import date, timedelta
+
+        future = date.today() + timedelta(days=365)
+        pub = self.make_publication(title="Not Yet Presented", date=future)
+        ids = [r["id"] for r in get_check("conference-papers-without-talk").get_rows()]
+        self.assertNotIn(pub.pk, ids)
+
+    def test_prelab_conference_paper_not_flagged(self):
+        pub = self.make_publication(title="Grad School Paper", year=2010)
+        ids = [r["id"] for r in get_check("conference-papers-without-talk").get_rows()]
+        self.assertNotIn(pub.pk, ids)
+
+    def test_poster_publication_without_poster_is_flagged(self):
+        from website.models.publication import PubType
+
+        pub = self.make_publication(
+            title="Poster Pub, No Poster", pub_venue_type=PubType.POSTER
+        )
+        rows = {r["id"]: r for r in get_check("poster-papers-without-poster").get_rows()}
+        self.assertIn(pub.pk, rows)
+        # A poster-type pub must NOT be flagged by the talk check, and vice versa.
+        talk_ids = [r["id"] for r in get_check("conference-papers-without-talk").get_rows()]
+        self.assertNotIn(pub.pk, talk_ids)
+
+    def test_poster_publication_with_poster_not_flagged(self):
+        from website.models.publication import PubType
+        from website.tests.factories import PosterFactory
+
+        poster = PosterFactory(title="The Poster")
+        pub = self.make_publication(
+            title="Poster Pub With Poster",
+            pub_venue_type=PubType.POSTER,
+            poster=poster,
+        )
+        ids = [r["id"] for r in get_check("poster-papers-without-poster").get_rows()]
+        self.assertNotIn(pub.pk, ids)
+
+
 class DataHealthReadOnlyTests(DatabaseTestCase):
     def test_get_rows_does_not_mutate_db(self):
         from website.models import Person, Publication
@@ -358,7 +425,8 @@ class DataHealthReadOnlyTests(DatabaseTestCase):
         before = (Person.objects.count(), Publication.objects.count())
         for slug in (
             "duplicate-people", "url-name-collisions", "position-integrity",
-            "project-leadership",
+            "project-leadership", "conference-papers-without-talk",
+            "poster-papers-without-poster",
         ):
             get_check(slug).get_rows()
         after = (Person.objects.count(), Publication.objects.count())
