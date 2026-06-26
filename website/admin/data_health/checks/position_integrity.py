@@ -22,6 +22,8 @@ class PositionIntegrityCheck(HealthCheck):
         'themselves.'
     )
     group = 'People'
+    link_model = 'person'
+    link_id_key = 'person_id'
     columns = ['person_id', 'name', 'issue', 'detail']
 
     def get_rows(self):

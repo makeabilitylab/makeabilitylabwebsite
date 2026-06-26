@@ -23,6 +23,7 @@ class ProjectHealthCheck(HealthCheck):
         'site), with no currently-active members, or with no umbrella.'
     )
     group = 'Projects'
+    link_model = 'project'
     columns = [
         'id', 'name', 'short_name', 'is_visible', 'has_thumbnail',
         'has_publication', 'active_member_count', 'has_umbrella', 'issues',
