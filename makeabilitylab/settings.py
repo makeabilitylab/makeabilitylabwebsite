@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.25.2" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Prep release for the legacy-filename re-standardization (#1390). Normalizes Talk and Poster forum names by stripping an embedded trailing year (e.g. 'ASSETS 2016' becomes 'ASSETS'), which previously only ran on publications; this is why some standardized filenames doubled the year (e.g. '...ASSETS20162016'). The cleanup writes only the forum_name field (never renaming files), so the file re-standardization stays gated and continues to run in --dry-run mode in this release. No files are renamed in this release; the venue label shown on affected talk pages now omits the year (the date is shown separately, matching publications)."
+ML_WEBSITE_VERSION = "2.25.3" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Performs the legacy-filename re-standardization (#1390). After two diagnostic dry-runs and a forum-name cleanup (2.25.1/2.25.2), this release renames the ~213 historical talk/poster/publication files that were never converted to the standardized Author_TitleInTitleCase_VenueYear scheme (bulk-imported rows that never went through an authored save). The original uploaded names were already captured (#1391), so provenance is preserved and stale publication links still resolve via the serve_pdf fallback. Each rename is logged to debug.log; the step is idempotent, so subsequent deploys are no-ops."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 

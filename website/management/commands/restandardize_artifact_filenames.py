@@ -136,7 +136,11 @@ class Command(BaseCommand):
         # untouched (it only captures on a new upload, not a no-update_fields
         # save), so the provenance recorded by #1391 is preserved.
         artifact.save()
-        _logger.debug(
+        # INFO (not DEBUG) so the real rename is captured on prod, giving a
+        # per-file audit trail of the one-time backfill. Idempotent: once a row
+        # is standardized it stops matching, so this stays silent on later
+        # deploys rather than logging every artifact forever.
+        _logger.info(
             f"Re-standardized {model_name} id={artifact.pk} to "
             f"'{Artifact.generate_filename(artifact)}'."
         )

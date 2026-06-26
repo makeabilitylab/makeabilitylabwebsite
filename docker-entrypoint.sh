@@ -166,10 +166,7 @@ python manage.py setup_admin_groups
 echo "****************** STEP 4.10b/5: docker-entrypoint.sh ************************"
 echo "4.10b Running 'python manage.py restandardize_artifact_filenames' to rename legacy talk/poster/pub files to the standardized scheme (#1401)"
 echo "******************************************"
-# TEMPORARY (#1390): --dry-run only logs what WOULD be renamed, touching nothing
-# on disk or in the DB, so we can review the exact prod rename set in debug.log
-# before doing it for real. REMOVE --dry-run and redeploy to perform the rename.
-python manage.py restandardize_artifact_filenames --dry-run
+python manage.py restandardize_artifact_filenames
 
 # echo "****************** STEP 4.3/5: docker-entrypoint.sh ************************"
 # echo "4.3 Running 'python manage.py rename_person_images' to rename person images"
