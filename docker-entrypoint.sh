@@ -119,7 +119,7 @@ echo "******************************************"
 python manage.py auto_close_project_roles
 
 echo "****************** STEP 4.4/5: docker-entrypoint.sh ************************"
-echo "4.4 Running 'python manage.py remove_year_from_forum_name' to remove year from forum names"
+echo "4.4 Running 'python manage.py remove_year_from_forum_name' to strip trailing years from Talk/Poster/Publication forum names (#1390)"
 echo "******************************************"
 python manage.py remove_year_from_forum_name
 
