@@ -52,9 +52,124 @@ def is_image(filename):
                     "jpeg": "image/jpeg",
                     "png": "image/png",
                     "gif": "image/gif"}
-    
+
     filename = filename.lower()
     return filename[filename.rfind(".") + 1:] in ext2conttype
+
+
+def pad_image_to_square(image_file):
+    """Pad a non-square image to a centered square, returning a Django
+    ``ContentFile`` of the padded image and the matching full-image crop box.
+
+    Returns ``(ContentFile, "0,0,side,side")`` when padding was applied, or
+    ``None`` when the image is already square or can't be read (so the caller
+    leaves the original upload untouched).
+
+    Why this exists (#1410)
+    -----------------------
+    Several admin image fields (Award.badge today; Person/Sponsor are similar)
+    are cropped to a fixed 1:1 square via ``image_cropping`` + Cropper.js. For a
+    logo or emblem that isn't square, cropping to a square *chops off content*.
+    Editors usually want the opposite: keep the whole image and add blank
+    margins -- exactly what they'd otherwise do by hand in an external editor
+    before uploading. This does that padding for them, keeping the original
+    pixels centered (equal margins on the two short sides).
+
+    Why server-side (and not in the browser)
+    ----------------------------------------
+    The cropper's instant preview is client-side, so the obvious worry is that
+    padding on the server would make the preview lie. We deliberately keep the
+    *transform* here anyway: it's a ~15-line Pillow operation (Pillow is already
+    a dependency) versus a much fiddlier client-side canvas + file-replacement
+    dance, and it works regardless of the browser. The admin keeps an honest
+    preview cheaply with CSS ``object-fit: contain`` (see pad_to_square.js):
+    when "pad to square" is checked the interactive cropper is hidden -- there
+    is nothing to crop -- and a letterboxed preview shows what will be saved.
+    The caller then stores a full-image crop box so the existing
+    ``crop_corners`` render path is a no-op on the already-square file.
+
+    Background fill follows the format: PNG/WebP (alpha-capable) get
+    *transparent* margins so the badge blends onto any page background; JPEG
+    (no alpha) gets *white* margins. GIF/other are normalized to transparent
+    PNG. Output format/extension otherwise match the upload so the upload
+    validator and on-disk naming are unaffected.
+
+    A note on lossy formats: padding always requires re-encoding -- you can't
+    "insert" margin pixels into a compressed JPEG/WebP stream (it's stored as
+    DCT/compressed blocks, not addressable pixels), so Pillow decodes the whole
+    image to a bitmap, we paste it centered, and the *entire* image is encoded
+    again. We don't reuse the source's original compression scheme: JPEG is
+    re-encoded at a fixed quality=92 (Pillow's quality="keep" only works on an
+    unmodified image, and pasting onto a larger canvas modifies it), which costs
+    one extra, visually negligible generation of compression on the flat
+    logos/emblems badges usually are. WebP is saved lossless so a lossless
+    source isn't silently degraded; PNG/GIF are lossless anyway. Already-square
+    uploads return ``None`` and are never re-encoded at all.
+    """
+    from io import BytesIO
+    from PIL import Image, ImageOps
+    from django.core.files.base import ContentFile
+
+    name = getattr(image_file, "name", "") or "image"
+    try:
+        image_file.seek(0)
+        img = Image.open(image_file)
+        fmt = (img.format or "").upper()  # captured before transpose drops it
+        # Respect EXIF orientation so a phone photo isn't padded sideways; this
+        # also matches how the browser renders the <img> in the CSS preview.
+        img = ImageOps.exif_transpose(img)
+    except Exception:
+        # Unreadable/corrupt image: let the normal upload path (and the upload
+        # validator) handle it rather than crashing the save.
+        _logger.warning("pad_image_to_square: could not read %s; skipping", name)
+        return None
+
+    width, height = img.size
+    if width == height:
+        return None  # already square -> keep the original bytes untouched
+
+    side = max(width, height)
+    offset = ((side - width) // 2, (side - height) // 2)
+    orig_ext = os.path.splitext(name)[1].lstrip(".").lower()
+
+    if fmt in ("JPEG", "JPG"):
+        # No alpha channel: center the image on a white square.
+        base = img.convert("RGB")
+        canvas = Image.new("RGB", (side, side), (255, 255, 255))
+        canvas.paste(base, offset)
+        save_fmt = "JPEG"
+        ext = orig_ext if orig_ext in ("jpg", "jpeg") else "jpg"
+    elif fmt in ("PNG", "WEBP"):
+        # Alpha-capable: transparent margins so the badge blends on any bg.
+        base = img.convert("RGBA")
+        canvas = Image.new("RGBA", (side, side), (255, 255, 255, 0))
+        canvas.paste(base, offset, base)  # use alpha as its own paste mask
+        save_fmt = fmt
+        ext = orig_ext if orig_ext in ("png", "webp") else fmt.lower()
+    else:
+        # GIF or anything else: normalize to a transparent PNG.
+        base = img.convert("RGBA")
+        canvas = Image.new("RGBA", (side, side), (255, 255, 255, 0))
+        canvas.paste(base, offset, base)
+        save_fmt = "PNG"
+        ext = "png"
+
+    buffer = BytesIO()
+    save_kwargs = {"format": save_fmt}
+    if save_fmt == "JPEG":
+        # Lossy + block-based: padding re-encodes the whole image (see docstring).
+        # Fixed quality=92 -- the source's own quantization tables can't be
+        # reused once we paste onto a larger canvas.
+        save_kwargs["quality"] = 92
+    elif save_fmt == "WEBP":
+        # WebP defaults to lossy (quality 80); force lossless so a lossless
+        # source isn't silently degraded by the re-encode that padding requires.
+        save_kwargs["lossless"] = True
+    canvas.save(buffer, **save_kwargs)
+
+    base_name = os.path.splitext(os.path.basename(name))[0] or "badge"
+    content = ContentFile(buffer.getvalue(), name="{}.{}".format(base_name, ext))
+    return content, "0,0,{0},{0}".format(side)
 
 # The Star Wars LEGO figures that seed a Person's default headshot / easter-egg
 # image live under media/images/StarWarsFiguresFullSquare/<side>/. 'Rebels' is

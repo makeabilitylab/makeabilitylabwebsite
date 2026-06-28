@@ -1,0 +1,57 @@
+/* "Pad to square" preview for the Award badge admin (#1410). Pairs with
+   pad_to_square.js and website.utils.fileutils.pad_image_to_square.
+
+   The interactive cropper and the padded preview are mutually exclusive: the
+   cropper matters only when cropping, the preview only when padding. Toggling
+   the `pad-mode` class on the <form> swaps which one is shown — no JS timing
+   dependency on ml_cropper.js building the cropper. */
+.pad-preview { display: none; margin: 6px 0 10px 160px; }
+form.pad-mode .pad-preview { display: block; }
+form.pad-mode .ml-cropper { display: none; }
+
+.pad-preview__label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #555;
+  margin-bottom: 4px;
+}
+
+.pad-preview__box {
+  width: 245px;
+  height: 245px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff; /* white margins (JPEG / opaque) by default */
+  overflow: hidden;
+}
+
+/* Checkerboard reveals transparent margins (PNG/WebP/GIF), the way image
+   editors show transparency. */
+.pad-preview__box--checker {
+  background-color: #fff;
+  background-image:
+    linear-gradient(45deg, #e6e6e6 25%, transparent 25%),
+    linear-gradient(-45deg, #e6e6e6 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #e6e6e6 75%),
+    linear-gradient(-45deg, transparent 75%, #e6e6e6 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+}
+
+/* The honest part: object-fit:contain letterboxes the image inside the square
+   box exactly the way the server pads it (centered, equal margins). */
+.pad-preview__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.pad-preview__note {
+  font-size: 11px;
+  color: #777;
+  margin: 4px 0 0;
+  max-width: 245px;
+}
