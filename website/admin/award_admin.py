@@ -8,10 +8,27 @@ from easy_thumbnails.files import get_thumbnailer
 from image_cropping import ImageCroppingMixin
 from website.models import Award
 from website.admin.admin_site import ml_admin_site
+from website.utils.fileutils import pad_image_to_square
 from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
 
 
 class AwardAdminForm(forms.ModelForm):
+    # When set, a non-square badge upload is padded to a centered square on save
+    # instead of being cropped to one (#1410). See AwardAdmin.save_model and
+    # website.utils.fileutils.pad_image_to_square for the why/how; the live
+    # admin preview is driven by pad_to_square.js / pad_to_square.css.
+    pad_badge_to_square = forms.BooleanField(
+        required=False,
+        initial=True,
+        label="Pad badge to a square (don't crop)",
+        help_text=(
+            "If the uploaded badge isn't square, add blank margins to make it "
+            "square instead of cropping it — keeping the whole image, "
+            "centered. Margins are transparent for PNG/WebP and white for JPEG. "
+            "Uncheck to crop to a square with the tool above instead."
+        ),
+    )
+
     class Meta:
         model = Award
         fields = '__all__'
@@ -35,6 +52,12 @@ class AwardAdminForm(forms.ModelForm):
 class AwardAdmin(ImageCroppingMixin, admin.ModelAdmin):
     form = AwardAdminForm
 
+    class Media:
+        # Drives the "pad to square" toggle: hides the cropper and shows an
+        # object-fit:contain preview when padding is selected (#1410).
+        js = ("website/js/pad_to_square.js",)
+        css = {"all": ("website/css/pad_to_square.css",)}
+
     # get_recipient_names / get_project_names are methods on the Award model;
     # their column headers come from each method's short_description.
     list_display = ('title', 'get_display_thumbnail', 'organization', 'date',
@@ -54,6 +77,27 @@ class AwardAdmin(ImageCroppingMixin, admin.ModelAdmin):
     # they don't fire two queries per award on the changelist (#1346).
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related('recipients', 'projects')
+
+    def save_model(self, request, obj, form, change):
+        """Optionally pad a freshly uploaded badge to a centered square instead
+        of cropping it (#1410).
+
+        The badge is cropped to a 1:1 square on the public Awards page. When
+        "pad to square" is checked and a new, non-square badge was uploaded, we
+        pad it here with white/transparent margins (see ``pad_image_to_square``)
+        and store a full-image crop box, so the square comes from padding rather
+        than from chopping off content. When unchecked — or when the badge
+        wasn't changed — nothing happens and the interactive cropper above
+        behaves exactly as before.
+        """
+        if (form.cleaned_data.get('pad_badge_to_square')
+                and 'badge' in form.changed_data and obj.badge):
+            result = pad_image_to_square(obj.badge)
+            if result is not None:
+                content, box = result
+                obj.badge.save(content.name, content, save=False)
+                obj.badge_cropping = box
+        super().save_model(request, obj, form, change)
 
     def get_fieldsets(self, request, obj=None):
         # Built at request time so reverse() can resolve the Publications admin URL.
@@ -84,7 +128,8 @@ class AwardAdmin(ImageCroppingMixin, admin.ModelAdmin):
                 'fields': ['url', 'description'],
             }),
             ('Display', {
-                'fields': ['badge', 'badge_cropping', 'badge_alt_text'],
+                'fields': ['badge', 'pad_badge_to_square', 'badge_cropping',
+                           'badge_alt_text'],
                 'description': 'Optional. On the Awards page, faculty honors show a medal icon, '
                                'student awards show the recipient’s photo, and project awards '
                                'show the project thumbnail. Upload a badge/logo here to override '
