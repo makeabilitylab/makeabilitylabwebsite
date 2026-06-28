@@ -80,10 +80,11 @@
   border-radius: 50%;
 }
 
-/* Uploaded emblem/logo: show whole (don't crop) and let it sit on the page. */
+/* Uploaded emblem/logo: editors square-crop it in the admin (Award.badge_cropping),
+   so it fills the same square tile as the portrait/thumbnail anchors for a uniform
+   row. The shared .award-anchor-img rules already supply object-fit: cover + border. */
 .award-anchor-badge {
-  object-fit: contain;
-  border: none;
+  border-radius: var(--border-radius-md);
 }
 
 /* Faculty honors: medal icon in a soft circular chip. */

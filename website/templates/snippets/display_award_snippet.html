@@ -25,7 +25,8 @@ markup stays free of inline styles.
 
   <div class="award-anchor" aria-hidden="true">
     {% if kind == 'badge' %}
-      <img class="award-anchor-img award-anchor-badge" src="{{ award.badge.url }}" alt="">
+      <img class="award-anchor-img award-anchor-badge"
+           src="{% thumbnail award.badge 245x245 box=award.badge_cropping crop upscale %}" alt="">
     {% elif kind == 'portrait' %}
       {% with person=award.get_portrait_person %}
       <img class="award-anchor-img award-anchor-portrait"

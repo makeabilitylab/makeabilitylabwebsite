@@ -1,7 +1,11 @@
+import os
+
 from django import forms
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
+from easy_thumbnails.files import get_thumbnailer
+from image_cropping import ImageCroppingMixin
 from website.models import Award
 from website.admin.admin_site import ml_admin_site
 from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
@@ -28,12 +32,12 @@ class AwardAdminForm(forms.ModelForm):
 
 
 @admin.register(Award, site=ml_admin_site)
-class AwardAdmin(admin.ModelAdmin):
+class AwardAdmin(ImageCroppingMixin, admin.ModelAdmin):
     form = AwardAdminForm
 
     # get_recipient_names / get_project_names are methods on the Award model;
     # their column headers come from each method's short_description.
-    list_display = ('title', 'organization', 'date',
+    list_display = ('title', 'get_display_thumbnail', 'organization', 'date',
                     'get_recipient_names', 'get_project_names', 'award_type')
 
     list_filter = ('award_type', 'date')
@@ -80,7 +84,7 @@ class AwardAdmin(admin.ModelAdmin):
                 'fields': ['url', 'description'],
             }),
             ('Display', {
-                'fields': ['badge', 'badge_alt_text'],
+                'fields': ['badge', 'badge_cropping', 'badge_alt_text'],
                 'description': 'Optional. On the Awards page, faculty honors show a medal icon, '
                                'student awards show the recipient’s photo, and project awards '
                                'show the project thumbnail. Upload a badge/logo here to override '
@@ -98,3 +102,18 @@ class AwardAdmin(admin.ModelAdmin):
         if db_field.name == 'recipients' or db_field.name == 'projects':
             kwargs['widget'] = SortedFilteredSelectMultiple()
         return super().formfield_for_manytomany(db_field, request, **kwargs)
+
+    def get_display_thumbnail(self, obj):
+        """Square preview of the uploaded badge (with its crop applied) in the
+        changelist, mirroring the SponsorAdmin/NewsAdmin logo columns. Awards
+        without a custom badge fall back to a medal icon on the public page, so
+        there's nothing to show here."""
+        if obj.badge and os.path.isfile(obj.badge.path):
+            thumbnailer = get_thumbnailer(obj.badge)
+            options = {'size': (50, 50), 'crop': True, 'box': obj.badge_cropping}
+            thumbnail_url = thumbnailer.get_thumbnail(options).url
+            return format_html('<img src="{}" height="50" width="50" '
+                               'style="object-fit: cover; border-radius: 5%;"/>', thumbnail_url)
+        return '—'
+
+    get_display_thumbnail.short_description = 'Badge'

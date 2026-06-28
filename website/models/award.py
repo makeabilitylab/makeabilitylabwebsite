@@ -1,6 +1,8 @@
 from django.db import models
 from sortedm2m.fields import SortedManyToManyField
 
+from image_cropping import ImageRatioField
+
 from website.utils.fileutils import UniquePathAndRename
 from website.utils.upload_validators import validate_image_upload
 
@@ -71,6 +73,14 @@ class Award(models.Model):
                        "organization's logo). Faculty honors otherwise show a medal icon. "
                        "Student awards default to the recipient's photo and project awards to "
                        "the project thumbnail; uploading a badge overrides those.")
+
+    # Square crop box for the badge, applied on the public Awards page so every
+    # anchor (badge, portrait, project thumbnail, medal) reads as a uniform square
+    # tile. Stored as an "x1,y1,x2,y2" string; the admin shows a Cropper.js preview
+    # before the first save (same pattern as Person.cropping / Sponsor.icon_cropping).
+    badge_cropping = ImageRatioField('badge', '245x245', size_warning=True)
+    badge_cropping.help_text = ("Crop the badge to a square using the preview above "
+                                "(no need to save first). Keeps award anchors uniform.")
 
     badge_alt_text = models.CharField(max_length=255, blank=True, null=True)
     badge_alt_text.help_text = "Alt text for the badge image. Defaults to the award title if left blank."
