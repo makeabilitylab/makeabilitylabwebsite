@@ -172,6 +172,13 @@ class PersonCropMetadataTests(SimpleTestCase):
         self.assertIn("cropping", Person.ratio_fields)
         self.assertIn("easter_egg_crop", Person.ratio_fields)
 
+    def test_award_badge_exposes_crop_fields(self):
+        """Award.badge gained a square crop so its public anchor stays uniform."""
+        from website.models import Award
+
+        self.assertIn("badge", Award.crop_fields)
+        self.assertIn("badge_cropping", Award.ratio_fields)
+
 
 # --- Admin uses the Cropper.js widget, not Jcrop ---------------------------
 
@@ -204,5 +211,18 @@ class CropWidgetTests(SimpleTestCase):
         request = MagicMock()
         request.user = AnonymousUser()
         db_field = Person._meta.get_field("image")
+        formfield = admin_obj.formfield_for_dbfield(db_field, request)
+        self.assertIsInstance(formfield.widget, CropImageWidget)
+
+    def test_award_admin_badge_field_uses_crop_widget(self):
+        from django.contrib.auth.models import AnonymousUser
+        from image_cropping.widgets import CropImageWidget
+        from website.models import Award
+        from website.admin.admin_site import ml_admin_site
+
+        admin_obj = ml_admin_site._registry[Award]
+        request = MagicMock()
+        request.user = AnonymousUser()
+        db_field = Award._meta.get_field("badge")
         formfield = admin_obj.formfield_for_dbfield(db_field, request)
         self.assertIsInstance(formfield.widget, CropImageWidget)
