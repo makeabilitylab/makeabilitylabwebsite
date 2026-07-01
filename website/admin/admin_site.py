@@ -73,7 +73,7 @@ class MakeabilityLabAdminSite(admin.AdminSite):
         ),
         (
             "Administration",
-            ["Group", "User"],
+            ["Group", "User", "LogEntry"],
             None
         ),
     ]

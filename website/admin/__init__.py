@@ -56,6 +56,7 @@ from . import (
     banner_admin,
     grant_admin,
     keyword_admin,
+    logentry_admin,
     news_admin,
     person_admin,
     photo_admin,
