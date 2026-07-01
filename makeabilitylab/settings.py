@@ -105,6 +105,23 @@ CSRF_TRUSTED_ORIGINS = ['https://*.cs.washington.edu']
 # See: https://docs.djangoproject.com/en/2.0/topics/logging/
 # https://lincolnloop.com/blog/django-logging-right-way/
 # For the log format, see: https://stackoverflow.com/a/26276689/388117
+#
+# Log-file path (issue #1283): this used to be hardcoded to /code/media/debug.log,
+# an absolute container-specific path. Django evaluates LOGGING at django.setup(),
+# so on any host lacking that exact directory (e.g. GitHub Actions CI) startup died
+# with FileNotFoundError before a single request/test ran. Derive the path from
+# BASE_DIR instead (still under media/ so it stays reachable via the intentional
+# /logs/ URL — see docs/DEPLOYMENT.md), allow an ML_LOG_DIR env override, and if
+# the directory can't be created or written, fall back to a NullHandler so a bad
+# log path never crashes startup.
+LOG_DIR = os.environ.get('ML_LOG_DIR', os.path.join(BASE_DIR, 'media'))
+LOG_FILE = os.path.join(LOG_DIR, 'debug.log')
+try:
+    os.makedirs(LOG_DIR, exist_ok=True)
+    _LOG_TO_FILE = os.access(LOG_DIR, os.W_OK)
+except OSError:
+    _LOG_TO_FILE = False
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -125,20 +142,23 @@ LOGGING = {
         },
     },
     'handlers': {
+        # The file handler writes LOG_FILE (media/debug.log by default), which
+        # lands in the bind-mounted web root and is intentionally exposed via the
+        # /logs/ URL per docs/DEPLOYMENT.md (Jason Howe's design — convenient
+        # remote debugging in exchange for some info disclosure). To shrink that
+        # exposure in production, we log at INFO when DEBUG is off, but keep
+        # DEBUG-level file logging in local dev where DEBUG is on and the file
+        # isn't publicly reachable. If the log dir isn't writable (_LOG_TO_FILE
+        # is False), degrade to a NullHandler so startup never dies (issue #1283).
         'file': {
-            # The file handler writes /code/media/debug.log, which lands in the
-            # bind-mounted web root and is intentionally exposed via the /logs/
-            # URL per docs/DEPLOYMENT.md (Jason Howe's design — convenient
-            # remote debugging in exchange for some info disclosure). To shrink
-            # that exposure in production, we log at INFO when DEBUG is off,
-            # but keep DEBUG-level file logging in local dev where DEBUG is on
-            # and the file isn't publicly reachable.
             'level': 'DEBUG' if DEBUG else 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/code/media/debug.log',
+            'filename': LOG_FILE,
             'maxBytes': 1024*1024*5,  # 5 MB
             'backupCount': 6,
             'formatter': 'verbose',  # can switch between verbose and simple
+        } if _LOG_TO_FILE else {
+            'class': 'logging.NullHandler',
         },
         'console': {
             'level': 'DEBUG',
