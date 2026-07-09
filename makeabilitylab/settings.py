@@ -114,13 +114,28 @@ CSRF_TRUSTED_ORIGINS = ['https://*.cs.washington.edu']
 # /logs/ URL — see docs/DEPLOYMENT.md), allow an ML_LOG_DIR env override, and if
 # the directory can't be created or written, fall back to a NullHandler so a bad
 # log path never crashes startup.
+def _log_dir_is_writable(log_dir):
+    """Return True if ``log_dir`` exists (or can be created) and looks writable.
+
+    Used to decide whether the file log handler is active or degrades to a
+    NullHandler so a bad log path never crashes ``django.setup()`` (issue #1283).
+
+    Note: this checks the *directory*, not the eventual log file. A dir that is
+    writable but already holds a root-owned, read-only ``debug.log`` would still
+    let RotatingFileHandler raise on open — an edge case we accept, since it is
+    strictly better than the previous unconditional crash and matches the real
+    deploy model (media/ is owned by the app's own user).
+    """
+    try:
+        os.makedirs(log_dir, exist_ok=True)
+        return os.access(log_dir, os.W_OK)
+    except OSError:
+        return False
+
+
 LOG_DIR = os.environ.get('ML_LOG_DIR', os.path.join(BASE_DIR, 'media'))
 LOG_FILE = os.path.join(LOG_DIR, 'debug.log')
-try:
-    os.makedirs(LOG_DIR, exist_ok=True)
-    _LOG_TO_FILE = os.access(LOG_DIR, os.W_OK)
-except OSError:
-    _LOG_TO_FILE = False
+_LOG_TO_FILE = _log_dir_is_writable(LOG_DIR)
 
 LOGGING = {
     'version': 1,
