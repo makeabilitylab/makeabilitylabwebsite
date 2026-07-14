@@ -105,6 +105,38 @@ CSRF_TRUSTED_ORIGINS = ['https://*.cs.washington.edu']
 # See: https://docs.djangoproject.com/en/2.0/topics/logging/
 # https://lincolnloop.com/blog/django-logging-right-way/
 # For the log format, see: https://stackoverflow.com/a/26276689/388117
+#
+# Log-file path (issue #1283): this used to be hardcoded to /code/media/debug.log,
+# an absolute container-specific path. Django evaluates LOGGING at django.setup(),
+# so on any host lacking that exact directory (e.g. GitHub Actions CI) startup died
+# with FileNotFoundError before a single request/test ran. Derive the path from
+# BASE_DIR instead (still under media/ so it stays reachable via the intentional
+# /logs/ URL — see docs/DEPLOYMENT.md), allow an ML_LOG_DIR env override, and if
+# the directory can't be created or written, fall back to a NullHandler so a bad
+# log path never crashes startup.
+def _log_dir_is_writable(log_dir):
+    """Return True if ``log_dir`` exists (or can be created) and looks writable.
+
+    Used to decide whether the file log handler is active or degrades to a
+    NullHandler so a bad log path never crashes ``django.setup()`` (issue #1283).
+
+    Note: this checks the *directory*, not the eventual log file. A dir that is
+    writable but already holds a root-owned, read-only ``debug.log`` would still
+    let RotatingFileHandler raise on open — an edge case we accept, since it is
+    strictly better than the previous unconditional crash and matches the real
+    deploy model (media/ is owned by the app's own user).
+    """
+    try:
+        os.makedirs(log_dir, exist_ok=True)
+        return os.access(log_dir, os.W_OK)
+    except OSError:
+        return False
+
+
+LOG_DIR = os.environ.get('ML_LOG_DIR', os.path.join(BASE_DIR, 'media'))
+LOG_FILE = os.path.join(LOG_DIR, 'debug.log')
+_LOG_TO_FILE = _log_dir_is_writable(LOG_DIR)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -125,20 +157,23 @@ LOGGING = {
         },
     },
     'handlers': {
+        # The file handler writes LOG_FILE (media/debug.log by default), which
+        # lands in the bind-mounted web root and is intentionally exposed via the
+        # /logs/ URL per docs/DEPLOYMENT.md (Jason Howe's design — convenient
+        # remote debugging in exchange for some info disclosure). To shrink that
+        # exposure in production, we log at INFO when DEBUG is off, but keep
+        # DEBUG-level file logging in local dev where DEBUG is on and the file
+        # isn't publicly reachable. If the log dir isn't writable (_LOG_TO_FILE
+        # is False), degrade to a NullHandler so startup never dies (issue #1283).
         'file': {
-            # The file handler writes /code/media/debug.log, which lands in the
-            # bind-mounted web root and is intentionally exposed via the /logs/
-            # URL per docs/DEPLOYMENT.md (Jason Howe's design — convenient
-            # remote debugging in exchange for some info disclosure). To shrink
-            # that exposure in production, we log at INFO when DEBUG is off,
-            # but keep DEBUG-level file logging in local dev where DEBUG is on
-            # and the file isn't publicly reachable.
             'level': 'DEBUG' if DEBUG else 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/code/media/debug.log',
+            'filename': LOG_FILE,
             'maxBytes': 1024*1024*5,  # 5 MB
             'backupCount': 6,
             'formatter': 'verbose',  # can switch between verbose and simple
+        } if _LOG_TO_FILE else {
+            'class': 'logging.NullHandler',
         },
         'console': {
             'level': 'DEBUG',
