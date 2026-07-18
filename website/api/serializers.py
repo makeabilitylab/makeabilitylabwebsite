@@ -178,7 +178,6 @@ class GrantSerializer(serializers.ModelSerializer):
             "title",
             "sponsor",
             "grant_id",
-            "funding_amount",
             "grant_url",
             "start_date",
             "end_date",

@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.27.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Adds a public, read-only REST API (#1268) at /api/v1/ so external sites can treat the Makeability Lab website as the source of truth for already-public content instead of duplicating it. Endpoints cover publications (filterable by project, author, year, and venue type -- e.g. ?author=jonfroehlich&page_size=5 for a 'recent publications' widget), publicly-visible projects, grants, and people, plus project sub-resources for a project's publications, grants, people, and leadership (PIs/Co-PIs/leads) -- the exact data Project Sidewalk needs to render its funding, team, and papers from one place. Built on the already-bundled Django REST Framework: read-only (GET only), no auth and no throttle since the data is already public, paginated with a tunable page_size (max 100), absolute media/page URLs in every payload, and cross-origin requests enabled on /api/ only (via a tiny in-repo CORS middleware) so a browser-side widget can fetch it directly. Personal email is deliberately not exposed. Full reference: docs/API.md."
+ML_WEBSITE_VERSION = "2.27.1" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Stops the public REST API (#1268) from exposing grant funding amounts: the /api/v1/ grants payload no longer includes the funding_amount field. The amount is still stored on the model and visible to editors in /admin (and in the sponsor funding totals) -- it is simply not served over the API. Personal email was already excluded; this extends that same 'already-public data only' principle to keep dollar figures out of the public API. Full reference: docs/API.md."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 

@@ -84,8 +84,8 @@ sub-resources are keyed by `short_name`:
 ### Grants — `GET /api/v1/grants/`
 
 Filters: `?project=<short_name>`, `?sponsor=<sponsor short_name>`. Each grant
-includes its `sponsor`, `funding_amount`, `grant_id`, `grant_url`, and the
-`projects` it funds.
+includes its `sponsor`, `grant_id`, `grant_url`, and the `projects` it funds.
+Funding amounts are intentionally **not** exposed by the API.
 
 ### People — `GET /api/v1/people/`
 

@@ -172,7 +172,8 @@ class ApiTestCase(DatabaseTestCase):
         self.assertEqual(body["count"], 1)
         grant = body["results"][0]
         self.assertEqual(grant["sponsor"]["short_name"], "NSF")
-        self.assertEqual(grant["funding_amount"], 500000)
+        # Funding amounts are intentionally not exposed by the public API.
+        self.assertNotIn("funding_amount", grant)
 
     def test_project_people_subresource(self):
         resp = self.client.get("/api/v1/projects/projectsidewalk/people/")
