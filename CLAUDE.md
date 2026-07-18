@@ -100,6 +100,23 @@ Custom admin organization lives in `website/admin/admin_site.py` (`MakeabilityLa
 - `/media/publications/<filename>` is served by the custom `serve_pdf` view (not Django's static serve), which does **fuzzy filename matching** so stale external links to renamed PDFs still resolve. Don't replace it with a plain static route.
 - In `DEBUG=True`, `/media/...` is also served by Django's `serve()`. In production, the web server handles `/media/` directly.
 
+### Public REST API (`website/api/`, #1268)
+
+A public, **read-only** DRF API at `/api/v1/` over already-public content
+(publications, projects, grants, people, project leadership). Built on the
+already-bundled `djangorestframework` (previously an unused dependency). Code
+lives in the `website/api/` package (`serializers.py`, `views.py`, `urls.py`,
+`middleware.py`), mounted by the **root** URLconf (`makeabilitylab/urls.py`),
+configured by the `REST_FRAMEWORK` block in `settings.py`. GET-only, no auth, no
+throttle (data is already public); paginated (`?page_size=`, max 100); every
+payload uses absolute URLs. Cross-origin requests are allowed on `/api/` only
+via the in-repo `ApiCorsMiddleware` (no `django-cors-headers` dependency).
+`Person.email` is intentionally not serialized. Projects are gated to
+`is_visible=True`; the people list is scoped to actual members (those with a
+Position). When adding a resource, follow the existing viewset/serializer
+pattern and keep `v1` fields additive-only (breaking changes → `v2`). Full
+reference: `docs/API.md`. Tests: `website/tests/test_api.py`.
+
 ### Settings, config, and environment
 
 - **Compose files per environment:** the servers run `docker-compose.yml` (test *and* prod — `makeabilitylabwebsite/rebuildanddeploy.sh` runs `docker compose up` with no `-f`, so it always picks the default `docker-compose.yml`; it only varies per-host env vars). Local dev runs `docker-compose-local-dev.yml` (passed explicitly with `-f`). `docker-compose-local-dev.yml` is **never** used on the servers.

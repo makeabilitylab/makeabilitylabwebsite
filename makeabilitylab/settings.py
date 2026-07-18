@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.26.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Improves image handling on the Awards admin badge plus a Data Health polish. The badge field now has an instant client-side preview and square (1:1) cropping via Cropper.js (#1408), and a new 'Pad badge to a square (don't crop)' option (#1410) that pads a non-square upload to a centered square -- white margins for JPEG, transparent for PNG/WebP -- instead of cropping off content, so editors no longer need to pad logos in an external tool before uploading. Padding is done server-side with Pillow: it re-encodes JPEG at quality 92, saves WebP lossless so a lossless source isn't degraded, and leaves already-square uploads untouched; a full-image crop box is stored so the public render isn't cropped. Also standardizes the per-row action links across the Data Health checks (#1405)."
+ML_WEBSITE_VERSION = "2.27.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Adds a public, read-only REST API (#1268) at /api/v1/ so external sites can treat the Makeability Lab website as the source of truth for already-public content instead of duplicating it. Endpoints cover publications (filterable by project, author, year, and venue type -- e.g. ?author=jonfroehlich&page_size=5 for a 'recent publications' widget), publicly-visible projects, grants, and people, plus project sub-resources for a project's publications, grants, people, and leadership (PIs/Co-PIs/leads) -- the exact data Project Sidewalk needs to render its funding, team, and papers from one place. Built on the already-bundled Django REST Framework: read-only (GET only), no auth and no throttle since the data is already public, paginated with a tunable page_size (max 100), absolute media/page URLs in every payload, and cross-origin requests enabled on /api/ only (via a tiny in-repo CORS middleware) so a browser-side widget can fetch it directly. Personal email is deliberately not exposed. Full reference: docs/API.md."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
@@ -259,7 +259,27 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # Adds permissive CORS headers to /api/ responses only (#1268). Read-only,
+    # already-public data -- see website/api/middleware.py.
+    'website.api.middleware.ApiCorsMiddleware',
 ]
+
+# Django REST Framework config for the public read-only API (#1268).
+# Public data, so no auth and no throttle (per the #1268 scoping decision); the
+# browsable HTML API is enabled only in DEBUG (JSON-only in prod).
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [],
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny'],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 25,
+    'DEFAULT_RENDERER_CLASSES': (
+        ['rest_framework.renderers.JSONRenderer',
+         'rest_framework.renderers.BrowsableAPIRenderer']
+        if DEBUG else
+        ['rest_framework.renderers.JSONRenderer']
+    ),
+}
 
 # A string representing the full Python import path to your root URLconf.
 # See: https://docs.djangoproject.com/en/4.2/ref/settings/#root-urlconf

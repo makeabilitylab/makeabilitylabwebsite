@@ -50,6 +50,10 @@ urlpatterns = [
     # the top-level ./robots.txt to change crawler rules or the Sitemap line.
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 
+    # Public read-only REST API (#1268). Declared before the website.urls
+    # include so the app's catch-all patterns can't shadow /api/.
+    path('api/', include('website.api.urls')),
+
     #Info on how to route root to website was found here http://stackoverflow.com/questions/7580220/django-urls-howto-map-root-to-app
     re_path(r'', include('website.urls')),
     # re_path(r'^admin/', admin.site.urls),
