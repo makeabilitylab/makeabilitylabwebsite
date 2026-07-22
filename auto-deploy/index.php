@@ -86,16 +86,64 @@ if($gitSystem && $HOSTNAME && $OPERATION){
 	}
 	
 	//Make sure we're doing a TAG or BRANCH as appropriate
-	if(($incomingOp == "tags" && $OPERATION = "TAG") || ($incomingOp == "heads" && $refs[2] == $OPERATION)){
-		//possibly need to clone it or pull it first:
-		
-	        $out = do_clone_or_pull(DEPLOY_KEY,$url,$deploy_to, $OPERATION);
-	        _debug("$out\n");
-		
-	        //The following will ensure we're either on the right branch, or the right tag:
-	        $out = do_checkout_branch($req,$deploy_to, $OPERATION);
-	        _debug("$out\n");
-	
+	// NOTE: the first clause below is `==`, not `=`. It was previously an
+	// assignment, which made the condition true for EVERY tag push regardless of
+	// how this host is configured -- and, worse, reassigned $OPERATION to "TAG"
+	// for the rest of the request. The effect was that a tag push drove a
+	// branch-tracking host (our test server) down the tag code path, leaving its
+	// checkout detached at that tag.
+	if(($incomingOp == "tags" && $OPERATION == "TAG") || ($incomingOp == "heads" && $refs[2] == $OPERATION)){
+
+	        // Order matters, and it differs between the two cases:
+	        //
+	        //  - TAG: fetch first. The tag usually doesn't exist locally yet, so
+	        //    checking it out before fetching would fail.
+	        //  - BRANCH: check out the branch first. `git pull` aborts outright
+	        //    from a detached HEAD ("You are not currently on a branch"), and
+	        //    the old fetch-then-checkout order could never recover from that:
+	        //    the pull failed, the local branch stayed behind, and the deploy
+	        //    ran anyway (see below) -- so the container rebuilt from stale
+	        //    source while looking freshly deployed.
+	        $repo_exists = is_dir($deploy_to) && file_exists($deploy_to . "/.git");
+
+	        if($OPERATION != "TAG" && $repo_exists){
+	                $out = do_checkout_branch($req,$deploy_to, $OPERATION);
+	                _debug("$out\n");
+
+	                $out = do_clone_or_pull(DEPLOY_KEY,$url,$deploy_to, $OPERATION);
+	                _debug("$out\n");
+	        }
+	        else{
+	                //possibly need to clone it or pull it first:
+	                $out = do_clone_or_pull(DEPLOY_KEY,$url,$deploy_to, $OPERATION);
+	                _debug("$out\n");
+
+	                //The following will ensure we're either on the right branch, or the right tag:
+	                $out = do_checkout_branch($req,$deploy_to, $OPERATION);
+	                _debug("$out\n");
+	        }
+
+		// Guard against silently deploying stale source. Historically the
+		// container build below ran unconditionally after checkout/pull, so a
+		// failed pull (detached HEAD, merge conflict, network/ssh error) would
+		// rebuild from STALE source while looking freshly deployed. Confirm the
+		// checked-out HEAD is the commit that was actually pushed ($req['after'])
+		// before building. If the payload carries no usable SHA we fall back to
+		// deploying (preserves prior behavior rather than risk blocking a deploy).
+		// (On rapid successive pushes HEAD may already be a *newer* commit than
+		// this event's 'after'; skipping here is safe -- the newer push's hook
+		// deploys the newer state.)
+		$expected_sha = isset($req['after']) ? strtolower(trim($req['after'])) : "";
+		$has_sha = ($expected_sha !== "" && !preg_match('/^0+$/', $expected_sha));
+		$head_sha = strtolower(trim(shell_exec("bash -c 'cd $deploy_to; git rev-parse HEAD' 2>/dev/null")));
+
+		if($has_sha && $head_sha !== "" && $head_sha !== $expected_sha){
+			_log("ABORTING DEPLOY: checked-out HEAD ($head_sha) does not match the ".
+			     "pushed commit ($expected_sha) -- the pull/checkout above likely ".
+			     "failed. Refusing to rebuild the container from stale source.\n");
+			exit;
+		}
+
 		//If we're using docker, then do someother stuff
                 if($USE_DOCKER){
 
@@ -195,7 +243,7 @@ function do_checkout_branch($req, $deployto, $operation){
  */
 function determine_branch_name( $request) {
     // push request, branch is in request[ref]
-    if (isset($reqest['ref'])) {
+    if (isset($request['ref'])) {
         // strip out the refs/head nonsense -- doesn't look like bare
         // branch is listed anywhere in the request
         return preg_replace("|refs/heads/|", "", $request['ref']);
@@ -280,18 +328,24 @@ function do_clone($key,$url,$path) {
  * Log a message, only here to make some messages easy to turn off.
  */
 function _trace($message) {
-    if ($trace = TRUE) {
+    // NOTE: was `if ($trace = TRUE)` -- an assignment, not a comparison, so it
+    // was always true and could never be turned off (same =/== footgun fixed in
+    // the deploy condition above). Default to on to preserve prior behavior;
+    // config.php can silence it with `define('AUTODEPLOY_TRACE', false);`.
+    if (defined('AUTODEPLOY_TRACE') ? AUTODEPLOY_TRACE : TRUE) {
         _log($message);
-    } 
+    }
 }
 
 /**
  * Log a message, only here to make some messages easy to turn off.
  */
 function _debug($message) {
-    if ($debug = TRUE) {
+    // Same fix as _trace(): `$debug = TRUE` was an assignment, always true.
+    // Default on; silence via `define('AUTODEPLOY_DEBUG', false);` in config.php.
+    if (defined('AUTODEPLOY_DEBUG') ? AUTODEPLOY_DEBUG : TRUE) {
         _log($message);
-    } 
+    }
 }
 
 /**
