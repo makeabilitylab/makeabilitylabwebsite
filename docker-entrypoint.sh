@@ -176,6 +176,11 @@ echo "******************************************"
 # for real. REMOVE --dry-run and redeploy to perform the recovery.
 python manage.py repair_diverged_artifact_filenames --dry-run
 
+echo "****************** STEP 4.10d/5: docker-entrypoint.sh ************************"
+echo "4.10d Running 'python manage.py seed_sidewalk_participants' to backfill Project Sidewalk contributors from the NSF Crowd+AI annual reports"
+echo "******************************************"
+python manage.py seed_sidewalk_participants
+
 # echo "****************** STEP 4.3/5: docker-entrypoint.sh ************************"
 # echo "4.3 Running 'python manage.py rename_person_images' to rename person images"
 # echo "******************************************"
