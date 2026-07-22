@@ -120,8 +120,15 @@ article-specific structural OG tags.
         <!-- Featured Image -->
         <figure class="news-item-figure">
           {% if news_item.image %}
-          <img class="img-responsive news-item-image" 
-               src="{% thumbnail news_item.image 750x350 box=news_item.cropping crop=True upscale=True detail=True %}" 
+          {% comment %}
+          Render size MUST share the crop aspect ratio (NEWS_THUMBNAIL_SIZE = 5:3).
+          If it doesn't, easy_thumbnails applies a second center-crop on top of the
+          editor's crop box, silently trimming the top/bottom of the chosen crop
+          (e.g. clipping people's heads). 750x450 == 5:3, so the rendered image is
+          exactly what the admin crop preview shows. See test_news_crop_aspect.py.
+          {% endcomment %}
+          <img class="img-responsive news-item-image"
+               src="{% thumbnail news_item.image 750x450 box=news_item.cropping crop=True upscale=True detail=True %}"
                alt="{{ news_item.alt_text }}">
           {% else %}
           <img class="img-responsive news-item-image" 
