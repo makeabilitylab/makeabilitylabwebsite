@@ -123,6 +123,27 @@ if($gitSystem && $HOSTNAME && $OPERATION){
 	                _debug("$out\n");
 	        }
 
+		// Guard against silently deploying stale source. Historically the
+		// container build below ran unconditionally after checkout/pull, so a
+		// failed pull (detached HEAD, merge conflict, network/ssh error) would
+		// rebuild from STALE source while looking freshly deployed. Confirm the
+		// checked-out HEAD is the commit that was actually pushed ($req['after'])
+		// before building. If the payload carries no usable SHA we fall back to
+		// deploying (preserves prior behavior rather than risk blocking a deploy).
+		// (On rapid successive pushes HEAD may already be a *newer* commit than
+		// this event's 'after'; skipping here is safe -- the newer push's hook
+		// deploys the newer state.)
+		$expected_sha = isset($req['after']) ? strtolower(trim($req['after'])) : "";
+		$has_sha = ($expected_sha !== "" && !preg_match('/^0+$/', $expected_sha));
+		$head_sha = strtolower(trim(shell_exec("bash -c 'cd $deploy_to; git rev-parse HEAD' 2>/dev/null")));
+
+		if($has_sha && $head_sha !== "" && $head_sha !== $expected_sha){
+			_log("ABORTING DEPLOY: checked-out HEAD ($head_sha) does not match the ".
+			     "pushed commit ($expected_sha) -- the pull/checkout above likely ".
+			     "failed. Refusing to rebuild the container from stale source.\n");
+			exit;
+		}
+
 		//If we're using docker, then do someother stuff
                 if($USE_DOCKER){
 
@@ -222,7 +243,7 @@ function do_checkout_branch($req, $deployto, $operation){
  */
 function determine_branch_name( $request) {
     // push request, branch is in request[ref]
-    if (isset($reqest['ref'])) {
+    if (isset($request['ref'])) {
         // strip out the refs/head nonsense -- doesn't look like bare
         // branch is listed anywhere in the request
         return preg_replace("|refs/heads/|", "", $request['ref']);
@@ -307,18 +328,24 @@ function do_clone($key,$url,$path) {
  * Log a message, only here to make some messages easy to turn off.
  */
 function _trace($message) {
-    if ($trace = TRUE) {
+    // NOTE: was `if ($trace = TRUE)` -- an assignment, not a comparison, so it
+    // was always true and could never be turned off (same =/== footgun fixed in
+    // the deploy condition above). Default to on to preserve prior behavior;
+    // config.php can silence it with `define('AUTODEPLOY_TRACE', false);`.
+    if (defined('AUTODEPLOY_TRACE') ? AUTODEPLOY_TRACE : TRUE) {
         _log($message);
-    } 
+    }
 }
 
 /**
  * Log a message, only here to make some messages easy to turn off.
  */
 function _debug($message) {
-    if ($debug = TRUE) {
+    // Same fix as _trace(): `$debug = TRUE` was an assignment, always true.
+    // Default on; silence via `define('AUTODEPLOY_DEBUG', false);` in config.php.
+    if (defined('AUTODEPLOY_DEBUG') ? AUTODEPLOY_DEBUG : TRUE) {
         _log($message);
-    } 
+    }
 }
 
 /**
