@@ -128,7 +128,7 @@ reference: `docs/API.md`. Tests: `website/tests/test_api.py`.
 
 ### Container startup side effects (`docker-entrypoint.sh`)
 
-Every container start runs, in order: `collectstatic` → `makemigrations` → `migrate` → `makemigrations website` → `migrate website` → `delete_unused_files` → `thumbnail_cleanup` → `generate_slugs_for_old_news_items` → `auto_close_project_roles` → `remove_year_from_forum_name` → `fix_sortedm2m_columns` → `runserver 0.0.0.0:8000`. The repeated `makemigrations website` step is intentional (fixes first-run issues). If you add a one-shot data migration command under `website/management/commands/`, decide whether it belongs in this startup sequence.
+Every container start runs, in order: `collectstatic` → `makemigrations` → `migrate` → `makemigrations website` → `migrate website` → `delete_unused_files` → `thumbnail_cleanup` → `generate_slugs_for_old_news_items` → `auto_close_project_roles` → `remove_year_from_forum_name` → `fix_sortedm2m_columns` → `seed_sidewalk_participants` → `runserver 0.0.0.0:8000`. The repeated `makemigrations website` step is intentional (fixes first-run issues). If you add a one-shot data migration command under `website/management/commands/`, decide whether it belongs in this startup sequence.
 
 ### Image handling
 
