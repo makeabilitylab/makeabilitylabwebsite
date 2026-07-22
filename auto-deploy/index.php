@@ -86,16 +86,43 @@ if($gitSystem && $HOSTNAME && $OPERATION){
 	}
 	
 	//Make sure we're doing a TAG or BRANCH as appropriate
-	if(($incomingOp == "tags" && $OPERATION = "TAG") || ($incomingOp == "heads" && $refs[2] == $OPERATION)){
-		//possibly need to clone it or pull it first:
-		
-	        $out = do_clone_or_pull(DEPLOY_KEY,$url,$deploy_to, $OPERATION);
-	        _debug("$out\n");
-		
-	        //The following will ensure we're either on the right branch, or the right tag:
-	        $out = do_checkout_branch($req,$deploy_to, $OPERATION);
-	        _debug("$out\n");
-	
+	// NOTE: the first clause below is `==`, not `=`. It was previously an
+	// assignment, which made the condition true for EVERY tag push regardless of
+	// how this host is configured -- and, worse, reassigned $OPERATION to "TAG"
+	// for the rest of the request. The effect was that a tag push drove a
+	// branch-tracking host (our test server) down the tag code path, leaving its
+	// checkout detached at that tag.
+	if(($incomingOp == "tags" && $OPERATION == "TAG") || ($incomingOp == "heads" && $refs[2] == $OPERATION)){
+
+	        // Order matters, and it differs between the two cases:
+	        //
+	        //  - TAG: fetch first. The tag usually doesn't exist locally yet, so
+	        //    checking it out before fetching would fail.
+	        //  - BRANCH: check out the branch first. `git pull` aborts outright
+	        //    from a detached HEAD ("You are not currently on a branch"), and
+	        //    the old fetch-then-checkout order could never recover from that:
+	        //    the pull failed, the local branch stayed behind, and the deploy
+	        //    ran anyway (see below) -- so the container rebuilt from stale
+	        //    source while looking freshly deployed.
+	        $repo_exists = is_dir($deploy_to) && file_exists($deploy_to . "/.git");
+
+	        if($OPERATION != "TAG" && $repo_exists){
+	                $out = do_checkout_branch($req,$deploy_to, $OPERATION);
+	                _debug("$out\n");
+
+	                $out = do_clone_or_pull(DEPLOY_KEY,$url,$deploy_to, $OPERATION);
+	                _debug("$out\n");
+	        }
+	        else{
+	                //possibly need to clone it or pull it first:
+	                $out = do_clone_or_pull(DEPLOY_KEY,$url,$deploy_to, $OPERATION);
+	                _debug("$out\n");
+
+	                //The following will ensure we're either on the right branch, or the right tag:
+	                $out = do_checkout_branch($req,$deploy_to, $OPERATION);
+	                _debug("$out\n");
+	        }
+
 		//If we're using docker, then do someother stuff
                 if($USE_DOCKER){
 
