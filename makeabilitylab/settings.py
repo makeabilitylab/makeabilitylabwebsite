@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.27.1" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Stops the public REST API (#1268) from exposing grant funding amounts: the /api/v1/ grants payload no longer includes the funding_amount field. The amount is still stored on the model and visible to editors in /admin (and in the sponsor funding totals) -- it is simply not served over the API. Personal email was already excluded; this extends that same 'already-public data only' principle to keep dollar figures out of the public API. Full reference: docs/API.md."
+ML_WEBSITE_VERSION = "2.27.2" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Backfills Project Sidewalk contributors from the four NSF Crowd+AI annual project reports (award #2125087, Oct 2021 - Sep 2025), so that /api/v1/projects/sidewalk/people/ is complete now that Project Sidewalk treats it as the single source of truth for who worked on PS. Diffing those spreadsheets against the live API found 74 unique participants, 29 of whom were missing or unlinked: 10 had a member page but no Sidewalk project role (making them invisible to the API), and 17 -- every one from the UIC subaward -- had no person record at all. A new idempotent seed_sidewalk_participants management command, run at container start, creates only what is absent: it never modifies an existing person, never adds a position to someone who already has one, and never touches an existing project role, so editor corrections in /admin survive every redeploy. Also adds a 'Project Coordinator' title for non-student staff who run a project's operations rather than its research, and bumps Pillow to 12.3.0."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
