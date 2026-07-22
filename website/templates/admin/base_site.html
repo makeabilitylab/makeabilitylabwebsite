@@ -15,6 +15,8 @@
 {% endblock %}
 
 {% block userlinks %}
+  <a href="{% url 'view_project_people' %}" target="_blank" rel="noopener">Team Members</a> /
+  {% if user.is_superuser %}<a href="{% url 'admin:admin_logentry_changelist' %}">Activity Log</a> /{% endif %}
   <a href="https://github.com/makeabilitylab/makeabilitylabwebsite" target="_blank" rel="noopener">GitHub</a> /
   {{ block.super }}
 {% endblock %}
