@@ -76,7 +76,7 @@ pypdf==6.13.3
 # Pillow - Python Imaging Library fork, for image manipulation
 # Note: Pillow 10.0+ dropped Python 3.7 support; 11.0+ dropped Python 3.8
 # See: https://pypi.org/project/Pillow/
-Pillow==12.2.0
+Pillow==12.3.0
 
 # Image cropping in the admin is provided by the in-repo `image_cropping/`
 # package (a fork of django-image-cropping), NOT a PyPI dependency. We dropped
