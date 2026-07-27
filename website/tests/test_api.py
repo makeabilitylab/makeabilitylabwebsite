@@ -189,6 +189,16 @@ class ApiTestCase(DatabaseTestCase):
         self.assertEqual(lead_roles, {"PI", "Co-PI", "Student Lead"})
 
     # ---- position held during a project role (#1426) ------------------------
+    #
+    # These pin the *wire contract* -- that the resolved Position reaches the
+    # payload, and at what cost. The resolution rules themselves (which Position
+    # wins for overlapping / gapped / predating dates) are unit-tested directly
+    # against the model in test_project_role.py, where a failure isolates.
+
+    def _count_queries(self, url):
+        with CaptureQueriesContext(connection) as ctx:
+            self.assertEqual(self.client.get(url).status_code, 200)
+        return len(ctx)
 
     def _make_role_holder(self, first_name, positions, role_start,
                           role_end=None):
@@ -236,35 +246,6 @@ class ApiTestCase(DatabaseTestCase):
         self.assertEqual(record["position_school"], "University of Maryland")
         self.assertEqual(record["position_school_abbreviated"], "UMD")
 
-    def test_project_people_position_falls_back_to_earliest(self):
-        """A role that predates every recorded Position (data drift) reports the
-        earliest position rather than nothing."""
-        person = self._make_role_holder(
-            "Early",
-            positions=[(Title.PHD_STUDENT, "University of Washington",
-                        date(2020, 1, 1), None)],
-            role_start=date(2018, 1, 1),
-        )
-        record = self._role_record(person)
-        self.assertEqual(record["position_title"], "PhD Student")
-        self.assertEqual(record["position_school_abbreviated"], "UW")
-
-    def test_project_people_position_falls_back_to_prior_when_in_gap(self):
-        """A role starting between two positions reports the most recent one that
-        had already started."""
-        person = self._make_role_holder(
-            "Gap",
-            positions=[
-                (Title.UGRAD, "University of Maryland",
-                 date(2014, 1, 1), date(2015, 1, 1)),
-                (Title.PHD_STUDENT, "University of Washington",
-                 date(2019, 1, 1), None),
-            ],
-            role_start=date(2017, 1, 1),
-        )
-        record = self._role_record(person)
-        self.assertEqual(record["position_title"], "Undergrad")
-
     def test_project_people_position_null_without_position(self):
         """self.past_lead has a project role but no Position at all."""
         record = self._role_record(self.past_lead)
@@ -293,11 +274,6 @@ class ApiTestCase(DatabaseTestCase):
                 role_start=date(2016, 1, 1),
             )
         self.assertEqual(self._count_queries(url), baseline)
-
-    def _count_queries(self, url):
-        with CaptureQueriesContext(connection) as ctx:
-            self.assertEqual(self.client.get(url).status_code, 200)
-        return len(ctx)
 
     def test_project_leadership_subresource(self):
         resp = self.client.get("/api/v1/projects/projectsidewalk/leadership/")

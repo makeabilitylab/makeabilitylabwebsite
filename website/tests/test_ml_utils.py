@@ -48,6 +48,30 @@ class GetSchoolAbbreviatedTests(SimpleTestCase):
         # " of " is dropped before acronyming, so "University of Foo Bar" -> UFB.
         self.assertEqual(get_school_abbreviated("University of Foo Bar"), "UFB")
 
+    def test_maryland_college_park_is_umd(self):
+        self.assertEqual(
+            get_school_abbreviated("University of Maryland, College Park"), "UMD"
+        )
+
+    def test_washington_in_another_school_name_is_not_uw(self):
+        # The special case matches "university of washington", not a bare
+        # "washington" substring, which used to hand UW's initials to every
+        # school with Washington in its name. These acronym instead.
+        self.assertEqual(get_school_abbreviated("Washington State University"), "WSU")
+        self.assertEqual(get_school_abbreviated("George Washington University"), "GWU")
+        self.assertNotEqual(
+            get_school_abbreviated("Washington University in St. Louis"), "UW"
+        )
+
+    def test_umbc_is_not_umd(self):
+        # Same bug on the Maryland side: UMBC is its own school.
+        self.assertEqual(
+            get_school_abbreviated("University of Maryland Baltimore County"), "UMBC"
+        )
+        self.assertEqual(
+            get_school_abbreviated("University of Maryland, Baltimore County"), "UMBC"
+        )
+
     def test_uic_acronym(self):
         # A real affiliation on the site (the Project Sidewalk UIC subaward).
         self.assertEqual(

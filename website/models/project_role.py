@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.functional import cached_property
 from datetime import date, datetime, timedelta
 
 class LeadProjectRoleTypes(models.TextChoices):
@@ -70,8 +71,9 @@ class ProjectRole(models.Model):
         else:
             return f"{self.start_date.year}-{self.end_date.year}"
 
-    def get_position_during_role(self):
-        """Returns the Position this person held when they started this project role.
+    @cached_property
+    def position_during_role(self):
+        """The Position this person held when they started this project role.
 
         This is deliberately *not* the person's current title: a 2015 undergrad
         who is now a professor should read "Undergrad" next to a 2015 project
@@ -89,30 +91,41 @@ class ProjectRole(models.Model):
            position -- data drift, common for older imported roles).
         4. ``None`` only if the person has no Positions at all.
 
-        Filters ``position_set`` in Python rather than issuing a query, so a
-        caller with ``prefetch_related('person__position_set')`` (e.g. the API's
-        project-people endpoint) resolves this with zero extra queries. This
+        Ties on ``start_date`` (a person holding two positions that begin the
+        same day -- concurrent Member/Collaborator rows, or a duplicate entry)
+        break on ``pk``, so the answer is stable across requests: ``position_set``
+        has no ``Meta.ordering``, so without an explicit tie-break the winner
+        would follow whatever order the DB happened to return.
+
+        A ``cached_property`` (like :meth:`Person.get_current_title`) because the
+        API reads it three times per row -- for title, school, and abbreviated
+        school. Filters ``position_set`` in Python rather than issuing a query,
+        so a caller with ``prefetch_related('person__position_set')`` (e.g. the
+        API's project-people endpoint) resolves it with zero extra queries. This
         mirrors :meth:`Person.get_latest_position`; positions-per-person is tiny.
 
         Example:
-            >>> role.get_position_during_role().title
+            >>> role.position_during_role.title
             'Undergrad'
         """
         positions = list(self.person.position_set.all())
         if not positions:
             return None
 
+        # Sorts rather than max()/min() so the pk tie-break is stated once.
+        positions.sort(key=lambda p: (p.start_date, p.pk))
+
         containing = [p for p in positions
                       if p.start_date <= self.start_date
                       and (p.end_date is None or p.end_date >= self.start_date)]
         if containing:
-            return max(containing, key=lambda p: p.start_date)
+            return containing[-1]
 
         already_started = [p for p in positions if p.start_date <= self.start_date]
         if already_started:
-            return max(already_started, key=lambda p: p.start_date)
+            return already_started[-1]
 
-        return min(positions, key=lambda p: p.start_date)
+        return positions[0]
 
     def get_pi_status_index(self):
         if self.lead_project_role is not None and self.lead_project_role in self.LEAD_PROJECT_ROLE_MAPPING:

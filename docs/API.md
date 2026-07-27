@@ -77,9 +77,10 @@ sub-resources are keyed by `short_name`:
   `role` is the editor-written free-text description of what they did; the
   `position_*` fields are what they **were at the time** — the title and school
   from the Position they held when the role started, so a 2015 stint reads
-  `"Undergrad"` / `"UMD"` even if that person is a professor today. If the role
-  began between (or before) recorded positions, the nearest one is used; all
-  three are `null` for someone with no Position on record.
+  `"Undergrad"` / `"UMD"` even if that person is a professor today. Where the
+  role's start date falls outside every recorded position, the most recent
+  position already begun by then is used — or, for a role predating them all,
+  the earliest. All three are `null` for someone with no Position on record.
 - `GET /api/v1/projects/<short_name>/leadership/` — **all** leadership across
   all time (current *and* past), grouped:
   `{ pis, co_pis, student_leads, postdoc_leads, research_scientist_leads }`,

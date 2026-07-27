@@ -312,22 +312,17 @@ class ProjectRoleSerializer(serializers.ModelSerializer):
     def get_is_active(self, obj):
         return obj.is_active()
 
-    def _position(self, obj):
-        # Resolved once per role and stashed on the instance: three fields read
-        # it, and ProjectRole has no cached_property for it (see the model
-        # helper's note on riding the view's prefetch).
-        if not hasattr(obj, "_api_position"):
-            obj._api_position = obj.get_position_during_role()
-        return obj._api_position
-
+    # ProjectRole.position_during_role is a cached_property, so the three fields
+    # below resolve it once per row (and ride the view's prefetch -- see the
+    # model helper).
     def get_position_title(self, obj):
-        position = self._position(obj)
+        position = obj.position_during_role
         return position.title if position else None
 
     def get_position_school(self, obj):
-        position = self._position(obj)
+        position = obj.position_during_role
         return position.school if position else None
 
     def get_position_school_abbreviated(self, obj):
-        position = self._position(obj)
+        position = obj.position_during_role
         return position.get_school_abbreviated() if position else None
