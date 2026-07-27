@@ -10,6 +10,9 @@ plus a few direct model creates for the relationships the factories don't cover
 
 from datetime import date
 
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
+
 from website.models import Grant, Position, ProjectRole, Sponsor
 from website.models.position import Title
 from website.models.project_role import LeadProjectRoleTypes
@@ -185,6 +188,93 @@ class ApiTestCase(DatabaseTestCase):
         lead_roles = {r["lead_project_role"] for r in body["results"]}
         self.assertEqual(lead_roles, {"PI", "Co-PI", "Student Lead"})
 
+    # ---- position held during a project role (#1426) ------------------------
+    #
+    # These pin the *wire contract* -- that the resolved Position reaches the
+    # payload, and at what cost. The resolution rules themselves (which Position
+    # wins for overlapping / gapped / predating dates) are unit-tested directly
+    # against the model in test_project_role.py, where a failure isolates.
+
+    def _count_queries(self, url):
+        with CaptureQueriesContext(connection) as ctx:
+            self.assertEqual(self.client.get(url).status_code, 200)
+        return len(ctx)
+
+    def _make_role_holder(self, first_name, positions, role_start,
+                          role_end=None):
+        """Create a person with the given ``(title, school, start, end)``
+        positions and a single ProjectRole on self.project. Created per-test
+        rather than in setUp so the fixture counts other tests assert stay put.
+        """
+        person = self.make_person(first_name=first_name, last_name="Holder")
+        for title, school, start, end in positions:
+            Position.objects.create(
+                person=person, title=title, school=school,
+                start_date=start, end_date=end,
+            )
+        ProjectRole.objects.create(
+            person=person, project=self.project,
+            start_date=role_start, end_date=role_end,
+        )
+        return person
+
+    def _role_record(self, person):
+        """Fetch the /people/ record for a person (they hold exactly one role)."""
+        results = self.client.get(
+            "/api/v1/projects/projectsidewalk/people/?page_size=100"
+        ).json()["results"]
+        matches = [r for r in results if r["person"]["id"] == person.id]
+        self.assertEqual(len(matches), 1)
+        return matches[0]
+
+    def test_project_people_exposes_position_during_role(self):
+        """The roll call wants what someone *was* at the time, not their current
+        title: an undergrad who later did an MS reads 'Undergrad', 'UMD'."""
+        person = self._make_role_holder(
+            "Multi",
+            positions=[
+                (Title.UGRAD, "University of Maryland",
+                 date(2015, 1, 1), date(2017, 5, 31)),
+                (Title.MS_STUDENT, "University of Washington",
+                 date(2017, 6, 1), date(2019, 6, 1)),
+            ],
+            role_start=date(2016, 1, 1),
+            role_end=date(2018, 1, 1),
+        )
+        record = self._role_record(person)
+        self.assertEqual(record["position_title"], "Undergrad")
+        self.assertEqual(record["position_school"], "University of Maryland")
+        self.assertEqual(record["position_school_abbreviated"], "UMD")
+
+    def test_project_people_position_null_without_position(self):
+        """self.past_lead has a project role but no Position at all."""
+        record = self._role_record(self.past_lead)
+        self.assertIsNone(record["position_title"])
+        self.assertIsNone(record["position_school"])
+        self.assertIsNone(record["position_school_abbreviated"])
+
+    def test_project_people_does_not_scale_queries_with_rows(self):
+        """N+1 guard: resolving each role's Position must ride on the view's
+        prefetch, so query count is flat as the roster grows (#1426)."""
+        url = "/api/v1/projects/projectsidewalk/people/?page_size=100"
+        for i in range(3):
+            self._make_role_holder(
+                f"Small{i}",
+                positions=[(Title.PHD_STUDENT, "University of Washington",
+                            date(2015, 1, 1), None)],
+                role_start=date(2016, 1, 1),
+            )
+        baseline = self._count_queries(url)
+
+        for i in range(10):
+            self._make_role_holder(
+                f"Big{i}",
+                positions=[(Title.PHD_STUDENT, "University of Washington",
+                            date(2015, 1, 1), None)],
+                role_start=date(2016, 1, 1),
+            )
+        self.assertEqual(self._count_queries(url), baseline)
+
     def test_project_leadership_subresource(self):
         resp = self.client.get("/api/v1/projects/projectsidewalk/leadership/")
         body = resp.json()
@@ -221,6 +311,17 @@ class ApiTestCase(DatabaseTestCase):
         resp = self.client.get(f"/api/v1/people/{self.jon.url_name}/")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()["name"], "Jon Froehlich")
+
+    def test_person_detail_exposes_current_school_and_department(self):
+        """Affiliation for the team cards -- both come from the latest Position,
+        like the already-exposed current_title (#1426)."""
+        body = self.client.get(f"/api/v1/people/{self.jon.url_name}/").json()
+        self.assertEqual(body["current_title"], "Professor")
+        self.assertEqual(body["current_school"], "University of Washington")
+        self.assertEqual(
+            body["current_department"],
+            "Allen School of Computer Science and Engineering",
+        )
 
     def test_person_email_not_exposed(self):
         resp = self.client.get(f"/api/v1/people/{self.jon.url_name}/")

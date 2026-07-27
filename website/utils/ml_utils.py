@@ -32,16 +32,43 @@ def slugify_max(text, max_length=100):
     return trimmed_slug
 
 def get_school_abbreviated(school_name):
-    """Returns the school abbreviation for a given school name"""
-    school_low = school_name.lower()
+    """Returns the school abbreviation for a given school name.
 
-    if "washington" in school_low:
+    The lab's own two schools are special-cased; everything else acronyms
+    ("University of Illinois Chicago" -> "UIC"; " of " is dropped first). Names
+    that would acronym to a single letter are returned unchanged: not every
+    affiliation is a university, and one-word organizations like "Easterseals"
+    are far more readable than "E".
+
+    The special cases match the phrase "university of washington/maryland", not
+    a bare "washington"/"maryland" substring, which used to hand UW's initials
+    to any school with Washington in its name. The generic acronym path happens
+    to get those right on its own (Washington State -> WSU, George Washington ->
+    GWU, UMD Baltimore County -> UMBC), so they're simply left to it.
+
+    Examples:
+        >>> get_school_abbreviated("University of Washington")
+        'UW'
+        >>> get_school_abbreviated("University of Illinois Chicago")
+        'UIC'
+        >>> get_school_abbreviated("University of Maryland, Baltimore County")
+        'UMBC'
+        >>> get_school_abbreviated("Easterseals")
+        'Easterseals'
+    """
+    # Punctuation dropped and whitespace collapsed so the phrase match and the
+    # acronym both see "university of maryland baltimore county" whether or not
+    # the editor typed the comma.
+    school_low = " ".join(school_name.lower().replace(",", " ").split())
+
+    if "university of washington" in school_low:
         return "UW"
-    elif "maryland" in school_low:
+    elif "university of maryland" in school_low and "baltimore" not in school_low:
         return "UMD"
     else:
         school_low = school_low.replace(" of ", " ")
-        return create_acronym(school_low).upper()
+        acronym = create_acronym(school_low).upper()
+        return acronym if len(acronym) > 1 else school_name
 
 def create_acronym(name):
     """Returns the acronym for a given name"""

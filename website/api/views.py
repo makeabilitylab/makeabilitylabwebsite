@@ -122,8 +122,12 @@ class PersonViewSet(ReadOnlyModelViewSet):
     lookup_field = "url_name"
 
     def get_queryset(self):
+        # position_set is prefetched because current_title/current_school/
+        # current_department all funnel through Person.get_latest_position,
+        # which resolves in Python off position_set.all().
         return (
             Person.objects.filter(position__isnull=False)
+            .prefetch_related("position_set")
             .distinct()
             .order_by("last_name", "first_name")
         )
@@ -199,6 +203,7 @@ class ProjectViewSet(_PaginatedActionMixin, ReadOnlyModelViewSet):
         qs = (
             ProjectRole.objects.filter(project=project)
             .select_related("person")
+            .prefetch_related("person__position_set")
             .order_by("person__last_name", "person__first_name", "start_date")
         )
         return self._paginated(qs, ProjectRoleSerializer)
@@ -218,6 +223,7 @@ class ProjectViewSet(_PaginatedActionMixin, ReadOnlyModelViewSet):
                 project=project, lead_project_role__in=list(_LEAD_BUCKETS)
             )
             .select_related("person")
+            .prefetch_related("person__position_set")
             .order_by("-start_date")
         )
         context = self.get_serializer_context()

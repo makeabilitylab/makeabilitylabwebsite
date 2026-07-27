@@ -71,8 +71,16 @@ sub-resources are keyed by `short_name`:
 - `GET /api/v1/projects/<short_name>/publications/` — the project's pubs.
 - `GET /api/v1/projects/<short_name>/grants/` — grants funding the project.
 - `GET /api/v1/projects/<short_name>/people/` — everyone with a role on the
-  project, each as a `{ person, role, lead_project_role, start_date, end_date,
+  project, each as a `{ person, role, lead_project_role, position_title,
+  position_school, position_school_abbreviated, start_date, end_date,
   is_active }` record (a person may appear more than once for multiple roles).
+  `role` is the editor-written free-text description of what they did; the
+  `position_*` fields are what they **were at the time** — the title and school
+  from the Position they held when the role started, so a 2015 stint reads
+  `"Undergrad"` / `"UMD"` even if that person is a professor today. Where the
+  role's start date falls outside every recorded position, the most recent
+  position already begun by then is used — or, for a role predating them all,
+  the earliest. All three are `null` for someone with no Position on record.
 - `GET /api/v1/projects/<short_name>/leadership/` — **all** leadership across
   all time (current *and* past), grouped:
   `{ pis, co_pis, student_leads, postdoc_leads, research_scientist_leads }`,
@@ -91,8 +99,14 @@ Funding amounts are intentionally **not** exposed by the API.
 
 Actual lab members (people with at least one Position); external co-authors are
 not listed here even though they appear as publication `authors`. Detail by
-`url_name`: `GET /api/v1/people/<url_name>/` — name, current title, bio,
-thumbnail, and public social/web links (ORCID, Google Scholar, GitHub, etc.).
+`url_name`: `GET /api/v1/people/<url_name>/` — name, `current_title`,
+`current_school`, `current_department`, bio, thumbnail, and public social/web
+links (ORCID, Google Scholar, GitHub, etc.).
+
+> **Note:** the `current_*` fields come from the person's *latest* Position, so
+> for an alum they describe their last lab position, not their present-day
+> employer. For what someone was during a specific project stint, use the
+> `position_*` fields on `/projects/<short_name>/people/`.
 
 > **Note:** `email` is intentionally **not** exposed by the API to avoid making
 > it an email-harvesting surface, even where it appears on a member page.
