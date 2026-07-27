@@ -23,6 +23,10 @@ class Talk(Artifact):
     UPLOAD_DIR = 'talks/'
     THUMBNAIL_DIR = os.path.join(UPLOAD_DIR, 'images/')
 
+    # Standardized filenames end in "_Talk" (#1404) so a downloaded slide deck
+    # isn't indistinguishable from the paper's PDF of the same work.
+    FILENAME_TYPE_SUFFIX = 'Talk'
+
     external_slides_url = models.URLField(blank=True, null=True)
     external_slides_url.help_text = (
         "Optional link to the source slide deck (e.g., Figma, Google Slides, "

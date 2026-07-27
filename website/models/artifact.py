@@ -23,6 +23,14 @@ class Artifact(models.Model):
       2. also hook up an authors_changed signal in signals.py. For example, add the line "@receiver(m2m_changed, sender=Grant.authors.through)"
          to signals.py's def authors_changed(sender, instance, action, reverse, **kwargs):
     """
+    # The artifact-type segment appended to standardized filenames (#1404), so a
+    # downloaded file says what kind of artifact it is. Set on the subclasses
+    # whose files are otherwise ambiguous — a talk's exported slides and a poster
+    # generate the same Author_Title_VenueYear name as the paper itself. Left
+    # None here (and on Publication/Grant): a bare paper PDF is the default
+    # expectation, and that same name is also the .bib download name.
+    FILENAME_TYPE_SUFFIX = None
+
     title = models.CharField(max_length=255, blank=True, null=True)
     authors = SortedManyToManyField('Person', blank=True)
     date = models.DateField(null=True)
@@ -473,32 +481,44 @@ class Artifact(models.Model):
         return False
 
     @staticmethod
-    def generate_filename(artifact, file_extension=None, max_pub_title_length = -1):
+    def generate_filename(artifact, file_extension=None, max_pub_title_length = -1,
+                          include_type_suffix=True):
         """
         Generates a filename for the given artifact.
 
-        This method generates a filename based on the artifact's first author's last name, title, forum name, and date.
+        This method generates a filename based on the artifact's first author's last name, title, forum name, and date,
+        plus the artifact-type segment of its class (``FILENAME_TYPE_SUFFIX``, e.g. "_Talk" — see #1404).
         If a file extension is provided, it is appended to the filename. Otherwise, a filename without extension is returned.
 
         Parameters:
         artifact (Artifact): The artifact for which the filename is to be generated.
         file_extension (str, optional): The file extension to be appended to the filename. Defaults to None.
+        include_type_suffix (bool, optional): Pass False for the pre-#1404 name (no type segment). Only the
+            filename management commands need this, to recognize a file that was standardized under the old
+            scheme; everything else wants the current scheme. Defaults to True.
 
         Returns:
         str: The generated filename.
 
         Example:
-        >>> artifact = Artifact(first_author_last_name="Froehlich", title="Research Artifact Title", forum_name="CHI", date="2023-12-16")
-        >>> generate_filename(artifact, file_extension=".pdf")
+        >>> talk = Talk(title="Research Artifact Title", forum_name="CHI", date="2023-12-16")  # first author: Froehlich
+        >>> generate_filename(talk, file_extension=".pdf")
+        'Froehlich_ResearchArtifactTitle_CHI2023_Talk.pdf'
+        >>> generate_filename(talk, file_extension=".pdf", include_type_suffix=False)
         'Froehlich_ResearchArtifactTitle_CHI2023.pdf'
         """
-        
+
+        # Read off the class, not the instance, so the type segment is a property of the model
+        # (Poster has no type field, and Talk.talk_type is nullable and editor-editable — deriving
+        # the segment from data would rename files on a metadata-only edit).
+        type_suffix = type(artifact).FILENAME_TYPE_SUFFIX if include_type_suffix else None
+
         # An empty string or a string with only whitespace characters is considered False in a boolean context.
         if not file_extension or not file_extension.strip():
             return ml_fileutils.get_filename_without_ext_for_artifact(
-                    artifact.get_first_author_last_name(), artifact.title, 
-                    artifact.forum_name, artifact.date)
+                    artifact.get_first_author_last_name(), artifact.title,
+                    artifact.forum_name, artifact.date, type_suffix=type_suffix)
         else:
             return ml_fileutils.get_filename_for_artifact(
-                    artifact.get_first_author_last_name(), artifact.title, 
-                    artifact.forum_name, artifact.date, file_extension)
+                    artifact.get_first_author_last_name(), artifact.title,
+                    artifact.forum_name, artifact.date, file_extension, type_suffix=type_suffix)

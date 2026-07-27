@@ -6,6 +6,10 @@ class Poster(Artifact):
     UPLOAD_DIR = 'posters/'
     THUMBNAIL_DIR = os.path.join(UPLOAD_DIR, 'images/')
 
+    # Standardized filenames end in "_Poster" (#1404) so a downloaded poster
+    # isn't indistinguishable from the paper's PDF of the same work.
+    FILENAME_TYPE_SUFFIX = 'Poster'
+
     external_slides_url = models.URLField(blank=True, null=True)
     external_slides_url.help_text = (
         "Optional link to the source design (e.g., Figma, Canva, Illustrator "

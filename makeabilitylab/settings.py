@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.28.1" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Adds Project People and Activity Log quick links to the admin header, so two internal pages that nothing in the site nav points at are one click away. The Activity Log link is superuser-only, matching that page's own gate."
+ML_WEBSITE_VERSION = "2.29.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Standardized filenames for talks and posters now end in '_Talk' and '_Poster' (#1404), so a downloaded slide deck or poster is no longer indistinguishable from the paper PDF of the same work. Publication filenames are unchanged. Existing talk/poster files are renamed once, on deploy."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
