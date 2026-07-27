@@ -64,7 +64,17 @@ if (!$gitSystem) {
 
 //Make a determiniation if the incoming operation is right for this system.
 if($gitSystem && $HOSTNAME && $OPERATION){
-	$refs=explode("/",$req['ref']);
+	// The ref is interpolated into shell commands further down (`git checkout
+	// <ref>`) and this endpoint is unauthenticated, so accept only a plain,
+	// well-formed ref name and refuse anything else. Without this, a crafted
+	// payload could smuggle shell metacharacters through to shell_exec().
+	$incoming_ref = isset($req['ref']) ? trim($req['ref']) : "";
+	if(!preg_match('#^refs/(heads|tags)/[A-Za-z0-9._/-]+$#', $incoming_ref)){
+		_log("Refusing to act on a malformed or unsupported ref: " . json_encode($incoming_ref) . "\n");
+		exit;
+	}
+
+	$refs=explode("/",$incoming_ref);
 	$incomingOp=$refs[1]; // should be tags or heads
 	
 	//Some initial validation, make sure this is a configured repo and stuff
@@ -133,13 +143,31 @@ if($gitSystem && $HOSTNAME && $OPERATION){
 		// (On rapid successive pushes HEAD may already be a *newer* commit than
 		// this event's 'after'; skipping here is safe -- the newer push's hook
 		// deploys the newer state.)
+		//
+		// IMPORTANT: 'after' is the ref's new VALUE, which for an ANNOTATED tag is
+		// the tag OBJECT's sha -- not the commit's. `git checkout refs/tags/X`
+		// leaves HEAD at the COMMIT, so a raw sha comparison would abort every
+		// annotated-tag deploy, i.e. every production release (2.27.0/.2/.3 are all
+		// annotated). Peel with `^{commit}` before comparing.
 		$expected_sha = isset($req['after']) ? strtolower(trim($req['after'])) : "";
-		$has_sha = ($expected_sha !== "" && !preg_match('/^0+$/', $expected_sha));
-		$head_sha = strtolower(trim(shell_exec("bash -c 'cd $deploy_to; git rev-parse HEAD' 2>/dev/null")));
+		$has_sha = preg_match('/^[0-9a-f]{40}$/', $expected_sha) && !preg_match('/^0+$/', $expected_sha);
 
-		if($has_sha && $head_sha !== "" && $head_sha !== $expected_sha){
+		$head_sha = "";
+		$expected_commit = "";
+		if($has_sha){
+			$head_sha = strtolower(trim(shell_exec("bash -c 'cd $deploy_to; git rev-parse HEAD' 2>/dev/null")));
+			$expected_commit = strtolower(trim(shell_exec(
+				"bash -c 'cd $deploy_to; git rev-parse --verify --quiet {$expected_sha}^{commit}' 2>/dev/null")));
+		}
+
+		// Fail SAFE: abort only when we positively know HEAD is the wrong commit.
+		// A sha we can't resolve locally (fetch failed, unusual payload, ...) falls
+		// through to the historical deploy-anyway behavior rather than blocking a
+		// release on a check we aren't sure about.
+		if($head_sha !== "" && $expected_commit !== "" && $head_sha !== $expected_commit){
 			_log("ABORTING DEPLOY: checked-out HEAD ($head_sha) does not match the ".
-			     "pushed commit ($expected_sha) -- the pull/checkout above likely ".
+			     "pushed commit ($expected_commit, from ref value $expected_sha) -- ".
+			     "the pull/checkout above likely ".
 			     "failed. Refusing to rebuild the container from stale source.\n");
 			exit;
 		}
