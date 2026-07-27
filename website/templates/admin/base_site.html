@@ -15,9 +15,15 @@
 {% endblock %}
 
 {% block userlinks %}
-  <a href="{% url 'website:view_project_people' %}" target="_blank" rel="noopener">Team Members</a> /
+  {% comment %}
+    Label matches the target page's own <h1>/<title> ("Project People Viewer")
+    so the link and the page it lands on agree. Both new-tab links carry a
+    visually-hidden warning: `.visually-hidden` is Django admin's own
+    screen-reader-only helper (admin/css/base.css), so no new CSS is needed.
+  {% endcomment %}
+  <a href="{% url 'website:view_project_people' %}" target="_blank" rel="noopener">Project People<span class="visually-hidden"> (opens in a new tab)</span></a> /
   {% if user.is_superuser %}<a href="{% url 'admin:admin_logentry_changelist' %}">Activity Log</a> /{% endif %}
-  <a href="https://github.com/makeabilitylab/makeabilitylabwebsite" target="_blank" rel="noopener">GitHub</a> /
+  <a href="https://github.com/makeabilitylab/makeabilitylabwebsite" target="_blank" rel="noopener">GitHub<span class="visually-hidden"> (opens in a new tab)</span></a> /
   {{ block.super }}
 {% endblock %}
 

@@ -41,8 +41,18 @@ class AdminHeaderQuickLinkTests(DatabaseTestCase):
         self.assertNotContains(
             response, reverse("admin:admin_logentry_changelist"))
 
-    def test_team_members_target_is_publicly_reachable(self):
+    def test_project_people_target_is_publicly_reachable(self):
         # The link opens in a new tab for any staff user, so it must not be
         # gated behind a login the editor/contributor accounts may not pass.
         response = self.client.get(reverse("website:view_project_people"))
         self.assertEqual(response.status_code, 200)
+
+    def test_new_tab_links_announce_themselves(self):
+        # target="_blank" without a warning is a WCAG 3.2.5 nit; the cue is a
+        # visually-hidden span (Django admin's own screen-reader helper class).
+        self.client.force_login(self.superuser)
+        response = self.client.get(reverse("admin:index"))
+        self.assertContains(
+            response,
+            '<span class="visually-hidden"> (opens in a new tab)</span>',
+            count=2, html=False)
