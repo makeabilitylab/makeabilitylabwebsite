@@ -32,7 +32,21 @@ def slugify_max(text, max_length=100):
     return trimmed_slug
 
 def get_school_abbreviated(school_name):
-    """Returns the school abbreviation for a given school name"""
+    """Returns the school abbreviation for a given school name.
+
+    Multi-word names acronym ("University of Illinois Chicago" -> "UIC"; " of "
+    is dropped first). Names that would acronym to a single letter are returned
+    unchanged: not every affiliation is a university, and one-word organizations
+    like "Easterseals" are far more readable than "E".
+
+    Examples:
+        >>> get_school_abbreviated("University of Washington")
+        'UW'
+        >>> get_school_abbreviated("University of Illinois Chicago")
+        'UIC'
+        >>> get_school_abbreviated("Easterseals")
+        'Easterseals'
+    """
     school_low = school_name.lower()
 
     if "washington" in school_low:
@@ -41,7 +55,8 @@ def get_school_abbreviated(school_name):
         return "UMD"
     else:
         school_low = school_low.replace(" of ", " ")
-        return create_acronym(school_low).upper()
+        acronym = create_acronym(school_low).upper()
+        return acronym if len(acronym) > 1 else school_name
 
 def create_acronym(name):
     """Returns the acronym for a given name"""

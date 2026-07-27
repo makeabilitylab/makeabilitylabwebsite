@@ -48,6 +48,21 @@ class GetSchoolAbbreviatedTests(SimpleTestCase):
         # " of " is dropped before acronyming, so "University of Foo Bar" -> UFB.
         self.assertEqual(get_school_abbreviated("University of Foo Bar"), "UFB")
 
+    def test_uic_acronym(self):
+        # A real affiliation on the site (the Project Sidewalk UIC subaward).
+        self.assertEqual(
+            get_school_abbreviated("University of Illinois Chicago"), "UIC"
+        )
+
+    def test_single_word_org_is_not_acronymed(self):
+        # Non-university affiliations are often one word, where an acronym is a
+        # single useless letter ("Easterseals" -> "E"). Return the name instead.
+        self.assertEqual(get_school_abbreviated("Easterseals"), "Easterseals")
+        self.assertEqual(get_school_abbreviated("Google"), "Google")
+
+    def test_empty_school_is_passed_through(self):
+        self.assertEqual(get_school_abbreviated(""), "")
+
 
 class GetDepartmentAbbreviatedTests(SimpleTestCase):
     def test_cse(self):

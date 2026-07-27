@@ -75,11 +75,18 @@ class PersonSummarySerializer(serializers.ModelSerializer):
 class PersonSerializer(PersonSummarySerializer):
     """Full person representation for the people detail/list endpoints.
 
-    Extends the summary with bio, current title, and the public social/web
+    Extends the summary with bio, current affiliation, and the public social/web
     links. ``email`` is intentionally omitted (see module docstring).
+
+    ``current_title`` / ``current_school`` / ``current_department`` all come from
+    the person's *latest* Position, so for an alum they describe their last lab
+    position, not their present-day employer. For what someone was during a
+    specific project stint, use ``ProjectRoleSerializer``'s ``position_*`` fields.
     """
 
     current_title = serializers.SerializerMethodField()
+    current_school = serializers.SerializerMethodField()
+    current_department = serializers.SerializerMethodField()
 
     class Meta(PersonSummarySerializer.Meta):
         fields = PersonSummarySerializer.Meta.fields + [
@@ -87,6 +94,8 @@ class PersonSerializer(PersonSummarySerializer):
             "middle_name",
             "last_name",
             "current_title",
+            "current_school",
+            "current_department",
             "bio",
             "personal_website",
             "github",
@@ -102,6 +111,14 @@ class PersonSerializer(PersonSummarySerializer):
     def get_current_title(self, obj):
         # Person.get_current_title is a cached_property, not a method.
         return obj.get_current_title
+
+    def get_current_school(self, obj):
+        # Person.get_current_school is a cached_property, not a method.
+        return obj.get_current_school
+
+    def get_current_department(self, obj):
+        # Person.get_current_department is a cached_property, not a method.
+        return obj.get_current_department
 
 
 class ProjectSummarySerializer(serializers.ModelSerializer):
@@ -262,10 +279,21 @@ class PublicationDetailSerializer(PublicationListSerializer):
 
 
 class ProjectRoleSerializer(serializers.ModelSerializer):
-    """A person's role on a project (start/end, lead type, active flag)."""
+    """A person's role on a project (start/end, lead type, active flag).
+
+    The ``position_*`` fields describe what the person *was* when they joined the
+    project -- title and school from the Position held at the role's start date
+    (#1426) -- so a 2015 stint reads "Undergrad, UMD" even if that person is a
+    professor today. They're ``null`` for someone with no Position on record.
+    Named ``position_*`` (not bare ``title``) so they don't read as part of
+    ``role``, which is the editor-written free-text description of the work.
+    """
 
     person = PersonSummarySerializer(read_only=True)
     is_active = serializers.SerializerMethodField()
+    position_title = serializers.SerializerMethodField()
+    position_school = serializers.SerializerMethodField()
+    position_school_abbreviated = serializers.SerializerMethodField()
 
     class Meta:
         model = ProjectRole
@@ -273,6 +301,9 @@ class ProjectRoleSerializer(serializers.ModelSerializer):
             "person",
             "role",
             "lead_project_role",
+            "position_title",
+            "position_school",
+            "position_school_abbreviated",
             "start_date",
             "end_date",
             "is_active",
@@ -280,3 +311,23 @@ class ProjectRoleSerializer(serializers.ModelSerializer):
 
     def get_is_active(self, obj):
         return obj.is_active()
+
+    def _position(self, obj):
+        # Resolved once per role and stashed on the instance: three fields read
+        # it, and ProjectRole has no cached_property for it (see the model
+        # helper's note on riding the view's prefetch).
+        if not hasattr(obj, "_api_position"):
+            obj._api_position = obj.get_position_during_role()
+        return obj._api_position
+
+    def get_position_title(self, obj):
+        position = self._position(obj)
+        return position.title if position else None
+
+    def get_position_school(self, obj):
+        position = self._position(obj)
+        return position.school if position else None
+
+    def get_position_school_abbreviated(self, obj):
+        position = self._position(obj)
+        return position.get_school_abbreviated() if position else None
