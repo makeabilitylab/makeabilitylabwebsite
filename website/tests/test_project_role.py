@@ -87,6 +87,16 @@ class PositionDuringRoleTests(DatabaseTestCase):
         role = self._role(date(2021, 1, 1))
         self.assertEqual(role.position_during_role, current)
 
+    def test_future_position_is_not_reported_on_a_role_ending_in_the_future(self):
+        """The same guard, on the role shape that used to slip past it: an
+        editor may enter a planned wrap-up date, which puts end_date in the
+        future. The window end is clamped to today either way, so a promotion
+        entered ahead of time still doesn't leak into today's payload."""
+        current = self._position(Title.PHD_STUDENT, date(2020, 1, 1), None)
+        self._position(Title.POST_DOC, date.today() + timedelta(days=30), None)
+        role = self._role(date(2021, 1, 1), date.today() + timedelta(days=365))
+        self.assertEqual(role.position_during_role, current)
+
     def test_falls_back_to_prior_position_when_role_falls_in_a_gap(self):
         """A completed role sitting between two positions reports the most
         recent one that had already started -- not the nearest in time."""
@@ -99,7 +109,7 @@ class PositionDuringRoleTests(DatabaseTestCase):
         """Data drift, common in older imported roles: report the earliest
         position rather than nothing."""
         phd = self._position(Title.PHD_STUDENT, date(2020, 1, 1), None)
-        self._position(Title.POST_DOC, date(2025, 1, 1), None)
+        self._position(Title.POST_DOC, date(2023, 1, 1), None)
         role = self._role(date(2017, 1, 1), date(2018, 1, 1))
         self.assertEqual(role.position_during_role, phd)
 

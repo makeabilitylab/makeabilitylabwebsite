@@ -78,14 +78,13 @@ sub-resources are keyed by `short_name`:
   `role` is the editor-written free-text description of what they did; the
   `position_*` fields describe them **over the span of that role** — the title
   and school from the latest Position overlapping the role's window
-  (`start_date` → `end_date`, or today for an open role). So an ongoing role
-  reads as what the person is *now* (`"Professor"` / `"UW"`), while a stint that
-  ended in 2016 still reads `"Undergrad"` / `"UMD"` even if that person is a
-  professor today. Where a role's window falls outside every recorded position,
-  the most recent position already begun by its end is used — or, for a role
-  predating them all, the earliest. All three are `null` for someone with no
-  Position on record.
-
+  (`start_date` → `end_date`, or today for an open role; never past today). So
+  an ongoing role reads as what the person is *now* (`"Professor"` / `"UW"`),
+  while a stint that ended in 2016 still reads `"Undergrad"` / `"UMD"` even if
+  that person is a professor today. Where a role's window falls outside every
+  recorded position, the most recent position already begun by its end is used —
+  or, for a role predating them all, the earliest. All three are `null` for
+  someone with no Position on record.
   > Use these rather than `/people/<url_name>/`'s `current_*` fields for a roster:
   > they're scoped to the project, so a past contributor reads as what they were
   > on the project, not their last lab position.
