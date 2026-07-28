@@ -41,6 +41,11 @@ class Title(models.TextChoices):
     ASSOCIATE_PROF = "Associate Professor"
     FULL_PROF = "Professor"
     RESEARCH_SCIENTIST = "Research Scientist"
+    # Non-student staff who coordinate a project's operations (curriculum,
+    # IRB, recruitment, partner logistics) rather than run its research.
+    # Added for the UIC subaward on Project Sidewalk; "Research Scientist"
+    # overstated the role.
+    PROJECT_COORDINATOR = "Project Coordinator"
     SOFTWARE_DEVELOPER = "Software Developer"
     DESIGNER = "Designer"
     MEDICAL_DOCTOR = "Medical Doctor"     
@@ -77,15 +82,16 @@ class Position(models.Model):
         Title.POST_DOC: 3,
         Title.DIRECTOR: 4,
         Title.RESEARCH_SCIENTIST: 5,
-        Title.MEDICAL_DOCTOR: 6,
-        Title.PHD_STUDENT: 7,
-        Title.MEDICAL_STUDENT: 8,
-        Title.MS_STUDENT: 9,
-        Title.SOFTWARE_DEVELOPER: 10,
-        Title.DESIGNER: 11,
-        Title.UGRAD: 12,
-        Title.HIGH_SCHOOL: 13,
-        Title.UNKNOWN: 14
+        Title.PROJECT_COORDINATOR: 6,
+        Title.MEDICAL_DOCTOR: 7,
+        Title.PHD_STUDENT: 8,
+        Title.MEDICAL_STUDENT: 9,
+        Title.MS_STUDENT: 10,
+        Title.SOFTWARE_DEVELOPER: 11,
+        Title.DESIGNER: 12,
+        Title.UGRAD: 13,
+        Title.HIGH_SCHOOL: 14,
+        Title.UNKNOWN: 15
     }
 
     # BETTER - Use class constant:

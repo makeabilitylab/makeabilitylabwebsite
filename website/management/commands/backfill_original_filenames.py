@@ -4,6 +4,7 @@ import logging
 from django.core.management.base import BaseCommand
 
 from website.models import Artifact, Talk, Poster, Publication
+from website.utils import fileutils as ml_fileutils
 
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
@@ -122,19 +123,26 @@ class Command(BaseCommand):
 
         current_basename = os.path.basename(file_field.name)
         current_no_ext = os.path.splitext(current_basename)[0]
-        standardized_no_ext = Artifact.generate_filename(artifact)
 
-        # Treat the file as already-standardized when its name equals the
-        # standardized scheme OR is a uniquified variant of it. When a
-        # standardized name collides on disk, ensure_filename_is_unique()
-        # (fileutils.py) appends "-<timestamp>" — e.g.
-        # "Lee_Talk_CHI2021-1782399772.42.pdf" — so the on-disk name still
-        # STARTS WITH the standardized base. Matching only on exact equality
-        # would misread those as never-renamed and record the standardized+
-        # suffix name as the "original" — a false positive.
-        already_standardized = (
-            current_no_ext == standardized_no_ext
-            or current_no_ext.startswith(standardized_no_ext + "-")
+        # Treat the file as already-standardized when its name matches the
+        # standardized scheme. matches_standardized_basename also accepts the
+        # "-<timestamp>" that ensure_filename_is_unique appends on a disk
+        # collision (e.g. "Lee_Talk_CHI2021-1782399772.42.pdf"), so a renamed-
+        # then-uniquified file isn't misread as an original upload.
+        #
+        # BOTH schemes count (#1404). This command runs at container start
+        # BEFORE restandardize_artifact_filenames, so on the deploy that
+        # introduces the artifact-type segment ("..._Talk") every already-renamed
+        # talk and poster still carries its pre-#1404 name. Checking only the
+        # current scheme would read the whole corpus as never-renamed and record
+        # those old standardized names as originals — false provenance, shown to
+        # editors as "Originally uploaded as".
+        already_standardized = any(
+            ml_fileutils.matches_standardized_basename(
+                current_no_ext,
+                Artifact.generate_filename(
+                    artifact, include_type_suffix=include_type_suffix))
+            for include_type_suffix in (True, False)
         )
         if already_standardized:
             # Already renamed — the original upload name is gone.

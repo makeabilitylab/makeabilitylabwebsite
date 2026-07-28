@@ -15,7 +15,7 @@
 # If you need to install new packages in the Docker container, you can try:
 # 1. docker ps // this gets a list of current processes/containers running
 # 2. docker exec -it -u root <container_id> /bin/bash
-# 3. Then here, you can install a new package like: > pip3 install django==5.2.14
+# 3. Then here, you can install a new package like: > pip3 install django==5.2.15
 #    or you could even run: > pip3 install -r requirements.txt
 #
 # You can also try to see which version of libraries are installed by running:
@@ -40,7 +40,7 @@
 # -----------------------------------------------------------------------------
 # Django 5.2 is an LTS release with support until April 2028
 # See: https://www.djangoproject.com/download/
-django==5.2.14
+django==5.2.15
 
 # -----------------------------------------------------------------------------
 # Database
@@ -76,7 +76,7 @@ pypdf==6.13.3
 # Pillow - Python Imaging Library fork, for image manipulation
 # Note: Pillow 10.0+ dropped Python 3.7 support; 11.0+ dropped Python 3.8
 # See: https://pypi.org/project/Pillow/
-Pillow==12.2.0
+Pillow==12.3.0
 
 # Image cropping in the admin is provided by the in-repo `image_cropping/`
 # package (a fork of django-image-cropping), NOT a PyPI dependency. We dropped

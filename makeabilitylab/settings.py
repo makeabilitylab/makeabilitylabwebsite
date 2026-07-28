@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.26.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Improves image handling on the Awards admin badge plus a Data Health polish. The badge field now has an instant client-side preview and square (1:1) cropping via Cropper.js (#1408), and a new 'Pad badge to a square (don't crop)' option (#1410) that pads a non-square upload to a centered square -- white margins for JPEG, transparent for PNG/WebP -- instead of cropping off content, so editors no longer need to pad logos in an external tool before uploading. Padding is done server-side with Pillow: it re-encodes JPEG at quality 92, saves WebP lossless so a lossless source isn't degraded, and leaves already-square uploads untouched; a full-image crop box is stored so the public render isn't cropped. Also standardizes the per-row action links across the Data Health checks (#1405)."
+ML_WEBSITE_VERSION = "2.31.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "A project's roster in the public API now reports each person's title over the span of their role (#1435), so someone on a project since 2012 reads as what they are today rather than the title they held back then. Finished stints still read as what that person was at the time."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
@@ -294,7 +294,27 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # Adds permissive CORS headers to /api/ responses only (#1268). Read-only,
+    # already-public data -- see website/api/middleware.py.
+    'website.api.middleware.ApiCorsMiddleware',
 ]
+
+# Django REST Framework config for the public read-only API (#1268).
+# Public data, so no auth and no throttle (per the #1268 scoping decision); the
+# browsable HTML API is enabled only in DEBUG (JSON-only in prod).
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [],
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny'],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 25,
+    'DEFAULT_RENDERER_CLASSES': (
+        ['rest_framework.renderers.JSONRenderer',
+         'rest_framework.renderers.BrowsableAPIRenderer']
+        if DEBUG else
+        ['rest_framework.renderers.JSONRenderer']
+    ),
+}
 
 # A string representing the full Python import path to your root URLconf.
 # See: https://docs.djangoproject.com/en/4.2/ref/settings/#root-urlconf

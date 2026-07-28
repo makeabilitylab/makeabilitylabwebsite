@@ -20,21 +20,19 @@ not read those parameters — it always returns the full dataset.
 """
 
 import json
-import logging
+from datetime import date
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count, Q
 from django.shortcuts import render
 
-# easy-thumbnails generates the per-person headshot thumbnails server-side.
-from easy_thumbnails.files import get_thumbnailer
-
 from website.models import Person, Project, Publication
 from website.models.position import Position, Title
 from website.models.publication import PubType
-from datetime import date
 
-_logger = logging.getLogger(__name__)
+# Generates the per-person headshot thumbnails server-side (easy-thumbnails +
+# the editor's crop box).
+from website.utils.thumbnail_utils import get_cropped_thumbnail
 
 # Matches PERSON_THUMBNAIL_SIZE in website/models/person.py.
 PERSON_THUMBNAIL_SIZE = (245, 245)
@@ -109,25 +107,10 @@ def _build_thumbnail_url(person):
     if not person.image:
         return ""
 
-    options = {
-        "size": PERSON_THUMBNAIL_SIZE,
-        "crop": True,
-        "upscale": True,
-        "detail": True,
-    }
-    if person.cropping:
-        options["box"] = person.cropping
-
-    try:
-        thumbnail = get_thumbnailer(person.image).get_thumbnail(options)
-        return thumbnail.url if thumbnail else ""
-    except Exception:
-        _logger.warning(
-            "Thumbnail generation failed for %s; falling back to original image.",
-            person,
-            exc_info=True,
-        )
-        return person.image.url
+    thumbnail = get_cropped_thumbnail(
+        person.image, PERSON_THUMBNAIL_SIZE, person.cropping
+    )
+    return thumbnail.url if thumbnail else person.image.url
 
 
 def _build_project_roles(person, today):

@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.functional import cached_property
 from datetime import date, datetime, timedelta
 
 class LeadProjectRoleTypes(models.TextChoices):
@@ -69,6 +70,93 @@ class ProjectRole(models.Model):
             return f"{self.start_date.year}"
         else:
             return f"{self.start_date.year}-{self.end_date.year}"
+
+    @cached_property
+    def position_during_role(self):
+        """The Position that best describes this person over this project role.
+
+        Specifically, the *latest* Position overlapping the role's window --
+        ``[start_date, end_date or today]``, with the end never past today. That
+        gives the two answers a roster wants (#1426, refined in #1435):
+
+        - An **ongoing** role reports what the person is *now*. Someone who has
+          led a project since 2012 and was promoted along the way reads
+          "Professor, University of Washington", not the assistant professorship
+          they held when the stint began.
+        - A **finished** stint stays frozen in its own time. A 2015 undergrad who
+          is a professor today still reads "Undergrad" next to that stint, because
+          the professorship never overlapped it. Where their title changed
+          mid-stint (an undergrad who stayed on for an MS), the later title wins.
+
+        This is why it is *not* :meth:`Person.get_current_title`, which is the
+        person's latest Position full stop -- for an alum, their last lab position
+        rather than either of the above. The one case where the two converge is a
+        role left open (``end_date`` null) after the person has actually left: its
+        window runs to today, so it reports their last lab position, same as
+        ``get_current_title`` would. That's a data-entry gap, not a rule -- both
+        :meth:`Position.save` (which closes a departing member's open roles) and
+        the ``auto_close_project_roles`` command exist to keep it from arising.
+
+        Resolution order, most to least faithful:
+
+        1. The latest-starting Position overlapping the role's window.
+        2. Failing that, the latest-starting Position that had already begun by
+           the window's end (the whole role sits in a gap between positions).
+        3. Failing that, the earliest Position (the role predates every recorded
+           position -- data drift, common for older imported roles).
+        4. ``None`` only if the person has no Positions at all.
+
+        The window end is clamped twice. Up top, to today, so a Position starting
+        in the future (a promotion entered ahead of time) never reaches today's
+        payload -- including on a role carrying a future ``end_date``, which an
+        editor may enter for a planned wrap-up. Down below, to at least the start
+        date, so a typo'd ``end_date`` earlier than ``start_date`` degrades to
+        "position at role start" instead of inverting the range and matching
+        nothing.
+
+        Ties on ``start_date`` (a person holding two positions that begin the
+        same day -- concurrent Member/Collaborator rows, or a duplicate entry)
+        break on ``pk``, so the answer is stable across requests: ``position_set``
+        has no ``Meta.ordering``, so without an explicit tie-break the winner
+        would follow whatever order the DB happened to return.
+
+        A ``cached_property`` (like :meth:`Person.get_current_title`) because the
+        API reads it three times per row -- for title, school, and abbreviated
+        school. Filters ``position_set`` in Python rather than issuing a query,
+        so a caller with ``prefetch_related('person__position_set')`` (e.g. the
+        API's project-people endpoint) resolves it with zero extra queries. This
+        mirrors :meth:`Person.get_latest_position`; positions-per-person is tiny.
+
+        Example:
+            >>> role.end_date is None          # still on the project
+            True
+            >>> role.position_during_role.title
+            'Professor'
+        """
+        positions = list(self.person.position_set.all())
+        if not positions:
+            return None
+
+        # Sorts rather than max()/min() so the pk tie-break is stated once.
+        positions.sort(key=lambda p: (p.start_date, p.pk))
+
+        today = date.today()
+        window_start = self.start_date
+        # min() first so a future end_date can't admit a not-yet-started
+        # position; max() second so a typo'd end_date can't invert the window.
+        window_end = max(min(self.end_date or today, today), window_start)
+
+        overlapping = [p for p in positions
+                       if p.start_date <= window_end
+                       and (p.end_date is None or p.end_date >= window_start)]
+        if overlapping:
+            return overlapping[-1]
+
+        already_started = [p for p in positions if p.start_date <= window_end]
+        if already_started:
+            return already_started[-1]
+
+        return positions[0]
 
     def get_pi_status_index(self):
         if self.lead_project_role is not None and self.lead_project_role in self.LEAD_PROJECT_ROLE_MAPPING:

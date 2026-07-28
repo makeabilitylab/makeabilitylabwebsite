@@ -4,6 +4,7 @@ import logging
 from django.core.management.base import BaseCommand
 
 from website.models import Artifact, Talk, Poster, Publication
+from website.utils import fileutils as ml_fileutils
 
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
@@ -11,17 +12,20 @@ _logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
     help = (
-        "Re-standardizes legacy talk/poster/publication filenames that were "
-        "never renamed to the Author_TitleInTitleCase_VenueYear scheme (issue "
-        "#1401). Production has many such rows (bulk-imported, so they never "
-        "went through an authored Artifact.save()). This reuses the existing, "
-        "now-correct rename path: when Artifact.do_filenames_need_updating() is "
-        "True it calls artifact.save(), which renames the pdf_file, raw_file, "
-        "and thumbnail on disk AND in the DB together. The original upload name "
-        "is preserved (it was captured into original_*_filename by "
-        "backfill_original_filenames / #1391 before this runs). Idempotent: "
-        "once a row is standardized the check returns False, so re-runs do "
-        "nothing. Safe to run on every container start."
+        "Re-standardizes talk/poster/publication filenames that don't match the "
+        "current scheme. Two populations: files that were never renamed at all "
+        "(issue #1401 — bulk-imported rows that never went through an authored "
+        "Artifact.save()), and files standardized under a superseded scheme "
+        "(issue #1404 added the trailing artifact-type segment, e.g. "
+        "'..._CHI2024_Talk'), which this migrates in one pass. It reuses the "
+        "existing, now-correct rename path: when Artifact.do_filenames_need_"
+        "updating() is True it calls artifact.save(), which renames the "
+        "pdf_file, raw_file, and thumbnail on disk AND in the DB together. The "
+        "original upload name is preserved (it was captured into "
+        "original_*_filename by backfill_original_filenames / #1391 before this "
+        "runs). Idempotent: once a row matches the current scheme the check "
+        "returns False, so re-runs do nothing. Safe to run on every container "
+        "start."
     )
 
     # The concrete artifact models this covers. Posters are already
@@ -156,9 +160,12 @@ class Command(BaseCommand):
         standardized name collided on disk and got a ``-<timestamp>`` suffix
         (``ensure_filename_is_unique``) reads as "needs updating" forever and
         would be re-renamed on every run — churning duplicate-name artifacts'
-        filenames on every deploy. Here a name that equals the standardized
-        base OR is a ``-<suffix>`` variant of it counts as already standardized,
-        which keeps the command idempotent.
+        filenames on every deploy. ``matches_standardized_basename`` accepts
+        those variants, which keeps the command idempotent.
+
+        Only the CURRENT scheme counts as standardized: a file named under the
+        pre-#1404 scheme (no trailing "_Talk"/"_Poster") is deliberately flagged,
+        which is what migrates the existing corpus in a single pass.
         """
         standardized = Artifact.generate_filename(artifact)
         for file_attr in ("pdf_file", "raw_file"):
@@ -167,10 +174,7 @@ class Command(BaseCommand):
                 continue
             current_no_ext = os.path.splitext(
                 os.path.basename(file_field.name))[0]
-            is_standardized = (
-                current_no_ext == standardized
-                or current_no_ext.startswith(standardized + "-")
-            )
-            if not is_standardized:
+            if not ml_fileutils.matches_standardized_basename(
+                    current_no_ext, standardized):
                 return True
         return False
