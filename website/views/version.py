@@ -26,13 +26,27 @@ Example::
       "environment": "PROD",
       "git_sha": "02909b0",
       "built_at": "2026-06-21T18:30:00-07:00",
-      "server": "gunicorn/23.0.0"
+      "server": "gunicorn/23.0.0",
+      "log_to_file": true,
+      "log_file": "/code/media/debug.log"
     }
 
 The ``server`` field is the WSGI server's self-reported ``SERVER_SOFTWARE``
 (``gunicorn/<ver>`` vs. Django's ``WSGIServer/<ver> CPython/<ver>``), read off
 the live request -- it's the ground-truth answer to *"is this actually running
 Gunicorn?"* after the #1034 swap, not an inference from env vars or git_sha.
+
+``log_to_file`` / ``log_file`` report whether the ``LOGGING`` file handler is live
+or degraded to a NullHandler, and which path it resolved to (#1283). We have no
+console access on the -test or prod servers, so without this a bad log directory
+would silently blackhole every log record with no way to notice: ``log_to_file:
+false`` means the app is running blind, and ``log_file`` says which directory was
+at fault. Nothing new is disclosed -- the path is derivable from the public repo.
+
+Note that ``log_to_file: true`` only means the log *directory* was writable at
+startup. To confirm records are really landing, tail the file over SSH at
+``/cse/web/research/makelab/www[-test]/debug.log`` (the ``/logs/`` URL described in
+docs/DEPLOYMENT.md 404s on both servers).
 """
 
 import json
@@ -92,6 +106,11 @@ def version(request, format=None):
         # WSGI server handling this request: "gunicorn/<ver>" under #1034,
         # "WSGIServer/<ver> CPython/<ver>" if the dev runserver is somehow live.
         "server": request.META.get("SERVER_SOFTWARE", "unknown"),
+        # Is the LOGGING file handler live, and where does it point (#1283)? False
+        # means it degraded to a NullHandler and this server is logging nowhere --
+        # the only remote way to notice, since we have no console on -test/prod.
+        "log_to_file": settings.LOG_TO_FILE,
+        "log_file": settings.LOG_FILE,
     }
     response = JsonResponse(payload)
     response["Cache-Control"] = "no-store"

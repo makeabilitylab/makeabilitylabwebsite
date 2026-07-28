@@ -87,7 +87,7 @@ if DJANGO_ENV in ('PROD', 'TEST'):
 
 # Makeability Lab Global Variables, including Makeability Lab version
 ML_WEBSITE_VERSION = "2.32.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Positions can now be titled \"Research Software Engineer\" (#1437). The affiliation fields are relabeled \"Institution or organization\" and \"Department or unit\", since collaborators come from nonprofits and companies too, and non-academic units no longer abbreviate to their first five characters."
+ML_WEBSITE_VERSION_DESCRIPTION = "Positions can now be titled \"Research Software Engineer\", and the affiliation fields are relabeled \"Institution or organization\" and \"Department or unit\" — collaborators come from nonprofits and companies, not just universities (#1437). This release also carries the 2.31.1 log-path fix (#1283)."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
@@ -105,6 +105,96 @@ CSRF_TRUSTED_ORIGINS = ['https://*.cs.washington.edu']
 # See: https://docs.djangoproject.com/en/2.0/topics/logging/
 # https://lincolnloop.com/blog/django-logging-right-way/
 # For the log format, see: https://stackoverflow.com/a/26276689/388117
+#
+# Log-file path (issue #1283): this used to be hardcoded to /code/media/debug.log,
+# an absolute container-specific path. Django evaluates LOGGING at django.setup(),
+# so on any host lacking that exact directory (e.g. GitHub Actions CI) startup died
+# with FileNotFoundError before a single request/test ran. Derive the path from
+# BASE_DIR instead (still under media/, the bind-mounted tree, so the file stays
+# readable over SSH — see docs/DEPLOYMENT.md), allow an ML_LOG_DIR env override, and if
+# the directory can't be created or written, fall back to a NullHandler so a bad
+# log path never crashes startup.
+#
+# Degrading is silent by default, and that is dangerous here: the 'django' logger
+# has only the 'file' handler, and the 'website' logger's console handler is gated
+# by require_debug_true (False in prod), so an unwritable log dir means the app runs
+# completely blind. We have no console access on the -test or prod servers, so the
+# degraded state is surfaced two web-reachable ways instead: the 'log_to_file' field
+# on /version.json (website/views/version.py) and a warning callout on the admin
+# dashboard (website/templates/admin/index.html).
+def _ensure_log_dir_writable(log_dir):
+    """Create ``log_dir`` if needed and return True if it looks writable.
+
+    Named for the side effect: this *creates* the directory (``os.makedirs``)
+    rather than merely inspecting it. Used to decide whether the file log handler
+    is active or degrades to a NullHandler, so a bad log path never crashes
+    ``django.setup()`` (issue #1283).
+
+    Two known limits, both accepted as strictly better than the previous
+    unconditional crash:
+
+    1. This checks the *directory*, not the eventual log file. A dir that is
+       writable but already holds a root-owned, read-only ``debug.log`` would
+       still let RotatingFileHandler raise on open. That doesn't match the real
+       deploy model, where media/ is owned by the app's own user.
+    2. ``os.access(dir, os.W_OK)`` returns True for root regardless of the
+       directory mode, so a mode-555 dir wouldn't be caught when running as root.
+       The deployed container runs as ``apache`` (UID 48, see Dockerfile), so the
+       guard is meaningful where it matters; only the root devcontainer bypasses
+       it. The common failures — missing dir, uncreatable dir, read-only
+       filesystem — are caught either way.
+    """
+    try:
+        os.makedirs(log_dir, exist_ok=True)
+        return os.access(log_dir, os.W_OK)
+    except OSError:
+        return False
+
+
+def _file_log_handler(log_file, level, enabled):
+    """Return the ``LOGGING['handlers']['file']`` config dict.
+
+    When ``enabled`` is False (the log dir isn't writable) this returns a
+    NullHandler instead, which keeps every logger's ``'file'`` handler reference
+    valid while never touching disk — so startup degrades instead of dying.
+
+    Split out of the ``LOGGING`` literal so both branches are directly testable;
+    ``LOGGING`` is evaluated once at import, so a test can't re-derive it.
+    See ``website/tests/test_logging_config.py``.
+    """
+    if not enabled:
+        return {'class': 'logging.NullHandler'}
+    return {
+        'level': level,
+        'class': 'logging.handlers.RotatingFileHandler',
+        'filename': log_file,
+        'maxBytes': 1024*1024*5,  # 5 MB
+        'backupCount': 6,
+        'formatter': 'verbose',  # can switch between verbose and simple
+    }
+
+
+# NOTE: this default must stay in sync with MEDIA_ROOT (defined further down as
+# os.path.join(BASE_DIR, 'media')) — the web-served /logs/debug.log URL only works
+# because the log lives inside the media root. MEDIA_ROOT isn't defined yet here
+# (LOGGING has to be built before it), hence the duplicated expression;
+# test_default_log_file_is_under_media_root pins the two together.
+LOG_DIR = os.environ.get('ML_LOG_DIR', os.path.join(BASE_DIR, 'media'))
+LOG_FILE = os.path.join(LOG_DIR, 'debug.log')
+
+# Uppercase on purpose: Django only exposes uppercase module attributes through
+# django.conf.settings, and both the /version.json view and the admin dashboard
+# read this to surface a degraded-logging warning.
+LOG_TO_FILE = _ensure_log_dir_writable(LOG_DIR)
+
+if not LOG_TO_FILE:
+    # Secondary signal only. There is no console access on the -test or prod
+    # servers, so this print is really for local dev and the emailed buildlog;
+    # the channels that actually work remotely are /version.json (log_to_file
+    # field) and the warning callout on the admin dashboard.
+    print(f"WARNING: log dir {LOG_DIR!r} is not writable — file logging disabled "
+          f"(NullHandler). Check /version.json 'log_to_file'.")
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -125,21 +215,16 @@ LOGGING = {
         },
     },
     'handlers': {
-        'file': {
-            # The file handler writes /code/media/debug.log, which lands in the
-            # bind-mounted web root and is intentionally exposed via the /logs/
-            # URL per docs/DEPLOYMENT.md (Jason Howe's design — convenient
-            # remote debugging in exchange for some info disclosure). To shrink
-            # that exposure in production, we log at INFO when DEBUG is off,
-            # but keep DEBUG-level file logging in local dev where DEBUG is on
-            # and the file isn't publicly reachable.
-            'level': 'DEBUG' if DEBUG else 'INFO',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/code/media/debug.log',
-            'maxBytes': 1024*1024*5,  # 5 MB
-            'backupCount': 6,
-            'formatter': 'verbose',  # can switch between verbose and simple
-        },
+        # The file handler writes LOG_FILE (media/debug.log by default), which lands
+        # in the bind-mounted web root — that's what makes it readable over SSH at
+        # /cse/web/research/makelab/www[-test]/debug.log. (docs/DEPLOYMENT.md also
+        # describes a /logs/ URL per Jason Howe's design, but that URL 404s on both
+        # prod and test as of 2026-07-28.) Since the file still sits in a web-served
+        # tree, stay conservative: log at INFO when DEBUG is off, but keep DEBUG-level
+        # file logging in local dev where DEBUG is on and nothing is public. If the
+        # log dir isn't writable (LOG_TO_FILE is False), degrade to a NullHandler so
+        # startup never dies (issue #1283).
+        'file': _file_log_handler(LOG_FILE, 'DEBUG' if DEBUG else 'INFO', LOG_TO_FILE),
         'console': {
             'level': 'DEBUG',
             'filters': ['require_debug_true'],
@@ -366,6 +451,11 @@ USE_TZ = True
 # The MEDIA_URL is required by Django see and is a URL that handles the media served 
 # from MEDIA_ROOT, used for managing stored files. 
 # See: https://docs.djangoproject.com/en/4.2/ref/settings/#media-url
+#
+# NOTE: LOG_DIR (defined up with LOGGING, which has to be built before this) hard-codes
+# the same expression, because the web-served /logs/debug.log URL only works while the
+# log file lives inside the media root. If you move MEDIA_ROOT, move LOG_DIR with it —
+# test_default_log_file_is_under_media_root fails loudly if the two ever diverge.
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
