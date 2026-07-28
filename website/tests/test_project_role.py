@@ -1,14 +1,15 @@
 """Tests for ProjectRole model helpers.
 
-Covers ``ProjectRole.position_during_role`` (#1426): the rule that decides which
-Position a person held when they started a project role. The public REST API
+Covers ``ProjectRole.position_during_role`` (#1426, revised in #1435): the rule
+that decides which Position best describes a person over the span of a project
+role -- the latest one that overlaps the role's window. The public REST API
 serializes it (``position_title`` / ``position_school`` /
 ``position_school_abbreviated``), but the rules are exercised here, directly
 against the model, so a failure points at the resolution logic rather than at
 the API contract. The wire contract is pinned in test_api.py.
 """
 
-from datetime import date
+from datetime import date, timedelta
 
 from website.models import Position, ProjectRole
 from website.models.position import Title
@@ -33,14 +34,34 @@ class PositionDuringRoleTests(DatabaseTestCase):
             start_date=start, end_date=end,
         )
 
-    def test_returns_position_containing_role_start(self):
-        """The headline case: what they were when they joined, not what they are
-        now. An undergrad who later did an MS reads 'Undergrad' on a 2016 stint.
-        """
-        ugrad = self._position(Title.UGRAD, date(2015, 1, 1), date(2017, 5, 31))
-        self._position(Title.MS_STUDENT, date(2017, 6, 1), date(2019, 6, 1),
-                       school="University of Washington")
+    def test_ongoing_role_reports_the_present_day_position(self):
+        """The headline case (#1435): someone who has been on a project since
+        2014 and was promoted along the way reads as what they are *now*, not
+        what they were when the stint began. A still-open role's window runs to
+        today, so today's position is the latest one overlapping it."""
+        self._position(Title.ASSISTANT_PROF, date(2014, 1, 1), date(2018, 8, 31))
+        full_prof = self._position(Title.FULL_PROF, date(2018, 9, 1), None,
+                                   school="University of Washington")
+        role = self._role(date(2014, 6, 1))
+        self.assertEqual(role.position_during_role, full_prof)
+
+    def test_mid_stint_promotion_reports_the_later_title(self):
+        """An undergrad who stayed on for an MS mid-stint reads 'MS Student':
+        of the positions overlapping the role, the latest to start wins."""
+        self._position(Title.UGRAD, date(2015, 1, 1), date(2017, 5, 31))
+        ms = self._position(Title.MS_STUDENT, date(2017, 6, 1), date(2019, 6, 1),
+                            school="University of Washington")
         role = self._role(date(2016, 1, 1), date(2018, 1, 1))
+        self.assertEqual(role.position_during_role, ms)
+
+    def test_ended_role_ignores_positions_that_start_after_it(self):
+        """The other half of #1435: a finished stint is still frozen in its own
+        time. A 2015 undergrad who is a professor today reads 'Undergrad' next
+        to that stint -- the professorship never overlapped it."""
+        ugrad = self._position(Title.UGRAD, date(2015, 1, 1), date(2016, 6, 1))
+        self._position(Title.FULL_PROF, date(2022, 1, 1), None,
+                       school="Massachusetts Institute of Technology")
+        role = self._role(date(2015, 6, 1), date(2016, 6, 1))
         self.assertEqual(role.position_during_role, ugrad)
 
     def test_overlapping_positions_pick_the_latest_to_start(self):
@@ -49,7 +70,7 @@ class PositionDuringRoleTests(DatabaseTestCase):
         better description of the person at that moment."""
         self._position(Title.UGRAD, date(2015, 1, 1), date(2019, 1, 1))
         ms = self._position(Title.MS_STUDENT, date(2017, 1, 1), date(2019, 1, 1))
-        role = self._role(date(2018, 1, 1))
+        role = self._role(date(2018, 1, 1), date(2018, 12, 1))
         self.assertEqual(role.position_during_role, ms)
 
     def test_open_ended_position_contains_later_role(self):
@@ -58,20 +79,38 @@ class PositionDuringRoleTests(DatabaseTestCase):
         role = self._role(date(2023, 6, 1))
         self.assertEqual(role.position_during_role, phd)
 
-    def test_falls_back_to_prior_position_when_role_starts_in_a_gap(self):
-        """A role starting between two positions reports the most recent one
-        that had already started -- not the nearest in time."""
+    def test_future_position_is_not_reported_yet(self):
+        """A promotion entered ahead of time (start date in the future) must not
+        leak into today's payload: the window stops at today."""
+        current = self._position(Title.PHD_STUDENT, date(2020, 1, 1), None)
+        self._position(Title.POST_DOC, date.today() + timedelta(days=90), None)
+        role = self._role(date(2021, 1, 1))
+        self.assertEqual(role.position_during_role, current)
+
+    def test_future_position_is_not_reported_on_a_role_ending_in_the_future(self):
+        """The same guard, on the role shape that used to slip past it: an
+        editor may enter a planned wrap-up date, which puts end_date in the
+        future. The window end is clamped to today either way, so a promotion
+        entered ahead of time still doesn't leak into today's payload."""
+        current = self._position(Title.PHD_STUDENT, date(2020, 1, 1), None)
+        self._position(Title.POST_DOC, date.today() + timedelta(days=30), None)
+        role = self._role(date(2021, 1, 1), date.today() + timedelta(days=365))
+        self.assertEqual(role.position_during_role, current)
+
+    def test_falls_back_to_prior_position_when_role_falls_in_a_gap(self):
+        """A completed role sitting between two positions reports the most
+        recent one that had already started -- not the nearest in time."""
         ugrad = self._position(Title.UGRAD, date(2014, 1, 1), date(2015, 1, 1))
         self._position(Title.PHD_STUDENT, date(2019, 1, 1), None)
-        role = self._role(date(2017, 1, 1))
+        role = self._role(date(2016, 1, 1), date(2017, 1, 1))
         self.assertEqual(role.position_during_role, ugrad)
 
     def test_falls_back_to_earliest_when_role_predates_every_position(self):
         """Data drift, common in older imported roles: report the earliest
         position rather than nothing."""
         phd = self._position(Title.PHD_STUDENT, date(2020, 1, 1), None)
-        self._position(Title.POST_DOC, date(2025, 1, 1), None)
-        role = self._role(date(2018, 1, 1))
+        self._position(Title.POST_DOC, date(2023, 1, 1), None)
+        role = self._role(date(2017, 1, 1), date(2018, 1, 1))
         self.assertEqual(role.position_during_role, phd)
 
     def test_none_when_person_has_no_positions(self):
@@ -87,6 +126,13 @@ class PositionDuringRoleTests(DatabaseTestCase):
         later_row = self._position(Title.SOFTWARE_DEVELOPER, date(2015, 1, 1), None)
         role = self._role(date(2016, 1, 1))
         self.assertEqual(role.position_during_role, later_row)
+
+    def test_role_ending_before_it_starts_does_not_crash(self):
+        """A typo'd end_date (before start_date) would invert the window. It's
+        clamped, so resolution still answers with the position at role start."""
+        ugrad = self._position(Title.UGRAD, date(2015, 1, 1), None)
+        role = self._role(date(2016, 1, 1), date(2015, 6, 1))
+        self.assertEqual(role.position_during_role, ugrad)
 
     def test_resolves_without_extra_queries_when_prefetched(self):
         """The API relies on this riding prefetch_related('person__position_set')

@@ -76,12 +76,18 @@ sub-resources are keyed by `short_name`:
   position_school, position_school_abbreviated, start_date, end_date,
   is_active }` record (a person may appear more than once for multiple roles).
   `role` is the editor-written free-text description of what they did; the
-  `position_*` fields are what they **were at the time** — the title and school
-  from the Position they held when the role started, so a 2015 stint reads
-  `"Undergrad"` / `"UMD"` even if that person is a professor today. Where the
-  role's start date falls outside every recorded position, the most recent
-  position already begun by then is used — or, for a role predating them all,
-  the earliest. All three are `null` for someone with no Position on record.
+  `position_*` fields describe them **over the span of that role** — the title
+  and school from the latest Position overlapping the role's window
+  (`start_date` → `end_date`, or today for an open role; never past today). So
+  an ongoing role reads as what the person is *now* (`"Professor"` / `"UW"`),
+  while a stint that ended in 2016 still reads `"Undergrad"` / `"UMD"` even if
+  that person is a professor today. Where a role's window falls outside every
+  recorded position, the most recent position already begun by its end is used —
+  or, for a role predating them all, the earliest. All three are `null` for
+  someone with no Position on record.
+  > Use these rather than `/people/<url_name>/`'s `current_*` fields for a roster:
+  > they're scoped to the project, so a past contributor reads as what they were
+  > on the project, not their last lab position.
 - `GET /api/v1/projects/<short_name>/leadership/` — **all** leadership across
   all time (current *and* past), grouped:
   `{ pis, co_pis, student_leads, postdoc_leads, research_scientist_leads }`,
@@ -107,8 +113,10 @@ etc.). See *Images* below.
 
 > **Note:** the `current_*` fields come from the person's *latest* Position, so
 > for an alum they describe their last lab position, not their present-day
-> employer. For what someone was during a specific project stint, use the
-> `position_*` fields on `/projects/<short_name>/people/`.
+> employer. For someone's title during a specific project stint — including a
+> current one — use the `position_*` fields on
+> `/projects/<short_name>/people/`; they're project-scoped, and for an active
+> role they carry the same present-day title anyway.
 
 > **Note:** `email` is intentionally **not** exposed by the API to avoid making
 > it an email-harvesting surface, even where it appears on a member page.
@@ -145,6 +153,13 @@ disk and will 404. Ask for a different size in an issue instead.
     derivative described above. A field named `thumbnail` handing out an 11 MB
     original was a bug, not a contract — 13 headshots cost one consumer 33.5 MB.
     The raw file is still available as `image_original`.
+  - A second, in **2.31.0** (#1435): the `position_*` fields on
+    `/projects/<short_name>/people/` were pinned to the Position held on the
+    role's *start* date, so a role open since 2012 still reported a title from
+    2012. They now report the latest Position overlapping the role, which only
+    changes values for roles spanning a title change — and changes them to the
+    ones a roster actually wants. Finished stints are unaffected unless the
+    person was promoted mid-stint.
 - Don't hardcode pagination page sizes as a proxy for "all" — page through
   `next`, or set `page_size` explicitly (≤100).
 - URLs in responses (PDFs, thumbnails, page links) are absolute and safe to use
