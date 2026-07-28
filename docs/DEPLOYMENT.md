@@ -188,6 +188,64 @@ email.
 | `httpd-access.log` | HTTP request logs | On the Docker host — web `/logs/` URL. |
 | `httpd-error.log` | HTTP error logs | On the Docker host — web `/logs/` URL. |
 
+#### Where `debug.log` is written, and what happens if that fails (#1283)
+
+The path is derived in `makeabilitylab/settings.py`:
+
+```
+LOG_DIR  = $ML_LOG_DIR, defaulting to <BASE_DIR>/media   # /code/media in the container
+LOG_FILE = $LOG_DIR/debug.log                            # /code/media/debug.log
+```
+
+`LOG_DIR` must stay inside `MEDIA_ROOT`, because that is the directory bind-mounted
+out to the shared CSE filesystem — it's what makes `debug.log` readable over SSH at
+`/cse/web/research/makelab/www/debug.log` (prod) and `www-test/debug.log` (test).
+
+> **Note:** `https://<host>/logs/debug.log` **404s on both prod and test** as of
+> 2026-07-28 (verified with `curl`; it falls through to Django's custom 404). The
+> web-URL rows in the table above are stale. SSH is the reliable path — see
+> "Reading `debug.log` over SSH" below. Because the log nonetheless lives in a
+> web-served tree, we still log at INFO rather than DEBUG when `DEBUG` is off.
+
+- **`ML_LOG_DIR`** is an optional environment override for hosts that don't use
+  `/code`. It is **not set** on prod, test, or local dev, and shouldn't need to
+  be. If you do set it outside `MEDIA_ROOT`, the web `/logs/` URL stops working.
+- **If the log directory can't be created or written**, Django does *not* crash
+  (it used to: `LOGGING` is evaluated at `django.setup()`, so a bad path killed
+  startup before a single request). The file handler degrades to a `NullHandler`
+  instead — meaning the server runs fine but **writes no logs at all**.
+
+Because a degraded state is otherwise invisible (there is no console access on
+these servers), it is surfaced two ways:
+
+1. **`/version.json`** → `"log_to_file": false` and `"log_file": "<path that failed>"`.
+2. **The `/admin/` dashboard** → a warning callout, shown to superusers only.
+
+### Verifying logging after a deploy
+
+`log_to_file: true` only means the *directory* was writable at startup, so check
+both the flag and that records are actually landing on disk:
+
+```bash
+HOST=https://makeabilitylab-test.cs.washington.edu   # or the prod host
+curl -s $HOST/version.json | python3 -m json.tool
+# expect: "log_to_file": true, "log_file": "/code/media/debug.log",
+#         and a "git_sha" matching the commit you pushed
+```
+
+Match `git_sha` — **not `built_at`**, which has shown fresh on a stuck auto-deploy
+serving stale code. Then confirm records are really being written (the web `/logs/`
+URL 404s, so this has to be SSH):
+
+```bash
+ssh makelab1                                          # or makelab2 / recycle
+ls -l /cse/web/research/makelab/www-test/debug.log     # www/ for prod
+tail -5 /cse/web/research/makelab/www-test/debug.log   # timestamps after the deploy
+```
+
+The log rotates at 5 MB, so check `debug.log.1` too when hunting a container-start
+sequence.
+
 ### Accessing Logs via Web
 
 - **Test:** https://makeabilitylab-test.cs.washington.edu/logs/
