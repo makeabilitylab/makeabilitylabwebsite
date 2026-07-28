@@ -164,9 +164,15 @@ echo "******************************************"
 python manage.py setup_admin_groups
 
 echo "****************** STEP 4.10b/5: docker-entrypoint.sh ************************"
-echo "4.10b Running 'python manage.py restandardize_artifact_filenames' to rename legacy talk/poster/pub files to the standardized scheme (#1401)"
+echo "4.10b Running 'python manage.py restandardize_artifact_filenames' to rename legacy talk/poster/pub files to the standardized scheme (#1401/#1404)"
 echo "******************************************"
-python manage.py restandardize_artifact_filenames
+# TEMPORARY (#1404): the scheme just gained a trailing artifact-type segment
+# ("..._CHI2024_Talk"), so this step would re-rename EVERY already-standardized
+# talk and poster in one unattended pass. --dry-run logs what WOULD be renamed,
+# touching nothing on disk or in the DB, so the scope can be reviewed on the
+# test server (and then prod) first. REMOVE --dry-run and redeploy to perform
+# the rename; after that this step is idempotent again and stays in place.
+python manage.py restandardize_artifact_filenames --dry-run
 
 echo "****************** STEP 4.10c/5: docker-entrypoint.sh ************************"
 echo "4.10c Running 'python manage.py repair_diverged_artifact_filenames' to recover artifacts whose files were renamed on disk but not in the DB (#1390 dotted-name bug)"
