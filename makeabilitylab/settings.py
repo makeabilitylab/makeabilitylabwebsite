@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.31.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "A project's roster in the public API now reports each person's title over the span of their role (#1435), so someone on a project since 2012 reads as what they are today rather than the title they held back then. Finished stints still read as what that person was at the time."
+ML_WEBSITE_VERSION = "2.32.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Positions can now be titled \"Research Software Engineer\" (#1437). The affiliation fields are relabeled \"Institution or organization\" and \"Department or unit\", since collaborators come from nonprofits and companies too, and non-academic units no longer abbreviate to their first five characters."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 

@@ -41,6 +41,11 @@ class Title(models.TextChoices):
     ASSOCIATE_PROF = "Associate Professor"
     FULL_PROF = "Professor"
     RESEARCH_SCIENTIST = "Research Scientist"
+    # Non-student staff who build and maintain the lab's research software
+    # (research systems, study apparatus, data pipelines). "Research Software
+    # Engineer" (RSE) is the term of art for this role in academia; it's
+    # engineering-led rather than research-led, unlike Research Scientist.
+    RESEARCH_SOFTWARE_ENGINEER = "Research Software Engineer"
     # Non-student staff who coordinate a project's operations (curriculum,
     # IRB, recruitment, partner logistics) rather than run its research.
     # Added for the UIC subaward on Project Sidewalk; "Research Scientist"
@@ -72,8 +77,23 @@ class Position(models.Model):
     role = models.CharField(max_length=50, choices=Role.choices, default=Role.MEMBER)
     title = models.CharField(max_length=50, choices=Title.choices)
 
-    department = models.CharField(max_length=50, blank=True, default="Allen School of Computer Science and Engineering")
-    school = models.CharField(max_length=60, default="University of Washington")
+    # Both fields hold the person's affiliation, which is *usually* but not always
+    # academic: collaborators come from nonprofits (Easterseals), companies, and
+    # medical centers too. The DB columns keep their historical names — this repo
+    # regenerates migrations non-interactively per environment, where a field
+    # rename can't be confirmed and would drop the column (same reason
+    # ``grad_mentor`` kept its name in #806) — so the fix is verbose_name only,
+    # which carries no schema change. The defaults stay UW/Allen School because
+    # that's right for the overwhelming majority of rows.
+    department = models.CharField(max_length=50, blank=True,
+                                  default="Allen School of Computer Science and Engineering",
+                                  verbose_name="Department or unit",
+                                  help_text="The unit within the institution or organization. "
+                                            "Clear the default for affiliations that don't have one.")
+    school = models.CharField(max_length=60, default="University of Washington",
+                              verbose_name="Institution or organization",
+                              help_text="University, company, nonprofit, or school "
+                                        "(e.g. \"University of Washington\", \"Easterseals\").")
 
     TITLE_ORDER_MAPPING = {
         Title.FULL_PROF: 0,
@@ -82,16 +102,17 @@ class Position(models.Model):
         Title.POST_DOC: 3,
         Title.DIRECTOR: 4,
         Title.RESEARCH_SCIENTIST: 5,
-        Title.PROJECT_COORDINATOR: 6,
-        Title.MEDICAL_DOCTOR: 7,
-        Title.PHD_STUDENT: 8,
-        Title.MEDICAL_STUDENT: 9,
-        Title.MS_STUDENT: 10,
-        Title.SOFTWARE_DEVELOPER: 11,
-        Title.DESIGNER: 12,
-        Title.UGRAD: 13,
-        Title.HIGH_SCHOOL: 14,
-        Title.UNKNOWN: 15
+        Title.RESEARCH_SOFTWARE_ENGINEER: 6,
+        Title.PROJECT_COORDINATOR: 7,
+        Title.MEDICAL_DOCTOR: 8,
+        Title.PHD_STUDENT: 9,
+        Title.MEDICAL_STUDENT: 10,
+        Title.MS_STUDENT: 11,
+        Title.SOFTWARE_DEVELOPER: 12,
+        Title.DESIGNER: 13,
+        Title.UGRAD: 14,
+        Title.HIGH_SCHOOL: 15,
+        Title.UNKNOWN: 16
     }
 
     # BETTER - Use class constant:
@@ -335,13 +356,15 @@ class Position(models.Model):
     def is_professional_position(position):
         """Static method returns true if position is a professional"""
         if(type(position) is Position):
-            return (position.title == Title.RESEARCH_SCIENTIST or 
+            return (position.title == Title.RESEARCH_SCIENTIST or
+                    position.title == Title.RESEARCH_SOFTWARE_ENGINEER or
                     position.title == Title.SOFTWARE_DEVELOPER or
-                    position.title == Title.DIRECTOR or 
+                    position.title == Title.DIRECTOR or
                     position.title == Title.DESIGNER or
                     position.title == Title.MEDICAL_DOCTOR)
         elif(type(position) is str):
-            return (position == Title.RESEARCH_SCIENTIST or 
+            return (position == Title.RESEARCH_SCIENTIST or
+                    position == Title.RESEARCH_SOFTWARE_ENGINEER or
                     position == Title.SOFTWARE_DEVELOPER or
                     position == Title.DIRECTOR or
                     position == Title.DESIGNER or
