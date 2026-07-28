@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.29.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Standardized filenames for talks and posters now end in '_Talk' and '_Poster' (#1404), so a downloaded slide deck or poster is no longer indistinguishable from the paper PDF of the same work. Publication filenames are unchanged. Dry-run stage: existing files are NOT renamed yet — the pending renames are inventoried in debug.log for review, and the one-time rename ships in the follow-up release."
+ML_WEBSITE_VERSION = "2.29.1" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Performs the one-time rename adding the '_Talk'/'_Poster' filename suffix (#1404): 188 talks and 11 posters per the 2.29.0 dry-run inventory; publications untouched. Also promotes the #1390 diverged-file repair from dry-run to live, recovering 3 talks whose PDFs sat orphaned on disk under dotted names."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 

@@ -166,21 +166,19 @@ python manage.py setup_admin_groups
 echo "****************** STEP 4.10b/5: docker-entrypoint.sh ************************"
 echo "4.10b Running 'python manage.py restandardize_artifact_filenames' to rename legacy talk/poster/pub files to the standardized scheme (#1401/#1404)"
 echo "******************************************"
-# TEMPORARY (#1404): the scheme just gained a trailing artifact-type segment
-# ("..._CHI2024_Talk"), so this step would re-rename EVERY already-standardized
-# talk and poster in one unattended pass. --dry-run logs what WOULD be renamed,
-# touching nothing on disk or in the DB, so the scope can be reviewed on the
-# test server (and then prod) first. REMOVE --dry-run and redeploy to perform
-# the rename; after that this step is idempotent again and stays in place.
-python manage.py restandardize_artifact_filenames --dry-run
+# The #1404 type-suffix migration ran here as a --dry-run first (2.29.0) so the
+# scope could be reviewed in prod's debug.log (188 talks + 11 posters, zero
+# publications); the one-time corpus rename went live in 2.29.1. Idempotent —
+# on-scheme rows are skipped — so this stays in place for future rows.
+python manage.py restandardize_artifact_filenames
 
 echo "****************** STEP 4.10c/5: docker-entrypoint.sh ************************"
 echo "4.10c Running 'python manage.py repair_diverged_artifact_filenames' to recover artifacts whose files were renamed on disk but not in the DB (#1390 dotted-name bug)"
 echo "******************************************"
-# TEMPORARY (#1390): --dry-run logs which diverged artifacts WOULD be repaired,
-# touching nothing on disk or in the DB, so we can review on prod before doing it
-# for real. REMOVE --dry-run and redeploy to perform the recovery.
-python manage.py repair_diverged_artifact_filenames --dry-run
+# Promoted from --dry-run in 2.29.1 after reviewing prod's inventory (#1390):
+# 3 recoverable orphans; truly-missing files are logged as unrecoverable
+# warnings for manual review. Divergence-gated and idempotent, so it stays.
+python manage.py repair_diverged_artifact_filenames
 
 echo "****************** STEP 4.10d/5: docker-entrypoint.sh ************************"
 echo "4.10d Running 'python manage.py seed_sidewalk_participants' to backfill Project Sidewalk contributors from the NSF Crowd+AI annual reports"
