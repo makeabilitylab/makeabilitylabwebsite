@@ -45,8 +45,8 @@ at fault. Nothing new is disclosed -- the path is derivable from the public repo
 
 Note that ``log_to_file: true`` only means the log *directory* was writable at
 startup. To confirm records are really landing, tail the file over SSH at
-``/cse/web/research/makelab/www[-test]/debug.log`` (the ``/logs/`` URL described in
-docs/DEPLOYMENT.md 404s on both servers).
+``/cse/web/research/makelab/www[-test]/debug.log`` -- there is no web path to the
+log (the old ``/logs/`` URL is gone; see docs/DEPLOYMENT.md).
 """
 
 import json

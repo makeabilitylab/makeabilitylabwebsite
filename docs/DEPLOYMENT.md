@@ -75,10 +75,17 @@ git push --tags
 
 ### Verifying Deployment
 
-Check the build log to confirm deployment succeeded:
+Confirm the deployment succeeded with `/version.json`, which reports the running
+build (the `/logs/buildlog.txt` URL this section used to point at now 404s — see
+"Log Files" below):
 
-- **Test:** https://makeabilitylab-test.cs.washington.edu/logs/buildlog.txt
-- **Production:** https://makeabilitylab.cs.washington.edu/logs/buildlog.txt
+```bash
+curl -s https://makeabilitylab-test.cs.washington.edu/version.json | python3 -m json.tool
+```
+
+Match `git_sha` against the commit you pushed — **not `built_at`**, which has read
+fresh while the host served stale code. The build log itself is only available in
+the deploy email sent to maintainers on every push.
 
 ## Versioning
 
@@ -112,7 +119,7 @@ View current and past versions on the [Releases page](https://github.com/makeabi
    git push --tags
    ```
 
-5. Verify deployment via the [production build log](https://makeabilitylab.cs.washington.edu/logs/buildlog.txt)
+5. Verify the deploy landed via [`/version.json`](https://makeabilitylab.cs.washington.edu/version.json) — check `git_sha`, not `built_at`
 
 ## Server Configuration
 
@@ -175,18 +182,24 @@ You only do this once per property (not per content change):
 
 ### Log Files
 
-Not all logs live in the same place. Only the Django application log is on
-the shared CSE filesystem (and therefore readable from `recycle`); the build
-and web-server logs live on the Docker host (`grabthar` / `docker-test2`),
-which we can't SSH into — reach those via the web `/logs/` URL or the deploy
-email.
+Not all logs live in the same place. Only the Django application log is on the
+shared CSE filesystem, and it is the only one we can still read directly. The
+build and web-server logs live on the Docker host (`grabthar` / `docker-test2`),
+which we can't SSH into.
+
+> **The web `/logs/` URL is gone.** It used to expose these files over HTTP.
+> Every path under it now 404s on both prod and test (verified 2026-07-28): the
+> response comes back as `Server: gunicorn` with Django's custom 404 template,
+> meaning Apache has no `/logs/` alias any more and the request falls through to
+> Django. It is not coming back — web access to logs is no longer needed and UW
+> CSE IT has trouble maintaining it. Use SSH.
 
 | Log | Description | Where to find it |
 |-----|-------------|------------------|
-| `debug.log` | Django application logs | **On the shared filesystem** — read via SSH on `recycle` (see below) or the web `/logs/` URL. A rotated `debug.log.1` sits alongside it. |
-| `buildlog.txt` | Deployment build output | **Not on the shared filesystem** (so *not* under `www/` on `recycle`). It lives on the Docker host and is emailed to maintainers on every push — that email is the most reliable copy. Also exposed at the web `/logs/` URL. |
-| `httpd-access.log` | HTTP request logs | On the Docker host — web `/logs/` URL. |
-| `httpd-error.log` | HTTP error logs | On the Docker host — web `/logs/` URL. |
+| `debug.log` | Django application logs | **On the shared filesystem** — read via SSH (see below). Rotated `debug.log.1` … `.6` sit alongside it. |
+| `buildlog.txt` | Deployment build output | **Not on the shared filesystem** (so *not* under `www/`). It lives on the Docker host and is emailed to maintainers on every push — **that email is the only copy you can get.** |
+| `httpd-access.log` | HTTP request logs | On the Docker host — **not reachable**; ask UW CSE IT if you need it. |
+| `httpd-error.log` | HTTP error logs | On the Docker host — **not reachable**; ask UW CSE IT if you need it. |
 
 #### Where `debug.log` is written, and what happens if that fails (#1283)
 
@@ -201,15 +214,16 @@ LOG_FILE = $LOG_DIR/debug.log                            # /code/media/debug.log
 out to the shared CSE filesystem — it's what makes `debug.log` readable over SSH at
 `/cse/web/research/makelab/www/debug.log` (prod) and `www-test/debug.log` (test).
 
-> **Note:** `https://<host>/logs/debug.log` **404s on both prod and test** as of
-> 2026-07-28 (verified with `curl`; it falls through to Django's custom 404). The
-> web-URL rows in the table above are stale. SSH is the reliable path — see
-> "Reading `debug.log` over SSH" below. Because the log nonetheless lives in a
-> web-served tree, we still log at INFO rather than DEBUG when `DEBUG` is off.
+Note that `MEDIA_ROOT` is a **web-served** tree, so keep the log conservative:
+we log at INFO rather than DEBUG whenever `DEBUG` is off, and nothing personal or
+sensitive should ever be written to it.
 
 - **`ML_LOG_DIR`** is an optional environment override for hosts that don't use
   `/code`. It is **not set** on prod, test, or local dev, and shouldn't need to
-  be. If you do set it outside `MEDIA_ROOT`, the web `/logs/` URL stops working.
+  be. If you point it outside `MEDIA_ROOT`, the log stops being bind-mounted to
+  the shared filesystem and you lose SSH access to it — which, with no shell on
+  these servers, means losing all access. Only do that if you also arrange a
+  mount for the new location.
 - **If the log directory can't be created or written**, Django does *not* crash
   (it used to: `LOGGING` is evaluated at `django.setup()`, so a bad path killed
   startup before a single request). The file handler degrades to a `NullHandler`
@@ -234,8 +248,8 @@ curl -s $HOST/version.json | python3 -m json.tool
 ```
 
 Match `git_sha` — **not `built_at`**, which has shown fresh on a stuck auto-deploy
-serving stale code. Then confirm records are really being written (the web `/logs/`
-URL 404s, so this has to be SSH):
+serving stale code. Then confirm records are really being written (this has to be
+SSH; there is no web path to the log):
 
 ```bash
 ssh makelab1                                          # or makelab2 / recycle
@@ -244,21 +258,20 @@ tail -5 /cse/web/research/makelab/www-test/debug.log   # timestamps after the de
 ```
 
 The log rotates at 5 MB, so check `debug.log.1` too when hunting a container-start
-sequence.
+sequence. Rotation is currently unreliable under multiple Gunicorn workers — see
+issue #1439 — so a rotated file may be much smaller than 5 MB and may be missing
+records.
 
-### Accessing Logs via Web
+### Reading `debug.log` over SSH
 
-- **Test:** https://makeabilitylab-test.cs.washington.edu/logs/
-- **Production:** https://makeabilitylab.cs.washington.edu/logs/
+This is the only way to read the application log. SSH access is read-mostly: you
+can read the shared CSE filesystem, but there is no Docker or `manage.py` access
+on the hosts that run the stack.
 
-Only `debug.log` (the Django application log) is reachable this way — it is
-the one log mounted out to the shared CSE filesystem. `buildlog.txt` and the
-`httpd-*.log` files are **not** here (see the table above).
-
-1. SSH into the jump host:
+1. SSH to a host with the shared filesystem mounted:
 
    ```bash
-   ssh recycle.cs.washington.edu
+   ssh makelab1     # or makelab2, or recycle.cs.washington.edu
    ```
 
 2. Navigate to the log directory:

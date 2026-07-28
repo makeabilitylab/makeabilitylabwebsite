@@ -51,7 +51,7 @@ A superuser is required to use `/admin` and add content; create one with `python
 - **Push to `master`** → auto-deploys to `makeabilitylab-test.cs.washington.edu` via webhook.
 - **Push a SemVer tag (e.g. `git tag 2.3.2 && git push --tags`)** → deploys to production `makeabilitylab.cs.washington.edu`.
 - Bump `ML_WEBSITE_VERSION` and `ML_WEBSITE_VERSION_DESCRIPTION` in `makeabilitylab/settings.py` when cutting a release.
-- Build logs: `<host>/logs/buildlog.txt`. Application logs: `<host>/logs/debug.log`. See `docs/DEPLOYMENT.md` for SSH paths on `recycle.cs.washington.edu`.
+- Application logs: read `debug.log` over SSH on `makelab1`/`makelab2`/`recycle` under `/cse/web/research/makelab/www[-test]/`. Build logs only reach you via the deploy email. **The web `/logs/` URL is gone — every path under it 404s on both hosts.** Confirm what a server is running with `/version.json` (`git_sha`, not `built_at`). See `docs/DEPLOYMENT.md`.
 
 ### Server access model (important — shapes how anything ships to prod/test)
 
@@ -130,7 +130,7 @@ the existing viewset/serializer pattern and keep `v1` fields additive-only
 - **Prod/test `config.ini` has only a `[Django]` section — no `[Postgres]` section.** Per `settings.py`, a missing `[Postgres]` section means Django uses the fallback `DATABASES` default (`HOST='db'`) — i.e. the dockerized `db` service of the active compose file. A `[Postgres]` section, if added, would override it. So the DB is the in-stack `db` container in **every** environment (no external Postgres); on the servers that's the `db` service in `docker-compose.yml`.
 - `DEBUG` resolution order: `DJANGO_ENV=PROD` forces False → `config.ini [Django] DEBUG` → `DJANGO_ENV=DEBUG` forces True → default False.
 - `TIME_ZONE = 'America/Los_Angeles'`. `ML_WEBSITE_VERSION` in settings is shown in the admin header and used in release tagging.
-- **Logging (#1283):** `debug.log` lives at `LOG_DIR/debug.log`, where `LOG_DIR` is `$ML_LOG_DIR` or `<BASE_DIR>/media` (`/code/media` in the container). Keep it inside `MEDIA_ROOT` — the web-served `/logs/debug.log` depends on that. `ML_LOG_DIR` is unset everywhere today; it exists for non-`/code` hosts. If the dir isn't writable the file handler degrades to a `NullHandler` rather than crashing `django.setup()`, and since there's no console on the servers that state surfaces via `/version.json` (`log_to_file`) and a superuser-only callout on the admin dashboard.
+- **Logging (#1283):** `debug.log` lives at `LOG_DIR/debug.log`, where `LOG_DIR` is `$ML_LOG_DIR` or `<BASE_DIR>/media` (`/code/media` in the container). Keep it inside `MEDIA_ROOT` — that's the tree bind-mounted to the shared CSE filesystem, so it's what makes the log readable over SSH at all. `ML_LOG_DIR` is unset everywhere today; it exists for non-`/code` hosts. `MEDIA_ROOT` is web-served, so never log anything sensitive. If the dir isn't writable the file handler degrades to a `NullHandler` rather than crashing `django.setup()`, and since there's no console on the servers that state surfaces via `/version.json` (`log_to_file`) and a superuser-only callout on the admin dashboard.
 
 ### Container startup side effects (`docker-entrypoint.sh`)
 
