@@ -230,7 +230,9 @@ class Person(models.Model):
         else:
             return None
 
-    get_current_department.short_description = "Department"
+    # Column labels match Position's verbose_names — the affiliation isn't always
+    # academic (nonprofits, companies, medical centers).
+    get_current_department.short_description = "Department or unit"
 
     @cached_property
     def get_current_school(self):
@@ -241,7 +243,7 @@ class Person(models.Model):
         else:
             return None
 
-    get_current_school.short_description = "School"
+    get_current_school.short_description = "Institution or organization"
 
     @cached_property
     def get_current_role(self):

@@ -103,6 +103,24 @@ class GetDepartmentAbbreviatedTests(SimpleTestCase):
     def test_hcde(self):
         self.assertEqual(get_department_abbreviated("HCDE"), "HCDE")
 
+    def test_unmatched_department_acronyms_without_filler_words(self):
+        # Used to return the first five characters ("Natio", "Disab").
+        self.assertEqual(
+            get_department_abbreviated("National Center for Mobility Management"), "NCMM"
+        )
+        self.assertEqual(
+            get_department_abbreviated("Disability and Human Development"), "DHD"
+        )
+
+    def test_single_word_department_is_not_acronymed(self):
+        # Same escape hatch as get_school_abbreviated: "P" helps nobody.
+        self.assertEqual(get_department_abbreviated("Psychology"), "Psychology")
+        self.assertEqual(get_department_abbreviated("Math"), "Math")
+
+    def test_empty_department_is_passed_through(self):
+        # Non-academic affiliations often have no unit at all.
+        self.assertEqual(get_department_abbreviated(""), "")
+
 
 class GetVideoEmbedTests(SimpleTestCase):
     def test_youtube_short_url(self):

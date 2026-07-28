@@ -148,6 +148,7 @@ def get_active_mentors_queryset():
         - PHD_STUDENT
         - MS_STUDENT
         - RESEARCH_SCIENTIST
+        - RESEARCH_SOFTWARE_ENGINEER
         - DIRECTOR
         - SOFTWARE_DEVELOPER
         - DESIGNER
@@ -170,6 +171,7 @@ def get_active_mentors_queryset():
         Title.PHD_STUDENT,
         Title.MS_STUDENT,
         Title.RESEARCH_SCIENTIST,
+        Title.RESEARCH_SOFTWARE_ENGINEER,
         Title.DIRECTOR,
         Title.SOFTWARE_DEVELOPER,
         Title.DESIGNER,

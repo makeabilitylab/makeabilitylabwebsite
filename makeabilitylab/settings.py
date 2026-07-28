@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.31.1" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "The Django log path is now derived from the project root instead of a hardcoded container path, and an unwritable log directory degrades gracefully instead of killing startup (#1283). Because the servers have no console, /version.json now reports whether file logging is actually live."
+ML_WEBSITE_VERSION = "2.32.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Positions can now be titled \"Research Software Engineer\", and the affiliation fields are relabeled \"Institution or organization\" and \"Department or unit\" — collaborators come from nonprofits and companies, not just universities (#1437). This release also carries the 2.31.1 log-path fix (#1283)."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
