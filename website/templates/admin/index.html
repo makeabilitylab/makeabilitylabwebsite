@@ -9,6 +9,25 @@
   {% endif %}
 </div>
 
+{% comment %}
+  Degraded-logging warning (#1283). LOGGING's file handler falls back to a
+  NullHandler when the log directory isn't writable, which would otherwise be
+  completely silent: the 'django' logger has only that handler, and there is no
+  console access on the -test or prod servers. Superuser-gated because only the
+  maintainer can act on it. The scriptable equivalent is /version.json's
+  'log_to_file' field.
+{% endcomment %}
+{% if user.is_superuser and not LOG_TO_FILE %}
+  <div class="ml-log-warning">
+    <span class="ml-log-warning-icon" aria-hidden="true">⚠️</span>
+    <strong>Warning: file logging is disabled.</strong>
+    <span class="ml-log-warning-desc">Django could not write to the log directory,
+      so log records are being discarded and <code>debug.log</code> will not update.
+      Expected path: <code>{{ LOG_FILE }}</code>. Check that directory's permissions,
+      or the <code>ML_LOG_DIR</code> environment variable if it is set.</span>
+  </div>
+{% endif %}
+
 {% if user.is_superuser %}
   <div class="ml-data-health">
     <span class="ml-data-health-icon" aria-hidden="true">🩺</span>
@@ -122,6 +141,37 @@
     color: #666;
   }
 
+  /* Degraded-logging warning (#1283) — only rendered when logging is dead.
+     Red-tinted rather than amber so it doesn't read as another .ml-help-text tip. */
+  .ml-log-warning {
+    background-color: #fdecea;
+    border: 1px solid #f5c6c0;
+    border-left: 4px solid #b3261e;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .ml-log-warning strong {
+    color: #a3261d; /* 6.4:1 on #fdecea — WCAG AA */
+  }
+
+  .ml-log-warning-icon {
+    margin-right: 6px;
+  }
+
+  .ml-log-warning-desc {
+    color: #5f2c28; /* 9.8:1 on #fdecea — WCAG AA */
+  }
+
+  /* Inherit the callout's text color rather than the admin's muted <code> grey,
+     which doesn't clear AA against these backgrounds (especially in dark mode). */
+  .ml-log-warning code {
+    color: inherit;
+    background: transparent;
+  }
+
   @media (prefers-color-scheme: dark) {
     .ml-data-health {
       background-color: #25302a;
@@ -129,6 +179,17 @@
     }
     .ml-data-health-desc {
       color: #aaa;
+    }
+    .ml-log-warning {
+      background-color: #3a201d;
+      border-color: #5a3430;
+      border-left-color: #e06c5f;
+    }
+    .ml-log-warning strong {
+      color: #f2a099; /* 7.3:1 on #3a201d — WCAG AA */
+    }
+    .ml-log-warning-desc {
+      color: #d9b8b4; /* 8.2:1 on #3a201d — WCAG AA */
     }
   }
 

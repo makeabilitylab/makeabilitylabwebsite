@@ -21,14 +21,21 @@ def admin_version_info(request):
     """
     Make version and debug info available to all templates.
     
-    This is used by the admin interface to display the current 
+    This is used by the admin interface to display the current
     website version in the header and show a debug indicator.
-    
+
+    LOG_TO_FILE / LOG_FILE (#1283) let the admin dashboard warn when the LOGGING
+    file handler degraded to a NullHandler — i.e. this server is writing no logs
+    at all. We have no console access on -test/prod, so the dashboard callout and
+    the /version.json 'log_to_file' field are the only ways to notice.
+
     Returns:
-        dict: Context variables for ML_WEBSITE_VERSION and DEBUG.
+        dict: Context variables for ML_WEBSITE_VERSION, DEBUG, and logging health.
     """
     return {
         'ML_WEBSITE_VERSION': settings.ML_WEBSITE_VERSION,
         'ML_WEBSITE_VERSION_DESCRIPTION': settings.ML_WEBSITE_VERSION_DESCRIPTION,
         'DEBUG': settings.DEBUG,
+        'LOG_TO_FILE': settings.LOG_TO_FILE,
+        'LOG_FILE': settings.LOG_FILE,
     }

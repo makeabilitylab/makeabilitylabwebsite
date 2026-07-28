@@ -7,7 +7,10 @@ HTML comment in ``base.html``. These pin:
   - the JSON shape and that version/description/environment come from settings,
   - ``Cache-Control: no-store`` (so a proxy can't serve a stale version),
   - that git_sha/built_at are read from the entrypoint-written build-info file,
-    and fall back to ``"unknown"`` when the file is absent (e.g. local dev).
+    and fall back to ``"unknown"`` when the file is absent (e.g. local dev),
+  - that log_to_file/log_file report logging health (#1283) -- with no console
+    access on -test or prod, this endpoint is how we confirm a deployed server
+    is actually writing logs rather than silently discarding them.
 """
 
 import json
@@ -59,6 +62,9 @@ class VersionResponseTests(SimpleTestCase):
         # The live WSGI server's self-reported SERVER_SOFTWARE (#1034); always
         # present so we can confirm gunicorn vs. the dev runserver in deploys.
         self.assertIn("server", data)
+        # Logging health (#1283) -- always present so a deploy check can assert on it.
+        self.assertIn("log_to_file", data)
+        self.assertIn("log_file", data)
 
     def test_server_reflects_wsgi_server_software(self):
         # The view reports request.META["SERVER_SOFTWARE"] verbatim; on the real
@@ -67,6 +73,20 @@ class VersionResponseTests(SimpleTestCase):
             self.client.get("/version/", SERVER_SOFTWARE="gunicorn/23.0.0").content
         )
         self.assertEqual(data["server"], "gunicorn/23.0.0")
+
+    @override_settings(LOG_TO_FILE=True, LOG_FILE="/code/media/debug.log")
+    def test_reports_healthy_logging(self):
+        data = json.loads(self.client.get("/version/").content)
+        self.assertTrue(data["log_to_file"])
+        self.assertEqual(data["log_file"], "/code/media/debug.log")
+
+    @override_settings(LOG_TO_FILE=False, LOG_FILE="/nope/debug.log")
+    def test_reports_degraded_logging(self):
+        """``log_to_file: false`` is the remote signal that a server is logging
+        nowhere (#1283); ``log_file`` names the directory that failed."""
+        data = json.loads(self.client.get("/version/").content)
+        self.assertFalse(data["log_to_file"])
+        self.assertEqual(data["log_file"], "/nope/debug.log")
 
     def test_build_info_missing_falls_back_to_unknown(self):
         with override_settings():
