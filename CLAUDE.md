@@ -113,9 +113,14 @@ payload uses absolute URLs. Cross-origin requests are allowed on `/api/` only
 via the in-repo `ApiCorsMiddleware` (no `django-cors-headers` dependency).
 `Person.email` is intentionally not serialized. Projects are gated to
 `is_visible=True`; the people list is scoped to actual members (those with a
-Position). When adding a resource, follow the existing viewset/serializer
-pattern and keep `v1` fields additive-only (breaking changes → `v2`). Full
-reference: `docs/API.md`. Tests: `website/tests/test_api.py`.
+Position). Image fields follow one rule (#1432): `thumbnail` is a cropped, sized
+derivative built by `website.utils.thumbnail_utils.get_cropped_thumbnail` (sizes
+in `serializers.py`; keep each size's aspect ratio equal to the model's
+`ImageRatioField`), `image_original` is the raw upload; `warm_api_thumbnails`
+pre-generates the derivatives at container start. When adding a resource, follow
+the existing viewset/serializer pattern and keep `v1` fields additive-only
+(breaking changes → `v2`). Full reference: `docs/API.md`. Tests:
+`website/tests/test_api.py`.
 
 ### Settings, config, and environment
 
@@ -128,7 +133,7 @@ reference: `docs/API.md`. Tests: `website/tests/test_api.py`.
 
 ### Container startup side effects (`docker-entrypoint.sh`)
 
-Every container start runs, in order: `collectstatic` → `makemigrations` → `migrate` → `makemigrations website` → `migrate website` → `delete_unused_files` → `thumbnail_cleanup` → `generate_slugs_for_old_news_items` → `auto_close_project_roles` → `remove_year_from_forum_name` → `fix_sortedm2m_columns` → `seed_sidewalk_participants` → `runserver 0.0.0.0:8000`. The repeated `makemigrations website` step is intentional (fixes first-run issues). If you add a one-shot data migration command under `website/management/commands/`, decide whether it belongs in this startup sequence.
+Every container start runs, in order: `collectstatic` → `makemigrations` → `migrate` → `makemigrations website` → `migrate website` → `delete_unused_files` → `thumbnail_cleanup` → `generate_slugs_for_old_news_items` → `auto_close_project_roles` → `remove_year_from_forum_name` → `fix_sortedm2m_columns` → `seed_sidewalk_participants` → `warm_api_thumbnails` → `runserver 0.0.0.0:8000`. The repeated `makemigrations website` step is intentional (fixes first-run issues). If you add a one-shot data migration command under `website/management/commands/`, decide whether it belongs in this startup sequence.
 
 ### Image handling
 

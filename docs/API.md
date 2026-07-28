@@ -67,7 +67,8 @@ Only **publicly visible** projects (`is_visible=True`). Detail and
 sub-resources are keyed by `short_name`:
 
 - `GET /api/v1/projects/<short_name>/` — summary, about, website, dates,
-  keywords, umbrellas, thumbnail.
+  keywords, umbrellas, `thumbnail` (cropped **1000×600**) and `image_original`.
+  See *Images* below.
 - `GET /api/v1/projects/<short_name>/publications/` — the project's pubs.
 - `GET /api/v1/projects/<short_name>/grants/` — grants funding the project.
 - `GET /api/v1/projects/<short_name>/people/` — everyone with a role on the
@@ -100,8 +101,9 @@ Funding amounts are intentionally **not** exposed by the API.
 Actual lab members (people with at least one Position); external co-authors are
 not listed here even though they appear as publication `authors`. Detail by
 `url_name`: `GET /api/v1/people/<url_name>/` — name, `current_title`,
-`current_school`, `current_department`, bio, thumbnail, and public social/web
-links (ORCID, Google Scholar, GitHub, etc.).
+`current_school`, `current_department`, bio, `thumbnail` (cropped **256×256**),
+`image_original`, and public social/web links (ORCID, Google Scholar, GitHub,
+etc.). See *Images* below.
 
 > **Note:** the `current_*` fields come from the person's *latest* Position, so
 > for an alum they describe their last lab position, not their present-day
@@ -111,11 +113,38 @@ links (ORCID, Google Scholar, GitHub, etc.).
 > **Note:** `email` is intentionally **not** exposed by the API to avoid making
 > it an email-harvesting surface, even where it appears on a member page.
 
+## Images
+
+Every payload with a picture follows one convention:
+
+| Field            | What it is                                                    |
+|------------------|---------------------------------------------------------------|
+| `thumbnail`      | A **cropped, sized derivative** — the same image the site itself renders, honoring the crop box an editor set in the admin. Use this. |
+| `image_original` | The **raw upload**. Full resolution, uncropped, and sometimes tens of megabytes. Only reach for it if you truly need the source. |
+
+Sizes are **256×256** for a person and **1000×600** for a project — roughly 2× what
+the site renders, so a 128 px avatar (or a 500 px-wide project card) stays sharp
+on a HiDPI display. Both keep the aspect ratio of the corresponding crop box, so
+nothing gets cropped a second time.
+
+Person image fields appear wherever a person does: `/people/`, publication
+`authors`, and the nested `person` on `/projects/<short_name>/people/`. Both
+fields are `null` when there's no image at all.
+
+Derivatives are generated server-side, so **don't hand-build a thumbnail URL** by
+editing the size in one — a size the site has never rendered doesn't exist on
+disk and will 404. Ask for a different size in an issue instead.
+
 ## Stability contract
 
 - **`v1` fields are additive-only.** New fields may be added; existing field
   names and meanings will not change or be removed within `v1`. Breaking changes
   ship as `/api/v2/`.
+  - One exception has been taken, in **2.30.0** (#1432): `thumbnail` on people
+    and projects used to return the raw upload and now returns the cropped
+    derivative described above. A field named `thumbnail` handing out an 11 MB
+    original was a bug, not a contract — 13 headshots cost one consumer 33.5 MB.
+    The raw file is still available as `image_original`.
 - Don't hardcode pagination page sizes as a proxy for "all" — page through
   `next`, or set `page_size` explicitly (≤100).
 - URLs in responses (PDFs, thumbnails, page links) are absolute and safe to use
@@ -129,6 +158,16 @@ Code lives in `website/api/` (`serializers.py`, `views.py`, `urls.py`,
 `settings.py`. CORS is a tiny in-repo middleware
 (`website.api.middleware.ApiCorsMiddleware`), scoped to `/api/`, rather than a
 third-party package. Tests: `website/tests/test_api.py`.
+
+Thumbnails go through `website.utils.thumbnail_utils.get_cropped_thumbnail` —
+the same easy-thumbnails options the site's templates pass, so the API shares
+their cached files — with the sizes defined as `API_PERSON_THUMBNAIL_SIZE` /
+`API_PROJECT_THUMBNAIL_SIZE` in `serializers.py`. **Keep any new size's aspect
+ratio equal to the model's `ImageRatioField`**, or easy-thumbnails center-crops a
+second time on top of the editor's box (#1424). The API's sizes aren't rendered
+anywhere on the site, so `warm_api_thumbnails` (run from `docker-entrypoint.sh`)
+pre-generates them at container start; without it the first request after a
+deploy generates them all inline.
 
 **Deliberately deferred** (add on the same pattern when needed): write
 endpoints, auth / API keys, request throttling, and Talks/Posters/Videos

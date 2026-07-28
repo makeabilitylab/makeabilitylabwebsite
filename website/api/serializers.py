@@ -8,6 +8,10 @@ contact details (e.g. ``Person.email``) are intentionally *not* serialized to
 avoid turning the API into an email-harvesting surface, even where they appear on
 a member page.
 
+Image fields follow one rule: ``thumbnail`` is a *cropped, sized derivative*
+(honoring the editor's crop box, same as the site renders) and ``image_original``
+is the raw upload. See :func:`cropped_thumbnail_url` and #1432.
+
 Existing model helpers are reused rather than re-deriving formatting:
 ``Person.get_full_name`` / ``get_current_title``, ``Publication`` citation
 helpers, ``Project.get_display_short_name``, ``Grant.start_date`` / ``grant_url``.
@@ -17,6 +21,19 @@ from django.urls import NoReverseMatch, reverse
 from rest_framework import serializers
 
 from website.models import Grant, Person, Project, ProjectRole, Publication
+from website.utils.thumbnail_utils import get_cropped_thumbnail
+
+# Sizes for the cropped derivatives the API serves as ``thumbnail`` (#1432).
+#
+# Each keeps the aspect ratio of the corresponding model's ImageRatioField --
+# Person's crop box is square (245x245), Project's is 15:9 (500x300). A mismatch
+# would make easy-thumbnails center-crop a second time on top of the editor's
+# box, which is what clipped heads off the news cards in #1424.
+#
+# Both are ~2x what the site itself renders, so a consumer can draw a 128px
+# avatar (or a 500px-wide project card) sharply on a HiDPI display.
+API_PERSON_THUMBNAIL_SIZE = (256, 256)
+API_PROJECT_THUMBNAIL_SIZE = (1000, 600)
 
 
 def abs_media_url(request, filefield):
@@ -35,6 +52,18 @@ def abs_media_url(request, filefield):
     return request.build_absolute_uri(url) if request is not None else url
 
 
+def cropped_thumbnail_url(request, image_field, size, box=None):
+    """Absolute URL of the cropped derivative of ``image_field`` at ``size``.
+
+    Falls back to the original image when generation fails (a bad/missing source
+    file), so ``thumbnail`` is never null for a row that *has* an image; returns
+    ``None`` when there's no image at all. Reuses the same easy-thumbnails
+    options the site's templates pass, so the API shares their cached files.
+    """
+    thumbnail = get_cropped_thumbnail(image_field, size, box)
+    return abs_media_url(request, thumbnail or image_field)
+
+
 def abs_page_url(request, url_name, *args):
     """Absolute URL for a named route, tolerant of reverse failures.
 
@@ -50,15 +79,22 @@ def abs_page_url(request, url_name, *args):
 
 
 class PersonSummarySerializer(serializers.ModelSerializer):
-    """Compact person representation, used when nested in publications/roles."""
+    """Compact person representation, used when nested in publications/roles.
+
+    ``thumbnail`` is the cropped 256x256 headshot -- the same derivative the
+    site's own pages render, honoring the crop box an editor set in the admin.
+    ``image_original`` is the raw upload, which can be tens of megabytes; only
+    reach for it if you genuinely need full resolution (#1432).
+    """
 
     name = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField()
     thumbnail = serializers.SerializerMethodField()
+    image_original = serializers.SerializerMethodField()
 
     class Meta:
         model = Person
-        fields = ["id", "url_name", "name", "url", "thumbnail"]
+        fields = ["id", "url_name", "name", "url", "thumbnail", "image_original"]
 
     def get_name(self, obj):
         return obj.get_full_name()
@@ -69,6 +105,14 @@ class PersonSummarySerializer(serializers.ModelSerializer):
         )
 
     def get_thumbnail(self, obj):
+        return cropped_thumbnail_url(
+            self.context.get("request"),
+            obj.image,
+            API_PERSON_THUMBNAIL_SIZE,
+            obj.cropping,
+        )
+
+    def get_image_original(self, obj):
         return abs_media_url(self.context.get("request"), obj.image)
 
 
@@ -142,9 +186,15 @@ class ProjectSummarySerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(ProjectSummarySerializer):
-    """Full project representation for the projects detail/list endpoints."""
+    """Full project representation for the projects detail/list endpoints.
+
+    As with people, ``thumbnail`` is the cropped 1000x600 derivative of the
+    gallery image (honoring ``Project.cropping``) and ``image_original`` is the
+    raw upload (#1432).
+    """
 
     thumbnail = serializers.SerializerMethodField()
+    image_original = serializers.SerializerMethodField()
     keywords = serializers.SerializerMethodField()
     project_umbrellas = serializers.SerializerMethodField()
 
@@ -158,11 +208,20 @@ class ProjectSerializer(ProjectSummarySerializer):
             "data_url",
             "featured_code_repo_url",
             "thumbnail",
+            "image_original",
             "keywords",
             "project_umbrellas",
         ]
 
     def get_thumbnail(self, obj):
+        return cropped_thumbnail_url(
+            self.context.get("request"),
+            obj.gallery_image,
+            API_PROJECT_THUMBNAIL_SIZE,
+            obj.cropping,
+        )
+
+    def get_image_original(self, obj):
         return abs_media_url(self.context.get("request"), obj.gallery_image)
 
     def get_keywords(self, obj):
