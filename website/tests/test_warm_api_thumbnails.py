@@ -58,9 +58,16 @@ class WarmApiThumbnailsTests(DatabaseTestCase):
         )
         return person
 
-    def _thumbnail_path(self, image_field, size, box):
-        thumbnail = get_cropped_thumbnail(image_field, size, box)
-        self.assertIsNotNone(thumbnail)
+    def _cached_thumbnail_path(self, image_field, size, box):
+        """Path of an ALREADY-cached derivative, or None.
+
+        ``generate=False`` matters: asking the generating way would create the
+        file, and every assertion here would pass whether or not the command
+        actually did anything.
+        """
+        thumbnail = get_cropped_thumbnail(image_field, size, box, generate=False)
+        if thumbnail is None:
+            return None
         return os.path.join(settings.MEDIA_ROOT, thumbnail.name)
 
     def test_warms_member_and_visible_project_thumbnails(self):
@@ -72,34 +79,74 @@ class WarmApiThumbnailsTests(DatabaseTestCase):
             gallery_image=_png_upload("warm_project.png", size=(1600, 1200)),
             cropping="0,100,1500,1000",
         )
+        self.assertIsNone(
+            self._cached_thumbnail_path(
+                person.image, API_PERSON_THUMBNAIL_SIZE, person.cropping
+            ),
+            "nothing should be cached before the command runs",
+        )
 
         call_command("warm_api_thumbnails")
 
-        # Asking for the same derivative afterwards must find it already on disk.
-        person_thumb = self._thumbnail_path(
+        person_thumb = self._cached_thumbnail_path(
             person.image, API_PERSON_THUMBNAIL_SIZE, person.cropping
         )
-        project_thumb = self._thumbnail_path(
+        project_thumb = self._cached_thumbnail_path(
             project.gallery_image, API_PROJECT_THUMBNAIL_SIZE, project.cropping
         )
-        self.assertTrue(os.path.exists(person_thumb))
-        self.assertTrue(os.path.exists(project_thumb))
+        self.assertIsNotNone(person_thumb)
+        self.assertIsNotNone(project_thumb)
         with Image.open(person_thumb) as img:
             self.assertEqual(img.size, API_PERSON_THUMBNAIL_SIZE)
+        with Image.open(project_thumb) as img:
+            self.assertEqual(img.size, API_PROJECT_THUMBNAIL_SIZE)
+
+    def test_warms_people_who_are_not_lab_members(self):
+        """External co-authors have no Position but are still served by the API,
+        nested as publication ``authors``."""
+        coauthor = self.make_person(
+            first_name="External",
+            last_name="Coauthor",
+            image=_png_upload("external_coauthor.png"),
+            cropping="0,0,400,400",
+        )
+
+        call_command("warm_api_thumbnails")
+
+        self.assertIsNotNone(
+            self._cached_thumbnail_path(
+                coauthor.image, API_PERSON_THUMBNAIL_SIZE, coauthor.cropping
+            )
+        )
+
+    def test_project_without_gallery_image_is_not_a_failure(self):
+        """gallery_image is null=True, and .exclude(field="") keeps NULLs -- an
+        image-less project must be filtered out, not reported as a failure."""
+        self.make_project(name="No Image", short_name="noimage", is_visible=True)
+
+        out = io.StringIO()
+        call_command("warm_api_thumbnails", stdout=out)
+
+        project_line = next(
+            line for line in out.getvalue().splitlines() if line.startswith("project")
+        )
+        self.assertIn("0 failed (of 0)", project_line)
 
     def test_rerun_is_idempotent(self):
         """Second run must reuse the cached file, not rewrite it -- this runs on
         every container start."""
         person = self._member()
         call_command("warm_api_thumbnails")
-        path = self._thumbnail_path(
+        path = self._cached_thumbnail_path(
             person.image, API_PERSON_THUMBNAIL_SIZE, person.cropping
         )
         first_mtime = os.path.getmtime(path)
 
-        call_command("warm_api_thumbnails")
+        out = io.StringIO()
+        call_command("warm_api_thumbnails", stdout=out)
 
         self.assertEqual(os.path.getmtime(path), first_mtime)
+        self.assertIn("0 generated", out.getvalue())
 
     def test_missing_source_file_does_not_abort_the_run(self):
         broken = self._member(first_name="Broken")
@@ -109,11 +156,9 @@ class WarmApiThumbnailsTests(DatabaseTestCase):
         with self.assertLogs("website.utils.thumbnail_utils", level="WARNING"):
             call_command("warm_api_thumbnails")
 
-        self.assertTrue(
-            os.path.exists(
-                self._thumbnail_path(
-                    healthy.image, API_PERSON_THUMBNAIL_SIZE, healthy.cropping
-                )
+        self.assertIsNotNone(
+            self._cached_thumbnail_path(
+                healthy.image, API_PERSON_THUMBNAIL_SIZE, healthy.cropping
             )
         )
 
@@ -121,10 +166,10 @@ class WarmApiThumbnailsTests(DatabaseTestCase):
         person = self._member()
         call_command("warm_api_thumbnails", "--dry-run")
 
-        thumbnailed = os.path.join(
-            settings.MEDIA_ROOT, os.path.dirname(person.image.name)
+        # Scoped to this person's own derivatives: MEDIA_ROOT is shared by every
+        # test in this class, so a directory-wide check would depend on test order.
+        self.assertIsNone(
+            self._cached_thumbnail_path(
+                person.image, API_PERSON_THUMBNAIL_SIZE, person.cropping
+            )
         )
-        derivatives = [
-            name for name in os.listdir(thumbnailed) if "256x256" in name
-        ]
-        self.assertEqual(derivatives, [])

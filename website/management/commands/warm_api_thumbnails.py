@@ -14,8 +14,9 @@ couple of stat calls per row. Safe to run by hand at any time::
     python manage.py warm_api_thumbnails
     python manage.py warm_api_thumbnails --dry-run   # just report what's covered
 
-Scope matches what the API exposes: lab members (people with a Position, i.e.
-the /api/v1/people/ queryset) and publicly visible projects.
+Scope matches what the API exposes: every person who has a photo -- not just lab
+members, because PersonSummarySerializer also nests in publication ``authors``,
+where external co-authors show up -- and every publicly visible project.
 """
 
 import logging
@@ -46,12 +47,16 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         dry_run = options["dry_run"]
 
-        people = (
-            Person.objects.filter(position__isnull=False)
-            .exclude(image="")
-            .distinct()
+        # Rows with no image at all are excluded here rather than skipped in the
+        # loop: gallery_image is null=True, and Django's .exclude(field="")
+        # keeps NULLs (NOT (x = '' AND x IS NOT NULL)), so both filters are
+        # needed or image-less projects get reported as failures.
+        people = Person.objects.exclude(image="").exclude(image__isnull=True)
+        projects = (
+            Project.objects.filter(is_visible=True)
+            .exclude(gallery_image="")
+            .exclude(gallery_image__isnull=True)
         )
-        projects = Project.objects.filter(is_visible=True).exclude(gallery_image="")
 
         targets = [
             ("person", people, "image", "cropping", API_PERSON_THUMBNAIL_SIZE),
@@ -68,20 +73,24 @@ class Command(BaseCommand):
                 continue
 
             start = time.monotonic()
-            failed = 0
+            generated = cached = failed = 0
             for obj in queryset.iterator():
-                thumbnail = get_cropped_thumbnail(
-                    getattr(obj, image_attr), size, getattr(obj, box_attr)
-                )
-                if thumbnail is None:
+                image, box = getattr(obj, image_attr), getattr(obj, box_attr)
+                if get_cropped_thumbnail(image, size, box, generate=False):
+                    cached += 1
+                    continue
+                if get_cropped_thumbnail(image, size, box) is None:
                     # get_cropped_thumbnail already logged the reason (usually a
                     # source file missing from media/); keep going.
                     failed += 1
+                else:
+                    generated += 1
 
             elapsed = time.monotonic() - start
             msg = (
-                f"Warmed {count - failed}/{count} {label} thumbnail(s) at {size} "
-                f"in {elapsed:.1f}s ({failed} could not be generated)"
+                f"{label} thumbnails at {size}: {generated} generated, "
+                f"{cached} already cached, {failed} failed (of {count}) "
+                f"in {elapsed:.1f}s"
             )
             _logger.info(msg)
             self.stdout.write(msg)

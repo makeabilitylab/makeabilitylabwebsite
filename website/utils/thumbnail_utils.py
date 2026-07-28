@@ -31,7 +31,7 @@ from easy_thumbnails.files import get_thumbnailer
 _logger = logging.getLogger(__name__)
 
 
-def get_cropped_thumbnail(image_field, size, box=None):
+def get_cropped_thumbnail(image_field, size, box=None, generate=True):
     """
     Generate (or fetch the cached) thumbnail of ``image_field`` at ``size``,
     applying the ``box`` crop set by an editor via django-image-cropping.
@@ -43,6 +43,9 @@ def get_cropped_thumbnail(image_field, size, box=None):
             to the model's ImageRatioField -- see the module docstring.
         box: the crop box string stored by ``ImageRatioField``
             (``"x1,y1,x2,y2"``), or falsy for no crop.
+        generate: when False, return the derivative only if it already exists on
+            disk (``None`` otherwise) instead of rendering it. Use this to ask
+            "is this one cached yet?" without paying to make it.
 
     Returns:
         An ``easy_thumbnails`` ``ThumbnailFile`` (has ``.url``, ``.width``, ...),
@@ -64,7 +67,7 @@ def get_cropped_thumbnail(image_field, size, box=None):
         options["box"] = box
 
     try:
-        return get_thumbnailer(image_field).get_thumbnail(options)
+        return get_thumbnailer(image_field).get_thumbnail(options, generate=generate)
     except Exception:
         _logger.warning(
             "Thumbnail generation failed for %s at %s.",
