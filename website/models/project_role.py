@@ -73,23 +73,39 @@ class ProjectRole(models.Model):
 
     @cached_property
     def position_during_role(self):
-        """The Position this person held when they started this project role.
+        """The Position that best describes this person over this project role.
 
-        This is deliberately *not* the person's current title: a 2015 undergrad
-        who is now a professor should read "Undergrad" next to a 2015 project
-        stint (see issue #1426). Where someone's title changed mid-stint (an
-        undergrad who stayed on for an MS), we report what they were when they
-        joined the project.
+        Specifically, the *latest* Position overlapping the role's window --
+        ``[start_date, end_date or today]``. That gives the two answers a roster
+        wants (#1426, refined in #1435):
+
+        - An **ongoing** role reports what the person is *now*. Someone who has
+          led a project since 2012 and was promoted along the way reads
+          "Professor, University of Washington", not the assistant professorship
+          they held when the stint began.
+        - A **finished** stint stays frozen in its own time. A 2015 undergrad who
+          is a professor today still reads "Undergrad" next to that stint, because
+          the professorship never overlapped it. Where their title changed
+          mid-stint (an undergrad who stayed on for an MS), the later title wins.
+
+        This is why it is *not* :meth:`Person.get_current_title`, which is the
+        person's latest Position full stop -- for an alum, their last lab position
+        rather than either of the above.
 
         Resolution order, most to least faithful:
 
-        1. The latest-starting Position whose date range contains this role's
-           ``start_date``.
+        1. The latest-starting Position overlapping the role's window.
         2. Failing that, the latest-starting Position that had already begun by
-           ``start_date`` (the role started in a gap between positions).
+           the window's end (the whole role sits in a gap between positions).
         3. Failing that, the earliest Position (the role predates every recorded
            position -- data drift, common for older imported roles).
         4. ``None`` only if the person has no Positions at all.
+
+        The window end is clamped to at least the start date, so a typo'd
+        ``end_date`` earlier than ``start_date`` degrades to "position at role
+        start" instead of inverting the range and matching nothing. A Position
+        starting in the future (a promotion entered ahead of time) is likewise
+        excluded, since the window stops at today.
 
         Ties on ``start_date`` (a person holding two positions that begin the
         same day -- concurrent Member/Collaborator rows, or a duplicate entry)
@@ -115,13 +131,16 @@ class ProjectRole(models.Model):
         # Sorts rather than max()/min() so the pk tie-break is stated once.
         positions.sort(key=lambda p: (p.start_date, p.pk))
 
-        containing = [p for p in positions
-                      if p.start_date <= self.start_date
-                      and (p.end_date is None or p.end_date >= self.start_date)]
-        if containing:
-            return containing[-1]
+        window_start = self.start_date
+        window_end = max(self.end_date or date.today(), window_start)
 
-        already_started = [p for p in positions if p.start_date <= self.start_date]
+        overlapping = [p for p in positions
+                       if p.start_date <= window_end
+                       and (p.end_date is None or p.end_date >= window_start)]
+        if overlapping:
+            return overlapping[-1]
+
+        already_started = [p for p in positions if p.start_date <= window_end]
         if already_started:
             return already_started[-1]
 

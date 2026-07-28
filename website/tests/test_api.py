@@ -225,7 +225,7 @@ class ApiTestCase(DatabaseTestCase):
         lead_roles = {r["lead_project_role"] for r in body["results"]}
         self.assertEqual(lead_roles, {"PI", "Co-PI", "Student Lead"})
 
-    # ---- position held during a project role (#1426) ------------------------
+    # ---- position held during a project role (#1426, #1435) -----------------
     #
     # These pin the *wire contract* -- that the resolved Position reaches the
     # payload, and at what cost. The resolution rules themselves (which Position
@@ -271,8 +271,8 @@ class ApiTestCase(DatabaseTestCase):
         return matches[0]
 
     def test_project_people_exposes_position_during_role(self):
-        """The roll call wants what someone *was* at the time, not their current
-        title: an undergrad who later did an MS reads 'Undergrad', 'UMD'."""
+        """A finished stint reports the latest position that overlapped it -- an
+        undergrad who moved to an MS mid-stint reads 'MS Student', 'UW'."""
         person = self._make_role_holder(
             "Multi",
             positions=[
@@ -285,9 +285,28 @@ class ApiTestCase(DatabaseTestCase):
             role_end=date(2018, 1, 1),
         )
         record = self._role_record(person)
-        self.assertEqual(record["position_title"], "Undergrad")
-        self.assertEqual(record["position_school"], "University of Maryland")
-        self.assertEqual(record["position_school_abbreviated"], "UMD")
+        self.assertEqual(record["position_title"], "MS Student")
+        self.assertEqual(record["position_school"], "University of Washington")
+        self.assertEqual(record["position_school_abbreviated"], "UW")
+
+    def test_project_people_active_role_reports_present_day_position(self):
+        """#1435: a still-open role reports what the person is *today*, not what
+        they were when the role began -- the case that had consumers fetching
+        /people/<url_name>/ per roster row just to get a current title."""
+        person = self._make_role_holder(
+            "Promoted",
+            positions=[
+                (Title.ASSISTANT_PROF, "University of Maryland",
+                 date(2012, 1, 1), date(2017, 8, 31)),
+                (Title.FULL_PROF, "University of Washington",
+                 date(2017, 9, 1), None),
+            ],
+            role_start=date(2012, 2, 1),
+        )
+        record = self._role_record(person)
+        self.assertEqual(record["position_title"], "Professor")
+        self.assertEqual(record["position_school"], "University of Washington")
+        self.assertEqual(record["position_school_abbreviated"], "UW")
 
     def test_project_people_position_null_without_position(self):
         """self.past_lead has a project role but no Position at all."""

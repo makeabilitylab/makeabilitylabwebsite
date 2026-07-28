@@ -340,12 +340,13 @@ class PublicationDetailSerializer(PublicationListSerializer):
 class ProjectRoleSerializer(serializers.ModelSerializer):
     """A person's role on a project (start/end, lead type, active flag).
 
-    The ``position_*`` fields describe what the person *was* when they joined the
-    project -- title and school from the Position held at the role's start date
-    (#1426) -- so a 2015 stint reads "Undergrad, UMD" even if that person is a
-    professor today. They're ``null`` for someone with no Position on record.
-    Named ``position_*`` (not bare ``title``) so they don't read as part of
-    ``role``, which is the editor-written free-text description of the work.
+    The ``position_*`` fields describe the person *over the span of this role* --
+    title and school from the latest Position overlapping it (#1426, #1435). An
+    ongoing role reports what they are today ("Professor, UW"); a stint that
+    ended in 2016 still reads "Undergrad, UMD" even if that person is a professor
+    now. They're ``null`` for someone with no Position on record. Named
+    ``position_*`` (not bare ``title``) so they don't read as part of ``role``,
+    which is the editor-written free-text description of the work.
     """
 
     person = PersonSummarySerializer(read_only=True)
