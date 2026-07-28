@@ -140,7 +140,7 @@ disk and will 404. Ask for a different size in an issue instead.
 - **`v1` fields are additive-only.** New fields may be added; existing field
   names and meanings will not change or be removed within `v1`. Breaking changes
   ship as `/api/v2/`.
-  - One exception has been taken, in **2.29.0** (#1432): `thumbnail` on people
+  - One exception has been taken, in **2.30.0** (#1432): `thumbnail` on people
     and projects used to return the raw upload and now returns the cropped
     derivative described above. A field named `thumbnail` handing out an 11 MB
     original was a bug, not a contract — 13 headshots cost one consumer 33.5 MB.

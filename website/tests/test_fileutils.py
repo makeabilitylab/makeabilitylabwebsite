@@ -20,6 +20,7 @@ from website.utils.fileutils import (
     get_filename_no_ext,
     get_filename_without_ext_for_artifact,
     is_image,
+    matches_standardized_basename,
     rename_artifact_on_filesystem,
 )
 
@@ -133,6 +134,65 @@ class GetFilenameForArtifactTests(SimpleTestCase):
         # Title portion (between the underscores) is capped at 5 chars.
         title_part = result.split("_")[1]
         self.assertEqual(len(title_part), 5)
+
+    def test_type_suffix_is_appended_after_the_year(self):
+        """The artifact-type segment (#1404) goes at the END, so the rest of the
+        name stays byte-identical to the pre-#1404 scheme (a paper and its talk
+        still sort next to each other)."""
+        self.assertEqual(
+            get_filename_without_ext_for_artifact(
+                "Doe", "Paper", "CHI", date(2022, 1, 1), type_suffix="Talk"
+            ),
+            "Doe_Paper_CHI2022_Talk",
+        )
+
+    def test_type_suffix_composes_with_the_mid_name_suffix(self):
+        """The trailing type segment is independent of the (unused, legacy)
+        mid-name suffix slot; adding one must not displace the other."""
+        self.assertEqual(
+            get_filename_without_ext_for_artifact(
+                "Doe", "Paper", "CHI", date(2022, 1, 1),
+                suffix="poster", type_suffix="Talk",
+            ),
+            "Doe_Paper_poster_CHI2022_Talk",
+        )
+
+    def test_type_suffix_precedes_the_extension(self):
+        self.assertEqual(
+            get_filename_for_artifact(
+                "Doe", "Paper", "CHI", date(2022, 1, 1), "pdf",
+                type_suffix="Poster",
+            ),
+            "Doe_Paper_CHI2022_Poster.pdf",
+        )
+
+
+class MatchesStandardizedBasenameTests(SimpleTestCase):
+    """The shared uniquifier-tolerant name comparison used by the filename
+    management commands (#1404 extracted it from three copies)."""
+
+    def test_exact_match(self):
+        self.assertTrue(
+            matches_standardized_basename("Doe_Paper_CHI2022", "Doe_Paper_CHI2022"))
+
+    def test_uniquified_variant_matches(self):
+        """ensure_filename_is_unique appends "-<timestamp>" on a disk collision;
+        such a file is still standardized (else the commands re-rename it on
+        every deploy)."""
+        self.assertTrue(matches_standardized_basename(
+            "Doe_Paper_CHI2022-1782399772.42", "Doe_Paper_CHI2022"))
+
+    def test_unrelated_name_does_not_match(self):
+        self.assertFalse(
+            matches_standardized_basename("MyTalk_v3_final", "Doe_Paper_CHI2022"))
+
+    def test_type_suffixed_name_does_not_match_the_unsuffixed_base(self):
+        """The two schemes must stay distinguishable: this is what makes a
+        pre-#1404 talk file get re-standardized rather than read as current."""
+        self.assertFalse(matches_standardized_basename(
+            "Doe_Paper_CHI2022_Talk", "Doe_Paper_CHI2022"))
+        self.assertFalse(matches_standardized_basename(
+            "Doe_Paper_CHI2022", "Doe_Paper_CHI2022_Talk"))
 
 
 class EnsureFilenameIsUniqueTests(SimpleTestCase):

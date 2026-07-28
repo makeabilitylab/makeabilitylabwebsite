@@ -4,6 +4,7 @@ import logging
 from django.core.management.base import BaseCommand
 
 from website.models import Artifact, Talk, Poster, Publication
+from website.utils import fileutils as ml_fileutils
 
 # This retrieves a Python logging instance (or creates it)
 _logger = logging.getLogger(__name__)
@@ -150,9 +151,15 @@ class Command(BaseCommand):
         # base, possibly with a "-<timestamp>" uniqueness suffix from colliding
         # with the sibling files. Match those, then confirm by content type so we
         # never mis-pair a pdf with a pptx/thumbnail (they share the base name).
+        # The pre-#1404 base (no trailing "_Talk"/"_Poster") is searched too: the
+        # bug predates that scheme change, so an orphan it left behind on disk
+        # carries the old base even though the repair target uses the new one.
+        legacy_base = get_valid_filename(
+            Artifact.generate_filename(artifact, include_type_suffix=False))
         candidates = []
         for entry in os.listdir(directory):
-            if entry == valid_base or entry.startswith(valid_base + "-"):
+            if any(ml_fileutils.matches_standardized_basename(entry, base)
+                   for base in {valid_base, legacy_base}):
                 full = os.path.join(directory, entry)
                 if os.path.isfile(full):
                     candidates.append(entry)

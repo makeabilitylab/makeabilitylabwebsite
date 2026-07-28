@@ -239,9 +239,11 @@ def get_filename_no_ext(filename):
     """Returns the *just* filename without the extension (no other path information)"""
     return os.path.splitext(os.path.basename(filename))[0]
 
-def get_filename_for_artifact(last_name, title, forum_name, date, ext, suffix=None, max_pub_title_length=-1):
+def get_filename_for_artifact(last_name, title, forum_name, date, ext, suffix=None, max_pub_title_length=-1,
+                              type_suffix=None):
     """Generates a filename from the provided content."""
-    filename_without_ext = get_filename_without_ext_for_artifact(last_name, title, forum_name, date, suffix, max_pub_title_length)
+    filename_without_ext = get_filename_without_ext_for_artifact(last_name, title, forum_name, date, suffix,
+                                                                 max_pub_title_length, type_suffix)
 
     # Check if ext starts with a dot. If not, add it
     if not ext.startswith('.'):
@@ -250,8 +252,26 @@ def get_filename_for_artifact(last_name, title, forum_name, date, ext, suffix=No
     # Combine filename with extension
     return filename_without_ext + ext
 
-def get_filename_without_ext_for_artifact(last_name, title, forum_name, date, suffix=None, max_pub_title_length=-1):
-    """Generates a filename from the provided content"""
+def get_filename_without_ext_for_artifact(last_name, title, forum_name, date, suffix=None, max_pub_title_length=-1,
+                                          type_suffix=None):
+    """
+    Generates a filename from the provided content.
+
+    The scheme is ``LastName_TitleInTitleCase_[suffix_]ForumYear[_TypeSuffix]``.
+
+    :param suffix: an optional segment inserted *between* the title and the
+        forum. Legacy slot; nothing in the codebase passes it today.
+    :param type_suffix: an optional artifact-type segment appended at the *end*
+        (e.g. "Talk", "Poster") so a downloaded file says what kind of artifact
+        it is (#1404). Trailing rather than mid-name so the rest of the name is
+        byte-identical to the pre-#1404 scheme — a paper and its talk still sort
+        next to each other, and the "-<timestamp>" uniqueness suffix
+        (:func:`ensure_filename_is_unique`) still appends cleanly after it.
+
+    >>> get_filename_without_ext_for_artifact("Froehlich", "Making In The HCIL",
+    ...                                       "CHI", date(2024, 1, 1), type_suffix="Talk")
+    'Froehlich_MakingInTheHcil_CHI2024_Talk'
+    """
 
     if not last_name:
         last_name = "None"
@@ -280,8 +300,34 @@ def get_filename_without_ext_for_artifact(last_name, title, forum_name, date, su
     # Add the rest of the metadata
     new_filename_no_ext += f"{forum_name}{year}"
 
+    # Add the artifact-type segment last (#1404), e.g. "..._CHI2024_Talk"
+    if type_suffix:
+        new_filename_no_ext += f"_{type_suffix}"
+
     return get_valid_filename(new_filename_no_ext)
-    
+
+
+def matches_standardized_basename(basename_no_ext, standardized_base):
+    """
+    Whether an on-disk (extension-less) basename is the given standardized name,
+    tolerating the uniqueness suffix.
+
+    When a standardized name collides on disk, :func:`ensure_filename_is_unique`
+    appends ``-<timestamp>`` (e.g. ``Lee_Talk_CHI2021-1782399772.42``), so such a
+    file IS standardized even though it isn't equal to the generated name.
+    Comparing with plain equality instead would mark those rows dirty forever and
+    churn their filenames on every deploy.
+
+    Note the two schemes stay distinguishable: an unsuffixed base does not match
+    a ``_Talk``-suffixed name (or vice versa), which is what makes a pre-#1404
+    file get re-standardized exactly once.
+
+    >>> matches_standardized_basename("Lee_Talk_CHI2021-1782399772.42", "Lee_Talk_CHI2021")
+    True
+    """
+    return (basename_no_ext == standardized_base
+            or basename_no_ext.startswith(standardized_base + "-"))
+
 
 def ensure_filename_is_unique(filename_with_full_path):
     """Will return a filename with full path that is guaranteed to be unique"""

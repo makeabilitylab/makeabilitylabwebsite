@@ -32,12 +32,20 @@ class RepairDivergedArtifactFilenamesTests(DatabaseTestCase):
         override.enable()
         self.addCleanup(override.disable)
 
-    def _simulate_divergence(self, talk):
+    def _simulate_divergence(self, talk, include_type_suffix=True,
+                             name_suffix=""):
         """Reproduce the bug's end state for the pdf_file: move the real file to
         the extension-less standardized base (the orphan) and point the DB at a
-        now-missing old name."""
+        now-missing old name.
+
+        ``include_type_suffix=False`` names the orphan under the pre-#1404
+        scheme (no trailing "_Talk") — what an orphan left behind before that
+        scheme change looks like. ``name_suffix`` appends a
+        "-<timestamp>"-style uniqueness suffix to the orphan.
+        """
         directory = os.path.dirname(talk.pdf_file.path)
-        valid_base = get_valid_filename(Artifact.generate_filename(talk))
+        valid_base = get_valid_filename(Artifact.generate_filename(
+            talk, include_type_suffix=include_type_suffix)) + name_suffix
         orphan_path = os.path.join(directory, valid_base)  # no extension
         os.rename(talk.pdf_file.path, orphan_path)
         # DB now references a file that isn't there.
@@ -65,6 +73,51 @@ class RepairDivergedArtifactFilenamesTests(DatabaseTestCase):
         self.assertTrue(talk.pdf_file.name.endswith(".pdf"))
         self.assertEqual(
             os.path.basename(talk.pdf_file.name), valid_base + ".pdf"
+        )
+        self.assertTrue(talk.pdf_file.storage.exists(talk.pdf_file.name))
+        self.assertFalse(os.path.exists(orphan_path))
+
+    def test_repairs_orphan_left_under_the_pre_1404_base(self):
+        """The #1390 bug predates the #1404 scheme change, so an orphan it left
+        behind carries the OLD standardized base (no trailing "_Talk"). The
+        command must still find it — and repairs it forward to the new-scheme
+        name."""
+        alice = self.make_person(first_name="Alice", last_name="Smith")
+        talk = self.make_talk(
+            title="A Recoverable Talk", forum_name="CHI", year=2024,
+            authors=[alice],
+        )
+        _, orphan_path = self._simulate_divergence(
+            talk, include_type_suffix=False)
+        self.assertTrue(os.path.exists(orphan_path))
+
+        call_command("repair_diverged_artifact_filenames")
+
+        talk.refresh_from_db()
+        new_base = get_valid_filename(Artifact.generate_filename(talk))
+        self.assertEqual(
+            os.path.basename(talk.pdf_file.name), new_base + ".pdf"
+        )
+        self.assertTrue(talk.pdf_file.storage.exists(talk.pdf_file.name))
+        self.assertFalse(os.path.exists(orphan_path))
+
+    def test_repairs_uniquified_orphan_under_the_pre_1404_base(self):
+        """Same, for a pre-#1404 orphan whose name collided on disk and picked
+        up the "-<timestamp>" uniqueness suffix (ensure_filename_is_unique)."""
+        alice = self.make_person(first_name="Alice", last_name="Smith")
+        talk = self.make_talk(
+            title="A Recoverable Talk", forum_name="CHI", year=2024,
+            authors=[alice],
+        )
+        _, orphan_path = self._simulate_divergence(
+            talk, include_type_suffix=False, name_suffix="-1782399772.42")
+
+        call_command("repair_diverged_artifact_filenames")
+
+        talk.refresh_from_db()
+        new_base = get_valid_filename(Artifact.generate_filename(talk))
+        self.assertEqual(
+            os.path.basename(talk.pdf_file.name), new_base + ".pdf"
         )
         self.assertTrue(talk.pdf_file.storage.exists(talk.pdf_file.name))
         self.assertFalse(os.path.exists(orphan_path))

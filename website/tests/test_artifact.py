@@ -1,6 +1,8 @@
 """Tests for Artifact model methods (filename-drift check, raw-file label)."""
 
 import os
+import shutil
+import tempfile
 from datetime import date
 from unittest.mock import MagicMock, patch
 
@@ -8,9 +10,9 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, override_settings
 
-from website.models import Artifact, Publication, Talk
+from website.models import Artifact, Grant, Poster, Publication, Talk
 from website.tests.base import DatabaseTestCase
 from website.tests.factories import TalkFactory
 
@@ -455,3 +457,178 @@ class RestandardizeArtifactFilenamesTests(DatabaseTestCase):
         self.assertNotIn("Good_Original", good.pdf_file.name)
         # The malformed row is left exactly as it was.
         self.assertEqual(bad.pdf_file.name, bad_name)
+
+
+# --- #1404: artifact-type filename suffix ---------------------------------
+
+
+class ArtifactTypeSuffixTests(SimpleTestCase):
+    """
+    generate_filename appends an artifact-type segment for the types whose
+    downloaded file is otherwise ambiguous (#1404): a talk's exported slides and
+    a poster produce the same Author_Title_VenueYear name as the paper itself.
+    Publications (and grants) stay unsuffixed — a bare paper PDF is the default
+    expectation, and that same name is the .bib download name (get_pub_filename).
+
+    No DB: get_first_author_last_name() short-circuits to "Unknown" on an
+    unsaved instance, so plain model construction is enough.
+    """
+
+    KWARGS = dict(title="My Cool Talk", forum_name="CHI", date=date(2024, 1, 1))
+    LEGACY = "Unknown_MyCoolTalk_CHI2024"
+
+    def test_talk_gets_a_trailing_talk_segment(self):
+        self.assertEqual(Artifact.generate_filename(Talk(**self.KWARGS)),
+                         self.LEGACY + "_Talk")
+
+    def test_poster_gets_a_trailing_poster_segment(self):
+        self.assertEqual(Artifact.generate_filename(Poster(**self.KWARGS)),
+                         self.LEGACY + "_Poster")
+
+    def test_publication_is_unsuffixed(self):
+        self.assertEqual(Artifact.generate_filename(Publication(**self.KWARGS)),
+                         self.LEGACY)
+
+    def test_grant_is_unsuffixed(self):
+        self.assertEqual(Artifact.generate_filename(Grant(**self.KWARGS)),
+                         self.LEGACY)
+
+    def test_extension_follows_the_type_segment(self):
+        self.assertEqual(
+            Artifact.generate_filename(Talk(**self.KWARGS), ".pdf"),
+            self.LEGACY + "_Talk.pdf",
+        )
+
+    def test_include_type_suffix_false_returns_the_pre_1404_name(self):
+        """The legacy form is what the backfill guard compares against so a
+        pre-#1404 standardized file isn't mistaken for an original upload."""
+        self.assertEqual(
+            Artifact.generate_filename(Talk(**self.KWARGS),
+                                       include_type_suffix=False),
+            self.LEGACY,
+        )
+        self.assertEqual(
+            Artifact.generate_filename(Talk(**self.KWARGS), ".pdf",
+                                       include_type_suffix=False),
+            self.LEGACY + ".pdf",
+        )
+
+
+class TypeSuffixRestandardizationTests(DatabaseTestCase):
+    """
+    The #1404 scheme change is applied retroactively: files already carrying the
+    pre-#1404 standardized name are re-renamed once by
+    restandardize_artifact_filenames (the entrypoint step that already runs on
+    every container start), and publications — which keep the old scheme — must
+    not churn.
+    """
+
+    def setUp(self):
+        super().setUp()
+        # Disposable MEDIA_ROOT: these tests write real files, and the renames
+        # must never touch the developer's media/ tree.
+        self.media_root = tempfile.mkdtemp(prefix="ml_media_test_")
+        self.addCleanup(shutil.rmtree, self.media_root, ignore_errors=True)
+        override = override_settings(MEDIA_ROOT=self.media_root)
+        override.enable()
+        self.addCleanup(override.disable)
+
+    def _talk_with_legacy_scheme_files(self, last_name="Kim", title="My Talk",
+                                       year=2019, name_suffix=""):
+        """
+        A talk whose pdf/raw on disk carry the *pre-#1404* standardized name —
+        i.e. what every already-renamed talk on prod looks like today.
+
+        Built with ``pdf_file=None`` so the factory's own (already new-scheme)
+        upload doesn't occupy the rename target, then real files are dropped at
+        the legacy path and the row repointed at them.
+        Returns ``(talk, legacy_base)``.
+        """
+        person = self.make_person(last_name=last_name)
+        talk = TalkFactory(title=title, forum_name="CHI", date=date(year, 1, 1),
+                           pdf_file=None, authors=[person])
+        legacy_base = Artifact.generate_filename(talk, include_type_suffix=False)
+        pdf_name = default_storage.save(
+            f"talks/{legacy_base}{name_suffix}.pdf", ContentFile(b"%PDF-1.4 x"))
+        raw_name = default_storage.save(
+            f"talks/{legacy_base}{name_suffix}.pptx", ContentFile(b"PKx"))
+        thumb_name = default_storage.save(
+            f"talks/images/{legacy_base}{name_suffix}.jpg", ContentFile(b"\xff\xd8jpg"))
+        Talk.objects.filter(pk=talk.pk).update(
+            pdf_file=pdf_name, raw_file=raw_name, thumbnail=thumb_name,
+            original_pdf_filename=None, original_raw_filename=None,
+        )
+        talk.refresh_from_db()
+        return talk, legacy_base
+
+    def test_legacy_scheme_talk_gains_the_type_segment(self):
+        talk, legacy_base = self._talk_with_legacy_scheme_files()
+
+        call_command("restandardize_artifact_filenames")
+
+        talk.refresh_from_db()
+        self.assertEqual(os.path.basename(talk.pdf_file.name),
+                         f"{legacy_base}_Talk.pdf")
+        self.assertEqual(os.path.basename(talk.raw_file.name),
+                         f"{legacy_base}_Talk.pptx")
+        # The thumbnail tracks the same base — save()'s three rename branches
+        # and its thumbnail-existence probe all derive from generate_filename,
+        # so a disagreement here would mean a thumbnail regenerated (or renamed)
+        # on every save.
+        self.assertEqual(os.path.basename(talk.thumbnail.name),
+                         f"{legacy_base}_Talk.jpg")
+        self.assertTrue(default_storage.exists(talk.pdf_file.name))
+        self.assertTrue(default_storage.exists(talk.raw_file.name))
+        self.assertTrue(default_storage.exists(talk.thumbnail.name))
+
+        # Idempotent: the corpus-wide rename happens exactly once, not on every
+        # deploy (this command runs at every container start).
+        pdf_after, raw_after = talk.pdf_file.name, talk.raw_file.name
+        call_command("restandardize_artifact_filenames")
+        talk.refresh_from_db()
+        self.assertEqual(talk.pdf_file.name, pdf_after)
+        self.assertEqual(talk.raw_file.name, raw_after)
+
+    def test_publication_keeps_the_unsuffixed_name(self):
+        """Publications are excluded from the suffix, so the scheme change must
+        not re-rename them — their PDFs are the indexed, externally linked ones."""
+        from website.tests.factories import PublicationFactory
+
+        person = self.make_person(last_name="Lee")
+        pub = PublicationFactory(title="A Paper", forum_name="CHI",
+                                 date=date(2021, 1, 1), authors=[person])
+        before = pub.pdf_file.name
+        self.assertNotIn("_Publication", before)
+
+        call_command("restandardize_artifact_filenames")
+
+        pub.refresh_from_db()
+        self.assertEqual(pub.pdf_file.name, before)
+
+    def test_backfill_does_not_record_a_legacy_scheme_name_as_the_original(self):
+        """
+        backfill_original_filenames runs BEFORE the re-standardization on every
+        container start. Without a legacy-aware guard it would read every
+        already-renamed talk as "never renamed" the moment the scheme changed,
+        and write the old standardized name into "Originally uploaded as" —
+        false provenance, on the very next deploy.
+        """
+        talk, _ = self._talk_with_legacy_scheme_files(last_name="Park")
+
+        call_command("backfill_original_filenames")
+
+        talk.refresh_from_db()
+        self.assertIsNone(talk.original_pdf_filename)
+        self.assertIsNone(talk.original_raw_filename)
+
+    def test_backfill_ignores_a_uniquified_legacy_scheme_name(self):
+        """Same guard, for a legacy name that collided on disk and picked up the
+        "-<timestamp>" uniqueness suffix."""
+        talk, _ = self._talk_with_legacy_scheme_files(
+            last_name="Chen", name_suffix="-1782399772.42")
+
+        call_command("backfill_original_filenames")
+
+        talk.refresh_from_db()
+        self.assertIsNone(talk.original_pdf_filename)
+        self.assertIsNone(talk.original_raw_filename)
