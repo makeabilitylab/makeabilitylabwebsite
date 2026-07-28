@@ -181,6 +181,13 @@ echo "4.10d Running 'python manage.py seed_sidewalk_participants' to backfill Pr
 echo "******************************************"
 python manage.py seed_sidewalk_participants
 
+echo "****************** STEP 4.10e/5: docker-entrypoint.sh ************************"
+echo "4.10e Running 'python manage.py warm_api_thumbnails' to pre-generate the cropped thumbnails the public API serves (#1432)"
+echo "******************************************"
+# Idempotent: after the first run this is a couple of stat calls per row. Without
+# it, the first API request after a deploy generates every derivative inline.
+python manage.py warm_api_thumbnails
+
 # echo "****************** STEP 4.3/5: docker-entrypoint.sh ************************"
 # echo "4.3 Running 'python manage.py rename_person_images' to rename person images"
 # echo "******************************************"

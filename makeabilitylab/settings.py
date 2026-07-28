@@ -86,8 +86,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.28.1" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Adds Project People and Activity Log quick links to the admin header, so two internal pages that nothing in the site nav points at are one click away. The Activity Log link is superuser-only, matching that page's own gate."
+ML_WEBSITE_VERSION = "2.29.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "The public API now serves cropped, sized photos: `thumbnail` honors the crop box you set in the admin (256x256 for people, 1000x600 for projects) instead of handing out the raw upload, which cost one consumer 33.5 MB for 13 headshots. The full-resolution file is still available as `image_original`."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 

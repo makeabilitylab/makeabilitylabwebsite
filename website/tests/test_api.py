@@ -8,19 +8,56 @@ plus a few direct model creates for the relationships the factories don't cover
 (Position, Sponsor/Grant, ProjectRole leadership).
 """
 
+import io
+import os
+import shutil
+import tempfile
 from datetime import date
+from urllib.parse import unquote, urlparse
 
+from django.conf import settings
+from django.core.files.storage import default_storage
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import connection
+from django.test import SimpleTestCase, override_settings
 from django.test.utils import CaptureQueriesContext
+from PIL import Image
 
-from website.models import Grant, Position, ProjectRole, Sponsor
+from website.api.serializers import (
+    API_PERSON_THUMBNAIL_SIZE,
+    API_PROJECT_THUMBNAIL_SIZE,
+)
+from website.models import Grant, Person, Position, ProjectRole, Sponsor
+from website.models.person import PERSON_THUMBNAIL_SIZE
 from website.models.position import Title
+from website.models.project import PROJECT_THUMBNAIL_SIZE
 from website.models.project_role import LeadProjectRoleTypes
 from website.models.publication import PubType
 from website.tests.base import DatabaseTestCase
+from website.utils.thumbnail_utils import get_cropped_thumbnail
+
+# The API now generates cropped derivatives (#1432), so these tests write image
+# files. Keep them out of the repo's media/ dir, which already holds tens of
+# thousands of files left by earlier suites.
+_TEST_MEDIA_ROOT = tempfile.mkdtemp(prefix="ml_api_tests_")
 
 
+def png_upload(name, size=(800, 600), color=(200, 30, 30)):
+    """A real (not 1x1) PNG upload, so cropping/resizing has something to do."""
+    buffer = io.BytesIO()
+    Image.new("RGB", size, color).save(buffer, format="PNG")
+    return SimpleUploadedFile(name, buffer.getvalue(), content_type="image/png")
+
+
+@override_settings(MEDIA_ROOT=_TEST_MEDIA_ROOT)
 class ApiTestCase(DatabaseTestCase):
+    @classmethod
+    def tearDownClass(cls):
+        # Subclasses inherit this; rmtree is idempotent and FileSystemStorage
+        # recreates directories on demand, so repeated cleanup is harmless.
+        shutil.rmtree(_TEST_MEDIA_ROOT, ignore_errors=True)
+        super().tearDownClass()
+
     def setUp(self):
         # A visible project (Project Sidewalk) and a hidden one.
         self.project = self.make_project(
@@ -196,6 +233,12 @@ class ApiTestCase(DatabaseTestCase):
     # against the model in test_project_role.py, where a failure isolates.
 
     def _count_queries(self, url):
+        # Warm the endpoint first: the *first* render generates each person's
+        # cropped thumbnail (#1432), and easy-thumbnails writes a Source/
+        # Thumbnail cache row per generated file. That cost is one-time -- the
+        # cached path is filesystem stats only, no queries -- so measuring the
+        # second call keeps this a test of the Position prefetch.
+        self.assertEqual(self.client.get(url).status_code, 200)
         with CaptureQueriesContext(connection) as ctx:
             self.assertEqual(self.client.get(url).status_code, 200)
         return len(ctx)
@@ -341,3 +384,153 @@ class ApiTestCase(DatabaseTestCase):
         resp = self.client.options("/api/v1/publications/")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp["Access-Control-Allow-Origin"], "*")
+
+
+# ---- image fields (#1432) ---------------------------------------------------
+
+
+class ApiThumbnailTests(ApiTestCase):
+    """``thumbnail`` is the cropped, sized derivative; ``image_original`` is the
+    raw upload.
+
+    Before #1432 the API handed out the raw file as ``thumbnail`` -- 33.5 MB for
+    the 13 headshots Project Sidewalk's About page renders, framed however the
+    original photo happened to be centered rather than by the editor's crop box.
+    """
+
+    CROP_BOX = "100,100,400,400"  # square, matching Person's crop ratio
+
+    def _member_with_photo(self, cropping=CROP_BOX):
+        """A lab member (Position -> visible in /people/) with a real photo."""
+        person = self.make_person(
+            first_name="Photo",
+            last_name="Person",
+            image=png_upload("photo_person.png"),
+            cropping=cropping,
+        )
+        Position.objects.create(
+            person=person, start_date=date(2020, 1, 1), title=Title.PHD_STUDENT
+        )
+        return person
+
+    def _person_payload(self, person):
+        resp = self.client.get(f"/api/v1/people/{person.url_name}/")
+        self.assertEqual(resp.status_code, 200)
+        return resp.json()
+
+    def _media_path(self, url):
+        """Filesystem path under MEDIA_ROOT for an absolute media URL."""
+        path = unquote(urlparse(url).path)
+        if path.startswith(settings.MEDIA_URL):
+            path = path[len(settings.MEDIA_URL):]
+        return os.path.join(settings.MEDIA_ROOT, path.lstrip("/"))
+
+    def test_person_thumbnail_is_cropped_derivative(self):
+        person = self._member_with_photo()
+        body = self._person_payload(person)
+
+        self.assertIn("256x256", body["thumbnail"])
+        # The crop box reaches the derivative (commas are percent-encoded).
+        self.assertIn("box-100%2C100%2C400%2C400", body["thumbnail"])
+        self.assertTrue(body["thumbnail"].startswith("http://testserver"))
+        self.assertNotEqual(body["thumbnail"], body["image_original"])
+
+    def test_person_thumbnail_file_is_generated_at_the_requested_size(self):
+        """Not just a URL: the file exists at 256x256, so a consumer that fetches
+        it gets a real image rather than the 404s that made this unworkable."""
+        body = self._person_payload(self._member_with_photo())
+        with Image.open(self._media_path(body["thumbnail"])) as img:
+            self.assertEqual(img.size, (256, 256))
+
+    def test_person_image_original_is_the_raw_upload(self):
+        person = self._member_with_photo()
+        body = self._person_payload(person)
+        self.assertIn(person.image.name, body["image_original"])
+        self.assertTrue(body["image_original"].startswith("http://testserver"))
+
+    def test_person_thumbnail_without_crop_box(self):
+        """An editor who never touched the cropper still gets a sized thumbnail
+        (ImageRatioField seeds a centered box on save; an empty one is a no-op)."""
+        person = self._member_with_photo(cropping="")
+        body = self._person_payload(person)
+        self.assertIn("256x256", body["thumbnail"])
+
+    def test_person_without_image_has_null_image_fields(self):
+        person = self._member_with_photo()
+        # .update() bypasses Person.save(), whose Star Wars fallback would
+        # otherwise put an image back.
+        Person.objects.filter(pk=person.pk).update(image="", cropping="")
+        body = self._person_payload(person)
+        self.assertIsNone(body["thumbnail"])
+        self.assertIsNone(body["image_original"])
+
+    def test_project_people_nested_person_carries_cropped_thumbnail(self):
+        """The roster reads the nested person, so the cropped URL has to be there
+        too -- otherwise it's a second request per member just for a photo."""
+        person = self._member_with_photo()
+        ProjectRole.objects.create(
+            person=person, project=self.project, start_date=date(2020, 1, 1)
+        )
+        results = self.client.get(
+            "/api/v1/projects/projectsidewalk/people/?page_size=100"
+        ).json()["results"]
+        record = next(r for r in results if r["person"]["id"] == person.id)
+
+        self.assertIn("256x256", record["person"]["thumbnail"])
+        self.assertIn(person.image.name, record["person"]["image_original"])
+
+    def test_project_thumbnail_is_cropped_derivative(self):
+        project = self.make_project(
+            name="Cropped Project",
+            short_name="croppedproj",
+            is_visible=True,
+            gallery_image=png_upload("cropped_proj.png", size=(1600, 1200)),
+            cropping="0,100,1500,1000",  # 15:9, matching Project's crop ratio
+        )
+        body = self.client.get("/api/v1/projects/croppedproj/").json()
+
+        self.assertIn("1000x600", body["thumbnail"])
+        self.assertIn("box-0%2C100%2C1500%2C1000", body["thumbnail"])
+        self.assertIn(project.gallery_image.name, body["image_original"])
+        with Image.open(self._media_path(body["thumbnail"])) as img:
+            self.assertEqual(img.size, (1000, 600))
+
+    def test_thumbnail_falls_back_to_original_when_source_is_missing(self):
+        """A row whose file vanished must not 500 the whole list response."""
+        person = self._member_with_photo()
+        default_storage.delete(person.image.name)
+
+        with self.assertLogs("website.utils.thumbnail_utils", level="WARNING"):
+            body = self._person_payload(person)
+
+        self.assertEqual(body["thumbnail"], body["image_original"])
+
+    def test_helper_returns_none_when_source_is_missing(self):
+        person = self._member_with_photo()
+        default_storage.delete(person.image.name)
+
+        with self.assertLogs("website.utils.thumbnail_utils", level="WARNING"):
+            thumbnail = get_cropped_thumbnail(
+                person.image, API_PERSON_THUMBNAIL_SIZE, person.cropping
+            )
+        self.assertIsNone(thumbnail)
+
+
+class ApiThumbnailAspectTests(SimpleTestCase):
+    """Guard against re-introducing the double-crop that clipped heads off the
+    news cards (#1424): crop_corners applies the editor's box, then scale_and_crop
+    center-crops again if the requested size's aspect ratio disagrees."""
+
+    def test_api_sizes_match_the_models_crop_ratios(self):
+        for label, api_size, model_size in (
+            ("person", API_PERSON_THUMBNAIL_SIZE, PERSON_THUMBNAIL_SIZE),
+            ("project", API_PROJECT_THUMBNAIL_SIZE, PROJECT_THUMBNAIL_SIZE),
+        ):
+            with self.subTest(label):
+                self.assertAlmostEqual(
+                    api_size[0] / api_size[1],
+                    model_size[0] / model_size[1],
+                    places=3,
+                    msg=f"API {label} size {api_size} must keep the aspect ratio "
+                        f"of the model's crop box {model_size}",
+                )
