@@ -133,6 +133,14 @@ django-prose-editor[sanitize]==0.26.0
 # See: https://docs.djangoproject.com/en/5.2/howto/deployment/wsgi/gunicorn/
 gunicorn==23.0.0
 
+# concurrent-log-handler - multiprocess-safe rotating file log handler, used by
+# LOGGING['handlers']['file'] in settings.py. Gunicorn's 3 workers each open the
+# same media/debug.log, and the stdlib RotatingFileHandler is not
+# multiprocess-safe: workers raced on rollover and silently lost log records
+# (issue #1439). This handler takes a cross-process file lock (via its
+# portalocker dependency) around every write and rollover.
+concurrent-log-handler==0.9.29
+
 # -----------------------------------------------------------------------------
 # Security & Networking
 # -----------------------------------------------------------------------------

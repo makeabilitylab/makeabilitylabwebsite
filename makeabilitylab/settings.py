@@ -13,7 +13,8 @@ A few things:
 """
 
 import os
-from configparser import ConfigParser 
+import tempfile # for the log-rotation lock-file dir, see _file_log_handler
+from configparser import ConfigParser
 import datetime # for DATE_MAKEABILITYLAB_FORMED global
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -86,8 +87,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.31.1" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "The Django log path is now derived from the project root instead of a hardcoded container path, and an unwritable log directory degrades gracefully instead of killing startup (#1283). Because the servers have no console, /version.json now reports whether file logging is actually live."
+ML_WEBSITE_VERSION = "2.31.2" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "debug.log rotation is now multiprocess-safe (concurrent-log-handler): Gunicorn's three workers previously raced on rollover and silently lost log records (#1439)."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
@@ -135,7 +136,7 @@ def _ensure_log_dir_writable(log_dir):
 
     1. This checks the *directory*, not the eventual log file. A dir that is
        writable but already holds a root-owned, read-only ``debug.log`` would
-       still let RotatingFileHandler raise on open. That doesn't match the real
+       still let the file handler raise on open. That doesn't match the real
        deploy model, where media/ is owned by the app's own user.
     2. ``os.access(dir, os.W_OK)`` returns True for root regardless of the
        directory mode, so a mode-555 dir wouldn't be caught when running as root.
@@ -158,6 +159,14 @@ def _file_log_handler(log_file, level, enabled):
     NullHandler instead, which keeps every logger's ``'file'`` handler reference
     valid while never touching disk — so startup degrades instead of dying.
 
+    The handler class is ``ConcurrentRotatingFileHandler`` (issue #1439), not
+    the stdlib ``RotatingFileHandler``: on -test and prod, Gunicorn runs 3
+    worker processes (docker-entrypoint.sh) that each open the *same* log file,
+    and the stdlib handler is not multiprocess-safe — workers raced on rollover,
+    renaming each other's freshly created files and silently dropping records.
+    The concurrent handler takes a cross-process file lock around every write
+    and rollover, so one file shared by all workers stays correct.
+
     Split out of the ``LOGGING`` literal so both branches are directly testable;
     ``LOGGING`` is evaluated once at import, so a test can't re-derive it.
     See ``website/tests/test_logging_config.py``.
@@ -166,10 +175,17 @@ def _file_log_handler(log_file, level, enabled):
         return {'class': 'logging.NullHandler'}
     return {
         'level': level,
-        'class': 'logging.handlers.RotatingFileHandler',
+        'class': 'concurrent_log_handler.ConcurrentRotatingFileHandler',
         'filename': log_file,
         'maxBytes': 1024*1024*5,  # 5 MB
         'backupCount': 6,
+        # By default the handler puts its lock file next to the log — i.e.
+        # inside the web-served media root (LOG_FILE lives there so the file is
+        # reachable over SSH/the web; see the LOG_DIR note below). Keep lock
+        # files out of the public tree. /tmp is container-local, which is fine:
+        # all Gunicorn workers share one container, so they see the same lock.
+        # test_lock_file_stays_out_of_media_root pins this.
+        'lock_file_directory': tempfile.gettempdir(),
         'formatter': 'verbose',  # can switch between verbose and simple
     }
 

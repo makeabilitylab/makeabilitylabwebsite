@@ -23,6 +23,8 @@ construction into ``_file_log_handler`` -- these tests call it directly.
 Mostly pure logic; the admin-dashboard tests need the DB for a superuser login.
 """
 
+import logging
+import logging.config
 import os
 import shutil
 import tempfile
@@ -70,14 +72,76 @@ class LogDirWritabilityTests(SimpleTestCase):
 
 
 class FileLogHandlerTests(SimpleTestCase):
-    """Both branches of the builder behind ``LOGGING['handlers']['file']``."""
+    """Both branches of the builder behind ``LOGGING['handlers']['file']``.
 
-    def test_enabled_builds_rotating_file_handler(self):
+    The enabled branch must build a *multiprocess-safe* rotating handler
+    (issue #1439): Gunicorn's 3 workers share one debug.log, and the stdlib
+    ``RotatingFileHandler`` races on rollover across processes — workers rename
+    each other's freshly rotated files and records are silently lost.
+    """
+
+    def test_enabled_builds_concurrent_rotating_file_handler(self):
         handler = _file_log_handler("/tmp/probe/debug.log", "INFO", True)
-        self.assertEqual(handler["class"], "logging.handlers.RotatingFileHandler")
+        self.assertEqual(
+            handler["class"], "concurrent_log_handler.ConcurrentRotatingFileHandler"
+        )
         self.assertEqual(handler["filename"], "/tmp/probe/debug.log")
         self.assertEqual(handler["level"], "INFO")
         self.assertEqual(handler["formatter"], "verbose")
+
+    def test_lock_file_stays_out_of_media_root(self):
+        """The handler's lock file must not land in the web-served media tree.
+
+        By default concurrent-log-handler drops its lock file next to the log,
+        and LOG_FILE lives inside MEDIA_ROOT (everything under it is publicly
+        downloadable). The config must redirect lock files elsewhere.
+        """
+        handler = _file_log_handler(settings.LOG_FILE, "INFO", True)
+        lock_dir = handler["lock_file_directory"]
+        media_root = os.path.join(os.path.normpath(settings.MEDIA_ROOT), "")
+        self.assertFalse(
+            os.path.normpath(lock_dir).startswith(media_root)
+            or os.path.normpath(lock_dir) == os.path.normpath(settings.MEDIA_ROOT),
+            f"lock_file_directory {lock_dir!r} is inside MEDIA_ROOT",
+        )
+
+    def test_enabled_handler_config_is_instantiable(self):
+        """``dictConfig`` must be able to build and use the real handler.
+
+        Guards the class path and constructor kwargs against package changes
+        (e.g. ``lock_file_directory`` is a concurrent-log-handler extension —
+        a typo'd kwarg here would crash ``django.setup()`` on every server).
+        Writes one record and checks it landed, and that no lock file was
+        dropped next to the log.
+        """
+        tmp = tempfile.mkdtemp()
+        log_file = os.path.join(tmp, "debug.log")
+        logger_name = "probe1439"
+        try:
+            handler_cfg = _file_log_handler(log_file, "INFO", True)
+            # 'formatter' refers to LOGGING['formatters'] by name; this minimal
+            # config has none, so drop it (dictConfig would fail the lookup).
+            handler_cfg.pop("formatter")
+            logging.config.dictConfig({
+                "version": 1,
+                "disable_existing_loggers": False,
+                "handlers": {"probe1439_file": handler_cfg},
+                "loggers": {
+                    logger_name: {"handlers": ["probe1439_file"], "level": "INFO"},
+                },
+            })
+            logging.getLogger(logger_name).info("probe record")
+            with open(log_file) as f:
+                self.assertIn("probe record", f.read())
+            self.assertEqual(os.listdir(tmp), ["debug.log"])
+        finally:
+            # Detach and close the handler so the temp dir can be removed and
+            # no stray handler outlives this test in global logging state.
+            probe_logger = logging.getLogger(logger_name)
+            for h in list(probe_logger.handlers):
+                probe_logger.removeHandler(h)
+                h.close()
+            shutil.rmtree(tmp, ignore_errors=True)
 
     def test_disabled_degrades_to_nullhandler(self):
         handler = _file_log_handler("/tmp/probe/debug.log", "INFO", False)
