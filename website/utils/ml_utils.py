@@ -78,8 +78,32 @@ def create_acronym(name):
     return acronym
 
 
+# Filler words dropped before acronyming a department name, so "Disability and
+# Human Development" abbreviates to DHD rather than DAHD.
+_DEPT_ACRONYM_STOPWORDS = {"of", "and", "for", "the", "in", "at"}
+
 def get_department_abbreviated(dept_name):
-    """Returns the department abbreviation for a given department name"""
+    """Returns the department abbreviation for a given department name.
+
+    The lab's common departments are special-cased; anything else acronyms with
+    filler words dropped, and names that would acronym to a single letter are
+    returned unchanged. This mirrors get_school_abbreviated, and for the same
+    reason: not every affiliation is a university, so the unit within it may be
+    an arbitrary phrase. (It used to return the first five characters, which
+    turned "National Center for Mobility Management" into "Natio" and
+    "Psychology" into "Psych".)
+
+    Examples:
+        >>> get_department_abbreviated("Computer Science & Engineering")
+        'CSE'
+        >>> get_department_abbreviated("Disability and Human Development")
+        'DHD'
+        >>> get_department_abbreviated("Psychology")
+        'Psychology'
+    """
+    if not dept_name:
+        return ""
+
     dept_low = dept_name.lower()
 
     if ("computer science" in dept_low and "engineering" in dept_low) or \
@@ -106,10 +130,11 @@ def get_department_abbreviated(dept_name):
         return "EE"
     elif "mhci" in dept_low or "hci+d" in dept_low or "hcid" in dept_low:
         return "MHCI+D"
-    elif dept_name is not None:
-        return dept_name[:5]
     else:
-        return "Unknown"
+        words = [w for w in dept_low.replace("&", " ").replace(",", " ").split()
+                 if w not in _DEPT_ACRONYM_STOPWORDS]
+        acronym = "".join(word[0] for word in words).upper()
+        return acronym if len(acronym) > 1 else dept_name
 
 def _get_youtube_id(video_url):
     """Extract the YouTube video id from the common URL forms.

@@ -215,13 +215,15 @@ class FileLogHandlerTests(SimpleTestCase):
 
 class LogFileLocationTests(SimpleTestCase):
     def test_default_log_file_is_under_media_root(self):
-        """The log must live inside MEDIA_ROOT or the /logs/ URL breaks.
+        """The log must live inside MEDIA_ROOT or it becomes unreadable.
 
         ``LOG_DIR`` and ``MEDIA_ROOT`` are computed independently in settings.py
         (LOGGING has to be built before MEDIA_ROOT is defined), so this pins them
-        together: the web-served ``/logs/debug.log`` on -test and prod works only
-        because the log file sits inside the bind-mounted media root. Skipped when
-        ``ML_LOG_DIR`` is set, since an explicit override may point elsewhere.
+        together: media/ is the tree bind-mounted to the shared CSE filesystem, and
+        SSH to that filesystem is the *only* way to read debug.log on -test and prod
+        (there is no shell on those hosts, and the old /logs/ URL is gone). A log
+        written outside it is a log nobody can read. Skipped when ``ML_LOG_DIR`` is
+        set, since an explicit override may point elsewhere.
         """
         if os.environ.get("ML_LOG_DIR"):
             self.skipTest("ML_LOG_DIR override in effect")
