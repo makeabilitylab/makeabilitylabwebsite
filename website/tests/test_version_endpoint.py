@@ -65,6 +65,9 @@ class VersionResponseTests(SimpleTestCase):
         # Logging health (#1283) -- always present so a deploy check can assert on it.
         self.assertIn("log_to_file", data)
         self.assertIn("log_file", data)
+        # Which rotation handler is live (#1439) -- the only remote way to see
+        # that the multiprocess-safe handler degraded.
+        self.assertIn("log_rotation", data)
 
     def test_server_reflects_wsgi_server_software(self):
         # The view reports request.META["SERVER_SOFTWARE"] verbatim; on the real
@@ -87,6 +90,14 @@ class VersionResponseTests(SimpleTestCase):
         data = json.loads(self.client.get("/version/").content)
         self.assertFalse(data["log_to_file"])
         self.assertEqual(data["log_file"], "/nope/debug.log")
+
+    @override_settings(LOG_ROTATION="RotatingFileHandler")
+    def test_reports_degraded_rotation(self):
+        """Anything but ``ConcurrentRotatingFileHandler`` means Gunicorn's three
+        workers can race on rollover again (#1439) -- invisible otherwise, since
+        there's no console on -test or prod."""
+        data = json.loads(self.client.get("/version/").content)
+        self.assertEqual(data["log_rotation"], "RotatingFileHandler")
 
     def test_build_info_missing_falls_back_to_unknown(self):
         with override_settings():

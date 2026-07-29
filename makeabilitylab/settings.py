@@ -13,7 +13,8 @@ A few things:
 """
 
 import os
-from configparser import ConfigParser 
+import tempfile # for the log-rotation lock-file dir, see _file_log_handler
+from configparser import ConfigParser
 import datetime # for DATE_MAKEABILITYLAB_FORMED global
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -86,8 +87,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.32.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Positions can now be titled \"Research Software Engineer\", and the affiliation fields are relabeled \"Institution or organization\" and \"Department or unit\" — collaborators come from nonprofits and companies, not just universities (#1437). This release also carries the 2.31.1 log-path fix (#1283)."
+ML_WEBSITE_VERSION = "2.32.1" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "debug.log rotation is now multiprocess-safe (concurrent-log-handler): Gunicorn's three workers previously raced on rollover and silently lost log records (#1439)."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
@@ -122,6 +123,21 @@ CSRF_TRUSTED_ORIGINS = ['https://*.cs.washington.edu']
 # degraded state is surfaced two web-reachable ways instead: the 'log_to_file' field
 # on /version.json (website/views/version.py) and a warning callout on the admin
 # dashboard (website/templates/admin/index.html).
+# Probed once, at import, so a missing package degrades the handler instead of
+# killing startup (see _file_log_handler). This matters because the container
+# bind-mounts the repo over /code while site-packages come from whenever the
+# image was last built: a branch switch or the window between the deploy
+# webhook's `git pull` and `docker compose build` can leave new settings.py
+# running against an older image. dictConfig raises ValueError ("Unable to
+# configure handler 'file'") on an unimportable class, and that aborts
+# django.setup() — no NullHandler degrade, no /version.json, no admin callout.
+try:
+    import concurrent_log_handler  # noqa: F401  (imported only to probe availability)
+    _HAS_CONCURRENT_LOG_HANDLER = True
+except ImportError:
+    _HAS_CONCURRENT_LOG_HANDLER = False
+
+
 def _ensure_log_dir_writable(log_dir):
     """Create ``log_dir`` if needed and return True if it looks writable.
 
@@ -135,7 +151,7 @@ def _ensure_log_dir_writable(log_dir):
 
     1. This checks the *directory*, not the eventual log file. A dir that is
        writable but already holds a root-owned, read-only ``debug.log`` would
-       still let RotatingFileHandler raise on open. That doesn't match the real
+       still let the file handler raise on open. That doesn't match the real
        deploy model, where media/ is owned by the app's own user.
     2. ``os.access(dir, os.W_OK)`` returns True for root regardless of the
        directory mode, so a mode-555 dir wouldn't be caught when running as root.
@@ -151,20 +167,70 @@ def _ensure_log_dir_writable(log_dir):
         return False
 
 
+def _lock_file_directory():
+    """Return a writable directory for the rotation lock file, or None.
+
+    ``ConcurrentRotatingFileHandler`` coordinates processes through a lock file.
+    Two things about *where* that file goes matter here:
+
+    1. By default it lands next to the log — i.e. inside the web-served media
+       root (LOG_FILE lives there so the file is reachable over SSH;
+       see the LOG_DIR note below). Lock files must not be in the public tree.
+       ``test_lock_file_stays_out_of_media_root`` pins this.
+    2. The lock name is derived from the log's basename alone, so every process
+       sharing one temp dir shares ``/tmp/.__debug.lock`` — and that file is
+       opened ``"r+"``. If a root process creates it first (the devcontainer
+       connects as root; see CLAUDE.md), the ``apache`` workers get a
+       PermissionError on every write and, thanks to /tmp's sticky bit, can't
+       even unlink it to recover — file logging would die silently. So the
+       directory is namespaced by uid: processes only ever share a lock with
+       same-uid processes, which is exactly the case that needs the locking
+       (all Gunicorn workers run as ``apache`` in one container).
+
+    Returns None if the directory can't be created or written — including the
+    pathological case where ``gettempdir()`` itself finds nowhere usable and
+    raises. The caller then falls back to the stdlib handler, because the
+    concurrent handler surfaces lock failures through ``handleError`` (stderr,
+    which nothing reads on the servers) while ``/version.json`` would still
+    report healthy — the exact blind spot #1283 exists to close.
+    """
+    try:
+        lock_dir = os.path.join(tempfile.gettempdir(),
+                                f'makelab-log-locks-{os.getuid()}')
+    except (OSError, AttributeError):
+        # No usable temp dir, or no getuid() (non-POSIX host).
+        return None
+    return lock_dir if _ensure_log_dir_writable(lock_dir) else None
+
+
 def _file_log_handler(log_file, level, enabled):
     """Return the ``LOGGING['handlers']['file']`` config dict.
 
-    When ``enabled`` is False (the log dir isn't writable) this returns a
-    NullHandler instead, which keeps every logger's ``'file'`` handler reference
-    valid while never touching disk — so startup degrades instead of dying.
+    Three outcomes, in descending order of goodness:
 
-    Split out of the ``LOGGING`` literal so both branches are directly testable;
+    * ``ConcurrentRotatingFileHandler`` (issue #1439) — the intended one. On
+      -test and prod, Gunicorn runs 3 worker processes (docker-entrypoint.sh)
+      that each open the *same* log file, and the stdlib ``RotatingFileHandler``
+      is not multiprocess-safe: workers raced on rollover, renaming each other's
+      freshly created files and silently dropping records. The concurrent
+      handler takes a cross-process lock around every write and rollover.
+    * The stdlib ``RotatingFileHandler`` — if the package isn't importable or
+      no lock directory is usable. Racy on rollover (i.e. #1439 is back), but
+      logging keeps working, which beats aborting ``django.setup()``.
+    * ``NullHandler`` — ``enabled`` is False, meaning the log dir isn't
+      writable. Keeps every logger's ``'file'`` handler reference valid while
+      never touching disk (issue #1283).
+
+    Only the first is multiprocess-safe, so which one we got is reported as
+    ``log_rotation`` on ``/version.json`` (there is no console on the servers).
+
+    Split out of the ``LOGGING`` literal so the branches are directly testable;
     ``LOGGING`` is evaluated once at import, so a test can't re-derive it.
     See ``website/tests/test_logging_config.py``.
     """
     if not enabled:
         return {'class': 'logging.NullHandler'}
-    return {
+    handler = {
         'level': level,
         'class': 'logging.handlers.RotatingFileHandler',
         'filename': log_file,
@@ -172,6 +238,11 @@ def _file_log_handler(log_file, level, enabled):
         'backupCount': 6,
         'formatter': 'verbose',  # can switch between verbose and simple
     }
+    lock_dir = _lock_file_directory() if _HAS_CONCURRENT_LOG_HANDLER else None
+    if lock_dir is not None:
+        handler['class'] = 'concurrent_log_handler.ConcurrentRotatingFileHandler'
+        handler['lock_file_directory'] = lock_dir
+    return handler
 
 
 # NOTE: this default must stay in sync with MEDIA_ROOT (defined further down as
@@ -247,6 +318,16 @@ LOGGING = {
         'django.utils.autoreload': {
             'level': 'INFO',  # Change to 'INFO' or 'WARNING'
         },
+        # Django logs every SQL query here at DEBUG, but only when DEBUG is on.
+        # That is on for local dev *and* on -test, where it was the bulk of the
+        # log volume behind #1439's rapid rollovers — and every record now takes
+        # a cross-process lock, so the noisiest logger is also the one paying
+        # the most for it. It also puts raw SQL in a file that is publicly
+        # downloadable (see the LOG_DIR note). Pinned to INFO, which silences
+        # query logging; set it back to DEBUG locally if you need to see them.
+        'django.db.backends': {
+            'level': 'INFO',
+        },
         # This logger captures information about incoming HTTP requests, including details 
         # about the request method, URL, and any exceptions that occur during request 
         # processing. It’s useful for getting a high-level overview of the requests 
@@ -268,6 +349,21 @@ LOGGING = {
         },
     },
 }
+
+# Which rotation handler we actually ended up with — derived from the built
+# config rather than tracked separately so the two can't drift. Uppercase on
+# purpose: like LOG_TO_FILE, it's read through django.conf.settings, here by
+# /version.json ('log_rotation'). Only 'ConcurrentRotatingFileHandler' is
+# multiprocess-safe; 'RotatingFileHandler' means we degraded and #1439's
+# rollover race is live again, which is otherwise invisible on the servers.
+LOG_ROTATION = LOGGING['handlers']['file']['class'].rsplit('.', 1)[-1]
+
+if LOG_TO_FILE and LOG_ROTATION != 'ConcurrentRotatingFileHandler':
+    # Secondary signal only, same as the LOG_TO_FILE warning above: the channel
+    # that works remotely is /version.json ('log_rotation').
+    print(f"WARNING: falling back to {LOG_ROTATION} — log rotation is NOT "
+          f"multiprocess-safe (concurrent-log-handler importable: "
+          f"{_HAS_CONCURRENT_LOG_HANDLER}). Check /version.json 'log_rotation'.")
 
 # Application definition
 INSTALLED_APPS = [
