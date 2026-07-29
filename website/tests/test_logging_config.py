@@ -28,12 +28,17 @@ import logging.config
 import os
 import shutil
 import tempfile
+from unittest import mock
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import SimpleTestCase, override_settings
 
-from makeabilitylab.settings import _ensure_log_dir_writable, _file_log_handler
+from makeabilitylab.settings import (
+    _ensure_log_dir_writable,
+    _file_log_handler,
+    _lock_file_directory,
+)
 from website.tests.base import DatabaseTestCase
 
 
@@ -89,6 +94,56 @@ class FileLogHandlerTests(SimpleTestCase):
         self.assertEqual(handler["level"], "INFO")
         self.assertEqual(handler["formatter"], "verbose")
 
+    def test_missing_package_degrades_to_stdlib_rotating_handler(self):
+        """An unimportable handler class must not abort ``django.setup()``.
+
+        ``dictConfig`` raises ValueError on a class it can't resolve, and that
+        propagates out of ``django.setup()`` — no NullHandler degrade, no
+        /version.json, no admin callout. The container runs the bind-mounted
+        checkout against whatever site-packages the image was last built with,
+        so "settings.py is ahead of the installed packages" is a real state
+        (branch switch without --build; the gap between the deploy webhook's
+        git pull and its image build). Degrade to the racy-but-working stdlib
+        handler instead.
+        """
+        with mock.patch("makeabilitylab.settings._HAS_CONCURRENT_LOG_HANDLER", False):
+            handler = _file_log_handler("/tmp/probe/debug.log", "INFO", True)
+        self.assertEqual(handler["class"], "logging.handlers.RotatingFileHandler")
+        # The kwarg is a concurrent-log-handler extension; passing it to the
+        # stdlib handler would be a TypeError at dictConfig time.
+        self.assertNotIn("lock_file_directory", handler)
+        self.assertEqual(handler["maxBytes"], 1024 * 1024 * 5)
+        self.assertEqual(handler["backupCount"], 6)
+
+    def test_unusable_lock_dir_degrades_to_stdlib_rotating_handler(self):
+        """No usable lock dir → degrade rather than fail silently at emit().
+
+        The concurrent handler reports lock failures through ``handleError``
+        (stderr, which nothing reads on the servers) while ``log_to_file``
+        would still say healthy — so decide up front, where we can report it.
+        """
+        with mock.patch("makeabilitylab.settings._lock_file_directory", return_value=None):
+            handler = _file_log_handler("/tmp/probe/debug.log", "INFO", True)
+        self.assertEqual(handler["class"], "logging.handlers.RotatingFileHandler")
+        self.assertNotIn("lock_file_directory", handler)
+
+    def test_lock_dir_is_namespaced_by_uid(self):
+        """Processes must not share a lock file across users.
+
+        The lock name comes from the log's basename alone, so a bare temp dir
+        gives every process ``/tmp/.__debug.lock`` — opened ``"r+"``. A
+        root-owned one (the devcontainer connects as root) locks out the
+        ``apache`` workers permanently, since /tmp's sticky bit stops them
+        unlinking it. A per-uid directory keeps the lock shared exactly where
+        it must be (same-uid Gunicorn workers) and nowhere else.
+        """
+        lock_dir = _lock_file_directory()
+        self.assertIsNotNone(lock_dir)
+        self.assertNotEqual(
+            os.path.normpath(lock_dir), os.path.normpath(tempfile.gettempdir())
+        )
+        self.assertTrue(os.path.basename(lock_dir).endswith(str(os.getuid())))
+
     def test_lock_file_stays_out_of_media_root(self):
         """The handler's lock file must not land in the web-served media tree.
 
@@ -113,6 +168,12 @@ class FileLogHandlerTests(SimpleTestCase):
         a typo'd kwarg here would crash ``django.setup()`` on every server).
         Writes one record and checks it landed, and that no lock file was
         dropped next to the log.
+
+        Note the ``dictConfig`` below is destructive: a non-incremental config
+        runs ``logging.config._clearExistingHandlers()``, which closes and
+        unregisters *every* handler Django set up, for the rest of the test
+        process. The ``finally`` block re-applies ``settings.LOGGING`` so this
+        test can't quietly break whichever test runs after it.
         """
         tmp = tempfile.mkdtemp()
         log_file = os.path.join(tmp, "debug.log")
@@ -141,6 +202,8 @@ class FileLogHandlerTests(SimpleTestCase):
             for h in list(probe_logger.handlers):
                 probe_logger.removeHandler(h)
                 h.close()
+            # Rebuild the handlers the probe config tore down (see docstring).
+            logging.config.dictConfig(settings.LOGGING)
             shutil.rmtree(tmp, ignore_errors=True)
 
     def test_disabled_degrades_to_nullhandler(self):
@@ -164,6 +227,21 @@ class LogFileLocationTests(SimpleTestCase):
             self.skipTest("ML_LOG_DIR override in effect")
         self.assertEqual(
             settings.LOG_FILE, os.path.join(settings.MEDIA_ROOT, "debug.log")
+        )
+
+
+class LogRotationSettingTests(SimpleTestCase):
+    """``LOG_ROTATION`` is what /version.json reports as ``log_rotation``.
+
+    It's derived from the built ``LOGGING`` dict so the reported handler can't
+    drift from the configured one — including in ``settings_test``, which swaps
+    the file handler for a NullHandler and must keep the two in step.
+    """
+
+    def test_log_rotation_names_the_configured_handler_class(self):
+        self.assertEqual(
+            settings.LOG_ROTATION,
+            settings.LOGGING["handlers"]["file"]["class"].rsplit(".", 1)[-1],
         )
 
 

@@ -28,7 +28,8 @@ Example::
       "built_at": "2026-06-21T18:30:00-07:00",
       "server": "gunicorn/23.0.0",
       "log_to_file": true,
-      "log_file": "/code/media/debug.log"
+      "log_file": "/code/media/debug.log",
+      "log_rotation": "ConcurrentRotatingFileHandler"
     }
 
 The ``server`` field is the WSGI server's self-reported ``SERVER_SOFTWARE``
@@ -42,6 +43,12 @@ console access on the -test or prod servers, so without this a bad log directory
 would silently blackhole every log record with no way to notice: ``log_to_file:
 false`` means the app is running blind, and ``log_file`` says which directory was
 at fault. Nothing new is disclosed -- the path is derivable from the public repo.
+
+``log_rotation`` names the live rotation handler class (#1439). Gunicorn runs 3
+workers over one debug.log, so it must be ``ConcurrentRotatingFileHandler``;
+anything else means the multiprocess-safe handler degraded (package missing from
+the image, or no usable lock directory) and workers can clobber each other's
+rotated files again.
 
 Note that ``log_to_file: true`` only means the log *directory* was writable at
 startup. To confirm records are really landing, tail the file over SSH at
@@ -111,6 +118,10 @@ def version(request, format=None):
         # the only remote way to notice, since we have no console on -test/prod.
         "log_to_file": settings.LOG_TO_FILE,
         "log_file": settings.LOG_FILE,
+        # Which rotation handler is live (#1439). Anything other than
+        # "ConcurrentRotatingFileHandler" means the multiprocess-safe handler
+        # degraded and Gunicorn's workers can race on rollover again.
+        "log_rotation": settings.LOG_ROTATION,
     }
     response = JsonResponse(payload)
     response["Cache-Control"] = "no-store"

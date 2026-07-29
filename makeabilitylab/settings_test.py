@@ -40,6 +40,9 @@ DATABASES["default"]["PORT"] = os.environ.get(  # noqa: F405
 # before a single test runs. Swap just the 'file' handler for a no-op; this
 # keeps every logger's handler reference valid while never touching disk.
 LOGGING["handlers"]["file"] = {"class": "logging.NullHandler"}  # noqa: F405
+# Keep the derived setting honest — it names the handler class actually wired
+# up, and /version.json reports it (#1439).
+LOG_ROTATION = "NullHandler"
 
 # Speed up the auth tests (Data Health suite creates real superuser rows).
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
