@@ -175,8 +175,10 @@ def _file_log_handler(log_file, level, enabled):
 
 
 # NOTE: this default must stay in sync with MEDIA_ROOT (defined further down as
-# os.path.join(BASE_DIR, 'media')) — the web-served /logs/debug.log URL only works
-# because the log lives inside the media root. MEDIA_ROOT isn't defined yet here
+# os.path.join(BASE_DIR, 'media')) — media/ is the tree bind-mounted out to the
+# shared CSE filesystem, so keeping the log inside it is what makes debug.log
+# readable over SSH at all. There is no shell on these hosts, so a log written
+# anywhere else is a log nobody can read. MEDIA_ROOT isn't defined yet here
 # (LOGGING has to be built before it), hence the duplicated expression;
 # test_default_log_file_is_under_media_root pins the two together.
 LOG_DIR = os.environ.get('ML_LOG_DIR', os.path.join(BASE_DIR, 'media'))
@@ -217,13 +219,12 @@ LOGGING = {
     'handlers': {
         # The file handler writes LOG_FILE (media/debug.log by default), which lands
         # in the bind-mounted web root — that's what makes it readable over SSH at
-        # /cse/web/research/makelab/www[-test]/debug.log. (docs/DEPLOYMENT.md also
-        # describes a /logs/ URL per Jason Howe's design, but that URL 404s on both
-        # prod and test as of 2026-07-28.) Since the file still sits in a web-served
-        # tree, stay conservative: log at INFO when DEBUG is off, but keep DEBUG-level
-        # file logging in local dev where DEBUG is on and nothing is public. If the
-        # log dir isn't writable (LOG_TO_FILE is False), degrade to a NullHandler so
-        # startup never dies (issue #1283).
+        # /cse/web/research/makelab/www[-test]/debug.log, the only way to read it now
+        # that the /logs/ URL is gone. media/ IS a web-served tree, so stay
+        # conservative about what lands here: log at INFO when DEBUG is off, but keep
+        # DEBUG-level file logging in local dev where DEBUG is on and nothing is
+        # public. If the log dir isn't writable (LOG_TO_FILE is False), degrade to a
+        # NullHandler so startup never dies (issue #1283).
         'file': _file_log_handler(LOG_FILE, 'DEBUG' if DEBUG else 'INFO', LOG_TO_FILE),
         'console': {
             'level': 'DEBUG',
@@ -453,8 +454,9 @@ USE_TZ = True
 # See: https://docs.djangoproject.com/en/4.2/ref/settings/#media-url
 #
 # NOTE: LOG_DIR (defined up with LOGGING, which has to be built before this) hard-codes
-# the same expression, because the web-served /logs/debug.log URL only works while the
-# log file lives inside the media root. If you move MEDIA_ROOT, move LOG_DIR with it —
+# the same expression, because this is the tree bind-mounted to the shared CSE
+# filesystem — the log has to live inside it to be readable over SSH, which is the only
+# access we have. If you move MEDIA_ROOT, move LOG_DIR with it —
 # test_default_log_file_is_under_media_root fails loudly if the two ever diverge.
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
