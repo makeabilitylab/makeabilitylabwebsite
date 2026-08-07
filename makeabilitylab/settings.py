@@ -87,8 +87,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.32.1" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "debug.log rotation is now multiprocess-safe (concurrent-log-handler): Gunicorn's three workers previously raced on rollover and silently lost log records (#1439)."
+ML_WEBSITE_VERSION = "2.33.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "The database now writes a nightly pg_dump into its own volume, so the infrastructure team's snapshots always contain a consistent restore point. Backup health shows on this dashboard and /version.json (#1443)."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 

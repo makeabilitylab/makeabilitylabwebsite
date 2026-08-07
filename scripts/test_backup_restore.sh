@@ -64,7 +64,7 @@ assert_true() {
 # and at that point WORK_DIR is still needed.
 cleanup_docker() {
   docker rm -f "$DB_CONTAINER" >/dev/null 2>&1
-  docker volume rm -f "$DATA_VOL" "$STATUS_VOL" "$DATA_VOL-dirty" >/dev/null 2>&1
+  docker volume rm -f "$DATA_VOL" "$STATUS_VOL" "$DATA_VOL-dirty" "$PROJECT-scratch" >/dev/null 2>&1
   docker network rm "$NET" >/dev/null 2>&1
 }
 cleanup() { cleanup_docker; rm -rf "$WORK_DIR"; }
@@ -237,6 +237,48 @@ assert_eq "existing dump survived the failed pass" "1" "$(status_field backup_co
 
 # Restore a good status for the rest of the run.
 run_backup_pass >/dev/null 2>&1
+
+# ---------------------------------------------------------------------------
+step "Retention pruning"
+# ---------------------------------------------------------------------------
+# Run against a scratch directory via BACKUP_DIR so this can age files freely
+# without disturbing the real dump the restore test below depends on. No
+# database is needed: when today's dump already exists the pass is prune-only.
+prune_pass() {
+  # prune_pass <retention_days> <setup shell snippet>
+  docker run --rm -v "$PROJECT-scratch:/scratch" "$IMAGE" bash -c "
+    rm -rf /scratch/pg_backups /scratch/status; mkdir -p /scratch/pg_backups; $2"
+  docker run --rm \
+    -e BACKUP_DIR=/scratch/pg_backups -e STATUS_DIR=/scratch/status \
+    -e BACKUP_RETENTION_DAYS="$1" -e PGDATABASE="$DB_NAME" \
+    -v "$PROJECT-scratch:/scratch" \
+    -v "$SCRIPT_DIR:/backup-scripts:ro" \
+    "$IMAGE" bash /backup-scripts/pg_backup.sh >/dev/null 2>&1
+  docker run --rm -v "$PROJECT-scratch:/scratch" "$IMAGE" \
+    sh -c 'ls -1 /scratch/pg_backups 2>/dev/null | sort | tr "\n" " "'
+}
+
+TODAY_FILE="$DB_NAME-$TODAY.sql.gz"
+REMAINING="$(prune_pass 14 "
+  touch -d '40 days ago' /scratch/pg_backups/$DB_NAME-old-40.sql.gz
+  touch -d '20 days ago' /scratch/pg_backups/$DB_NAME-old-20.sql.gz
+  touch -d '5 days ago'  /scratch/pg_backups/$DB_NAME-recent-5.sql.gz
+  touch /scratch/pg_backups/$TODAY_FILE")"
+# Listing is `ls | sort`, so the date-stamped name sorts before "recent-".
+assert_eq "prunes past retention, keeps what's inside it" \
+  "$TODAY_FILE $DB_NAME-recent-5.sql.gz " "$REMAINING"
+
+# The guard that matters: if every dump on disk is older than the retention
+# window, pruning must still leave the newest one. Without it, a backup that had
+# been failing for longer than the window would end with pruning deleting the
+# last good dump — turning one broken backup into total data loss.
+REMAINING="$(prune_pass 1 "
+  touch -d '40 days ago' /scratch/pg_backups/$DB_NAME-old-40.sql.gz
+  touch -d '30 days ago' /scratch/pg_backups/$DB_NAME-old-30.sql.gz
+  touch -d '20 days ago' /scratch/pg_backups/$TODAY_FILE")"
+assert_eq "never prunes the last remaining dump, however old" "$TODAY_FILE " "$REMAINING"
+
+docker volume rm -f "$PROJECT-scratch" >/dev/null 2>&1
 
 # ---------------------------------------------------------------------------
 step "DISASTER: copy the dump out, then destroy the database and its volume"
