@@ -20,7 +20,9 @@
 # Usage:
 #   bash scripts/test_backup_restore.sh
 #
-# Requires: docker, and the postgres image used by the stack.
+# Requires: docker, the postgres image used by the stack, and python3 on the
+# host (used to parse status.json in the assertions below — everything
+# postgres-specific runs inside a container, but that parsing does not).
 
 set -uo pipefail
 

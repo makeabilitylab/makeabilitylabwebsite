@@ -120,7 +120,13 @@ services:
       # The backup script, mounted as a directory so edits survive git checkouts.
       - ./scripts:/backup-scripts:ro
 
-    entrypoint: ["/bin/bash", "-c", "while true; do if bash /backup-scripts/pg_backup.sh; then sleep \"$${BACKUP_POLL_SECONDS}\"; else sleep \"$${BACKUP_RETRY_SECONDS}\"; fi; done"]
+    # `sleep ... & wait $!` plus the leading `trap`, instead of a plain
+    # foreground `sleep`, so `docker compose stop`/`down` return promptly:
+    # bash only acts on a trapped signal between foreground commands, so a
+    # SIGTERM arriving during a plain `sleep 3600` would sit unhandled for up
+    # to an hour and this container would always eat the full stop grace
+    # period before Docker escalates to SIGKILL.
+    entrypoint: ["/bin/bash", "-c", "trap 'exit 0' TERM INT; while true; do if bash /backup-scripts/pg_backup.sh; then sleep \"$${BACKUP_POLL_SECONDS}\" & wait $!; else sleep \"$${BACKUP_RETRY_SECONDS}\" & wait $!; fi; done"]
 
     depends_on:
       db:

@@ -121,7 +121,11 @@ proj = Project.objects.create(name='Sidewalk "Quoted" Project', short_name='back
 
 pub = Publication.objects.create(title='Notes on the Analytical Engine',
                                  date=datetime.date(2024, 5, 1))
-pub.authors.add(p1, p2)          # SortedManyToManyField through-table
+# Added out of alphabetical order on purpose: SortedManyToManyField orders by
+# insertion (sort_value), not by name, so this is the order a restore must
+# reproduce. Adding them already-alphabetical would let a restore that lost
+# the sort_value column pass by coincidence.
+pub.authors.add(p2, p1)          # zhang@example.edu, then jose@example.edu
 pub.projects.add(proj)
 
 News.objects.create(title='Lab news with <b>HTML</b> & entities',
@@ -196,9 +200,11 @@ assert_eq "manage.py check passes" "0" "$?"
 cat > "$WORK_DIR/verify.py" <<'PY'
 from website.models import Person, Publication, News
 pub = Publication.objects.get(title='Notes on the Analytical Engine')
+# Not sorted: this must reflect SortedManyToManyField's own ordering
+# (sort_value), which is what proves the restore preserved it.
 authors = list(pub.authors.all().values_list('email', flat=True))
 news = News.objects.get(title__startswith='Lab news')
-print('AUTHORS=' + ','.join(sorted(a or '' for a in authors)))
+print('AUTHORS=' + ','.join(a or '' for a in authors))
 print('UNICODE=' + Person.objects.get(email='zhang@example.edu').first_name)
 print('APOSTROPHE=' + Person.objects.get(email='pat@example.edu').last_name)
 print('PROJECTS=' + str(pub.projects.count()))
@@ -209,7 +215,8 @@ VERIFY_OUT="$(docker run --rm --network "$NET" --user root -v "$REPO_DIR:/code" 
   python manage.py shell -c "exec(open('/verify.py').read())" 2>&1)"
 get() { echo "$VERIFY_OUT" | grep "^$1=" | head -1 | cut -d= -f2-; }
 
-assert_eq "m2m authors restored in order"  "jose@example.edu,zhang@example.edu" "$(get AUTHORS)"
+assert_eq "m2m authors restored in insertion order (not alphabetical)" \
+  "zhang@example.edu,jose@example.edu" "$(get AUTHORS)"
 assert_eq "unicode field via ORM"          "张"    "$(get UNICODE)"
 assert_eq "apostrophe field via ORM"       "O'Brien" "$(get APOSTROPHE)"
 assert_eq "publication↔project m2m"        "1"     "$(get PROJECTS)"

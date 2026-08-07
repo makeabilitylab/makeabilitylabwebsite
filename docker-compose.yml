@@ -23,6 +23,14 @@ services:
   # `docker compose up -d` only recreates a container whose config changed, so a
   # loop inside the bind-mounted script would keep running the old code forever
   # after a deploy. Re-invoking the script each pass makes logic changes deploy.
+  #
+  # The `sleep ... & wait $!` (rather than a plain foreground `sleep`) and the
+  # leading `trap` are so `docker compose stop`/`down` return promptly: bash
+  # only acts on a trapped signal between foreground commands, so with a plain
+  # `sleep 3600` a SIGTERM sent while idle would sit unhandled for up to an
+  # hour and this container would always eat the full stop grace period before
+  # Docker escalates to SIGKILL. Backgrounding the sleep and `wait`-ing on it
+  # makes the trap run immediately instead.
   db-backup:
     image: "${POSTGRES_IMAGE:-postgres}"
     restart: always
@@ -38,7 +46,7 @@ services:
       - db-data:/var/lib/postgresql/data
       - backup-status:/var/backup-status
       - ./scripts:/backup-scripts:ro
-    entrypoint: ["/bin/bash", "-c", "while true; do if bash /backup-scripts/pg_backup.sh; then sleep \"$${BACKUP_POLL_SECONDS}\"; else sleep \"$${BACKUP_RETRY_SECONDS}\"; fi; done"]
+    entrypoint: ["/bin/bash", "-c", "trap 'exit 0' TERM INT; while true; do if bash /backup-scripts/pg_backup.sh; then sleep \"$${BACKUP_POLL_SECONDS}\" & wait $!; else sleep \"$${BACKUP_RETRY_SECONDS}\" & wait $!; fi; done"]
     depends_on:
       - db
   website:

@@ -10,6 +10,13 @@ The most important behavior pinned here is that a broken or missing status file
 degrades to "unknown" instead of raising. This code runs inside
 ``each_context``, so an exception would take the entire admin down — the exact
 opposite of what a backup-health feature should do.
+
+``BackupStatusFileTests``/``BackupWarningSuppressionTests``/``FormatBytesTests``
+exercise ``get_backup_status()`` directly. ``AdminBackupWarningTests`` below
+goes one layer further and proves the wiring itself -- that
+``MakeabilityLabAdminSite.each_context`` actually reaches the rendered
+``/admin/`` and Data Health pages -- mirroring ``AdminLoggingWarningTests`` in
+``test_logging_config.py`` for the sibling ``LOG_TO_FILE`` feature.
 """
 
 import json
@@ -17,8 +24,11 @@ import os
 import tempfile
 from datetime import datetime, timedelta, timezone
 
+from django.contrib.auth import get_user_model
 from django.test import SimpleTestCase, override_settings
+from django.urls import reverse
 
+from website.tests.base import DatabaseTestCase
 from website.utils.backup_status import format_bytes, get_backup_status
 
 NOW = datetime(2026, 8, 7, 12, 0, 0, tzinfo=timezone.utc)
@@ -200,6 +210,82 @@ class BackupWarningSuppressionTests(SimpleTestCase):
     def test_missing_file_is_quiet_in_local_dev(self):
         # A developer not running the db-backup service shouldn't be nagged.
         self.assertFalse(get_backup_status(self.missing, NOW)['should_warn'])
+
+
+class AdminBackupWarningTests(DatabaseTestCase):
+    """
+    The admin dashboard callout and Data Health panel that surface backup
+    health (#1443), rendered through a real request rather than calling
+    ``get_backup_status()`` in isolation.
+
+    ``get_backup_status()`` being correct doesn't prove
+    ``MakeabilityLabAdminSite.each_context`` actually wires ``BACKUP_STATUS``
+    into the templates, or that the superuser gate in ``each_context`` is
+    doing its job at the HTTP layer -- that's what these tests are for.
+    """
+
+    def setUp(self):
+        super().setUp()
+        User = get_user_model()
+        self.superuser = User.objects.create_superuser(
+            username="backupadmin", email="backupadmin@example.com", password="pw-for-test"
+        )
+        self.editor = User.objects.create_user(
+            username="backupeditor",
+            email="backupeditor@example.com",
+            password="pw-for-test",
+            is_staff=True,
+        )
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.status_file = os.path.join(self.tmp.name, 'status.json')
+
+    def _write_status(self, **overrides):
+        with open(self.status_file, 'w', encoding='utf-8') as handle:
+            json.dump(_status_payload(**overrides), handle)
+        return self.status_file
+
+    def test_warning_shown_to_superuser_when_backup_unhealthy(self):
+        self._write_status(last_attempt_ok=False,
+                            error='pg_dump failed (exit 1): connection refused')
+        with override_settings(BACKUP_STATUS_FILE=self.status_file):
+            self.client.force_login(self.superuser)
+            response = self.client.get("/admin/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "database backups are not healthy")
+        self.assertContains(response, "connection refused")
+
+    def test_no_warning_when_backup_healthy(self):
+        self._write_status()
+        with override_settings(BACKUP_STATUS_FILE=self.status_file):
+            self.client.force_login(self.superuser)
+            response = self.client.get("/admin/")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "database backups are not healthy")
+
+    def test_warning_hidden_from_non_superusers(self):
+        """Only the maintainer can act on a backup failure, so don't alarm editors."""
+        self._write_status(last_attempt_ok=False, error='connection refused')
+        with override_settings(BACKUP_STATUS_FILE=self.status_file):
+            self.client.force_login(self.editor)
+            response = self.client.get("/admin/")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "database backups are not healthy")
+
+    def test_data_health_panel_always_shown_even_when_healthy(self):
+        """
+        Unlike the ``/admin/`` callout, the Data Health panel is rendered
+        unconditionally -- "when did it last succeed?" is worth showing even
+        when nothing is wrong.
+        """
+        self._write_status()
+        with override_settings(BACKUP_STATUS_FILE=self.status_file):
+            self.client.force_login(self.superuser)
+            response = self.client.get(reverse("admin:data_health_dashboard"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Database backups")
+        self.assertContains(response, "Healthy")
+        self.assertContains(response, "makeability-2026-08-07.sql.gz")
 
 
 class FormatBytesTests(SimpleTestCase):
