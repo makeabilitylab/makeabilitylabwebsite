@@ -15,6 +15,8 @@ HTML comment in ``base.html``. These pin:
 
 import json
 import os
+import tempfile
+from datetime import datetime, timedelta, timezone
 
 from django.test import SimpleTestCase, override_settings
 from django.urls import resolve, reverse
@@ -68,6 +70,60 @@ class VersionResponseTests(SimpleTestCase):
         # Which rotation handler is live (#1439) -- the only remote way to see
         # that the multiprocess-safe handler degraded.
         self.assertIn("log_rotation", data)
+        # Backup health (#1443) -- the dumps live in a Docker volume on a host
+        # with no shell, so these fields are the only way to check backups
+        # without logging into /admin.
+        self.assertIn("backup_ok", data)
+        self.assertIn("last_backup_at", data)
+        self.assertIn("backup_age_hours", data)
+        self.assertIn("backup_count", data)
+
+    def test_reports_backup_health_from_status_file(self):
+        """A healthy status file surfaces as ``backup_ok: true`` plus its age."""
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "status.json")
+            now = datetime.now(timezone.utc)
+            with open(path, "w", encoding="utf-8") as handle:
+                json.dump({
+                    "last_attempt_ok": True,
+                    "error": None,
+                    "last_backup_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "last_backup_file": "makeability-2026-08-07.sql.gz",
+                    "last_backup_bytes": 12684,
+                    "backup_count": 14,
+                    "retention_days": 14,
+                }, handle)
+            with override_settings(BACKUP_STATUS_FILE=path):
+                data = json.loads(self.client.get("/version/").content)
+
+        self.assertTrue(data["backup_ok"])
+        self.assertEqual(data["backup_count"], 14)
+        self.assertIsNotNone(data["last_backup_at"])
+        self.assertLess(data["backup_age_hours"], 1)
+
+    def test_reports_unhealthy_backup_without_leaking_internals(self):
+        """A stale backup reports ``backup_ok: false``.
+
+        The endpoint is public, so it deliberately carries no error text and no
+        filesystem paths -- just enough for an external check to go red.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "status.json")
+            stale = datetime.now(timezone.utc) - timedelta(hours=100)
+            with open(path, "w", encoding="utf-8") as handle:
+                json.dump({
+                    "last_attempt_ok": False,
+                    "error": "pg_dump failed (exit 1): connection refused",
+                    "last_backup_at": stale.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "backup_count": 3,
+                }, handle)
+            with override_settings(BACKUP_STATUS_FILE=path):
+                data = json.loads(self.client.get("/version/").content)
+
+        self.assertFalse(data["backup_ok"])
+        self.assertNotIn("backup_problem", data)
+        self.assertNotIn("connection refused", json.dumps(data))
+        self.assertNotIn(path, json.dumps(data))
 
     def test_server_reflects_wsgi_server_software(self):
         # The view reports request.META["SERVER_SOFTWARE"] verbatim; on the real

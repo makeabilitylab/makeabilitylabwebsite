@@ -15,6 +15,79 @@
     restricted to superusers and the CSV is sent only to your browser.
   </p>
 
+  {% comment %}
+    Database-backup health (#1443). Unlike the admin dashboard callout, which
+    appears only when something is wrong, this panel is always rendered: this
+    page is where you come to look, and "when did it last succeed?" is a
+    reasonable question even when nothing is broken. Values come from the
+    db-backup sidecar's status.json, read via each_context.
+  {% endcomment %}
+  <h2 class="dh-section-heading">Database backups</h2>
+  <table class="dh-backup">
+    <caption>
+      Nightly <code>pg_dump</code> written into the postgres data volume so the
+      infrastructure team's volume snapshots always contain a consistent restore
+      point. Restore instructions live in <code>docs/BACKUPS.md</code>.
+    </caption>
+    <tbody>
+      <tr>
+        <th scope="row">Status</th>
+        <td>
+          {% if BACKUP_STATUS.healthy %}
+            <span class="dh-count dh-count-ok">Healthy</span>
+          {% else %}
+            <span class="dh-count dh-count-warn">{{ BACKUP_STATUS.problem }}</span>
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">Most recent dump</th>
+        <td>
+          {% if BACKUP_STATUS.last_backup_at %}
+            {{ BACKUP_STATUS.last_backup_at|date:"Y-m-d H:i T" }}
+            ({{ BACKUP_STATUS.age_hours }} hours ago)
+          {% else %}
+            —
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">File</th>
+        <td>
+          {% if BACKUP_STATUS.last_backup_file %}
+            <code>{{ BACKUP_STATUS.last_backup_file }}</code> ({{ BACKUP_STATUS.size_display }})
+          {% else %}
+            —
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">Dumps retained</th>
+        <td>
+          {{ BACKUP_STATUS.backup_count|default_if_none:"—" }}
+          {% if BACKUP_STATUS.retention_days %}
+            (pruned after {{ BACKUP_STATUS.retention_days }} days)
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">Oldest dump</th>
+        <td>{{ BACKUP_STATUS.oldest_backup_at|date:"Y-m-d H:i T"|default:"—" }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Last attempt</th>
+        <td>{{ BACKUP_STATUS.last_attempt_at|date:"Y-m-d H:i T"|default:"—" }}</td>
+      </tr>
+      {% if BACKUP_STATUS.error %}
+        <tr>
+          <th scope="row">Last error</th>
+          <td><code class="dh-backup-error">{{ BACKUP_STATUS.error }}</code></td>
+        </tr>
+      {% endif %}
+    </tbody>
+  </table>
+
+  <h2 class="dh-section-heading">Data quality checks</h2>
   <table id="result_list">
     <thead>
       <tr>
@@ -55,9 +128,24 @@
   .dh-count { font-variant-numeric: tabular-nums; font-weight: 600; }
   .dh-count-ok { color: #2e7d32; }
   .dh-count-warn { color: #b54708; }
+  /* Backup status panel (#1443) */
+  .dh-section-heading { font-size: 15px; margin: 24px 0 8px; }
+  .dh-backup { border-collapse: collapse; margin-bottom: 8px; max-width: 60em; }
+  .dh-backup caption {
+    caption-side: bottom;
+    text-align: left;
+    font-size: 12px;
+    color: #777;
+    padding-top: 6px;
+    max-width: 60em;
+  }
+  .dh-backup th, .dh-backup td { padding: 6px 12px 6px 0; text-align: left; vertical-align: top; }
+  .dh-backup th { white-space: nowrap; font-weight: 600; }
+  .dh-backup-error { white-space: pre-wrap; word-break: break-word; }
   @media (prefers-color-scheme: dark) {
     .dh-intro { color: #bbb; }
     .dh-desc { color: #999; }
+    .dh-backup caption { color: #999; }
     .dh-count-ok { color: #7bc47f; }
     .dh-count-warn { color: #e8a14b; }
   }

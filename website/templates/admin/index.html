@@ -28,6 +28,29 @@
   </div>
 {% endif %}
 
+{% comment %}
+  Unhealthy-backup warning (#1443). Shown ONLY when something is actually
+  wrong — a permanently-green banner turns into invisible chrome, and this one
+  needs to be read. BACKUP_STATUS comes from MakeabilityLabAdminSite.each_context
+  and is only populated for superusers, so this is inert for everyone else.
+  'should_warn' rather than 'not healthy' so that a local dev machine with no
+  db-backup service running doesn't nag; the servers still warn. The scriptable
+  equivalent is /version.json's 'backup_ok'.
+{% endcomment %}
+{% if BACKUP_STATUS.should_warn %}
+  <div class="ml-log-warning">
+    <span class="ml-log-warning-icon" aria-hidden="true">⚠️</span>
+    <strong>Warning: database backups are not healthy.</strong>
+    <span class="ml-log-warning-desc">{{ BACKUP_STATUS.problem }}
+      {% if BACKUP_STATUS.last_backup_file %}
+        Most recent dump: <code>{{ BACKUP_STATUS.last_backup_file }}</code>
+        ({{ BACKUP_STATUS.size_display }}).
+      {% endif %}
+      See the <a href="{% url 'admin:data_health_dashboard' %}">Data Health dashboard</a>
+      for detail, and <code>docs/BACKUPS.md</code> for how to investigate.</span>
+  </div>
+{% endif %}
+
 {% if user.is_superuser %}
   <div class="ml-data-health">
     <span class="ml-data-health-icon" aria-hidden="true">🩺</span>

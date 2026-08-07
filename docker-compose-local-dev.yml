@@ -73,6 +73,60 @@ services:
       retries: 5
 
   # ===========================================================================
+  # DATABASE BACKUP SERVICE (#1443)
+  # ===========================================================================
+  # Writes a dated, gzipped pg_dump into the postgres data volume once a day.
+  #
+  # On the servers this exists because volume-level snapshots of a *live*
+  # postgres data directory are only probably restorable; the dump is the
+  # guaranteed-consistent restore point. It runs locally too so that the same
+  # code path is exercised in development rather than only in production.
+  #
+  # Two things here are load-bearing and should not be "simplified":
+  #   1. `entrypoint` is overridden. Left alone, the postgres image's own
+  #      entrypoint would try to start a second database server on this PGDATA.
+  #   2. The scheduling loop lives here, not inside pg_backup.sh, because
+  #      `docker compose up -d` only recreates containers whose config changed.
+  #      A loop inside the bind-mounted script would keep running stale code
+  #      after a deploy.
+  #
+  # To force a backup immediately instead of waiting for the next pass:
+  #   docker compose -f docker-compose-local-dev.yml exec db-backup \
+  #     bash /backup-scripts/pg_backup.sh
+  #
+  # To verify and restore, see docs/BACKUPS.md.
+  db-backup:
+    # Same image as `db` so the pg_dump binary version matches the server.
+    image: 'postgres:16'
+    restart: always
+
+    environment:
+      # libpq connection settings; must match the `db` service above.
+      - PGHOST=db
+      - PGUSER=admin
+      - PGPASSWORD=password
+      - PGDATABASE=makeability
+      # Delete dumps older than this, but never the most recent one.
+      - BACKUP_RETENTION_DAYS=14
+      # How long to wait between passes, and after a failed pass.
+      - BACKUP_POLL_SECONDS=3600
+      - BACKUP_RETRY_SECONDS=300
+
+    volumes:
+      # The database volume, so dumps land inside the thing that gets snapshotted.
+      - postgres-data:/var/lib/postgresql/data
+      # Small shared volume for the status file Django reads.
+      - backup-status:/var/backup-status
+      # The backup script, mounted as a directory so edits survive git checkouts.
+      - ./scripts:/backup-scripts:ro
+
+    entrypoint: ["/bin/bash", "-c", "while true; do if bash /backup-scripts/pg_backup.sh; then sleep \"$${BACKUP_POLL_SECONDS}\"; else sleep \"$${BACKUP_RETRY_SECONDS}\"; fi; done"]
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # ===========================================================================
   # WEBSITE SERVICE (Django Application)
   # ===========================================================================
   website:
@@ -94,6 +148,9 @@ services:
       # This enables "live reloading"—when you edit local files, the changes
       # are immediately visible inside the container without rebuilding.
       - .:/code
+      # Read-only view of the backup status file so Django can report backup
+      # health on the admin dashboard and /version.json (#1443).
+      - backup-status:/var/backup-status:ro
 
     healthcheck:
       # Check if Django is responding
@@ -159,3 +216,5 @@ services:
 # Run 'docker volume rm postgres-data' to delete (WARNING: destroys all data).
 volumes:
   postgres-data:
+  # Disposable: holds only the backup status.json, regenerated every pass.
+  backup-status:

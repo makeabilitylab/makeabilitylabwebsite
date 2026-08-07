@@ -27,6 +27,8 @@ from django.contrib.auth.models import Group, User
 from django.contrib.auth.admin import GroupAdmin, UserAdmin
 from django.urls import path
 
+from website.utils.backup_status import get_backup_status
+
 
 class MakeabilityLabAdminSite(admin.AdminSite):
     """
@@ -78,6 +80,23 @@ class MakeabilityLabAdminSite(admin.AdminSite):
         ),
     ]
     
+    def each_context(self, request):
+        """
+        Add database-backup health to every admin page's context (#1443).
+
+        Deliberately here rather than in the global ``admin_version_info``
+        context processor: that processor runs on every public page render too,
+        and this one touches the filesystem. ``each_context`` runs only for
+        admin views, which is exactly where the warning is actionable.
+
+        Only computed for superusers — nobody else can act on it, and it is the
+        same audience as the degraded-logging warning it sits next to.
+        """
+        context = super().each_context(request)
+        if getattr(request.user, 'is_superuser', False):
+            context['BACKUP_STATUS'] = get_backup_status()
+        return context
+
     def get_urls(self):
         """
         Prepend the read-only Data Health pages to the admin URLconf.

@@ -365,6 +365,24 @@ if LOG_TO_FILE and LOG_ROTATION != 'ConcurrentRotatingFileHandler':
           f"multiprocess-safe (concurrent-log-handler importable: "
           f"{_HAS_CONCURRENT_LOG_HANDLER}). Check /version.json 'log_rotation'.")
 
+# ---------------------------------------------------------------------------
+# Database backup health (#1443)
+# ---------------------------------------------------------------------------
+# The db-backup sidecar writes a small JSON status file to a volume shared
+# read-only with this container. Django reads it purely to *report* backup
+# health; it never writes here and never touches the dumps themselves.
+#
+# The reporting is the whole point: the dumps live in a Docker named volume on
+# a host nobody has a shell on, and PGDATA is mode 700/uid 999 while this
+# container runs as uid 48 — so without this file there is no way to observe
+# whether backups are running at all. Same reasoning as LOG_TO_FILE above.
+BACKUP_STATUS_FILE = os.environ.get('ML_BACKUP_STATUS_FILE', '/var/backup-status/status.json')
+
+# How old the newest dump may get before the admin dashboard complains. 36h,
+# not 24h: backups run daily, so one missed pass or a little clock skew should
+# not raise an alarm — but a second consecutive miss should.
+BACKUP_STALE_AFTER_HOURS = int(os.environ.get('ML_BACKUP_STALE_AFTER_HOURS', '36'))
+
 # Application definition
 INSTALLED_APPS = [
     'website.apps.WebsiteConfig',
