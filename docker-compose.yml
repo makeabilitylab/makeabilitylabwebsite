@@ -10,6 +10,45 @@ services:
       - POSTGRES_PASSWORD=password
     volumes:
       - db-data:/var/lib/postgresql/data
+  # Consistent daily pg_dump into the postgres data volume (#1443). CSE IT's
+  # ZFS snapshots capture the raw volume, which is only *probably* restorable
+  # for a live database; this writes a guaranteed-consistent restore point
+  # inside that same volume so every snapshot carries one. See docs/BACKUPS.md.
+  #
+  # Uses the same image as `db` so pg_dump's version always matches the server.
+  # `entrypoint` MUST stay overridden: the postgres image's own entrypoint would
+  # otherwise try to bring up a second server on this PGDATA.
+  #
+  # The scheduling loop lives here rather than inside pg_backup.sh on purpose —
+  # `docker compose up -d` only recreates a container whose config changed, so a
+  # loop inside the bind-mounted script would keep running the old code forever
+  # after a deploy. Re-invoking the script each pass makes logic changes deploy.
+  #
+  # The `sleep ... & wait $!` (rather than a plain foreground `sleep`) and the
+  # leading `trap` are so `docker compose stop`/`down` return promptly: bash
+  # only acts on a trapped signal between foreground commands, so with a plain
+  # `sleep 3600` a SIGTERM sent while idle would sit unhandled for up to an
+  # hour and this container would always eat the full stop grace period before
+  # Docker escalates to SIGKILL. Backgrounding the sleep and `wait`-ing on it
+  # makes the trap run immediately instead.
+  db-backup:
+    image: "${POSTGRES_IMAGE:-postgres}"
+    restart: always
+    environment:
+      - PGHOST=db
+      - PGUSER=admin
+      - PGPASSWORD=password
+      - PGDATABASE=makeability
+      - BACKUP_RETENTION_DAYS=${BACKUP_RETENTION_DAYS:-14}
+      - BACKUP_POLL_SECONDS=${BACKUP_POLL_SECONDS:-3600}
+      - BACKUP_RETRY_SECONDS=${BACKUP_RETRY_SECONDS:-300}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - backup-status:/var/backup-status
+      - ./scripts:/backup-scripts:ro
+    entrypoint: ["/bin/bash", "-c", "trap 'exit 0' TERM INT; while true; do if bash /backup-scripts/pg_backup.sh; then sleep \"$${BACKUP_POLL_SECONDS}\" & wait $!; else sleep \"$${BACKUP_RETRY_SECONDS}\" & wait $!; fi; done"]
+    depends_on:
+      - db
   website:
     environment:
       - DJANGO_ENV=${DJANGO_ENV:-TEST}
@@ -23,6 +62,7 @@ services:
       - .:/code
       - ${MEDIA_PATH:-./media}:/code/media
       - ${CONFIG_PATH:-./config-dev.ini}:/code/config.ini # for loading vars into ConfigParser in Django
+      - backup-status:/var/backup-status:ro # read-only: Django reports backup health (#1443)
     depends_on:
       - db
     command: ["./docker-entrypoint.sh", "db", "python", "manage.py"]
@@ -32,3 +72,8 @@ volumes:
   db-data:
     external: true
     name: "makeabilitylabcswashingtonedu_${POSTGRES_VOLUME:-postgres-data}"
+  # Holds only the backup status.json that Django reads to report backup health.
+  # Intentionally NOT external and NOT something CSE IT needs to back up: it is
+  # disposable state, regenerated on the next backup pass. The dumps themselves
+  # live in db-data above, which is the volume that gets snapshotted.
+  backup-status:

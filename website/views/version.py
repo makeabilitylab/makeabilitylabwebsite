@@ -63,6 +63,8 @@ import os
 from django.conf import settings
 from django.http import JsonResponse
 
+from website.utils.backup_status import get_backup_status
+
 # Module logger (configured in settings.LOGGING).
 _logger = logging.getLogger(__name__)
 
@@ -104,6 +106,7 @@ def version(request, format=None):
     wrapper applied in ``website/urls.py`` doesn't choke on the suffixed route.
     """
     build_info = _read_build_info()
+    backup = get_backup_status()
     payload = {
         "version": settings.ML_WEBSITE_VERSION,
         "description": settings.ML_WEBSITE_VERSION_DESCRIPTION,
@@ -122,6 +125,18 @@ def version(request, format=None):
         # "ConcurrentRotatingFileHandler" means the multiprocess-safe handler
         # degraded and Gunicorn's workers can race on rollover again.
         "log_rotation": settings.LOG_ROTATION,
+        # Database backup health (#1443). The nightly dump lands in a Docker
+        # volume on a host with no shell, so this is the only way to check it
+        # without logging into /admin. backup_ok false means either the last
+        # pass failed or the newest dump has gone stale -- backup_problem says
+        # which. No paths or error internals beyond that: this endpoint is
+        # public.
+        "backup_ok": backup["healthy"],
+        "last_backup_at": (
+            backup["last_backup_at"].isoformat() if backup["last_backup_at"] else None
+        ),
+        "backup_age_hours": backup["age_hours"],
+        "backup_count": backup["backup_count"],
     }
     response = JsonResponse(payload)
     response["Cache-Control"] = "no-store"
