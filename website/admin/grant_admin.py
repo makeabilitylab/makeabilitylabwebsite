@@ -27,8 +27,21 @@ class GrantAdmin(ArtifactAdmin):
 
     # The list display lets us control what is shown in the default talk table at Home > Website > Grants
     # See: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_display
-    list_display = ('title', 'date', 'get_first_author_last_name', 'sponsor',
-                    'uw_grant_id', 'funding_amount')
+    #
+    # Two audiences, two column sets (#1448). Editors (PhD students) get a lean
+    # lookup table with the worktag right beside the title — finding one is the
+    # whole reason they can see this page. Superusers get the same plus the
+    # funding amount, which pairs with the Total Funding rollup above the table.
+    #
+    # EDITOR_LIST_DISPLAY is an allowlist rather than a filtered-down copy of
+    # list_display on purpose: a column added for superusers later can't leak
+    # into the Editor view by accident.
+    #
+    # 'First Author (Last Name)' stays for superusers but is left off the Editor
+    # view, which is meant to stay a lean lookup table.
+    EDITOR_LIST_DISPLAY = ('title', 'uw_grant_id', 'sponsor', 'date')
+    list_display = EDITOR_LIST_DISPLAY + ('get_first_author_last_name',
+                                          'funding_amount')
 
     # I want to make sponsor auto-complete but it's causing errors, so commenting out
     # https://github.com/makeabilitylab/makeabilitylabwebsite/issues/1093
@@ -44,7 +57,13 @@ class GrantAdmin(ArtifactAdmin):
     list_select_related = ('sponsor',)
 
     def get_queryset(self, request):
-        return super().get_queryset(request).prefetch_related('authors')
+        """Prefetch authors only when the first-author column is actually being
+        rendered — Editors don't get that column (#1448), so they shouldn't pay
+        for the join that feeds it."""
+        queryset = super().get_queryset(request)
+        if 'get_first_author_last_name' in self.get_list_display(request):
+            queryset = queryset.prefetch_related('authors')
+        return queryset
 
     fieldsets = [
         (None,                      {'fields': ['title', 'authors']}),
@@ -81,11 +100,9 @@ class GrantAdmin(ArtifactAdmin):
 
     def get_list_display(self, request):
         """Same boundary as get_fieldsets, applied to the changelist columns."""
-        list_display = super().get_list_display(request)
         if request.user.is_superuser:
-            return list_display
-        return tuple(column for column in list_display
-                     if column not in self.SUPERUSER_ONLY_FIELDS)
+            return super().get_list_display(request)
+        return self.EDITOR_LIST_DISPLAY
 
     def changelist_view(self, request, extra_context=None):
         """

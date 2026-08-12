@@ -179,6 +179,37 @@ class GrantAdminAccessTests(DatabaseTestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertIn("GR012345", resp.content.decode())
 
+    def test_changelist_columns_per_audience(self):
+        """Editors get exactly title / worktag / sponsor / date; superusers get
+        the same plus the funding amount. Pinned because EDITOR_LIST_DISPLAY is
+        the allowlist that keeps a future column out of the Editor view."""
+        from website.admin.grant_admin import GrantAdmin
+        from website.admin.admin_site import ml_admin_site
+
+        admin = GrantAdmin(Grant, ml_admin_site)
+        request = type("R", (), {"user": self.editor})()
+        self.assertEqual(admin.get_list_display(request),
+                         ("title", "uw_grant_id", "sponsor", "date"))
+
+        request.user = self.superuser
+        self.assertEqual(
+            admin.get_list_display(request),
+            ("title", "uw_grant_id", "sponsor", "date",
+             "get_first_author_last_name", "funding_amount"))
+
+    def test_authors_prefetched_only_when_the_author_column_renders(self):
+        """The first-author column walks authors, so it needs the #1346 prefetch;
+        the Editor changelist doesn't render it and shouldn't pay for it."""
+        from website.admin.grant_admin import GrantAdmin
+        from website.admin.admin_site import ml_admin_site
+
+        admin = GrantAdmin(Grant, ml_admin_site)
+        request = type("R", (), {"user": self.superuser})()
+        self.assertIn("authors", admin.get_queryset(request)._prefetch_related_lookups)
+
+        request.user = self.editor
+        self.assertEqual(admin.get_queryset(request)._prefetch_related_lookups, ())
+
     def test_editor_does_not_see_tracking_links_or_funding_totals(self):
         self.client.force_login(self.editor)
         content = self.client.get(CHANGELIST_URL).content.decode()
