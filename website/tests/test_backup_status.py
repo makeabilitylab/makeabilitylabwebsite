@@ -34,6 +34,11 @@ from website.utils.backup_status import format_bytes, get_backup_status
 NOW = datetime(2026, 8, 7, 12, 0, 0, tzinfo=timezone.utc)
 
 
+def _iso(dt):
+    """Render a datetime the way the sidecar writes them ('...Z')."""
+    return dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+
 def _status_payload(**overrides):
     """A well-formed status.json body, matching what pg_backup.sh writes."""
     payload = {
@@ -241,8 +246,27 @@ class AdminBackupWarningTests(DatabaseTestCase):
         self.status_file = os.path.join(self.tmp.name, 'status.json')
 
     def _write_status(self, **overrides):
+        """Write a status file for the *view* to read, timestamped relative to
+        the real clock.
+
+        This differs from the SimpleTestCase suites above on purpose. Those call
+        ``get_backup_status(..., now=NOW)``, so ``_status_payload``'s fixed
+        2026-08-07 timestamps stay correct forever. These tests go through the
+        real admin views, which use the real clock — so a hard-coded timestamp
+        reads as stale (``BACKUP_STALE_AFTER_HOURS = 36``) the day after it was
+        written, turning a healthy fixture unhealthy and failing the suite for
+        reasons that have nothing to do with the code under test. That is
+        exactly what happened from 2026-08-08 onward (#1450).
+        """
+        now = datetime.now(timezone.utc)
+        payload = {
+            'last_attempt_at': _iso(now - timedelta(hours=3)),
+            'last_backup_at': _iso(now - timedelta(hours=3)),
+            'oldest_backup_at': _iso(now - timedelta(days=13)),
+        }
+        payload.update(overrides)
         with open(self.status_file, 'w', encoding='utf-8') as handle:
-            json.dump(_status_payload(**overrides), handle)
+            json.dump(_status_payload(**payload), handle)
         return self.status_file
 
     def test_warning_shown_to_superuser_when_backup_unhealthy(self):
