@@ -65,8 +65,10 @@ class MakeabilityLabAdminSite(admin.AdminSite):
         ),
         (
             "Grants & Funding",
-            ["Grant", "Sponsor"],
-            "Generally, Jon will handle these. Please contact him if you think you need to edit."
+            ["Grant", "Sponsor", "GrantTrackingLink"],
+            "Generally, Jon will handle these. Please contact him if you think you need to edit. "
+            "Grants are readable (but not editable) by Editors so you can look up a UW grant "
+            "worktag or award number when purchasing, traveling, or filing an appointment."
         ),
         (
             "Configuration",

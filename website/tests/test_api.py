@@ -127,6 +127,11 @@ class ApiTestCase(DatabaseTestCase):
             date=date(2015, 1, 1),
             funding_amount=500000,
             grant_id="1302338",
+            # UW's internal Workday codes (#1448). Populated here on purpose: the
+            # tests below assert they never reach the public payload.
+            uw_grant_id="GR012345",
+            uw_award_number="AWD-00012345",
+            uw_award_name="Internal UW Award Name",
         )
         self.grant.projects.add(self.project)
 
@@ -214,6 +219,34 @@ class ApiTestCase(DatabaseTestCase):
         self.assertEqual(grant["sponsor"]["short_name"], "NSF")
         # Funding amounts are intentionally not exposed by the public API.
         self.assertNotIn("funding_amount", grant)
+        self._assert_no_internal_uw_fields(grant)
+
+    # ---- grants: the internal/public boundary (#1448) ------------------------
+
+    # UW's Workday codes are internal administrative data. GrantSerializer uses an
+    # explicit field allowlist so they're excluded structurally — these tests keep
+    # it that way if someone later switches to `exclude` or `fields = "__all__"`.
+    INTERNAL_UW_FIELDS = ("uw_grant_id", "uw_award_number", "uw_award_name")
+
+    def _assert_no_internal_uw_fields(self, grant):
+        for field in self.INTERNAL_UW_FIELDS:
+            self.assertNotIn(field, grant)
+
+    def test_grants_list_omits_internal_uw_fields(self):
+        resp = self.client.get("/api/v1/grants/")
+        self.assertEqual(resp.status_code, 200)
+        grant = resp.json()["results"][0]
+        # The sponsor-side award ID stays public — it's the NSF number.
+        self.assertEqual(grant["grant_id"], "1302338")
+        self._assert_no_internal_uw_fields(grant)
+
+    def test_grants_list_body_never_contains_a_worktag(self):
+        """Belt-and-braces: the worktag must not leak through any nested
+        serializer or added field either, so scan the whole response body."""
+        body = self.client.get("/api/v1/grants/").content.decode()
+        self.assertNotIn("GR012345", body)
+        self.assertNotIn("AWD-00012345", body)
+        self.assertNotIn("Internal UW Award Name", body)
 
     def test_project_people_subresource(self):
         resp = self.client.get("/api/v1/projects/projectsidewalk/people/")

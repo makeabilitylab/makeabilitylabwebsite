@@ -102,6 +102,12 @@ Filters: `?project=<short_name>`, `?sponsor=<sponsor short_name>`. Each grant
 includes its `sponsor`, `grant_id`, `grant_url`, and the `projects` it funds.
 Funding amounts are intentionally **not** exposed by the API.
 
+> **Note:** `grant_id` is the *sponsor's* award ID (e.g. the NSF award number),
+> which is already public. UW's own tracking codes — `uw_grant_id` (the Workday
+> grant worktag), `uw_award_number`, and `uw_award_name` — are internal
+> administrative data and are intentionally **not** exposed, like `funding_amount`
+> and `email`.
+
 ### People — `GET /api/v1/people/`
 
 Actual lab members (people with at least one Position); external co-authors are

@@ -22,8 +22,11 @@ CRUD = ("add", "change", "delete", "view")
 
 # Editors — PhD students and long-term staff who maintain the site. Full content
 # management on the public-facing models. DELIBERATELY EXCLUDES:
-#   - grant, award         -> admin-only by decision (funding data / curated
-#                             external recognitions stay with the superuser)
+#   - award                -> admin-only by decision (curated external
+#                             recognitions stay with the superuser)
+#   - grant                -> VIEW ONLY, see EDITORS_SPEC below (#1448)
+#   - granttrackinglink    -> admin-only: bookmarks to the maintainer's own
+#                             financial-reporting systems
 #   - user/group/permission/logentry/session -> no account administration
 #                             outside the superuser
 #   - contenttype, easy_thumbnails.* -> infra/cache tables nobody hand-edits
@@ -34,6 +37,15 @@ EDITORS_MODELS = [
     "photo", "projectumbrella", "sponsor", "projectrole",
 ]
 EDITORS_SPEC = {("website", model): CRUD for model in EDITORS_MODELS}
+
+# The one read-only entry (#1448). UW identifies every award by a "grant worktag"
+# (GR…), an award number, and an award name, and sponsored-programs staff ask for
+# them constantly — so PhD students need to be able to look one up without
+# pinging the PI. `view` only: they cannot add, edit, or delete a grant, and
+# GrantAdmin additionally hides the funding amounts, the proposal PDFs, and the
+# total-funding rollup from anyone who isn't a superuser. That keeps the #1125
+# decision ("funding data stays with the superuser") intact.
+EDITORS_SPEC[("website", "grant")] = ("view",)
 
 # Contributors — undergrads / interns (shared `contributor` account, or a personal
 # account promoted to Editors if they become a regular maintainer). Narrowest

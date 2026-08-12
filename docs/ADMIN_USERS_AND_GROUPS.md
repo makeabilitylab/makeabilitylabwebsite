@@ -41,6 +41,12 @@ These are defined declaratively in
 `banner, person, position, project, keyword, talk, publication, poster, news,
 video, photo, projectumbrella, sponsor, projectrole`.
 
+Plus one **read-only** exception: `grant` gets `view` and nothing else, so PhD
+students can look up a UW grant worktag / award number without pinging the PI.
+`GrantAdmin` additionally hides the funding amounts, the proposal PDFs/raw files,
+the total-funding rollup, and the official tracking links from anyone who isn't a
+superuser — so "funding data stays with the superuser" still holds.
+
 **`Contributors`** — submit-and-review, never destroy:
 - `person`: `add`, `change`, `view` (edit bios)
 - `publication`, `talk`, `poster`, `projectrole`: `add` + `view` (create their
@@ -50,9 +56,13 @@ video, photo, projectumbrella, sponsor, projectrole`.
 
 ### Deliberately admin-only (neither group)
 
-- **`Grant`** (Grants & Funding — funding data) and **`Award`** (curated external
-  recognitions). Note: *paper* awards live on `Publication.award`, which Editors
-  *can* edit via the publication; only the standalone `Award` model is withheld.
+- **`Grant`** — *editing* only; Editors can view it read-only (see above), but
+  add/change/delete stay with the superuser, as do funding amounts and files.
+- **`Award`** (curated external recognitions). Note: *paper* awards live on
+  `Publication.award`, which Editors *can* edit via the publication; only the
+  standalone `Award` model is withheld.
+- **`GrantTrackingLink`** — bookmarks to the maintainer's UW CSE / UW Award
+  Portal financial-reporting pages, shown atop the Grant changelist.
 - `User`, `Group`, `Permission`, `LogEntry`, sessions — account/audit administration.
 
 ## How it's enforced

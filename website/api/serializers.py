@@ -240,7 +240,17 @@ class SponsorSummarySerializer(serializers.Serializer):
 
 class GrantSerializer(serializers.ModelSerializer):
     """A funding grant. ``start_date`` and ``grant_url`` are model properties
-    aliasing the shared Artifact ``date`` / ``forum_url`` fields."""
+    aliasing the shared Artifact ``date`` / ``forum_url`` fields.
+
+    ``fields`` below is an explicit allowlist, and deliberately so: ``Grant`` also
+    carries UW's internal Workday codes (``uw_grant_id`` — the grant worktag —
+    plus ``uw_award_number`` / ``uw_award_name``) and ``funding_amount``. Those are
+    internal administrative data and must never be published here, the same way
+    ``Person.email`` is withheld from the people endpoints. Do not switch this to
+    ``exclude`` or ``__all__``; ``test_api.py`` pins the omission (#1448).
+
+    Note that ``grant_id`` IS public — it is the *sponsor's* award ID (the NSF
+    number), not UW's."""
 
     sponsor = SponsorSummarySerializer(read_only=True)
     grant_url = serializers.URLField(read_only=True)
