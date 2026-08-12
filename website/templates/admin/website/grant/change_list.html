@@ -1,19 +1,91 @@
 {% extends "admin/change_list.html" %}
 {% load humanize %}
 
+{% comment %}
+  Grant changelist additions.
+
+  Everything in this block is superuser-only. Editors hold `view_grant` so they
+  can look up a UW worktag (#1448), but the funding rollup and the official
+  tracking links stay with the superuser — GrantAdmin.changelist_view only puts
+  `total_funding` / `grant_tracking_links` into the context for superusers, and
+  the guard below is a second line of defense.
+{% endcomment %}
 
 {% block result_list %}
-  {# Display total funding summary above the results table #}
-  <div style="background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px; padding: 15px; margin-bottom: 20px;">
-    <strong style="font-size: 1.1em;">
-      Total Funding: ${{ total_funding|intcomma }}
-    </strong>
-    {% if cl.result_count != cl.full_result_count %}
-      <span style="color: #666; margin-left: 10px;">
-        (filtered from {{ cl.full_result_count }} total grants)
-      </span>
-    {% endif %}
-  </div>
-  
+  {% if request.user.is_superuser %}
+    <div class="ml-grant-admin-panel">
+      {# Official UW systems of record. These are rows in the DB (Grants & Funding > #}
+      {# Grant tracking links), not hard-coded, because the real URLs carry personal #}
+      {# sharing tokens and this repo is public. #}
+      {% if grant_tracking_links %}
+        <div class="ml-grant-tracking-links">
+          <strong>Official tracking:</strong>
+          <ul>
+            {% for link in grant_tracking_links %}
+              <li>
+                <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">
+                  {{ link.label }}<span class="ml-sr-only"> (opens in a new tab)</span>
+                </a>
+                {% if link.notes %}<span class="ml-grant-link-note">({{ link.notes }})</span>{% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% else %}
+        <p class="ml-grant-link-note">
+          No official tracking links yet —
+          <a href="{% url 'admin:website_granttrackinglink_add' %}">add one</a>
+          (e.g. the UW CSE financial reporting folder or the UW Award Portal).
+        </p>
+      {% endif %}
+
+      <strong class="ml-grant-total">Total Funding: ${{ total_funding|intcomma }}</strong>
+      {% if cl.result_count != cl.full_result_count %}
+        <span class="ml-grant-link-note">
+          (filtered from {{ cl.full_result_count }} total grants)
+        </span>
+      {% endif %}
+    </div>
+  {% endif %}
+
   {{ block.super }}
+{% endblock %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <style>
+    .ml-grant-admin-panel {
+      background: #f8f9fa;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .ml-grant-tracking-links ul {
+      list-style: none;
+      margin: 6px 0 12px 0;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+    }
+    /* The admin's base.css sets `ul > li { list-style-type: square }`; a class
+       selector on the li outranks it, whereas one on the ul does not. */
+    .ml-grant-tracking-links li { margin: 0; list-style: none; }
+    .ml-grant-total { font-size: 1.1em; }
+    .ml-grant-link-note { color: #666; margin-left: 6px; }
+    /* Visually hidden but available to screen readers. The Django admin has no
+       built-in equivalent (.hidden is display:none, which hides it from AT too). */
+    .ml-sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
 {% endblock %}

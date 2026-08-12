@@ -87,8 +87,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.33.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "The database now writes a nightly pg_dump into its own volume, so the infrastructure team's snapshots always contain a consistent restore point. Backup health shows on this dashboard and /version.json (#1443)."
+ML_WEBSITE_VERSION = "2.34.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Grants now record UW's internal tracking codes — the grant worktag, award number, and award name — and Editors can view grants read-only to look one up. Funding amounts, proposal files, and the links to the official UW trackers stay superuser-only (#1448)."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 

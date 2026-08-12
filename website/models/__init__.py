@@ -18,4 +18,5 @@ from .talk import Talk
 from .talk import TalkType
 from .video import Video
 from .grant import Grant
+from .grant_tracking_link import GrantTrackingLink
 from .award import Award, AwardType

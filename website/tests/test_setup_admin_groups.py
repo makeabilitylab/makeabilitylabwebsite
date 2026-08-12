@@ -7,7 +7,8 @@ Two layers:
    Contributors groups so a future model rename/removal, or an accidental edit
    to the spec, can't silently widen or drop a group's access. They also assert
    the design's security boundaries: neither group can manage users/groups
-   (account admin stays superuser-only), nor touch Grant or Award (admin-only).
+   (account admin stays superuser-only), Award stays admin-only, and Grant is
+   view-only for Editors (#1448 — worktag lookup, nothing more).
 
 2. SetupAdminGroupsSafetyTests + DockerEntrypointWiringTests cover the
    anti-lockout invariants. The command runs on EVERY container start, so it
@@ -49,6 +50,11 @@ EXPECTED_EDITORS = {
     f"website.{action}_{model}"
     for model in EDITORS_MODELS
     for action in ("add", "change", "delete", "view")
+} | {
+    # The one view-only entry (#1448): PhD students look up UW grant worktags,
+    # but funding data and proposal files stay with the superuser (GrantAdmin
+    # hides those fields from non-superusers).
+    "website.view_grant",
 }
 
 EXPECTED_CONTRIBUTORS = {
@@ -83,13 +89,38 @@ class SetupAdminGroupsTests(DatabaseTestCase):
                 self.assertNotIn("auth.", codename, f"{group} has {codename}")
                 self.assertNotIn("logentry", codename, f"{group} has {codename}")
 
-    def test_grant_and_award_are_admin_only(self):
-        """Grant (funding) and Award (external recognitions) stay superuser-only."""
+    def test_award_is_admin_only(self):
+        """Award (curated external recognitions) stays superuser-only."""
         call_command("setup_admin_groups")
         for group in ("Editors", "Contributors"):
             for codename in _codenames(group):
-                self.assertNotIn("_grant", codename, f"{group} has {codename}")
                 self.assertNotIn("_award", codename, f"{group} has {codename}")
+
+    def test_grant_is_view_only_for_editors_and_hidden_from_contributors(self):
+        """Editors may look up a UW worktag and nothing more (#1448): exactly
+        ``view_grant``, never add/change/delete. Contributors get nothing.
+
+        Checked with exact codenames rather than a substring: 'add_grant' and
+        'add_granttrackinglink' both contain '_grant'."""
+        call_command("setup_admin_groups")
+        self.assertEqual(
+            {c for c in _codenames("Editors") if c.endswith("_grant")},
+            {"website.view_grant"},
+        )
+        self.assertEqual(
+            {c for c in _codenames("Contributors") if c.endswith("_grant")}, set()
+        )
+
+    def test_grant_tracking_links_are_admin_only(self):
+        """The bookmark bar points at the superuser's own financial-reporting
+        systems — neither group may see or edit it (#1448)."""
+        call_command("setup_admin_groups")
+        for group in ("Editors", "Contributors"):
+            self.assertEqual(
+                {c for c in _codenames(group) if c.endswith("_granttrackinglink")},
+                set(),
+                f"{group} can reach grant tracking links",
+            )
 
     def test_contributors_cannot_delete_anything(self):
         call_command("setup_admin_groups")
@@ -179,8 +210,12 @@ class SetupAdminGroupsSafetyTests(DatabaseTestCase):
 
         self.assertTrue(ed.has_perm("website.change_publication"))
         self.assertTrue(ed.has_perm("website.delete_talk"))
+        # Grants are readable so a PhD student can look up a UW worktag (#1448).
+        self.assertTrue(ed.has_perm("website.view_grant"))
         # ...but not the admin-only or account-admin perms.
+        self.assertFalse(ed.has_perm("website.change_grant"))
         self.assertFalse(ed.has_perm("website.delete_grant"))
+        self.assertFalse(ed.has_perm("website.view_granttrackinglink"))
         self.assertFalse(ed.has_perm("website.add_award"))
         self.assertFalse(ed.has_perm("auth.add_user"))
         self.assertFalse(ed.has_perm("auth.change_group"))

@@ -28,8 +28,38 @@ class Grant(Artifact):
     funding_amount = models.IntegerField(null=True)
     funding_amount.help_text = "Amount of funding (in USD) for this grant"
 
-    grant_id = models.CharField(max_length=255, null=True, blank=True)
-    grant_id.help_text = "The grant id (e.g., <a href='https://www.nsf.gov/awardsearch/showAward?AWD_ID=1302338'>1302338</a>)"
+    # verbose_name (rather than only an admin form label) so the "sponsor's vs
+    # UW's" distinction also shows on the *read-only* change form Editors see:
+    # Django's readonly rendering reads the model's verbose_name and ignores
+    # ModelAdmin form label overrides (django.contrib.admin.utils.label_for_field).
+    grant_id = models.CharField(verbose_name="Sponsor grant ID",
+                                max_length=255, null=True, blank=True)
+    grant_id.help_text = "The sponsor's own ID for this grant (e.g., <a href='https://www.nsf.gov/awardsearch/showAward?AWD_ID=1302338'>1302338</a>). This one is public."
+
+    # --- UW internal tracking (#1448) ---------------------------------------
+    # Careful: `grant_id` above is the *sponsor's* award ID (the NSF number). It
+    # is public information and is serialized by the REST API. The three fields
+    # below are UW/Workday's own administrative codes for the same award. They
+    # are INTERNAL: deliberately absent from GrantSerializer's field allowlist
+    # (see website/api/serializers.py) and never rendered on a public page.
+    # Non-superusers can *view* them in the admin — that's the point, sponsored-
+    # programs staff ask for the worktag constantly — but not the funding data
+    # or proposal files alongside them (see GrantAdmin.get_fieldsets).
+
+    uw_grant_id = models.CharField(verbose_name="UW Grant ID (worktag)",
+                                   max_length=255, null=True, blank=True)
+    uw_grant_id.help_text = ("UW's internal grant worktag, e.g. GR012345. If the award "
+                             "spans several worktags, list them comma-separated. "
+                             "<b>Internal only</b> — never shown publicly or in the REST API.")
+
+    uw_award_number = models.CharField(verbose_name="UW Award number",
+                                       max_length=255, null=True, blank=True)
+    uw_award_number.help_text = "UW's award number for this grant, e.g. AWD-00012345. Internal only."
+
+    uw_award_name = models.CharField(verbose_name="UW Award name",
+                                     max_length=512, null=True, blank=True)
+    uw_award_name.help_text = ("The award name as UW records it, which is often not the "
+                               "title above. Internal only.")
 
     @property
     def start_date(self):
