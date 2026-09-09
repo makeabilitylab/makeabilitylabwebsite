@@ -22,3 +22,24 @@ jobs:
       - run: docker compose build website
       - run: docker compose up -d
 
+on:
+  push:
+    tags:
+      - *
+jobs:
+  deployprod:
+    environment:
+     name: prod
+     url: https://makeabilitylab.cs.washington.edu
+    runs-on: [self-hosted, cse-deploy]
+    env:
+     DJANGO_ENV: PROD
+     MEDIA_PATH: /cse/web/research/makelab/www
+     CONFIG_PATH: /cse/web/research/makelab/secret/config.ini
+     POSTGRES_IMAGE: postgres:16
+     POSTGRES_VOLUME: postgres16-data
+
+    steps:
+      - uses: actions/checkout@v7
+      - run: docker compose build website
+      - run: docker compose up -d
