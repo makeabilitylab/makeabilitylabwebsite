@@ -25,7 +25,7 @@ jobs:
 on:
   push:
     tags:
-      - *
+      - '*'
 jobs:
   deployprod:
     environment:
