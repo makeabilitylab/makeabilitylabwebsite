@@ -1,27 +1,5 @@
-name: deployCSE
-run-name: ${{ github.actor }} is deploying to CSE
-on:
-  push:
-    branches:
-      - master
-jobs:
-  deploytest:
-    environment:
-     name: test
-     url: https://makeabilitylab-test.cs.washington.edu
-    runs-on: [self-hosted, cse-deploy-test]
-    env:
-     DJANGO_ENV: TEST
-     MEDIA_PATH: /cse/web/research/makelab/www-test
-     CONFIG_PATH: /cse/web/research/makelab/secret/config-test.ini
-     POSTGRES_IMAGE: postgres:16
-     POSTGRES_VOLUME: postgres16-data
-
-    steps:
-      - uses: actions/checkout@v7
-      - run: docker compose build website
-      - run: docker compose up -d
-
+name: deployCSEProd
+run-name: ${{ github.actor }} is deploying to CSE Prod
 on:
   push:
     tags:
