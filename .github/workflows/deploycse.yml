@@ -6,6 +6,9 @@ on:
       - master
 jobs:
   deploytest:
+    environment:
+     name: test
+     url: https://makeabilitylab-test.cs.washington.edu
     runs-on: [self-hosted, cse-deploy-test]
     env:
      DJANGO_ENV: TEST
