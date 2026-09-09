@@ -15,6 +15,7 @@ jobs:
      POSTGRES_VOLUME: postgres16-data
 
     steps:
+      - uses: actions/checkout@v7
       - run: docker compose build website
       - run: docker compose up -d
 
