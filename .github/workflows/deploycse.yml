@@ -8,11 +8,11 @@ jobs:
   deploytest:
     runs-on: [self-hosted, cse-deploy-test]
     env:
-     DJANGO_ENV=TEST
-     MEDIA_PATH=/cse/web/research/makelab/www-test
-     CONFIG_PATH=/cse/web/research/makelab/secret/config-test.ini
-     POSTGRES_IMAGE=postgres:16
-     POSTGRES_VOLUME=postgres16-data
+     DJANGO_ENV: TEST
+     MEDIA_PATH: /cse/web/research/makelab/www-test
+     CONFIG_PATH: /cse/web/research/makelab/secret/config-test.ini
+     POSTGRES_IMAGE: postgres:16
+     POSTGRES_VOLUME: postgres16-data
 
     steps:
       - run: docker compose build website
