@@ -87,8 +87,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.34.0" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Grants now record UW's internal tracking codes — the grant worktag, award number, and award name — and Editors can view grants read-only to look one up. Funding amounts, proposal files, and the links to the official UW trackers stay superuser-only (#1448)."
+ML_WEBSITE_VERSION = "2.35.0" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Security dependency updates: Pillow 12.3 → 13.0 and pypdf 6.14 → 6.21 clear 66 GitHub security advisories (heap overflows, a Ghostscript argument-injection RCE, and PDF-parsing denial-of-service bugs); also picks up Django 5.2.17 and Django REST Framework 3.18.2."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
