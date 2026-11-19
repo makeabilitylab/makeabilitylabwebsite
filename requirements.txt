@@ -15,7 +15,7 @@
 # If you need to install new packages in the Docker container, you can try:
 # 1. docker ps // this gets a list of current processes/containers running
 # 2. docker exec -it -u root <container_id> /bin/bash
-# 3. Then here, you can install a new package like: > pip3 install django==5.2.17
+# 3. Then here, you can install a new package like: > pip3 install django==5.2.19
 #    or you could even run: > pip3 install -r requirements.txt
 #
 # You can also try to see which version of libraries are installed by running:
@@ -40,7 +40,7 @@
 # -----------------------------------------------------------------------------
 # Django 5.2 is an LTS release with support until April 2028
 # See: https://www.djangoproject.com/download/
-django==5.2.17
+django==5.2.19
 
 # -----------------------------------------------------------------------------
 # Database
@@ -59,7 +59,7 @@ django-debug-toolbar==5.0.1
 
 # Django REST Framework - for API endpoints
 # See: https://www.django-rest-framework.org/
-djangorestframework==3.18.2
+djangorestframework==3.18.3
 
 # -----------------------------------------------------------------------------
 # Image Processing
@@ -71,7 +71,7 @@ wand==0.6.13
 # pypdf - pure-Python PDF library, used to auto-count a publication's pages
 # (issue #1298) by reading the PDF's page tree directly (no rendering).
 # See: https://pypi.org/project/pypdf/
-pypdf==6.21.2
+pypdf==6.21.4
 
 # Pillow - Python Imaging Library fork, for image manipulation
 # Note: Pillow 10.0+ dropped Python 3.7 support; 11.0+ dropped Python 3.8
@@ -164,3 +164,25 @@ factory_boy==3.3.3
 # Dependency of factory_boy; pinned explicitly so test data stays reproducible.
 # See: https://faker.readthedocs.io/
 Faker==40.23.0
+
+# -----------------------------------------------------------------------------
+# Transitive dependencies (pinned so rebuilds are reproducible) — #1460
+# -----------------------------------------------------------------------------
+# These are not imported by our code; they are pulled in by the packages above.
+# Before #1460 they floated, so any uncached image rebuild (a new deploy host,
+# a pruned Docker cache, or any edit to this file) silently picked up whatever
+# was newest on PyPI. Pinned to exactly the set the 2.35.0 deploy installed
+# (2026-10-24). Bump them deliberately, alongside the package that needs them.
+asgiref==3.13.0             # django
+sqlparse==0.6.0             # django
+django-js-asset==4.2.0      # django-prose-editor 0.26 breaks on >=5.0 (TypeError on import maps); bump together with prose-editor
+nh3==0.3.7                  # django-prose-editor[sanitize]; the News HTML sanitizer, so never let it float
+portalocker==4.4.1          # concurrent-log-handler
+packaging==26.3             # gunicorn
+cryptography==46.0.7        # pyOpenSSL; pypdf also uses it to open AES-encrypted PDFs
+cffi==2.1.1                 # cryptography
+pycparser==3.12             # cffi
+certifi==2026.10.23         # requests
+charset_normalizer==3.5.2   # requests
+idna==3.20                  # requests
+urllib3==2.8.0              # requests
