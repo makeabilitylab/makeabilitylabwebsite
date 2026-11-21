@@ -10,7 +10,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # pinned: ubuntu-latest is now 26.04 (ImageMagick 7); keep CI on IM6 to match the Docker image until #1460 moves the image to trixie
 
     # Postgres service mirrors the local-dev / server `db` container
     # (postgres:16, makeability / admin / password).
@@ -87,7 +87,7 @@ jobs:
   # the push or the deploy). Playwright + its browser live in requirements-dev.txt
   # only, never in the production image.
   e2e:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # pinned: ubuntu-latest is now 26.04 (ImageMagick 7); keep CI on IM6 to match the Docker image until #1460 moves the image to trixie
 
     services:
       postgres:
@@ -157,7 +157,7 @@ jobs:
   # seed_demo_news), serve it with a native runserver, and scan the localhost
   # URLs in `.pa11yci.ci.json`.
   a11y:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # pinned: ubuntu-latest is now 26.04 (ImageMagick 7); keep CI on IM6 to match the Docker image until #1460 moves the image to trixie
 
     services:
       postgres:
