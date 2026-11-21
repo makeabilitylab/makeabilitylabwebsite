@@ -132,6 +132,24 @@ Django reads database credentials and secret keys from `config.ini`. This file:
 - Is mounted as a Docker volume on the production server
 - Contains PostgreSQL connection strings and Django secret keys
 
+**The servers will not start without two `[Django]` options.** When `DJANGO_ENV`
+is `PROD` or `TEST`, `settings.py` raises `ImproperlyConfigured` unless
+`config.ini` sets both:
+
+- `SECRET_KEY` — a real, private key. The fallback key in `settings.py` is in
+  this public repository, so it is rejected on the servers even if copied into
+  `config.ini`. A literal `%` in the value must be written `%%`.
+- `ALLOWED_HOSTS` — comma-separated hostnames the site answers to, e.g.
+  `makeabilitylab.cs.washington.edu`.
+
+Local development has no such requirement and falls back to dev defaults. To
+check a server's file from `recycle` without printing the key:
+
+```bash
+grep -cE '^(SECRET_KEY|ALLOWED_HOSTS) *[=:]' /cse/web/research/makelab/secret/config.ini       # expect 2
+grep -cE '^(SECRET_KEY|ALLOWED_HOSTS) *[=:]' /cse/web/research/makelab/secret/config-test.ini  # expect 2
+```
+
 ### Environment Variables
 
 Production-specific settings are configured in `settings.py` using values from `config.ini`. Local development uses different defaults specified in `docker-compose-local-dev.yml`.

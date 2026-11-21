@@ -15,6 +15,7 @@ A few things:
 import os
 import tempfile # for the log-rotation lock-file dir, see _file_log_handler
 from configparser import ConfigParser
+from django.core.exceptions import ImproperlyConfigured
 import datetime # for DATE_MAKEABILITYLAB_FORMED global
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -26,28 +27,114 @@ config = ConfigParser()
 
 OS_ENVIRONMENT = os.environ
 config_file = os.path.join(BASE_DIR, 'config.ini')
-config.read(config_file)
-if not config:
-    CONFIG_FILE = "No config file set"
-else:
+# ConfigParser.read() silently skips a file that is missing, is a directory, or
+# is not readable by this process, and returns the list of files it did parse.
+# Keep that list: "config.ini was never read" and "config.ini lacks an option"
+# need different error messages (see read_server_setting below).
+CONFIG_FILE_WAS_READ = bool(config.read(config_file))
+if CONFIG_FILE_WAS_READ:
     CONFIG_FILE = config_file
+else:
+    CONFIG_FILE = f"{config_file} (NOT READ: missing, a directory, or not readable)"
 
 print(f"CONFIG_FILE: {CONFIG_FILE}")
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
+# Which environment we are in. The deploy workflows set PROD or TEST, and
+# docker-compose.yml defaults it to TEST. CI sets DEBUG. Local dev
+# (docker-compose-local-dev.yml) leaves it unset.
+DJANGO_ENV = os.environ.get('DJANGO_ENV')
+
+# The dev-only fallback SECRET_KEY. This string is in a public repository, so
+# it is NOT a secret: anyone can use it to forge session cookies for a site
+# that runs on it. It exists only so a fresh local checkout starts without a
+# config.ini. read_server_setting() below refuses to let a server use it.
+_PUBLIC_DEV_SECRET_KEY = 'pe)-#st8rk!pomy!_1ha7=cpypp_(8%1xqmtw%!u@kw-f5&w^e'
+
+
+def read_server_setting(config, option, django_env, dev_default):
+    """Read ``[Django] <option>`` from config.ini, failing closed on the servers.
+
+    Locally a missing option falls back to ``dev_default`` so a fresh checkout
+    just works. On the deployed sites (``DJANGO_ENV`` of PROD or TEST) a missing
+    or blank option raises instead: silently running production on a default
+    that is published in this repository is worse than not starting.
+
+    What a refusal looks like from outside: the site returns 502/503. The
+    deploy job itself still goes green (``docker compose up -d`` does not wait
+    for the app), and this message only reaches the container's stdout on the
+    Docker host, which the maintainer cannot read. So "site down right after a
+    deploy that touched config" means: suspect this guard, and revert.
+
+    Args:
+        config: the ConfigParser loaded from config.ini.
+        option: option name in the ``[Django]`` section, e.g. ``'SECRET_KEY'``.
+        django_env: value of the DJANGO_ENV environment variable (may be None).
+        dev_default: value to use off-server when the option is absent.
+
+    Returns:
+        The configured string, or ``dev_default`` when off-server and unset.
+
+    Raises:
+        ImproperlyConfigured: on PROD/TEST when the option is missing, blank,
+            or equal to the public dev SECRET_KEY.
+
+    Example:
+        >>> read_server_setting(config, 'SECRET_KEY', 'PROD', 'dev-key')
+        # -> the key from config.ini, or ImproperlyConfigured if it has none
+    """
+    on_server = django_env in ('PROD', 'TEST')
+    if on_server and not config.sections():
+        raise ImproperlyConfigured(
+            f"config.ini has no sections, so it was not read at all (missing, a "
+            f"directory, or not readable by this user) and DJANGO_ENV={django_env} "
+            f"requires [Django] {option} from it. See docs/DEPLOYMENT.md."
+        )
+    value = config.get('Django', option).strip() if config.has_option('Django', option) else ''
+    if value and not (on_server and value == _PUBLIC_DEV_SECRET_KEY):
+        return value
+    if on_server:
+        raise ImproperlyConfigured(
+            f"config.ini must set a real [Django] {option} when DJANGO_ENV={django_env}. "
+            "Refusing to start on the built-in development default. "
+            "See docs/DEPLOYMENT.md."
+        )
+    return dev_default
+
+
+def parse_allowed_hosts(value, django_env):
+    """Split a comma-separated ALLOWED_HOSTS string into a clean list.
+
+    Entries are stripped and empty ones dropped, so ``"a.edu, b.edu,"`` gives
+    ``['a.edu', 'b.edu']``. On PROD/TEST an empty result raises: Django would
+    otherwise start and answer every request with 400 Bad Request. A ``*``
+    entry is accepted everywhere (the server's proxy may rely on it) but
+    printed as a warning on the servers.
+
+    Raises:
+        ImproperlyConfigured: on PROD/TEST when no hostname is left.
+
+    Example:
+        >>> parse_allowed_hosts(' a.edu ,b.edu,, ', 'PROD')
+        ['a.edu', 'b.edu']
+    """
+    hosts = [h.strip() for h in value.split(',') if h.strip()]
+    if django_env in ('PROD', 'TEST'):
+        if not hosts:
+            raise ImproperlyConfigured(
+                f"config.ini [Django] ALLOWED_HOSTS contains no hostnames (DJANGO_ENV={django_env}). "
+                "See docs/DEPLOYMENT.md."
+            )
+        if '*' in hosts:
+            print("WARNING: ALLOWED_HOSTS contains '*', so this site answers to any Host header.")
+    return hosts
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
-if config.has_option('Django', 'SECRET_KEY'):
-    SECRET_KEY = config.get('Django', 'SECRET_KEY')
-else:
-    # We should never be in production with this key
-    SECRET_KEY = 'pe)-#st8rk!pomy!_1ha7=cpypp_(8%1xqmtw%!u@kw-f5&w^e' 
+SECRET_KEY = read_server_setting(config, 'SECRET_KEY', DJANGO_ENV, _PUBLIC_DEV_SECRET_KEY)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # we will default to True if not overriden in the config file
 # this is to support localdev
-DJANGO_ENV = os.environ.get('DJANGO_ENV')
 if os.environ.get('DJANGO_ENV') == 'PROD':
     DEBUG = False
     DEBUG_SET = "Debug set to False because we're on production"
@@ -66,11 +153,15 @@ print(f"DJANGO_ENV: {DJANGO_ENV}")
 print(f"DEBUG_SET: {DEBUG_SET}")
 print(f"DEBUG: {DEBUG}")
 
+# ALLOWED_HOSTS is the list of hostnames Django will answer to. Off-server it
+# defaults to '*' (any name) for convenience. On PROD/TEST it must come from
+# config.ini: with '*', the site also answers requests that reach it by bare IP
+# address or under a made-up Host header, which sidesteps anything keyed on the
+# hostname and lets a forged Host leak into absolute URLs we generate.
+ALLOWED_HOSTS = parse_allowed_hosts(
+    read_server_setting(config, 'ALLOWED_HOSTS', DJANGO_ENV, '*'), DJANGO_ENV)
 if config.has_option('Django', 'ALLOWED_HOSTS'):
     USE_X_FORWARDED_HOST = True
-    ALLOWED_HOSTS = config.get('Django', 'ALLOWED_HOSTS').split(',')
-else:
-    ALLOWED_HOSTS = ['*']
 
 # Trust the X-Forwarded-Proto header from UW CSE's TLS-terminating Apache proxy so
 # request.scheme / request.is_secure() report the real (https) scheme (#1329).
@@ -95,8 +186,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     CSRF_COOKIE_SECURE = True
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.35.2" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Security maintenance: removes the unused requests and pyOpenSSL packages, updates cryptography to 50.0.2 (clears 8 Dependabot alerts), and marks the session and CSRF cookies Secure on the deployed sites."
+ML_WEBSITE_VERSION = "2.35.3" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Configuration hardening: the test and production sites now refuse to start unless config.ini supplies their SECRET_KEY and ALLOWED_HOSTS, instead of falling back to development defaults."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
