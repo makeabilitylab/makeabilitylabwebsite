@@ -86,9 +86,17 @@ else:
 if DJANGO_ENV in ('PROD', 'TEST'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
+    # Only send the session and CSRF cookies over HTTPS. Both deployed sites are
+    # HTTPS-only (Apache redirects and sets HSTS), so this costs nothing there
+    # and stops the admin session cookie from ever travelling in cleartext.
+    # Gated like the header above: local dev is plain http://localhost:8571,
+    # where a Secure cookie would never be sent back and /admin login would break.
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.35.1" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Maintenance release: Django 5.2.19, pypdf 6.21.4 and Django REST Framework 3.18.3 (upstream patch releases). All transitive dependencies are now pinned so rebuilds are reproducible."
+ML_WEBSITE_VERSION = "2.35.2" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Security maintenance: removes the unused requests and pyOpenSSL packages, updates cryptography to 50.0.2 (clears 8 Dependabot alerts), and marks the session and CSRF cookies Secure on the deployed sites."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
