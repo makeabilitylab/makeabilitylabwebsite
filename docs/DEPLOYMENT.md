@@ -142,6 +142,11 @@ is `PROD` or `TEST`, `settings.py` raises `ImproperlyConfigured` unless
 - `ALLOWED_HOSTS` — comma-separated hostnames the site answers to, e.g.
   `makeabilitylab.cs.washington.edu`.
 
+Both deploy workflows run a **preflight** step that loads the settings in a
+throwaway container before replacing the running site, so a config that fails
+this check turns the deploy job red (with the reason in its log) and leaves the
+current site up.
+
 Local development has no such requirement and falls back to dev defaults. To
 check a server's file from `recycle` without printing the key:
 

@@ -20,4 +20,16 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - run: docker compose build website
+
+      # Preflight: load the Django settings in a throwaway container, with this
+      # host's real config.ini mount, env and container user, BEFORE replacing
+      # the running site. settings.py refuses to load on test/prod without a
+      # readable config.ini that sets SECRET_KEY and ALLOWED_HOSTS. Without this
+      # step that refusal is invisible: `up -d` returns before the app boots, the
+      # job goes green, and the site just answers 502. With it, a bad config
+      # fails the job here, the reason is printed in this log, and the container
+      # that is already serving is left alone. --no-deps: don't touch the db.
+      - name: Preflight (settings load with this host's config)
+        run: docker compose run --rm --no-deps -T website python -c "import makeabilitylab.settings"
+
       - run: docker compose up -d
