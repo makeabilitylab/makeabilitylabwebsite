@@ -143,8 +143,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     CSRF_COOKIE_SECURE = True
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.35.2" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Security maintenance: removes the unused requests and pyOpenSSL packages, updates cryptography to 50.0.2 (clears 8 Dependabot alerts), and marks the session and CSRF cookies Secure on the deployed sites."
+ML_WEBSITE_VERSION = "2.35.3" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Configuration hardening: the test and production sites now refuse to start unless config.ini supplies their SECRET_KEY and ALLOWED_HOSTS, instead of falling back to development defaults."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
