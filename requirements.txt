@@ -142,15 +142,6 @@ gunicorn==23.0.0
 concurrent-log-handler==0.9.29
 
 # -----------------------------------------------------------------------------
-# Security & Networking
-# -----------------------------------------------------------------------------
-# pyOpenSSL - Python wrapper around OpenSSL
-pyOpenSSL==26.0.0
-
-# Requests - HTTP library for Python
-requests==2.33.0
-
-# -----------------------------------------------------------------------------
 # Testing
 # -----------------------------------------------------------------------------
 # factory_boy - model fixtures for the test suite (#1272). The de-facto Django
@@ -179,10 +170,12 @@ django-js-asset==4.2.0      # django-prose-editor 0.26 breaks on >=5.0 (TypeErro
 nh3==0.3.7                  # django-prose-editor[sanitize]; the News HTML sanitizer, so never let it float
 portalocker==4.4.1          # concurrent-log-handler
 packaging==26.3             # gunicorn
-cryptography==46.0.7        # pyOpenSSL; pypdf also uses it to open AES-encrypted PDFs
+cryptography==50.0.2        # pypdf uses it to open AES-encrypted PDFs (optional dep, so nothing pulls it in for us: keep the pin)
 cffi==2.1.1                 # cryptography
 pycparser==3.12             # cffi
-certifi==2026.10.23         # requests
-charset_normalizer==3.5.2   # requests
-idna==3.20                  # requests
-urllib3==2.8.0              # requests
+#
+# Removed in 2.35.2 (#1460): pyOpenSSL and requests, plus requests' transitive
+# set (certifi, charset_normalizer, idna, urllib3). Nothing in this project
+# imports either one; they dated from a 2016 Google Analytics integration that
+# is long gone. pyOpenSSL 26.0.0 also capped cryptography below 47, which
+# blocked its security updates.
