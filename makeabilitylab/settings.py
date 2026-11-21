@@ -27,16 +27,21 @@ config = ConfigParser()
 
 OS_ENVIRONMENT = os.environ
 config_file = os.path.join(BASE_DIR, 'config.ini')
-config.read(config_file)
-if not config:
-    CONFIG_FILE = "No config file set"
-else:
+# ConfigParser.read() silently skips a file that is missing, is a directory, or
+# is not readable by this process, and returns the list of files it did parse.
+# Keep that list: "config.ini was never read" and "config.ini lacks an option"
+# need different error messages (see read_server_setting below).
+CONFIG_FILE_WAS_READ = bool(config.read(config_file))
+if CONFIG_FILE_WAS_READ:
     CONFIG_FILE = config_file
+else:
+    CONFIG_FILE = f"{config_file} (NOT READ: missing, a directory, or not readable)"
 
 print(f"CONFIG_FILE: {CONFIG_FILE}")
 
-# Which environment we are in. Set by the deploy workflows (PROD / TEST) and by
-# docker-compose-local-dev.yml (DEBUG); unset when running outside Docker.
+# Which environment we are in. The deploy workflows set PROD or TEST, and
+# docker-compose.yml defaults it to TEST. CI sets DEBUG. Local dev
+# (docker-compose-local-dev.yml) leaves it unset.
 DJANGO_ENV = os.environ.get('DJANGO_ENV')
 
 # The dev-only fallback SECRET_KEY. This string is in a public repository, so
@@ -52,9 +57,13 @@ def read_server_setting(config, option, django_env, dev_default):
     Locally a missing option falls back to ``dev_default`` so a fresh checkout
     just works. On the deployed sites (``DJANGO_ENV`` of PROD or TEST) a missing
     or blank option raises instead: silently running production on a default
-    that is published in this repository is worse than not starting, and a
-    refusal to start is loud (the deploy fails and the previous container's
-    replacement never comes up) where a weak default is invisible.
+    that is published in this repository is worse than not starting.
+
+    What a refusal looks like from outside: the site returns 502/503. The
+    deploy job itself still goes green (``docker compose up -d`` does not wait
+    for the app), and this message only reaches the container's stdout on the
+    Docker host, which the maintainer cannot read. So "site down right after a
+    deploy that touched config" means: suspect this guard, and revert.
 
     Args:
         config: the ConfigParser loaded from config.ini.
@@ -74,6 +83,12 @@ def read_server_setting(config, option, django_env, dev_default):
         # -> the key from config.ini, or ImproperlyConfigured if it has none
     """
     on_server = django_env in ('PROD', 'TEST')
+    if on_server and not config.sections():
+        raise ImproperlyConfigured(
+            f"config.ini has no sections, so it was not read at all (missing, a "
+            f"directory, or not readable by this user) and DJANGO_ENV={django_env} "
+            f"requires [Django] {option} from it. See docs/DEPLOYMENT.md."
+        )
     value = config.get('Django', option).strip() if config.has_option('Django', option) else ''
     if value and not (on_server and value == _PUBLIC_DEV_SECRET_KEY):
         return value
@@ -84,6 +99,34 @@ def read_server_setting(config, option, django_env, dev_default):
             "See docs/DEPLOYMENT.md."
         )
     return dev_default
+
+
+def parse_allowed_hosts(value, django_env):
+    """Split a comma-separated ALLOWED_HOSTS string into a clean list.
+
+    Entries are stripped and empty ones dropped, so ``"a.edu, b.edu,"`` gives
+    ``['a.edu', 'b.edu']``. On PROD/TEST an empty result raises: Django would
+    otherwise start and answer every request with 400 Bad Request. A ``*``
+    entry is accepted everywhere (the server's proxy may rely on it) but
+    printed as a warning on the servers.
+
+    Raises:
+        ImproperlyConfigured: on PROD/TEST when no hostname is left.
+
+    Example:
+        >>> parse_allowed_hosts(' a.edu ,b.edu,, ', 'PROD')
+        ['a.edu', 'b.edu']
+    """
+    hosts = [h.strip() for h in value.split(',') if h.strip()]
+    if django_env in ('PROD', 'TEST'):
+        if not hosts:
+            raise ImproperlyConfigured(
+                f"config.ini [Django] ALLOWED_HOSTS contains no hostnames (DJANGO_ENV={django_env}). "
+                "See docs/DEPLOYMENT.md."
+            )
+        if '*' in hosts:
+            print("WARNING: ALLOWED_HOSTS contains '*', so this site answers to any Host header.")
+    return hosts
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -115,8 +158,8 @@ print(f"DEBUG: {DEBUG}")
 # config.ini: with '*', the site also answers requests that reach it by bare IP
 # address or under a made-up Host header, which sidesteps anything keyed on the
 # hostname and lets a forged Host leak into absolute URLs we generate.
-_allowed_hosts = read_server_setting(config, 'ALLOWED_HOSTS', DJANGO_ENV, '*')
-ALLOWED_HOSTS = [h.strip() for h in _allowed_hosts.split(',') if h.strip()]
+ALLOWED_HOSTS = parse_allowed_hosts(
+    read_server_setting(config, 'ALLOWED_HOSTS', DJANGO_ENV, '*'), DJANGO_ENV)
 if config.has_option('Django', 'ALLOWED_HOSTS'):
     USE_X_FORWARDED_HOST = True
 

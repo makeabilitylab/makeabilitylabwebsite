@@ -98,9 +98,9 @@ jobs:
         env:
           DJANGO_ENV: PROD
         run: |
+          trap 'rm -f config.ini' EXIT
           printf '[Django]\nSECRET_KEY=%s\nALLOWED_HOSTS=makeabilitylab.cs.washington.edu\n' \
             "$(python -c 'import secrets; print(secrets.token_urlsafe(50))')" > config.ini
-          trap 'rm -f config.ini' EXIT
           {
             echo "## manage.py check --deploy (DJANGO_ENV=PROD)"
             echo

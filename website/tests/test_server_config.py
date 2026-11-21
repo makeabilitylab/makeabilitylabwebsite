@@ -10,7 +10,11 @@ from configparser import ConfigParser
 from django.core.exceptions import ImproperlyConfigured
 from django.test import SimpleTestCase
 
-from makeabilitylab.settings import _PUBLIC_DEV_SECRET_KEY, read_server_setting
+from makeabilitylab.settings import (
+    _PUBLIC_DEV_SECRET_KEY,
+    parse_allowed_hosts,
+    read_server_setting,
+)
 
 # ConfigParser treats '%' as interpolation syntax, so a literal '%' in an .ini
 # value is written '%%'; config.get() hands back the single-'%' original.
@@ -44,17 +48,34 @@ class ReadServerSettingTests(SimpleTestCase):
     def test_missing_option_raises_on_servers(self):
         for env in ('PROD', 'TEST'):
             with self.subTest(env=env):
-                with self.assertRaises(ImproperlyConfigured):
-                    read_server_setting(make_config(), 'SECRET_KEY', env, 'dev')
+                # The file was read (it has a [Django] section) but lacks the option.
+                with self.assertRaises(ImproperlyConfigured) as ctx:
+                    read_server_setting(make_config(DEBUG='False'), 'SECRET_KEY', env, 'dev')
+                self.assertIn('must set', str(ctx.exception))
 
     def test_missing_section_raises_on_servers(self):
         # config.ini absent entirely -> ConfigParser has no [Django] section.
         with self.assertRaises(ImproperlyConfigured):
             read_server_setting(ConfigParser(), 'ALLOWED_HOSTS', 'PROD', '*')
 
-    def test_blank_option_raises_on_servers(self):
+    def test_unread_config_gets_its_own_message(self):
+        """An unreadable/missing file must not be reported as a missing option."""
+        with self.assertRaises(ImproperlyConfigured) as ctx:
+            read_server_setting(ConfigParser(), 'SECRET_KEY', 'TEST', 'dev')
+        self.assertIn('not read', str(ctx.exception))
+
+    def test_option_in_wrong_section_raises_on_servers(self):
+        # Section names are case-sensitive: [django] is not [Django].
+        config = ConfigParser()
+        config['django'] = {'SECRET_KEY': 'a-real-key'}
         with self.assertRaises(ImproperlyConfigured):
-            read_server_setting(make_config(SECRET_KEY='   '), 'SECRET_KEY', 'PROD', 'dev')
+            read_server_setting(config, 'SECRET_KEY', 'PROD', 'dev')
+
+    def test_blank_option_raises_on_servers(self):
+        for env in ('PROD', 'TEST'):
+            with self.subTest(env=env):
+                with self.assertRaises(ImproperlyConfigured):
+                    read_server_setting(make_config(SECRET_KEY='   '), 'SECRET_KEY', env, 'dev')
 
     def test_public_dev_key_is_rejected_on_servers(self):
         """A config.ini that copies the key from this repo is no better than none."""
@@ -71,3 +92,27 @@ class ReadServerSettingTests(SimpleTestCase):
             read_server_setting(config, 'SECRET_KEY', 'PROD', 'dev')
         self.assertIn('SECRET_KEY', str(ctx.exception))
         self.assertNotIn(_PUBLIC_DEV_SECRET_KEY, str(ctx.exception))
+
+
+class ParseAllowedHostsTests(SimpleTestCase):
+
+    def test_strips_and_drops_empty_entries(self):
+        self.assertEqual(
+            parse_allowed_hosts(' a.edu ,b.edu,, ', 'PROD'), ['a.edu', 'b.edu'])
+
+    def test_multiline_ini_value(self):
+        # An indented continuation line in config.ini arrives with a newline.
+        self.assertEqual(
+            parse_allowed_hosts('a.edu,\nb.edu', 'TEST'), ['a.edu', 'b.edu'])
+
+    def test_no_hostnames_raises_on_servers(self):
+        for value in (',', ' , ,'):
+            with self.subTest(value=value):
+                with self.assertRaises(ImproperlyConfigured):
+                    parse_allowed_hosts(value, 'PROD')
+
+    def test_wildcard_is_accepted(self):
+        # Accepted on the servers too (with a printed warning): rejecting it
+        # could take down a site whose config has always relied on it.
+        self.assertEqual(parse_allowed_hosts('*', 'PROD'), ['*'])
+        self.assertEqual(parse_allowed_hosts('*', None), ['*'])
