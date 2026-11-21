@@ -15,6 +15,7 @@ A few things:
 import os
 import tempfile # for the log-rotation lock-file dir, see _file_log_handler
 from configparser import ConfigParser
+from django.core.exceptions import ImproperlyConfigured
 import datetime # for DATE_MAKEABILITYLAB_FORMED global
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -34,20 +35,63 @@ else:
 
 print(f"CONFIG_FILE: {CONFIG_FILE}")
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
+# Which environment we are in. Set by the deploy workflows (PROD / TEST) and by
+# docker-compose-local-dev.yml (DEBUG); unset when running outside Docker.
+DJANGO_ENV = os.environ.get('DJANGO_ENV')
+
+# The dev-only fallback SECRET_KEY. This string is in a public repository, so
+# it is NOT a secret: anyone can use it to forge session cookies for a site
+# that runs on it. It exists only so a fresh local checkout starts without a
+# config.ini. read_server_setting() below refuses to let a server use it.
+_PUBLIC_DEV_SECRET_KEY = 'pe)-#st8rk!pomy!_1ha7=cpypp_(8%1xqmtw%!u@kw-f5&w^e'
+
+
+def read_server_setting(config, option, django_env, dev_default):
+    """Read ``[Django] <option>`` from config.ini, failing closed on the servers.
+
+    Locally a missing option falls back to ``dev_default`` so a fresh checkout
+    just works. On the deployed sites (``DJANGO_ENV`` of PROD or TEST) a missing
+    or blank option raises instead: silently running production on a default
+    that is published in this repository is worse than not starting, and a
+    refusal to start is loud (the deploy fails and the previous container's
+    replacement never comes up) where a weak default is invisible.
+
+    Args:
+        config: the ConfigParser loaded from config.ini.
+        option: option name in the ``[Django]`` section, e.g. ``'SECRET_KEY'``.
+        django_env: value of the DJANGO_ENV environment variable (may be None).
+        dev_default: value to use off-server when the option is absent.
+
+    Returns:
+        The configured string, or ``dev_default`` when off-server and unset.
+
+    Raises:
+        ImproperlyConfigured: on PROD/TEST when the option is missing, blank,
+            or equal to the public dev SECRET_KEY.
+
+    Example:
+        >>> read_server_setting(config, 'SECRET_KEY', 'PROD', 'dev-key')
+        # -> the key from config.ini, or ImproperlyConfigured if it has none
+    """
+    on_server = django_env in ('PROD', 'TEST')
+    value = config.get('Django', option).strip() if config.has_option('Django', option) else ''
+    if value and not (on_server and value == _PUBLIC_DEV_SECRET_KEY):
+        return value
+    if on_server:
+        raise ImproperlyConfigured(
+            f"config.ini must set a real [Django] {option} when DJANGO_ENV={django_env}. "
+            "Refusing to start on the built-in development default. "
+            "See docs/DEPLOYMENT.md."
+        )
+    return dev_default
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
-if config.has_option('Django', 'SECRET_KEY'):
-    SECRET_KEY = config.get('Django', 'SECRET_KEY')
-else:
-    # We should never be in production with this key
-    SECRET_KEY = 'pe)-#st8rk!pomy!_1ha7=cpypp_(8%1xqmtw%!u@kw-f5&w^e' 
+SECRET_KEY = read_server_setting(config, 'SECRET_KEY', DJANGO_ENV, _PUBLIC_DEV_SECRET_KEY)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # we will default to True if not overriden in the config file
 # this is to support localdev
-DJANGO_ENV = os.environ.get('DJANGO_ENV')
 if os.environ.get('DJANGO_ENV') == 'PROD':
     DEBUG = False
     DEBUG_SET = "Debug set to False because we're on production"
@@ -66,11 +110,15 @@ print(f"DJANGO_ENV: {DJANGO_ENV}")
 print(f"DEBUG_SET: {DEBUG_SET}")
 print(f"DEBUG: {DEBUG}")
 
+# ALLOWED_HOSTS is the list of hostnames Django will answer to. Off-server it
+# defaults to '*' (any name) for convenience. On PROD/TEST it must come from
+# config.ini: with '*', the site also answers requests that reach it by bare IP
+# address or under a made-up Host header, which sidesteps anything keyed on the
+# hostname and lets a forged Host leak into absolute URLs we generate.
+_allowed_hosts = read_server_setting(config, 'ALLOWED_HOSTS', DJANGO_ENV, '*')
+ALLOWED_HOSTS = [h.strip() for h in _allowed_hosts.split(',') if h.strip()]
 if config.has_option('Django', 'ALLOWED_HOSTS'):
     USE_X_FORWARDED_HOST = True
-    ALLOWED_HOSTS = config.get('Django', 'ALLOWED_HOSTS').split(',')
-else:
-    ALLOWED_HOSTS = ['*']
 
 # Trust the X-Forwarded-Proto header from UW CSE's TLS-terminating Apache proxy so
 # request.scheme / request.is_secure() report the real (https) scheme (#1329).

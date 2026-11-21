@@ -89,14 +89,18 @@ jobs:
       # so it evaluates the settings the production server actually gets (secure
       # cookies, DEBUG off, ...). Report-only: `continue-on-error` keeps a
       # warning from turning the job red, and the output goes to the run's
-      # Summary. Note CI has no config.ini, so warnings about SECRET_KEY reflect
-      # the dev fallback, not the server's real key.
+      # Summary. Settings refuse to load as PROD without a real SECRET_KEY and
+      # ALLOWED_HOSTS in config.ini, so the step writes a throwaway one first
+      # (random key, never used for anything) and removes it afterwards.
       - name: Django deployment checklist (report-only)
         if: always()
         continue-on-error: true
         env:
           DJANGO_ENV: PROD
         run: |
+          printf '[Django]\nSECRET_KEY=%s\nALLOWED_HOSTS=makeabilitylab.cs.washington.edu\n' \
+            "$(python -c 'import secrets; print(secrets.token_urlsafe(50))')" > config.ini
+          trap 'rm -f config.ini' EXIT
           {
             echo "## manage.py check --deploy (DJANGO_ENV=PROD)"
             echo
