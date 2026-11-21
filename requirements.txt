@@ -179,7 +179,7 @@ django-js-asset==4.2.0      # django-prose-editor 0.26 breaks on >=5.0 (TypeErro
 nh3==0.3.7                  # django-prose-editor[sanitize]; the News HTML sanitizer, so never let it float
 portalocker==4.4.1          # concurrent-log-handler
 packaging==26.3             # gunicorn
-cryptography==46.0.7        # pyOpenSSL; pypdf also uses it to open AES-encrypted PDFs
+cryptography==50.0.0        # pyOpenSSL; pypdf also uses it to open AES-encrypted PDFs
 cffi==2.1.1                 # cryptography
 pycparser==3.12             # cffi
 certifi==2026.10.23         # requests
