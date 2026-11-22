@@ -46,3 +46,9 @@ LOG_ROTATION = "NullHandler"
 
 # Speed up the auth tests (Data Health suite creates real superuser rows).
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
+
+# Login throttling (django-axes) is off for the suite: its auth backend needs
+# the HttpRequest, which `self.client.login(...)` does not pass, and lockout
+# state would leak between tests that share a username. The tests that cover
+# the throttle itself (test_login_throttle.py) switch it back on.
+AXES_ENABLED = False

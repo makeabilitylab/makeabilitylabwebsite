@@ -108,3 +108,19 @@ To preview without writing: `python manage.py setup_admin_groups --dry-run`.
   named personal superuser like `jonfroehlich` instead, so admin-history
   attribution stays clean). Rotating matters because its hash exists in old DB
   dumps and it is a long-lived (2016-era) credential.
+
+## Locked out after too many wrong passwords
+
+`/admin` login is throttled (`django-axes`): 10 wrong passwords in a row lock
+that **username** for 30 minutes, and a locked account is refused even with the
+right password (the page says "Account locked"). A correct login resets the
+count.
+
+- **It unlocks by itself** 30 minutes after the lockout began.
+- **To unlock someone sooner**, a superuser opens Admin → Administration →
+  **Access attempts** and deletes that username's row.
+- The lock is per username, so one person's lockout never affects anyone else.
+  The flip side: anyone who knows a username can lock it by guessing. If that
+  ever happens repeatedly, tell the maintainer.
+- **Access logs** (same admin section) list successful sign-ins, which is handy
+  when offboarding or checking whether an account is still in use.

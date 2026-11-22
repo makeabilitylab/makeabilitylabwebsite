@@ -186,8 +186,8 @@ if DJANGO_ENV in ('PROD', 'TEST'):
     CSRF_COOKIE_SECURE = True
 
 # Makeability Lab Global Variables, including Makeability Lab version
-ML_WEBSITE_VERSION = "2.35.3" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Configuration hardening: the test and production sites now refuse to start unless config.ini supplies their SECRET_KEY and ALLOWED_HOSTS, instead of falling back to development defaults."
+ML_WEBSITE_VERSION = "2.35.4" # Keep this updated with each release and also change the short description below
+ML_WEBSITE_VERSION_DESCRIPTION = "Admin login throttling: after 10 wrong passwords a username is locked out of /admin for 30 minutes (django-axes). Superusers can unlock an account under Administration > Access attempts."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
@@ -526,7 +526,45 @@ INSTALLED_APPS = [
     # https://docs.djangoproject.com/en/4.2/topics/performance/#performance-benchmarking
     # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html
     "debug_toolbar",
+
+    # django-axes: locks a username out of /admin login after repeated failed
+    # passwords. Configured in the AXES_* block below.
+    "axes",
 ]
+
+# -----------------------------------------------------------------------------
+# Admin login throttling (django-axes)
+# -----------------------------------------------------------------------------
+# Nothing used to limit password guessing against /admin/login/. Axes counts
+# failed logins in the database (shared by all Gunicorn workers) and refuses
+# further attempts for a locked username with HTTP 429.
+#
+# Policy: 10 wrong passwords for one username locks THAT USERNAME for 30 minutes.
+#
+# - Keyed on username only, not IP address. Behind UW CSE's Apache proxy Django
+#   may see every visitor as the proxy's address, and we cannot inspect which
+#   header carries the real one. An IP key could therefore lock out everybody at
+#   once, or nobody. Revisit if CSE IT confirms the forwarding header.
+# - The trade-off: someone who knows an admin username can lock that account by
+#   guessing. AXES_RESET_COOL_OFF_ON_FAILURE_DURING_LOCKOUT=False bounds that:
+#   the 30 minutes run from the lockout, and further guesses do not extend it.
+# - To unlock someone sooner: Admin > Administration > Access attempts, delete
+#   their row (superusers only). From a shell: `manage.py axes_reset_username <name>`.
+# - Tests turn this off (settings_test.py) except the ones that exercise it.
+AUTHENTICATION_BACKENDS = [
+    # Must be first: it rejects the login when the username is locked out.
+    'axes.backends.AxesStandaloneBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+AXES_FAILURE_LIMIT = 10
+AXES_COOLOFF_TIME = datetime.timedelta(minutes=30)
+AXES_LOCKOUT_PARAMETERS = ["username"]
+AXES_RESET_ON_SUCCESS = True  # a correct password clears the failure count
+AXES_RESET_COOL_OFF_ON_FAILURE_DURING_LOCKOUT = False
+AXES_ENABLE_RETRY_AFTER_HEADER = True
+# axes.W006 warns whenever 'ip_address' is not among the lockout keys. Leaving
+# it out is the deliberate choice explained above, so silence that one check.
+SILENCED_SYSTEM_CHECKS = ['axes.W006']
 
 # JEF: Added 9/22/2023
 # The Debug Toolbar is shown only if your IP address is listed in Django’s INTERNAL_IPS setting.
@@ -562,6 +600,10 @@ MIDDLEWARE = [
     # Adds permissive CORS headers to /api/ responses only (#1268). Read-only,
     # already-public data -- see website/api/middleware.py.
     'website.api.middleware.ApiCorsMiddleware',
+
+    # django-axes: turns a locked-out login into the 429 response. Its docs ask
+    # for it to be last so it sees the final result of authentication.
+    'axes.middleware.AxesMiddleware',
 ]
 
 # Django REST Framework config for the public read-only API (#1268).
