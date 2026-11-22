@@ -14,6 +14,7 @@ from makeabilitylab.settings import (
     _PUBLIC_DEV_SECRET_KEY,
     parse_allowed_hosts,
     read_server_setting,
+    safe_config_get,
 )
 
 # ConfigParser treats '%' as interpolation syntax, so a literal '%' in an .ini
@@ -116,3 +117,37 @@ class ParseAllowedHostsTests(SimpleTestCase):
         # could take down a site whose config has always relied on it.
         self.assertEqual(parse_allowed_hosts('*', 'PROD'), ['*'])
         self.assertEqual(parse_allowed_hosts('*', None), ['*'])
+
+
+class ConfigErrorsNeverLeakValuesTests(SimpleTestCase):
+    """configparser quotes the bad value in its errors; ours must not.
+
+    These messages reach the deploy preflight's log, which is public.
+    """
+
+    SECRET = "abc%xyzTAILSECRET"  # a bare % is an interpolation syntax error
+
+    def raw_config(self, text):
+        config = ConfigParser()
+        config.read_string(text)
+        return config
+
+    def test_bare_percent_in_secret_key(self):
+        config = self.raw_config(f"[Django]\nSECRET_KEY={self.SECRET}\n")
+        with self.assertRaises(ImproperlyConfigured) as ctx:
+            read_server_setting(config, 'SECRET_KEY', 'PROD', 'dev')
+        self.assertNotIn('TAILSECRET', str(ctx.exception))
+        self.assertIn('SECRET_KEY', str(ctx.exception))
+        # `from None`: the original configparser error must not ride along.
+        self.assertIsNone(ctx.exception.__cause__)
+        self.assertTrue(ctx.exception.__suppress_context__)
+
+    def test_missing_interpolation_target(self):
+        config = self.raw_config("[Postgres]\nPASSWORD=hunter2%(nope)s\n")
+        with self.assertRaises(ImproperlyConfigured) as ctx:
+            safe_config_get(config, 'Postgres', 'PASSWORD')
+        self.assertNotIn('hunter2', str(ctx.exception))
+
+    def test_escaped_percent_reads_normally(self):
+        config = self.raw_config("[Django]\nSECRET_KEY=abc%%def\n")
+        self.assertEqual(safe_config_get(config, 'Django', 'SECRET_KEY'), 'abc%def')
