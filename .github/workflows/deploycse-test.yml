@@ -26,10 +26,18 @@ jobs:
       # the running site. settings.py refuses to load on test/prod without a
       # readable config.ini that sets SECRET_KEY and ALLOWED_HOSTS. Without this
       # step that refusal is invisible: `up -d` returns before the app boots, the
-      # job goes green, and the site just answers 502. With it, a bad config
-      # fails the job here, the reason is printed in this log, and the container
-      # that is already serving is left alone. --no-deps: don't touch the db.
+      # job goes green, and the site answers 502/503. With it, a bad config fails
+      # the job here with the reason in this log, and the serving container is
+      # not replaced. That container is still running on top of the NEW checkout
+      # (/code is bind-mounted), so it can go down at its next worker respawn or
+      # restart: treat a failure here as "fix the config or revert soon".
+      #   --no-deps: don't start or touch the db.
+      #   The script prints error types, never config values: this log is public.
+      #   Escape hatch if the step itself ever misfires and blocks deploys: set
+      #   the repository variable SKIP_DEPLOY_PREFLIGHT to 'true' (Settings >
+      #   Secrets and variables > Actions > Variables). No commit needed.
       - name: Preflight (settings load with this host's config)
-        run: docker compose run --rm --no-deps -T website python -c "import makeabilitylab.settings"
+        if: vars.SKIP_DEPLOY_PREFLIGHT != 'true'
+        run: docker compose run --rm --no-deps -T website python scripts/preflight_settings.py
 
       - run: docker compose up -d
