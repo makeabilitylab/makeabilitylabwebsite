@@ -8,7 +8,7 @@ The suite runs with ``AXES_ENABLED = False`` (see settings_test.py); these tests
 switch it back on, with a small limit so they stay fast.
 """
 from django.contrib.auth import get_user_model
-from django.test import TestCase, override_settings
+from django.test import Client, SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 
 from axes.utils import reset
@@ -74,6 +74,73 @@ class AdminLoginThrottleTests(TestCase):
             self.attempt("nobody", "wrong")
         self.assertEqual(self.attempt("nobody", "wrong").status_code, 429)
 
+    def test_unknown_usernames_share_one_placeholder(self):
+        """A password typed into the username box must never reach the database."""
+        from axes.models import AccessAttempt, AccessFailureLog
+        from website.utils.login_throttle import UNKNOWN_USERNAME
+
+        self.attempt("MySecretPassw0rd!", "whatever")
+        self.attempt("root", "whatever")
+        for model in (AccessAttempt, AccessFailureLog):
+            names = set(model.objects.values_list("username", flat=True))
+            self.assertEqual(names, {UNKNOWN_USERNAME}, model.__name__)
+        for attempt in AccessAttempt.objects.all():
+            self.assertNotIn("MySecretPassw0rd!", attempt.post_data)
+
+    def test_locking_unknown_names_does_not_lock_a_real_account(self):
+        for name in ("root", "admin", "test"):
+            self.attempt(name, "wrong")
+        self.assertEqual(self.attempt("nobody", "wrong").status_code, 429)
+        self.assertEqual(self.attempt("alice", PASSWORD).status_code, 302)
+
+    def test_failed_logins_are_recorded(self):
+        from axes.models import AccessFailureLog
+
+        self.attempt("alice", "wrong")
+        self.assertEqual(AccessFailureLog.objects.filter(username="alice").count(), 1)
+
+    def test_lockout_page(self):
+        for _ in range(3):
+            self.attempt("alice", "wrong")
+        response = self.attempt("alice", PASSWORD)
+        self.assertEqual(response.status_code, 429)
+        self.assertEqual(response["Retry-After"], "1800")
+        self.assertTemplateUsed(response, "admin/login_locked_out.html")
+        self.assertContains(response, '<html lang="en">', status_code=429)
+        self.assertContains(response, "after 30 minutes", status_code=429)
+        self.assertNotContains(response, PASSWORD, status_code=429)
+
+    def test_signed_in_superuser_can_unlock_by_deleting_rows(self):
+        """The documented unlock path: delete the rows under Access attempts."""
+        from axes.models import AccessAttempt
+
+        for _ in range(3):
+            self.attempt("alice", "wrong")
+        self.assertEqual(self.attempt("alice", PASSWORD).status_code, 429)
+
+        admin_client = Client()
+        admin_client.force_login(self.bob)
+        changelist = reverse("admin:axes_accessattempt_changelist")
+        ids = list(AccessAttempt.objects.values_list("pk", flat=True))
+        response = admin_client.post(changelist, {
+            "action": "delete_selected", "_selected_action": ids, "post": "yes"})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.attempt("alice", PASSWORD).status_code, 302)
+
+    def test_axes_admin_is_superuser_only(self):
+        """Editors must not see login records (IP addresses, usernames)."""
+        from django.core.management import call_command
+        from django.contrib.auth.models import Group
+
+        call_command("setup_admin_groups", verbosity=0)
+        editor = get_user_model().objects.create_user("erin", "", PASSWORD, is_staff=True)
+        editor.groups.add(Group.objects.get(name="Editors"))
+        editor_client = Client()
+        editor_client.force_login(editor)
+        for model in ("accessattempt", "accesslog", "accessfailurelog"):
+            url = reverse(f"admin:axes_{model}_changelist")
+            self.assertEqual(editor_client.get(url).status_code, 403, model)
+
 
 class ThrottleConfigTests(TestCase):
     """Pin the production policy so a settings edit can't quietly weaken it."""
@@ -90,3 +157,55 @@ class ThrottleConfigTests(TestCase):
         self.assertEqual(
             settings.AUTHENTICATION_BACKENDS[0], "axes.backends.AxesStandaloneBackend")
         self.assertEqual(settings.MIDDLEWARE[-1], "axes.middleware.AxesMiddleware")
+        self.assertIn("axes", settings.INSTALLED_APPS)
+        self.assertTrue(settings.AXES_ENABLE_ACCESS_FAILURE_LOG)
+
+
+class ThrottleSwitchTests(SimpleTestCase):
+    """settings.py decides on/off at import time; load it fresh in a subprocess."""
+
+    def load(self, extra_env=None, hide_axes=False):
+        """Import settings in a clean interpreter and return what it decided."""
+        import json, os, subprocess, sys
+        code = (
+            "import sys, json\n"
+            + ("sys.modules['axes'] = None\n"
+               "import importlib.util as u\n"
+               "_f = u.find_spec\n"
+               "u.find_spec = lambda n, *a, **k: None if n == 'axes' else _f(n, *a, **k)\n"
+               if hide_axes else "")
+            + "from makeabilitylab import settings as s\n"
+            "print(json.dumps({'throttle': s.LOGIN_THROTTLE, 'enabled': s.AXES_ENABLED,\n"
+            "  'app': 'axes' in s.INSTALLED_APPS,\n"
+            "  'mw': 'axes.middleware.AxesMiddleware' in s.MIDDLEWARE,\n"
+            "  'backends': getattr(s, 'AUTHENTICATION_BACKENDS', None)}))\n"
+        )
+        env = {k: v for k, v in os.environ.items()
+               if k not in ("DJANGO_ENV", "ML_DISABLE_LOGIN_THROTTLE", "DJANGO_SETTINGS_MODULE")}
+        env.update(extra_env or {})
+        from django.conf import settings
+        out = subprocess.run([sys.executable, "-c", code], cwd=settings.BASE_DIR,
+                             env=env, capture_output=True, text=True, timeout=60)
+        self.assertEqual(out.returncode, 0, out.stderr[-2000:])
+        return json.loads(out.stdout.strip().splitlines()[-1])
+
+    def test_on_by_default(self):
+        result = self.load()
+        self.assertEqual(result["throttle"], "on")
+        self.assertTrue(result["enabled"] and result["app"] and result["mw"])
+
+    def test_environment_switch_turns_it_off(self):
+        result = self.load({"ML_DISABLE_LOGIN_THROTTLE": "true"})
+        self.assertFalse(result["enabled"])
+        self.assertTrue(result["throttle"].startswith("off"))
+
+    def test_empty_or_other_values_leave_it_on(self):
+        for value in ("", "false", "0"):
+            self.assertTrue(self.load({"ML_DISABLE_LOGIN_THROTTLE": value})["enabled"], value)
+
+    def test_settings_still_load_when_the_package_is_missing(self):
+        """Mid-deploy the old image runs the new settings; workers must boot."""
+        result = self.load(hide_axes=True)
+        self.assertFalse(result["app"] or result["mw"])
+        self.assertIsNone(result["backends"])
+        self.assertTrue(result["throttle"].startswith("off"))

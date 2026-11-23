@@ -12,6 +12,7 @@ A few things:
   https://docs.djangoproject.com/en/4.2/topics/settings/#altering-settings-at-runtime
 """
 
+import importlib.util # for the optional django-axes wiring
 import os
 import tempfile # for the log-rotation lock-file dir, see _file_log_handler
 import configparser
@@ -568,9 +569,7 @@ INSTALLED_APPS = [
     # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html
     "debug_toolbar",
 
-    # django-axes: locks a username out of /admin login after repeated failed
-    # passwords. Configured in the AXES_* block below.
-    "axes",
+    # django-axes ("axes") is appended below, only when the package is importable.
 ]
 
 # -----------------------------------------------------------------------------
@@ -587,22 +586,58 @@ INSTALLED_APPS = [
 #   header carries the real one. An IP key could therefore lock out everybody at
 #   once, or nobody. Revisit if CSE IT confirms the forwarding header.
 # - The trade-off: someone who knows an admin username can lock that account by
-#   guessing. AXES_RESET_COOL_OFF_ON_FAILURE_DURING_LOCKOUT=False bounds that:
-#   the 30 minutes run from the lockout, and further guesses do not extend it.
+#   guessing, and can re-lock it each time the 30 minutes end. Guesses made
+#   DURING a lockout do not extend it
+#   (AXES_RESET_COOL_OFF_ON_FAILURE_DURING_LOCKOUT=False). Recovery is in
+#   docs/ADMIN_USERS_AND_GROUPS.md ("Locked out ...").
 # - To unlock someone sooner: Admin > Administration > Access attempts, delete
-#   their row (superusers only). From a shell: `manage.py axes_reset_username <name>`.
+#   their rows (superusers only). There is no shell on the servers, so the
+#   `axes_reset_username` management command is for local dev only.
 # - Tests turn this off (settings_test.py) except the ones that exercise it.
-AUTHENTICATION_BACKENDS = [
-    # Must be first: it rejects the login when the username is locked out.
-    'axes.backends.AxesStandaloneBackend',
-    'django.contrib.auth.backends.ModelBackend',
-]
+#
+# Two ways it can be off, both reported to superusers on the admin dashboard
+# through LOGIN_THROTTLE:
+#
+# - The package is not importable. On the servers the checkout is updated before
+#   the image is rebuilt, so for a few minutes of every deploy that adds a
+#   package, the old image runs the new settings. A Gunicorn worker restarted in
+#   that window must still boot, so axes is wired in only when it is installed
+#   (same pattern as concurrent-log-handler in the LOGGING block).
+# - ML_DISABLE_LOGIN_THROTTLE=true in the environment. This is the way back in
+#   when every superuser is locked out: the deploy workflows pass it from the
+#   repository variable DISABLE_LOGIN_THROTTLE, so no commit is needed.
+AXES_INSTALLED = importlib.util.find_spec("axes") is not None
+AXES_ENABLED = os.environ.get('ML_DISABLE_LOGIN_THROTTLE', '').strip().lower() != 'true'
+if not AXES_INSTALLED:
+    LOGIN_THROTTLE = "off: django-axes is not installed in this image"
+elif not AXES_ENABLED:
+    LOGIN_THROTTLE = "off: ML_DISABLE_LOGIN_THROTTLE is set"
+else:
+    LOGIN_THROTTLE = "on"
+
+if AXES_INSTALLED:
+    INSTALLED_APPS.append("axes")
+    AUTHENTICATION_BACKENDS = [
+        # Must be first: it rejects the login when the username is locked out.
+        'axes.backends.AxesStandaloneBackend',
+        'django.contrib.auth.backends.ModelBackend',
+    ]
 AXES_FAILURE_LIMIT = 10
 AXES_COOLOFF_TIME = datetime.timedelta(minutes=30)
 AXES_LOCKOUT_PARAMETERS = ["username"]
 AXES_RESET_ON_SUCCESS = True  # a correct password clears the failure count
 AXES_RESET_COOL_OFF_ON_FAILURE_DURING_LOCKOUT = False
 AXES_ENABLE_RETRY_AFTER_HEADER = True
+# What axes records as the username: see website/utils/login_throttle.py. Names
+# that are not real accounts are stored as one placeholder, so a password typed
+# into the username box by mistake is never written to the database.
+AXES_USERNAME_CALLABLE = 'website.utils.login_throttle.get_throttle_username'
+# Keep a record of failed logins (Admin > Administration > Access failures).
+# Without it a failed attempt leaves no trace once its lockout row expires.
+# Axes caps this at 1000 rows per username.
+AXES_ENABLE_ACCESS_FAILURE_LOG = True
+# The page a locked-out person sees (HTTP 429).
+AXES_LOCKOUT_TEMPLATE = 'admin/login_locked_out.html'
 # axes.W006 warns whenever 'ip_address' is not among the lockout keys. Leaving
 # it out is the deliberate choice explained above, so silence that one check.
 SILENCED_SYSTEM_CHECKS = ['axes.W006']
@@ -641,11 +676,11 @@ MIDDLEWARE = [
     # Adds permissive CORS headers to /api/ responses only (#1268). Read-only,
     # already-public data -- see website/api/middleware.py.
     'website.api.middleware.ApiCorsMiddleware',
-
-    # django-axes: turns a locked-out login into the 429 response. Its docs ask
-    # for it to be last so it sees the final result of authentication.
-    'axes.middleware.AxesMiddleware',
 ]
+if AXES_INSTALLED:
+    # django-axes: turns a locked-out login into the 429 response. Kept last so
+    # it sees the final result of authentication.
+    MIDDLEWARE.append('axes.middleware.AxesMiddleware')
 
 # Django REST Framework config for the public read-only API (#1268).
 # Public data, so no auth and no throttle (per the #1268 scoping decision); the

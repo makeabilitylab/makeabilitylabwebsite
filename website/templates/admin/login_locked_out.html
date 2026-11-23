@@ -1,0 +1,31 @@
+{% comment %}
+  Shown with HTTP 429 when django-axes refuses a login because the username hit
+  the failed-password limit (AXES_LOCKOUT_TEMPLATE in settings.py). Standalone on
+  purpose: it must render with no admin context and no database access.
+{% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Account locked | Makeability Lab admin</title>
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #1a1a1a; background: #fff; margin: 0; }
+    main { max-width: 34rem; margin: 4rem auto; padding: 0 1rem; line-height: 1.5; }
+    h1 { font-size: 1.5rem; }
+    a { color: #0b5cad; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Account locked</h1>
+    <p>There were too many failed sign-in attempts for this username, so sign-in
+      is paused for it. This is a safeguard against password guessing.</p>
+    <p>It unlocks by itself{% if cooloff_timedelta %} after {% widthratio cooloff_timedelta.seconds 60 1 %} minutes{% else %} after a short wait{% endif %}.
+      If you need access sooner, ask the lab's website maintainer to unlock your
+      account.</p>
+    <p><a href="{% url 'admin:login' %}">Back to the sign-in page</a></p>
+  </main>
+</body>
+</html>

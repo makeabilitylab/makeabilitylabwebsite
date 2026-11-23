@@ -116,11 +116,32 @@ that **username** for 30 minutes, and a locked account is refused even with the
 right password (the page says "Account locked"). A correct login resets the
 count.
 
-- **It unlocks by itself** 30 minutes after the lockout began.
+- **It unlocks by itself** 30 minutes after the lockout began. Guesses made
+  while it is locked do not extend it.
 - **To unlock someone sooner**, a superuser opens Admin → Administration →
-  **Access attempts** and deletes that username's row.
+  **Access attempts** and deletes every row for that username. A superuser who
+  is already signed in can do this even if their own username is locked: the
+  lock only blocks new sign-ins.
 - The lock is per username, so one person's lockout never affects anyone else.
   The flip side: anyone who knows a username can lock it by guessing. If that
   ever happens repeatedly, tell the maintainer.
-- **Access logs** (same admin section) list successful sign-ins, which is handy
-  when offboarding or checking whether an account is still in use.
+- **Access failures** (same admin section) list failed sign-ins and **Access
+  logs** list successful ones, which is handy when offboarding or checking
+  whether an account is still in use.
+- Names that aren't real accounts are recorded together as
+  `(unknown username)`, so a password typed into the username box by mistake is
+  never stored.
+
+### If no superuser can sign in (maintainer)
+
+There is no shell on the servers, so the way back in is a switch on the deploy:
+
+1. In the GitHub repository, go to Settings → Secrets and variables → Actions →
+   Variables and set `DISABLE_LOGIN_THROTTLE` to `true`.
+2. Redeploy: re-run the latest `deployCSETest` or `deployCSEProd` workflow run.
+   If the re-run does not pick up the variable, push a new commit (test) or tag
+   (prod).
+3. Sign in, delete the rows under Access attempts, and change the affected
+   password if there is any doubt about it.
+4. Delete the variable and redeploy again. While it is set, the admin dashboard
+   shows superusers a warning that throttling is off.

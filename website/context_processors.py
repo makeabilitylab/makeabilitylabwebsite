@@ -38,4 +38,6 @@ def admin_version_info(request):
         'DEBUG': settings.DEBUG,
         'LOG_TO_FILE': settings.LOG_TO_FILE,
         'LOG_FILE': settings.LOG_FILE,
+        # "on", or "off: <why>" -- drives a superuser-only dashboard warning.
+        'LOGIN_THROTTLE': settings.LOGIN_THROTTLE,
     }

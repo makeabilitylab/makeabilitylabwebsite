@@ -12,6 +12,10 @@ jobs:
     runs-on: [self-hosted, cse-deploy-test]
     env:
      DJANGO_ENV: TEST
+     # Emergency switch for admin login throttling: set the repository
+     # variable DISABLE_LOGIN_THROTTLE to 'true' and redeploy to turn it off
+     # (docs/ADMIN_USERS_AND_GROUPS.md). Empty normally.
+     ML_DISABLE_LOGIN_THROTTLE: ${{ vars.DISABLE_LOGIN_THROTTLE }}
      MEDIA_PATH: /cse/web/research/makelab/www-test
      CONFIG_PATH: /cse/web/research/makelab/secret/config-test.ini
      POSTGRES_IMAGE: postgres:16

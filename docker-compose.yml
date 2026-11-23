@@ -52,6 +52,10 @@ services:
   website:
     environment:
       - DJANGO_ENV=${DJANGO_ENV:-TEST}
+      # Emergency switch: "true" turns admin login throttling off (see the
+      # AXES_* block in settings.py). Set from the repository variable
+      # DISABLE_LOGIN_THROTTLE by the deploy workflows; empty otherwise.
+      - ML_DISABLE_LOGIN_THROTTLE=${ML_DISABLE_LOGIN_THROTTLE:-}
     build:
       context: .
       dockerfile: Dockerfile
