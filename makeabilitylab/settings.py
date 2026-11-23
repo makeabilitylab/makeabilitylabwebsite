@@ -14,6 +14,7 @@ A few things:
 
 import os
 import tempfile # for the log-rotation lock-file dir, see _file_log_handler
+import configparser
 from configparser import ConfigParser
 from django.core.exceptions import ImproperlyConfigured
 import datetime # for DATE_MAKEABILITYLAB_FORMED global
@@ -31,7 +32,46 @@ config_file = os.path.join(BASE_DIR, 'config.ini')
 # is not readable by this process, and returns the list of files it did parse.
 # Keep that list: "config.ini was never read" and "config.ini lacks an option"
 # need different error messages (see read_server_setting below).
-CONFIG_FILE_WAS_READ = bool(config.read(config_file))
+#
+# SECRET HYGIENE: configparser's own error messages quote the offending line or
+# value ("found: '%abc...'", "Raw value: '...'"). For config.ini that text can be
+# the SECRET_KEY or a database password, and a startup traceback ends up in logs
+# (the deploy preflight prints to a PUBLIC GitHub Actions log). So every read of
+# config.ini goes through this block or safe_config_get(), which re-raise with
+# the error's type only. `from None` drops the original message from the
+# traceback as well.
+try:
+    CONFIG_FILE_WAS_READ = bool(config.read(config_file))
+except configparser.Error as e:
+    raise ImproperlyConfigured(
+        f"config.ini could not be parsed ({type(e).__name__}); file contents are "
+        "deliberately not shown. Check for a missing [Django] header or a "
+        "malformed line. See docs/DEPLOYMENT.md."
+    ) from None
+
+
+def safe_config_get(config, section, option):
+    """``config.get(section, option)`` that can never leak the value in an error.
+
+    A literal ``%`` in an .ini value must be written ``%%``; a bare one makes
+    ConfigParser raise an interpolation error whose message includes the value.
+
+    Raises:
+        ImproperlyConfigured: naming the section, option and error type only.
+
+    Example:
+        >>> safe_config_get(config, 'Django', 'SECRET_KEY')
+    """
+    try:
+        return config.get(section, option)
+    except configparser.Error as e:
+        raise ImproperlyConfigured(
+            f"config.ini [{section}] {option} could not be read ({type(e).__name__}); "
+            "the value is deliberately not shown. A literal % in a value must be "
+            "written %%. See docs/DEPLOYMENT.md."
+        ) from None
+
+
 if CONFIG_FILE_WAS_READ:
     CONFIG_FILE = config_file
 else:
@@ -59,11 +99,12 @@ def read_server_setting(config, option, django_env, dev_default):
     or blank option raises instead: silently running production on a default
     that is published in this repository is worse than not starting.
 
-    What a refusal looks like from outside: the site returns 502/503. The
-    deploy job itself still goes green (``docker compose up -d`` does not wait
-    for the app), and this message only reaches the container's stdout on the
-    Docker host, which the maintainer cannot read. So "site down right after a
-    deploy that touched config" means: suspect this guard, and revert.
+    What a refusal looks like from outside: the deploy job fails at its
+    "Preflight" step and this message is in that run's GitHub Actions log. The
+    running container is not replaced, but its code directory is already the
+    new checkout, so fix the config or revert promptly (see docs/DEPLOYMENT.md).
+    If the preflight is ever bypassed, a refusal instead looks like a green
+    deploy followed by 502/503, with the message only on the Docker host.
 
     Args:
         config: the ConfigParser loaded from config.ini.
@@ -89,7 +130,7 @@ def read_server_setting(config, option, django_env, dev_default):
             f"directory, or not readable by this user) and DJANGO_ENV={django_env} "
             f"requires [Django] {option} from it. See docs/DEPLOYMENT.md."
         )
-    value = config.get('Django', option).strip() if config.has_option('Django', option) else ''
+    value = safe_config_get(config, 'Django', option).strip() if config.has_option('Django', option) else ''
     if value and not (on_server and value == _PUBLIC_DEV_SECRET_KEY):
         return value
     if on_server:
@@ -652,10 +693,10 @@ if config.has_section('Postgres'):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': config.get('Postgres', 'DATABASE'),
-            'USER': config.get('Postgres', 'USER'),
-            'PASSWORD': config.get('Postgres', 'PASSWORD'),
-            'HOST': config.get('Postgres', 'HOSTNAME'),
+            'NAME': safe_config_get(config, 'Postgres', 'DATABASE'),
+            'USER': safe_config_get(config, 'Postgres', 'USER'),
+            'PASSWORD': safe_config_get(config, 'Postgres', 'PASSWORD'),
+            'HOST': safe_config_get(config, 'Postgres', 'HOSTNAME'),
             'PORT': '',
         }
     }

@@ -48,10 +48,10 @@ A superuser is required to use `/admin` and add content; create one with `python
 
 ## Deployment
 
-- **Push to `master`** → auto-deploys to `makeabilitylab-test.cs.washington.edu` via webhook.
+- **Push to `master`** → auto-deploys to `makeabilitylab-test.cs.washington.edu` via the `deployCSETest` GitHub Actions workflow (self-hosted CSE runner).
 - **Push a SemVer tag (e.g. `git tag 2.3.2 && git push --tags`)** → deploys to production `makeabilitylab.cs.washington.edu`.
 - Bump `ML_WEBSITE_VERSION` and `ML_WEBSITE_VERSION_DESCRIPTION` in `makeabilitylab/settings.py` when cutting a release.
-- Application logs: read `debug.log` over SSH on `makelab1`/`makelab2`/`recycle` under `/cse/web/research/makelab/www[-test]/`. Build logs only reach you via the deploy email. **The web `/logs/` URL is gone — every path under it 404s on both hosts.** Confirm what a server is running with `/version.json` (`git_sha`, not `built_at`). See `docs/DEPLOYMENT.md`.
+- Application logs: read `debug.log` over SSH on `makelab1`/`makelab2`/`recycle` under `/cse/web/research/makelab/www[-test]/`. Build/deploy logs are the workflow run logs in GitHub Actions (public: never print secrets there). **The web `/logs/` URL is gone — every path under it 404s on both hosts.** Confirm what a server is running with `/version.json` (`git_sha`, not `built_at`). See `docs/DEPLOYMENT.md`.
 
 ### Server access model (important — shapes how anything ships to prod/test)
 
@@ -70,7 +70,7 @@ The maintainer does **not** have shell or admin access to the test or production
 - `manage.py` → Django entry point, uses `makeabilitylab.settings`.
 - `makeabilitylab/` → Django project (settings, root URLconf, WSGI). Root URLconf mounts `website.urls` at `/`, `admin.site.urls` at `/admin/`, ckeditor at `/ckeditor/`, and django-debug-toolbar at `/__debug__/`.
 - `website/` → the single Django app. All models, views, admin, URLs, templates live here.
-- `makeabilitylabwebsite/` → **not** a Python package; legacy folder holding deploy shell scripts (`rebuildanddeploy.sh`, `command`, `command-test`) used by the production deploy webhook. Don't confuse it with the Django project package above.
+- `makeabilitylabwebsite/` → **not** a Python package; legacy folder holding deploy shell scripts (`rebuildanddeploy.sh`, `command`, `command-test`) formerly used by the deploy webhook (deploys now run from `.github/workflows/deploycse*.yml`). Don't confuse it with the Django project package above.
 - `sortedm2m_filter_horizontal_widget/` → a vendored, locally-modified fork of the upstream `sortedm2m-filter-horizontal-widget` package (upstream is incompatible with Django 5.2). It is listed in `INSTALLED_APPS`; treat it as project source code, not a third-party library.
 - `media/` → user-uploaded content (publications PDFs, images, talks). Bind-mounted, persists across container restarts.
 - `static/` → output of `collectstatic`; do not edit by hand. Source assets live under `website/static/`.
@@ -130,7 +130,7 @@ the existing viewset/serializer pattern and keep `v1` fields additive-only
 - **Compose files per environment:** the servers run `docker-compose.yml` (test *and* prod — `makeabilitylabwebsite/rebuildanddeploy.sh` runs `docker compose up` with no `-f`, so it always picks the default `docker-compose.yml`; it only varies per-host env vars). Local dev runs `docker-compose-local-dev.yml` (passed explicitly with `-f`). `docker-compose-local-dev.yml` is **never** used on the servers.
 - **Per-host wiring** (set by `rebuildanddeploy.sh`): test host `docker-test2` → `DJANGO_ENV=TEST`, mounts `secret/config-test.ini` + `www-test/` media; prod host `grabthar` → `DJANGO_ENV=PROD`, mounts `secret/config.ini` + `www/` media.
 - `makeabilitylab/settings.py` reads `config.ini` (mounted at the project root, **not** committed) for `SECRET_KEY`, `DEBUG`, and `ALLOWED_HOSTS`.
-- **Fail-closed server config:** when `DJANGO_ENV` is `PROD` or `TEST`, `read_server_setting()` in `settings.py` raises `ImproperlyConfigured` unless `config.ini` is readable and supplies a real `SECRET_KEY` and a non-empty `ALLOWED_HOSTS` (a `*` entry is allowed but warned about). A refusal shows up as a 502/503 after a green deploy, with no log the maintainer can read, so the response is to revert. The in-repo fallback key is public and is rejected on the servers; the dev fallbacks (`ALLOWED_HOSTS=['*']`) apply only locally. Pinned by `website/tests/test_server_config.py`. `SESSION_COOKIE_SECURE`/`CSRF_COOKIE_SECURE` are on for PROD/TEST only.
+- **Fail-closed server config:** when `DJANGO_ENV` is `PROD` or `TEST`, `read_server_setting()` in `settings.py` raises `ImproperlyConfigured` unless `config.ini` is readable and supplies a real `SECRET_KEY` and a non-empty `ALLOWED_HOSTS` (a `*` entry is allowed but warned about). A refusal fails the deploy workflows' Preflight step (`scripts/preflight_settings.py`), with the reason in the Actions log; the old container keeps running but on the new checkout, so fix or revert promptly. **Never read config.ini with a bare `config.get`/`config.read`:** configparser errors quote the value, and that log is public. Use `safe_config_get()`. The in-repo fallback key is public and is rejected on the servers; the dev fallbacks (`ALLOWED_HOSTS=['*']`) apply only locally. Pinned by `website/tests/test_server_config.py`. `SESSION_COOKIE_SECURE`/`CSRF_COOKIE_SECURE` are on for PROD/TEST only.
 - **Prod/test `config.ini` has only a `[Django]` section — no `[Postgres]` section.** Per `settings.py`, a missing `[Postgres]` section means Django uses the fallback `DATABASES` default (`HOST='db'`) — i.e. the dockerized `db` service of the active compose file. A `[Postgres]` section, if added, would override it. So the DB is the in-stack `db` container in **every** environment (no external Postgres); on the servers that's the `db` service in `docker-compose.yml`.
 - `DEBUG` resolution order: `DJANGO_ENV=PROD` forces False → `config.ini [Django] DEBUG` → `DJANGO_ENV=DEBUG` forces True → default False.
 - `TIME_ZONE = 'America/Los_Angeles'`. `ML_WEBSITE_VERSION` in settings is shown in the admin header and used in release tagging.

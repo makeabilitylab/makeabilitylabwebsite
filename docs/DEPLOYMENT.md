@@ -45,14 +45,14 @@ Each server has its own:
 
 ## Deployment Pipeline
 
-Deployments are automated via GitHub webhooks:
+Deployments are automated via GitHub Actions workflows (`.github/workflows/deploycse*.yml`) running on UW CSE's self-hosted runners:
 
 ```mermaid
 graph LR
-    A[Push to<br/>master] --> B(Webhook fires)
+    A[Push to<br/>master] --> B(deployCSETest workflow)
     B --> C[makeabilitylab-test<br/>auto-deploys]
 
-    D[Push a tag<br/>e.g. 2.1.0] --> E(Webhook fires)
+    D[Push a tag<br/>e.g. 2.1.0] --> E(deployCSEProd workflow)
     E --> F[makeabilitylab<br/>production]
 ```
 
@@ -84,8 +84,8 @@ curl -s https://makeabilitylab-test.cs.washington.edu/version.json | python3 -m 
 ```
 
 Match `git_sha` against the commit you pushed — **not `built_at`**, which has read
-fresh while the host served stale code. The build log itself is only available in
-the deploy email sent to maintainers on every push.
+fresh while the host served stale code. The build log is the workflow run's log
+in the repository's GitHub Actions tab (`gh run list --workflow=deploycse-test.yml`).
 
 ## Versioning
 
@@ -141,6 +141,18 @@ is `PROD` or `TEST`, `settings.py` raises `ImproperlyConfigured` unless
   `config.ini`. A literal `%` in the value must be written `%%`.
 - `ALLOWED_HOSTS` — comma-separated hostnames the site answers to, e.g.
   `makeabilitylab.cs.washington.edu`.
+
+Both deploy workflows run a **preflight** step (`scripts/preflight_settings.py`)
+that loads the settings in a throwaway container before replacing the running
+site. A config that fails this check turns the deploy job red, with the reason
+in that run's GitHub Actions log. The log is public, so the reason names the
+setting and the kind of error but never shows a value.
+
+When the preflight fails, the running container is not replaced and normally
+keeps answering. It is, however, already running on top of the new checkout, so
+it can go down at its next worker restart. Fix the config (or revert) and
+redeploy soon. If the preflight step itself ever misbehaves and blocks deploys,
+set the repository variable `SKIP_DEPLOY_PREFLIGHT` to `true` to bypass it.
 
 Local development has no such requirement and falls back to dev defaults. To
 check a server's file from `recycle` without printing the key:
