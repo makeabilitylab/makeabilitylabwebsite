@@ -51,6 +51,22 @@
   </div>
 {% endif %}
 
+{% comment %}
+  Login throttling (django-axes) is off, either through the emergency switch or
+  because the package is missing from the image. Superuser-only, and deliberately
+  not on the public /version.json: it would advertise an unthrottled login.
+{% endcomment %}
+{% if user.is_superuser and LOGIN_THROTTLE != "on" %}
+  <div class="ml-log-warning">
+    <span class="ml-log-warning-icon" aria-hidden="true">⚠️</span>
+    <strong>Warning: admin login throttling is {{ LOGIN_THROTTLE }}.</strong>
+    <span class="ml-log-warning-desc">Password guessing against <code>/admin</code>
+      is not limited right now. If the emergency switch was used to get back in,
+      delete the repository variable <code>DISABLE_LOGIN_THROTTLE</code> and
+      redeploy. See <code>docs/ADMIN_USERS_AND_GROUPS.md</code>.</span>
+  </div>
+{% endif %}
+
 {% if user.is_superuser %}
   <div class="ml-data-health">
     <span class="ml-data-health-icon" aria-hidden="true">🩺</span>

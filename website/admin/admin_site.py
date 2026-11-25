@@ -77,8 +77,12 @@ class MakeabilityLabAdminSite(admin.AdminSite):
         ),
         (
             "Administration",
-            ["Group", "User", "LogEntry"],
-            None
+            # AccessAttempt / AccessLog / AccessFailureLog are django-axes' login
+            # records (current lockouts, the sign-in history and the failed-login history). Only
+            # superusers have permissions on them, so nobody else sees them.
+            ["Group", "User", "LogEntry", "AccessAttempt", "AccessLog", "AccessFailureLog"],
+            "To unlock an account that hit the failed-login limit, delete its "
+            "rows under Access attempts (it also unlocks by itself after 30 minutes)."
         ),
     ]
     

@@ -116,6 +116,13 @@ django-sortedm2m==4.0.0
 django-prose-editor[sanitize]==0.26.0
 
 
+# django-axes - throttles failed /admin logins: after AXES_FAILURE_LIMIT wrong
+# passwords a username is locked out for AXES_COOLOFF_TIME (see the AXES_* block
+# in settings.py). Counts live in the database so all Gunicorn workers share
+# them. Its only dependencies are Django and asgiref, both already pinned.
+# See: https://django-axes.readthedocs.io/
+django-axes==9.0.0
+
 # -----------------------------------------------------------------------------
 # WSGI Server (production)
 # -----------------------------------------------------------------------------

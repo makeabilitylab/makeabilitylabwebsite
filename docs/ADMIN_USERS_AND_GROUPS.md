@@ -108,3 +108,45 @@ To preview without writing: `python manage.py setup_admin_groups --dry-run`.
   named personal superuser like `jonfroehlich` instead, so admin-history
   attribution stays clean). Rotating matters because its hash exists in old DB
   dumps and it is a long-lived (2016-era) credential.
+
+## Locked out after too many wrong passwords
+
+`/admin` login is throttled (`django-axes`): 10 wrong passwords in a row lock
+that **username** for 30 minutes, and a locked account is refused even with the
+right password (the page says "Account locked"). A correct login resets the
+count.
+
+- **It unlocks by itself** 30 minutes after the lockout began. Guesses made
+  while it is locked do not extend it.
+- **To unlock someone sooner**, a superuser opens Admin → Administration →
+  **Access attempts** and deletes every row for that username. A superuser who
+  is already signed in can do this even if their own username is locked: the
+  lock only blocks new sign-ins.
+- The lock is per username, so one person's lockout never affects anyone else.
+  The flip side: anyone who knows a username can lock it by guessing. If that
+  ever happens repeatedly, tell the maintainer.
+- **Access failures** (same admin section) list failed sign-ins and **Access
+  logs** list successful ones, which is handy when offboarding or checking
+  whether an account is still in use.
+- Names that aren't real accounts are recorded as `(unknown) ` plus a short
+  hash, never as typed, so a password put in the username box by mistake is not
+  stored. Each such name still has its own count.
+- Attempts refused while an account is locked are not added to Access failures,
+  so that list undercounts a sustained attack.
+
+### If no superuser can sign in (maintainer)
+
+There is no shell on the servers, so the way back in is a switch on the deploy:
+
+1. In the GitHub repository, go to Settings → Secrets and variables → Actions →
+   Variables and set the **repository** variable `DISABLE_LOGIN_THROTTLE` to
+   `true`. (A variable of the same name on the `prod` or `test` environment
+   would override it, so don't create one there.)
+2. Redeploy the site you are locked out of: re-run the latest `deployCSETest`
+   (test) or `deployCSEProd` (production) workflow run.
+   If the re-run does not pick up the variable, push a new commit (test) or tag
+   (prod).
+3. Sign in, delete the rows under Access attempts, and change the affected
+   password if there is any doubt about it.
+4. Delete the variable and redeploy again. While it is set, the admin dashboard
+   shows superusers a warning that throttling is off.
