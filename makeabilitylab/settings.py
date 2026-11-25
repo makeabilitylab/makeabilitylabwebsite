@@ -607,7 +607,7 @@ INSTALLED_APPS = [
 #   when every superuser is locked out: the deploy workflows pass it from the
 #   repository variable DISABLE_LOGIN_THROTTLE, so no commit is needed.
 AXES_INSTALLED = importlib.util.find_spec("axes") is not None
-AXES_ENABLED = os.environ.get('ML_DISABLE_LOGIN_THROTTLE', '').strip().lower() != 'true'
+AXES_ENABLED = os.environ.get('ML_DISABLE_LOGIN_THROTTLE', '').strip().lower() not in ('true', '1', 'yes', 'on')
 if not AXES_INSTALLED:
     LOGIN_THROTTLE = "off: django-axes is not installed in this image"
 elif not AXES_ENABLED:
@@ -629,11 +629,12 @@ AXES_RESET_ON_SUCCESS = True  # a correct password clears the failure count
 AXES_RESET_COOL_OFF_ON_FAILURE_DURING_LOCKOUT = False
 AXES_ENABLE_RETRY_AFTER_HEADER = True
 # What axes records as the username: see website/utils/login_throttle.py. Names
-# that are not real accounts are stored as one placeholder, so a password typed
+# that are not real accounts are stored as a keyed hash, so a password typed
 # into the username box by mistake is never written to the database.
 AXES_USERNAME_CALLABLE = 'website.utils.login_throttle.get_throttle_username'
 # Keep a record of failed logins (Admin > Administration > Access failures).
 # Without it a failed attempt leaves no trace once its lockout row expires.
+# Attempts refused during a lockout are not recorded, so it undercounts those.
 # Axes caps this at 1000 rows per username.
 AXES_ENABLE_ACCESS_FAILURE_LOG = True
 # The page a locked-out person sees (HTTP 429).

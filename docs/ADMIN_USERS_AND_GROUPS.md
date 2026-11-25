@@ -128,17 +128,22 @@ count.
 - **Access failures** (same admin section) list failed sign-ins and **Access
   logs** list successful ones, which is handy when offboarding or checking
   whether an account is still in use.
-- Names that aren't real accounts are recorded together as
-  `(unknown username)`, so a password typed into the username box by mistake is
-  never stored.
+- Names that aren't real accounts are recorded as `(unknown) ` plus a short
+  hash, never as typed, so a password put in the username box by mistake is not
+  stored. Each such name still has its own count.
+- Attempts refused while an account is locked are not added to Access failures,
+  so that list undercounts a sustained attack.
 
 ### If no superuser can sign in (maintainer)
 
 There is no shell on the servers, so the way back in is a switch on the deploy:
 
 1. In the GitHub repository, go to Settings → Secrets and variables → Actions →
-   Variables and set `DISABLE_LOGIN_THROTTLE` to `true`.
-2. Redeploy: re-run the latest `deployCSETest` or `deployCSEProd` workflow run.
+   Variables and set the **repository** variable `DISABLE_LOGIN_THROTTLE` to
+   `true`. (A variable of the same name on the `prod` or `test` environment
+   would override it, so don't create one there.)
+2. Redeploy the site you are locked out of: re-run the latest `deployCSETest`
+   (test) or `deployCSEProd` (production) workflow run.
    If the re-run does not pick up the variable, push a new commit (test) or tag
    (prod).
 3. Sign in, delete the rows under Access attempts, and change the affected

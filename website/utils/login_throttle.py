@@ -1,8 +1,10 @@
 """Helpers for admin login throttling (django-axes). See the AXES_* block in settings.py."""
 from django.contrib.auth import get_user_model
+from django.utils.crypto import salted_hmac
 
-# What axes records in place of a username that matches no account.
-UNKNOWN_USERNAME = "(unknown username)"
+# Prefix of what axes records in place of a username that matches no account.
+# Real usernames cannot contain spaces or parentheses, so the two never collide.
+UNKNOWN_PREFIX = "(unknown) "
 
 
 def get_throttle_username(request, credentials=None):
@@ -11,26 +13,31 @@ def get_throttle_username(request, credentials=None):
     Wired in as ``AXES_USERNAME_CALLABLE``; axes calls it with the request and,
     when it has them, the credentials passed to ``authenticate()``.
 
-    A name that matches a real account is returned unchanged, so each account
-    has its own failure count. Anything else is replaced by ``UNKNOWN_USERNAME``,
-    for two reasons:
+    A name that matches a real account is returned unchanged. Anything else is
+    replaced by ``"(unknown) "`` plus a short keyed hash of what was typed,
+    because people sometimes type their password into the username box, axes
+    stores the username in plain text, and the nightly database dump would
+    keep it.
 
-    - People sometimes type their password into the username box. Axes stores
-      the username in plain text, and the nightly database dump would keep it.
-    - Bots guess thousands of names (``admin``, ``root``, ...). Sharing one
-      counter keeps that to a handful of rows instead of one per name.
+    Each unknown name gets its OWN hash, and so its own failure count, on
+    purpose. If all unknown names shared one counter, that counter would lock
+    after a few junk guesses, and from then on a made-up name would be refused
+    at once while a real one would not: a way to test which usernames exist.
 
     Example::
 
         get_throttle_username(request, {"username": "jonfroehlich"})  # "jonfroehlich"
-        get_throttle_username(request, {"username": "hunter2"})       # "(unknown username)"
+        get_throttle_username(request, {"username": "hunter2"})       # "(unknown) 3f9a0c..."
     """
-    username = (credentials or {}).get("username")
-    if username is None:
+    username = None
+    if isinstance(credentials, dict):
+        username = credentials.get("username")
+    if username is None and request is not None:
         username = request.POST.get("username")
-    if not username:
+    if not username or not isinstance(username, str):
         return username
     User = get_user_model()
     if User.objects.filter(**{User.USERNAME_FIELD: username}).exists():
         return username
-    return UNKNOWN_USERNAME
+    digest = salted_hmac("website.login_throttle.unknown", username).hexdigest()[:16]
+    return UNKNOWN_PREFIX + digest

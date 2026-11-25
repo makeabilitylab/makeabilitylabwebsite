@@ -22,7 +22,7 @@
     <h1>Account locked</h1>
     <p>There were too many failed sign-in attempts for this username, so sign-in
       is paused for it. This is a safeguard against password guessing.</p>
-    <p>It unlocks by itself{% if cooloff_timedelta %} after {% widthratio cooloff_timedelta.seconds 60 1 %} minutes{% else %} after a short wait{% endif %}.
+    <p>It unlocks by itself{% if cooloff_timedelta %} within {% widthratio cooloff_timedelta.total_seconds 60 1 %} minutes{% else %} after a short wait{% endif %}.
       If you need access sooner, ask the lab's website maintainer to unlock your
       account.</p>
     <p><a href="{% url 'admin:login' %}">Back to the sign-in page</a></p>

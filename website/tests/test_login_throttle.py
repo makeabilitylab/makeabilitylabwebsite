@@ -74,24 +74,64 @@ class AdminLoginThrottleTests(TestCase):
             self.attempt("nobody", "wrong")
         self.assertEqual(self.attempt("nobody", "wrong").status_code, 429)
 
-    def test_unknown_usernames_share_one_placeholder(self):
+    def test_unknown_usernames_are_never_stored_in_plain_text(self):
         """A password typed into the username box must never reach the database."""
         from axes.models import AccessAttempt, AccessFailureLog
-        from website.utils.login_throttle import UNKNOWN_USERNAME
+        from website.utils.login_throttle import UNKNOWN_PREFIX
 
         self.attempt("MySecretPassw0rd!", "whatever")
         self.attempt("root", "whatever")
         for model in (AccessAttempt, AccessFailureLog):
             names = set(model.objects.values_list("username", flat=True))
-            self.assertEqual(names, {UNKNOWN_USERNAME}, model.__name__)
-        for attempt in AccessAttempt.objects.all():
-            self.assertNotIn("MySecretPassw0rd!", attempt.post_data)
+            self.assertEqual(len(names), 2, model.__name__)  # one counter per name
+            for name in names:
+                self.assertTrue(name.startswith(UNKNOWN_PREFIX), name)
+                self.assertNotIn("MySecret", name)
+                self.assertNotIn("root", name)
 
-    def test_locking_unknown_names_does_not_lock_a_real_account(self):
+    def test_unknown_and_real_names_are_indistinguishable(self):
+        """Locking some made-up names must not reveal which other names exist.
+
+        If unknown names shared one counter, a fresh made-up name would get 429
+        here while a real one got 200.
+        """
         for name in ("root", "admin", "test"):
-            self.attempt(name, "wrong")
-        self.assertEqual(self.attempt("nobody", "wrong").status_code, 429)
+            for _ in range(3):
+                self.attempt(name, "wrong")
+        self.assertEqual(self.attempt("root", "wrong").status_code, 429)
+        made_up = self.attempt("doesnotexist", "wrong").status_code
+        real = self.attempt("alice", "wrong").status_code
+        self.assertEqual(made_up, real)
+        self.assertEqual(real, 200)
+        # And a mistyped username does not lock the real account.
         self.assertEqual(self.attempt("alice", PASSWORD).status_code, 302)
+
+    @override_settings(AXES_ENABLED=False)
+    def test_off_switch_really_stops_the_lockout(self):
+        from axes.models import AccessAttempt
+
+        for _ in range(6):
+            self.attempt("alice", "wrong")
+        self.assertEqual(self.attempt("alice", PASSWORD).status_code, 302)
+        self.assertEqual(AccessAttempt.objects.count(), 0)
+
+    def test_dashboard_warning_is_for_superusers_only(self):
+        from django.core.management import call_command
+        from django.contrib.auth.models import Group
+
+        call_command("setup_admin_groups", verbosity=0)
+        editor = get_user_model().objects.create_user("erin", "", PASSWORD, is_staff=True)
+        editor.groups.add(Group.objects.get(name="Editors"))
+        marker = "admin login throttling is"
+        for user, state, shown in ((self.bob, "off: test", True),
+                                   (self.bob, "on", False),
+                                   (editor, "off: test", False)):
+            client = Client()
+            client.force_login(user)
+            with override_settings(LOGIN_THROTTLE=state):
+                response = client.get(reverse("admin:index"))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(marker in response.content.decode(), shown, (user.username, state))
 
     def test_failed_logins_are_recorded(self):
         from axes.models import AccessFailureLog
@@ -107,7 +147,7 @@ class AdminLoginThrottleTests(TestCase):
         self.assertEqual(response["Retry-After"], "1800")
         self.assertTemplateUsed(response, "admin/login_locked_out.html")
         self.assertContains(response, '<html lang="en">', status_code=429)
-        self.assertContains(response, "after 30 minutes", status_code=429)
+        self.assertContains(response, "within 30 minutes", status_code=429)
         self.assertNotContains(response, PASSWORD, status_code=429)
 
     def test_signed_in_superuser_can_unlock_by_deleting_rows(self):
@@ -202,6 +242,11 @@ class ThrottleSwitchTests(SimpleTestCase):
     def test_empty_or_other_values_leave_it_on(self):
         for value in ("", "false", "0"):
             self.assertTrue(self.load({"ML_DISABLE_LOGIN_THROTTLE": value})["enabled"], value)
+
+    def test_common_truthy_spellings_also_turn_it_off(self):
+        """In an emergency nobody should be defeated by typing 1 instead of true."""
+        for value in ("TRUE", "1", " yes "):
+            self.assertFalse(self.load({"ML_DISABLE_LOGIN_THROTTLE": value})["enabled"], value)
 
     def test_settings_still_load_when_the_package_is_missing(self):
         """Mid-deploy the old image runs the new settings; workers must boot."""
