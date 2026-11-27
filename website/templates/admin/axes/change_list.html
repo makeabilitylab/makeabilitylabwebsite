@@ -1,0 +1,72 @@
+{% extends "admin/change_list.html" %}
+
+{% comment %}
+  Changelist for django-axes' three login-record models (#1460). Axes ships no
+  admin templates, and the admin looks for admin/<app_label>/change_list.html
+  before its default, so this one template covers all three pages without
+  re-registering axes' ModelAdmins. It only adds a short explanation under the
+  page title, because names like "Access attempts" don't say what is in them,
+  and these pages get read during a lockout.
+
+  The numbers (10 wrong passwords, 30 minutes, 1,000 rows) mirror AXES_* in
+  settings.py and axes' own failure-log cap; AxesChangelistHelpTests in
+  test_login_throttle.py renders the pages and fails if they drift. All three
+  pages are superuser-only (axes' permissions).
+{% endcomment %}
+
+{% block content_title %}
+  {{ block.super }}
+  <div class="ml-axes-help" id="ml-axes-help">
+    {% if opts.model_name == "accessattempt" %}
+      <p>Usernames building up wrong passwords. 10 wrong passwords in a row lock
+        that username out of <code>/admin</code> for 30 minutes, and a correct
+        password clears its count.</p>
+      <p>A username can have several rows (one per browser or address), and its
+        lockout adds up the Failed Logins on all of them, so a locked-out username
+        may have no row that says “Locked Out”. A row whose Attempt Time is more than 30 minutes
+        ago has already expired, even if it still says “Locked Out”; it is removed
+        the next time anyone signs in.</p>
+      <p><strong>To unlock someone now,</strong> tick every row with their username,
+        choose “Delete selected access attempts”, click Go, then confirm.</p>
+      <p>A username shown as “(unknown) …” matched no account and is stored as a
+        hash.</p>
+    {% elif opts.model_name == "accesslog" %}
+      <p>Every successful sign-in to <code>/admin</code>, with the time the person
+        signed out. A blank logout time means they are still signed in, or their
+        session expired without signing out.</p>
+      <p>The IP address is the web server's internal address, the same for everyone,
+        not the person's own, which is why the throttle counts by username rather
+        than address.</p>
+    {% elif opts.model_name == "accessfailurelog" %}
+      <p>Wrong passwords, kept after the count on Access attempts resets (up to
+        1,000 per username). Attempts made while a username is locked out are not
+        recorded, so one locked-out username may stand for many more guesses than
+        it shows. A burst of failures for one username usually means someone is
+        guessing its password, or its owner has forgotten it.</p>
+      <p>A username that matches no account is stored as a hash, so a password typed
+        into the username box by mistake is never saved.</p>
+    {% endif %}
+  </div>
+{% endblock %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <style>
+    /* Admin custom properties rather than literal colors, so the box follows
+       the light/dark theme toggle (same approach as the Grant changelist). */
+    .ml-axes-help {
+      background: var(--darkened-bg, #f8f8f8);
+      border: 1px solid var(--hairline-color, #e8e8e8);
+      border-left: 4px solid var(--primary, #79aec8);
+      color: var(--body-fg, #333);
+      border-radius: 4px;
+      padding: 10px 15px;
+      margin: 0 0 20px 0;
+      max-width: 70em;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .ml-axes-help p { margin: 0; padding: 0; }
+    .ml-axes-help p + p { margin-top: 8px; }
+  </style>
+{% endblock %}

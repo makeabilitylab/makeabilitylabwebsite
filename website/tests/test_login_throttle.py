@@ -182,6 +182,47 @@ class AdminLoginThrottleTests(TestCase):
             self.assertEqual(editor_client.get(url).status_code, 403, model)
 
 
+class AxesChangelistHelpTests(TestCase):
+    """Each axes changelist explains what it records (templates/admin/axes/change_list.html)."""
+
+    PAGES = {
+        "accessattempt": "To unlock someone now,",
+        "accesslog": "Every successful sign-in",
+        "accessfailurelog": "Attempts made while a username is locked out are not",
+    }
+
+    def setUp(self):
+        user = get_user_model().objects.create_superuser("alice", "", PASSWORD)
+        self.client.force_login(user)
+
+    def test_each_page_has_its_own_explanation(self):
+        for model, own_text in self.PAGES.items():
+            with self.subTest(model=model):
+                response = self.client.get(reverse(f"admin:axes_{model}_changelist"))
+                self.assertContains(response, 'class="ml-axes-help"')
+                self.assertContains(response, own_text)
+                for other, other_text in self.PAGES.items():
+                    if other != model:
+                        self.assertNotContains(response, other_text)
+
+    def test_numbers_in_the_text_match_the_settings(self):
+        """The template hard-codes them; fail here rather than show stale numbers."""
+        from django.conf import settings
+
+        msg = "update templates/admin/axes/change_list.html to match settings"
+        minutes = int(settings.AXES_COOLOFF_TIME.total_seconds() // 60)
+        attempts = self.client.get(reverse("admin:axes_accessattempt_changelist"))
+        self.assertContains(
+            attempts, f"{settings.AXES_FAILURE_LIMIT} wrong passwords in a row", msg_prefix=msg)
+        self.assertContains(attempts, f"for {minutes} minutes", msg_prefix=msg)
+        self.assertContains(attempts, f"more than {minutes} minutes", msg_prefix=msg)
+        # Axes' own default (axes/conf.py), not a repo setting: guards an upgrade.
+        failures = self.client.get(reverse("admin:axes_accessfailurelog_changelist"))
+        self.assertContains(
+            failures, f"{settings.AXES_ACCESS_FAILURE_LOG_PER_USER_LIMIT:,} per username",
+            msg_prefix=msg)
+
+
 class ThrottleConfigTests(TestCase):
     """Pin the production policy so a settings edit can't quietly weaken it."""
 
