@@ -20,9 +20,12 @@
     {% if opts.model_name == "accessattempt" %}
       <p>Usernames building up wrong passwords. 10 wrong passwords in a row lock
         that username out of <code>/admin</code> for 30 minutes, and a correct
-        password clears its count. A row whose Attempt Time is more than 30 minutes
+        password clears its count.</p>
+      <p>A username can have several rows (one per browser or address), and its
+        lockout adds up the Failed Logins on all of them, so a locked-out username
+        may have no row that says “Locked Out”. A row whose Attempt Time is more than 30 minutes
         ago has already expired, even if it still says “Locked Out”; it is removed
-        at the next sign-in.</p>
+        the next time anyone signs in.</p>
       <p><strong>To unlock someone now,</strong> tick every row with their username,
         choose “Delete selected access attempts”, click Go, then confirm.</p>
       <p>A username shown as “(unknown) …” matched no account and is stored as a
@@ -38,8 +41,8 @@
       <p>Wrong passwords, kept after the count on Access attempts resets (up to
         1,000 per username). Attempts made while a username is locked out are not
         recorded, so one locked-out username may stand for many more guesses than
-        it shows. A burst of failures for one username means someone is guessing
-        its password.</p>
+        it shows. A burst of failures for one username usually means someone is
+        guessing its password, or its owner has forgotten it.</p>
       <p>A username that matches no account is stored as a hash, so a password typed
         into the username box by mistake is never saved.</p>
     {% endif %}
