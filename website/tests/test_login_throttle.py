@@ -188,7 +188,7 @@ class AxesChangelistHelpTests(TestCase):
     PAGES = {
         "accessattempt": "To unlock someone now,",
         "accesslog": "Every successful sign-in",
-        "accessfailurelog": "Every wrong password",
+        "accessfailurelog": "Attempts made while a username is locked out are not",
     }
 
     def setUp(self):
@@ -207,12 +207,20 @@ class AxesChangelistHelpTests(TestCase):
 
     def test_numbers_in_the_text_match_the_settings(self):
         """The template hard-codes them; fail here rather than show stale numbers."""
-        from datetime import timedelta
         from django.conf import settings
 
-        self.assertEqual(settings.AXES_FAILURE_LIMIT, 10)  # "Ten in a row"
-        self.assertEqual(settings.AXES_COOLOFF_TIME, timedelta(minutes=30))
-        self.assertEqual(settings.AXES_ACCESS_FAILURE_LOG_PER_USER_LIMIT, 1000)
+        msg = "update templates/admin/axes/change_list.html to match settings"
+        minutes = int(settings.AXES_COOLOFF_TIME.total_seconds() // 60)
+        attempts = self.client.get(reverse("admin:axes_accessattempt_changelist"))
+        self.assertContains(
+            attempts, f"{settings.AXES_FAILURE_LIMIT} wrong passwords in a row", msg_prefix=msg)
+        self.assertContains(attempts, f"for {minutes} minutes", msg_prefix=msg)
+        self.assertContains(attempts, f"more than {minutes} minutes", msg_prefix=msg)
+        # Axes' own default (axes/conf.py), not a repo setting: guards an upgrade.
+        failures = self.client.get(reverse("admin:axes_accessfailurelog_changelist"))
+        self.assertContains(
+            failures, f"{settings.AXES_ACCESS_FAILURE_LOG_PER_USER_LIMIT:,} per username",
+            msg_prefix=msg)
 
 
 class ThrottleConfigTests(TestCase):

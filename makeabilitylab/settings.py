@@ -229,7 +229,7 @@ if DJANGO_ENV in ('PROD', 'TEST'):
 
 # Makeability Lab Global Variables, including Makeability Lab version
 ML_WEBSITE_VERSION = "2.35.5" # Keep this updated with each release and also change the short description below
-ML_WEBSITE_VERSION_DESCRIPTION = "Admin login throttling: after 10 wrong passwords a username is locked out of /admin for 30 minutes (django-axes). Superusers can unlock an account under Administration > Access attempts; each of the three Access pages now explains what it records."
+ML_WEBSITE_VERSION_DESCRIPTION = "Each of the three login-throttle pages under Administration (Access attempts, logs, failures) now explains what it records and how to unlock an account."
 DATE_MAKEABILITYLAB_FORMED = datetime.date(2012, 1, 1)  # Date Makeability Lab was formed
 MAX_BANNERS = 7 # Maximum number of banners on a page
 
